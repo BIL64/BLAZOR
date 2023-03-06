@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 
-namespace LexiconLMSBlazor
+namespace LexiconLMSBlazor.Server
 {
     public class Program
     {

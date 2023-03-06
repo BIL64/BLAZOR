@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LexiconLMSBlazor.Shared.Entities
+namespace LexiconLMSBlazor.Server.Models
 {
     public class ActivityType
     {

@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LexiconLMSBlazor.Shared.Entities
+namespace LexiconLMSBlazor.Shared.Dtos
 {
-    public class Module
+    public class ActivityDto
     {
         public int Id { get; set; }
 
@@ -19,12 +18,12 @@ namespace LexiconLMSBlazor.Shared.Entities
         public string Description { get; set; } = string.Empty;
 
         [Required]
-        public string StartDate { get; set; } = string.Empty;
+        public DateTime StartDate { get; set; }
 
         [Required]
-        public string EndDate { get; set; } = string.Empty;
+        public DateTime EndDate { get; set; }
+        public string Type { get; set; } = string.Empty;
+        public string ModuleName { get; set; }
 
-        // Enumerable Type
-        public ICollection<Activity> Activities { get; set; } = new List<Activity>();
     }
 }

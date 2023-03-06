@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LexiconLMSBlazor.Shared.Entities
+namespace LexiconLMSBlazor.Server.Models
 {
-    public class Course
+    public class Module
     {
         public int Id { get; set; }
 
@@ -25,9 +25,6 @@ namespace LexiconLMSBlazor.Shared.Entities
         public DateTime EndDate { get; set; }
 
         // Enumerable Type
-        public ICollection<Module> Modules { get; set; } = new List<Module>();
-
-        public ICollection<User> Users { get; set; } = new List<User>();
+        public ICollection<Activity> Activities { get; set; } = new List<Activity>();
     }
 }
-
