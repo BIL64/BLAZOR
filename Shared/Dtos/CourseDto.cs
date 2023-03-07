@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LexiconLMSBlazor.Server.Models
+namespace LexiconLMSBlazor.Shared.Dtos
 {
     public class Course
     {
