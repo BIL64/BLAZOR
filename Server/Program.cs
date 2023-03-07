@@ -1,8 +1,10 @@
-using LexiconLMSBlazor.Server.Data;
+﻿using LexiconLMSBlazor.Server.Data;
 using LexiconLMSBlazor.Server.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LexiconLMSBlazor.Server
 {
@@ -28,7 +30,9 @@ namespace LexiconLMSBlazor.Server
                 .AddIdentityServerJwt();
 
             builder.Services.AddControllersWithViews();
-            builder.Services.AddRazorPages();
+            //builder.Services.AddDbContext<LexiconLMSBlazorServerContext>(options =>
+            //    options.UseSqlServer(builder.Configuration.GetConnectionString("LexiconLMSBlazorServerContext") ?? throw new InvalidOperationException("Connection string 'LexiconLMSBlazorServerContext' not found.")));
+            //builder.Services.AddRazorPages();
 
             var app = builder.Build();
 
