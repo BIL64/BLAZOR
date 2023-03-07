@@ -3,6 +3,7 @@ using LexiconLMSBlazor.Server.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace LexiconLMSBlazor.Server
 {
