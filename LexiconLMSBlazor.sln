@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33414.496
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LexiconLMSBlazor.Server", "Server\LexiconLMSBlazor.Server.csproj", "{3A719178-ED15-40D3-A1A0-8F32DDE7D00E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LexiconLMSBlazor.Server", "Server\LexiconLMSBlazor.Server.csproj", "{3A719178-ED15-40D3-A1A0-8F32DDE7D00E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LexiconLMSBlazor.Client", "Client\LexiconLMSBlazor.Client.csproj", "{9846A3C1-7290-451E-9763-339055FED428}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LexiconLMSBlazor.Client", "Client\LexiconLMSBlazor.Client.csproj", "{9846A3C1-7290-451E-9763-339055FED428}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LexiconLMSBlazor.Shared", "Shared\LexiconLMSBlazor.Shared.csproj", "{42DDACEF-C458-4F25-A30B-2F21A43F96D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LexiconLMSBlazor.Shared", "Shared\LexiconLMSBlazor.Shared.csproj", "{42DDACEF-C458-4F25-A30B-2F21A43F96D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
