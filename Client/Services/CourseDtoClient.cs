@@ -2,7 +2,6 @@
 using System.Net.Http.Json;
 using System.Reflection.PortableExecutable;
 
-
 namespace LexiconLMSBlazor.Client.Services
 {
     public class CourseDtoClient

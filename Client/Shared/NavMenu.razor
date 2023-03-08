@@ -1,4 +1,10 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Microsoft.AspNetCore.Authorization
+@inject NavigationManager Navigation
+@inject IAuthorizationService AuthorizationService
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">LexiconLMSBlazor</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -9,21 +15,49 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
+        @if (Navstat.Logintype != "") // Statisk sträng.
+        {
+            <div style="text-align: center; padding: 20px; color: white">
+                @Navstat.Logintype
+            </div>
+        }
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
+        </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </div>
+        @if (Navstat.Navbtn1 != "") // Statisk sträng.
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="@Navstat.Navlink1">
+                    <span aria-hidden="true"></span>@Navstat.Navbtn1
+                </NavLink>
+            </div>
+        }
+        @if (Navstat.Navbtn2 != "") // Statisk sträng.
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="@Navstat.Navlink2">
+                    <span aria-hidden="true"></span>@Navstat.Navbtn2
+                </NavLink>
+            </div>
+        }
+        @if (Navstat.Navbtn3 != "") // Statisk sträng.
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="@Navstat.Navbtn3">
+                    <span aria-hidden="true"></span>@Navstat.Navbtn3
+                </NavLink>
+            </div>
+        }
+        @if (Navstat.Navbtn4 != "") // Statisk sträng.
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="@Navstat.Navbtn4">
+                    <span aria-hidden="true"></span>@Navstat.Navbtn4
+                </NavLink>
+            </div>
+        }
     </nav>
 </div>
 
@@ -32,8 +66,107 @@
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    private void ToggleNavMenu()
+    private async Task ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+        await Navlogin();
     }
+
+    private void BeginLogOut()
+    {
+        Navigation.NavigateToLogout("authentication/logout");
+    }
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    private async Task Navlogin()
+    {
+        if (authenticationState is not null)
+        {
+            var authState = await authenticationState;
+            var user = authState?.User;
+
+            if (user is not null)
+            {
+                if (user.Identity is not null && user.Identity.IsAuthenticated)
+                {
+                    // ...
+                }
+
+                if (user.IsInRole("Student"))
+                {
+                    Navstat.Logintype = "S T U D E N T";
+                    Navstat.Navbtn1 = "Course";
+                    Navstat.Navlink1 = "studentfetch";
+                    Navstat.Navbtn2 = "Students";
+                    Navstat.Navlink2 = "studentall";
+                    Navstat.Navbtn3 = "";
+                    Navstat.Navlink3 = "";
+                    Navstat.Navbtn4 = "";
+                    Navstat.Navlink4 = "";
+                    Navstat.Navbtn5 = "";
+                    Navstat.Navlink5 = "";
+                    base.StateHasChanged();
+                }
+
+                if (user.IsInRole("Teacher"))
+                {
+                    Navstat.Logintype = "T E A C H E R";
+                    Navstat.Navbtn1 = "All courses";
+                    Navstat.Navlink1 = "teacherfetch";
+                    Navstat.Navbtn2 = "Add course";
+                    Navstat.Navlink2 = "teacheraddcourse";
+                    Navstat.Navbtn3 = "All teachers";
+                    Navstat.Navlink3 = "teacherallteachers";
+                    Navstat.Navbtn4 = "All students";
+                    Navstat.Navlink4 = "teacherallstudents";
+                    Navstat.Navbtn5 = "";
+                    Navstat.Navlink5 = "";
+                    base.StateHasChanged();
+                }
+
+                if ((await AuthorizationService.AuthorizeAsync(user, "content-editor"))
+                    .Succeeded)
+                {
+                    // ...
+                }
+            }
+        }
+    }
+
+    //private void Navlogin()
+    //{
+    //    if (user.IsInRole("Student"))
+    //    {
+    //        Navstat.Logintype = "S T U D E N T";
+    //        Navstat.Navbtn1 = "Course";
+    //        Navstat.Navlink1 = "studentfetch";
+    //        Navstat.Navbtn2 = "Students";
+    //        Navstat.Navlink2 = "studentall";
+    //        Navstat.Navbtn3 = "";
+    //        Navstat.Navlink3 = "";
+    //        Navstat.Navbtn4 = "";
+    //        Navstat.Navlink4 = "";
+    //        Navstat.Navbtn5 = "";
+    //        Navstat.Navlink5 = "";
+    //        base.StateHasChanged();
+    //    }
+
+    //    if (user.IsInRole("Teacher"))
+    //    {
+    //        Navstat.Logintype = "T E A C H E R";
+    //        Navstat.Navbtn1 = "All courses";
+    //        Navstat.Navlink1 = "teacherfetch";
+    //        Navstat.Navbtn2 = "Add course";
+    //        Navstat.Navlink2 = "teacheraddcourse";
+    //        Navstat.Navbtn3 = "All teachers";
+    //        Navstat.Navlink3 = "teacherallteachers";
+    //        Navstat.Navbtn4 = "All students";
+    //        Navstat.Navlink4 = "teacherallstudents";
+    //        Navstat.Navbtn5 = "";
+    //        Navstat.Navlink5 = "";
+    //        base.StateHasChanged();
+    //    }
+    //}
 }
