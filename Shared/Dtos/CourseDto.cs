@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace LexiconLMSBlazor.Shared.Dtos
 {
-    public class ActivityDto
+    public class CourseDto
     {
         public int Id { get; set; }
 
@@ -22,8 +23,11 @@ namespace LexiconLMSBlazor.Shared.Dtos
 
         [Required]
         public DateTime EndDate { get; set; }
-        public string TypeName { get; set; } = string.Empty;
-        public string ModuleName { get; set; }
 
+        // Enumerable Type
+        public ICollection<Module> Modules { get; set; } = new List<Module>();
+
+        //public ICollection<ApplicationUser> Users { get; set; } = new List<ApplicationUser>();
     }
 }
+

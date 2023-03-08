@@ -13,5 +13,10 @@ namespace LexiconLMSBlazor.Server.Data
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
         }
+        public DbSet<Course> Course { get; set; } = default!;
+        public DbSet<Module> Module { get; set; } = default!;
+        public DbSet<Activity> Activity { get; set; } = default!;
+        public DbSet<ActivityType> ActivityType { get; set; } = default!;
+        public DbSet<Document> Document { get; set; } = default!;
     }
 }
