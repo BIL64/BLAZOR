@@ -4,6 +4,12 @@
     {
         public static string Logintype = string.Empty;
 
+        public static string Homebtn = "Home";
+
+        public static string Homelink = "/";
+
+        public static string Homeclass = "oi oi-home";
+
         public static string Navbtn1 = string.Empty;
 
         public static string Navlink1 = string.Empty;

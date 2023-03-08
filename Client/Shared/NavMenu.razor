@@ -15,6 +15,16 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
+        <p style="color:white">@authMessage</p>
+        <AuthorizeView>
+            <Authorized>
+                <p style="color:white">Hello, @context.User.Identity.Name!</p>
+                <p style="color:white"><button @onclick="Navlogin">Authorized Only Button</button></p>
+            </Authorized>
+            <NotAuthorized>
+                <p style="color:white">You're not authorized.</p>
+            </NotAuthorized>
+        </AuthorizeView>
         @if (Navstat.Logintype != "") // Statisk sträng.
         {
             <div style="text-align: center; padding: 20px; color: white">
@@ -22,9 +32,9 @@
             </div>
         }
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-        </NavLink>
+            <NavLink class="nav-link" href="@Navstat.Homelink" Match="NavLinkMatch.All">
+                <span class="@Navstat.Homeclass" aria-hidden="true"></span> @Navstat.Homebtn
+            </NavLink>
         </div>
         @if (Navstat.Navbtn1 != "") // Statisk sträng.
         {
@@ -72,10 +82,7 @@
         await Navlogin();
     }
 
-    private void BeginLogOut()
-    {
-        Navigation.NavigateToLogout("authentication/logout");
-    }
+    private string authMessage = "The user is NOT authenticated.";
 
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
@@ -91,12 +98,15 @@
             {
                 if (user.Identity is not null && user.Identity.IsAuthenticated)
                 {
-                    // ...
+                    authMessage = $"{user.Identity.Name} is authenticated.";
                 }
 
                 if (user.IsInRole("Student"))
                 {
                     Navstat.Logintype = "S T U D E N T";
+                    Navstat.Homebtn = "Refresh";
+                    Navstat.Homelink = "";
+                    Navstat.Homeclass = "";
                     Navstat.Navbtn1 = "Course";
                     Navstat.Navlink1 = "studentfetch";
                     Navstat.Navbtn2 = "Students";
@@ -113,6 +123,9 @@
                 if (user.IsInRole("Teacher"))
                 {
                     Navstat.Logintype = "T E A C H E R";
+                    Navstat.Homebtn = "Refresh";
+                    Navstat.Homelink = "";
+                    Navstat.Homeclass = "";
                     Navstat.Navbtn1 = "All courses";
                     Navstat.Navlink1 = "teacherfetch";
                     Navstat.Navbtn2 = "Add course";
