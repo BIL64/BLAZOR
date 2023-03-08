@@ -1,5 +1,4 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using Microsoft.AspNetCore.Authorization
 @inject NavigationManager Navigation
 @inject IAuthorizationService AuthorizationService
@@ -15,56 +14,54 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <p style="color:white">@authMessage</p>
-        <AuthorizeView>
-            <Authorized>
-                <p style="color:white">Hello, @context.User.Identity.Name!</p>
-                <p style="color:white"><button @onclick="Navlogin">Authorized Only Button</button></p>
-            </Authorized>
-            <NotAuthorized>
-                <p style="color:white">You're not authorized.</p>
-            </NotAuthorized>
-        </AuthorizeView>
-        @if (Navstat.Logintype != "") // Statisk sträng.
+        @if (Navstatic.Logintype != "") // Statisk sträng.
         {
             <div style="text-align: center; padding: 20px; color: white">
-                @Navstat.Logintype
+                @Navstatic.Logintype
             </div>
         }
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="@Navstat.Homelink" Match="NavLinkMatch.All">
-                <span class="@Navstat.Homeclass" aria-hidden="true"></span> @Navstat.Homebtn
+            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
+                <span class="@Navstatic.Homeclass" aria-hidden="true"></span> Refresh
             </NavLink>
         </div>
-        @if (Navstat.Navbtn1 != "") // Statisk sträng.
+        @if (Navstatic.Navbtn1 != "") // Statisk sträng 1.
         {
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@Navstat.Navlink1">
-                    <span aria-hidden="true"></span>@Navstat.Navbtn1
+                <NavLink class="nav-link" href="@Navstatic.Navlink1">
+                    <span aria-hidden="true"></span>@Navstatic.Navbtn1
                 </NavLink>
             </div>
         }
-        @if (Navstat.Navbtn2 != "") // Statisk sträng.
+        @if (Navstatic.Navbtn2 != "") // Statisk sträng 2.
         {
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@Navstat.Navlink2">
-                    <span aria-hidden="true"></span>@Navstat.Navbtn2
+                <NavLink class="nav-link" href="@Navstatic.Navlink2">
+                    <span aria-hidden="true"></span>@Navstatic.Navbtn2
                 </NavLink>
             </div>
         }
-        @if (Navstat.Navbtn3 != "") // Statisk sträng.
+        @if (Navstatic.Navbtn3 != "") // Statisk sträng 3.
         {
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@Navstat.Navbtn3">
-                    <span aria-hidden="true"></span>@Navstat.Navbtn3
+                <NavLink class="nav-link" href="@Navstatic.Navlink3">
+                    <span aria-hidden="true"></span>@Navstatic.Navbtn3
                 </NavLink>
             </div>
         }
-        @if (Navstat.Navbtn4 != "") // Statisk sträng.
+        @if (Navstatic.Navbtn4 != "") // Statisk sträng 4.
         {
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@Navstat.Navbtn4">
-                    <span aria-hidden="true"></span>@Navstat.Navbtn4
+                <NavLink class="nav-link" href="@Navstatic.Navlink4">
+                    <span aria-hidden="true"></span>@Navstatic.Navbtn4
+                </NavLink>
+            </div>
+        }
+        @if (Navstatic.Navbtn5 != "") // Statisk sträng 5 (reserv).
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="@Navstatic.Navlink5">
+                    <span aria-hidden="true"></span>@Navstatic.Navbtn5
                 </NavLink>
             </div>
         }
@@ -72,6 +69,7 @@
 </div>
 
 @code {
+
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -82,104 +80,48 @@
         await Navlogin();
     }
 
-    private string authMessage = "The user is NOT authenticated.";
-
     [CascadingParameter]
-    private Task<AuthenticationState>? authenticationState { get; set; }
+    private Task<AuthenticationState>? authenticationState { get; set; } // Tillhör autentiseringen.
 
-    private async Task Navlogin()
+    private async Task Navlogin() // Autentisering.
     {
         if (authenticationState is not null)
         {
             var authState = await authenticationState;
             var user = authState?.User;
 
-            if (user is not null)
+            if (user is not null && user.Identity is not null && user.Identity.IsAuthenticated)
             {
-                if (user.Identity is not null && user.Identity.IsAuthenticated)
+                if (user.IsInRole("Student")) // Den inloggade är en student.
                 {
-                    authMessage = $"{user.Identity.Name} is authenticated.";
-                }
-
-                if (user.IsInRole("Student"))
-                {
-                    Navstat.Logintype = "S T U D E N T";
-                    Navstat.Homebtn = "Refresh";
-                    Navstat.Homelink = "";
-                    Navstat.Homeclass = "";
-                    Navstat.Navbtn1 = "Course";
-                    Navstat.Navlink1 = "studentfetch";
-                    Navstat.Navbtn2 = "Students";
-                    Navstat.Navlink2 = "studentall";
-                    Navstat.Navbtn3 = "";
-                    Navstat.Navlink3 = "";
-                    Navstat.Navbtn4 = "";
-                    Navstat.Navlink4 = "";
-                    Navstat.Navbtn5 = "";
-                    Navstat.Navlink5 = "";
+                    Navstatic.Logintype = "S T U D E N T";
+                    Navstatic.Homeclass = "";
+                    Navstatic.Navbtn1 = "Course";
+                    Navstatic.Navlink1 = "studentfetch";
+                    Navstatic.Navbtn2 = "Students";
+                    Navstatic.Navlink2 = "studentall";
+                    Navstatic.Navbtn3 = "";
+                    Navstatic.Navlink3 = "";
+                    Navstatic.Navbtn4 = "";
+                    Navstatic.Navlink4 = "";
                     base.StateHasChanged();
                 }
 
-                if (user.IsInRole("Teacher"))
+                if (user.IsInRole("Teacher")) // Den inloggade är en lärare.
                 {
-                    Navstat.Logintype = "T E A C H E R";
-                    Navstat.Homebtn = "Refresh";
-                    Navstat.Homelink = "";
-                    Navstat.Homeclass = "";
-                    Navstat.Navbtn1 = "All courses";
-                    Navstat.Navlink1 = "teacherfetch";
-                    Navstat.Navbtn2 = "Add course";
-                    Navstat.Navlink2 = "teacheraddcourse";
-                    Navstat.Navbtn3 = "All teachers";
-                    Navstat.Navlink3 = "teacherallteachers";
-                    Navstat.Navbtn4 = "All students";
-                    Navstat.Navlink4 = "teacherallstudents";
-                    Navstat.Navbtn5 = "";
-                    Navstat.Navlink5 = "";
+                    Navstatic.Logintype = "T E A C H E R";
+                    Navstatic.Homeclass = "";
+                    Navstatic.Navbtn1 = "All courses";
+                    Navstatic.Navlink1 = "teacherfetch";
+                    Navstatic.Navbtn2 = "Add course";
+                    Navstatic.Navlink2 = "teacheraddcourse";
+                    Navstatic.Navbtn3 = "All teachers";
+                    Navstatic.Navlink3 = "teacherallteachers";
+                    Navstatic.Navbtn4 = "All students";
+                    Navstatic.Navlink4 = "teacherallstudents";
                     base.StateHasChanged();
-                }
-
-                if ((await AuthorizationService.AuthorizeAsync(user, "content-editor"))
-                    .Succeeded)
-                {
-                    // ...
                 }
             }
         }
     }
-
-    //private void Navlogin()
-    //{
-    //    if (user.IsInRole("Student"))
-    //    {
-    //        Navstat.Logintype = "S T U D E N T";
-    //        Navstat.Navbtn1 = "Course";
-    //        Navstat.Navlink1 = "studentfetch";
-    //        Navstat.Navbtn2 = "Students";
-    //        Navstat.Navlink2 = "studentall";
-    //        Navstat.Navbtn3 = "";
-    //        Navstat.Navlink3 = "";
-    //        Navstat.Navbtn4 = "";
-    //        Navstat.Navlink4 = "";
-    //        Navstat.Navbtn5 = "";
-    //        Navstat.Navlink5 = "";
-    //        base.StateHasChanged();
-    //    }
-
-    //    if (user.IsInRole("Teacher"))
-    //    {
-    //        Navstat.Logintype = "T E A C H E R";
-    //        Navstat.Navbtn1 = "All courses";
-    //        Navstat.Navlink1 = "teacherfetch";
-    //        Navstat.Navbtn2 = "Add course";
-    //        Navstat.Navlink2 = "teacheraddcourse";
-    //        Navstat.Navbtn3 = "All teachers";
-    //        Navstat.Navlink3 = "teacherallteachers";
-    //        Navstat.Navbtn4 = "All students";
-    //        Navstat.Navlink4 = "teacherallstudents";
-    //        Navstat.Navbtn5 = "";
-    //        Navstat.Navlink5 = "";
-    //        base.StateHasChanged();
-    //    }
-    //}
 }

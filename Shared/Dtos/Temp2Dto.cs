@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LexiconLMSBlazor.Shared.Dtos
 {
-    public class ActivityDto
+    public class Temp2Dto
     {
         public int Id { get; set; }
 

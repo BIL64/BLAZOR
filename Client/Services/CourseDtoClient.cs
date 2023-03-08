@@ -14,21 +14,21 @@ namespace LexiconLMSBlazor.Client.Services
             this.httpClient.BaseAddress = new Uri("https://localhost:nnnn"); // Lokal databas.            
         }
 
-        public async Task<IEnumerable<CourseDto>?> GetAsync()
+        public async Task<IEnumerable<Temp1Dto>?> GetAsync()
         {
-            var response = await httpClient.GetFromJsonAsync<IEnumerable<CourseDto>>("api/CourseDto");
+            var response = await httpClient.GetFromJsonAsync<IEnumerable<Temp1Dto>>("api/CourseDto");
             return response;
         }
 
-        public async Task<CourseDto?> GetAsync(string id)
+        public async Task<Temp1Dto?> GetAsync(string id)
         {
-            return await httpClient.GetFromJsonAsync<CourseDto>($"api/CourseDto/{id}");
+            return await httpClient.GetFromJsonAsync<Temp1Dto>($"api/CourseDto/{id}");
         }
 
-        public async Task<CourseDto?> PostAsync(CourseDto courseDto)
+        public async Task<Temp1Dto?> PostAsync(Temp1Dto courseDto)
         {
             var response = await httpClient.PostAsJsonAsync("api/CourseDto", courseDto);
-            return response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<CourseDto>() : null;
+            return response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<Temp1Dto>() : null;
         }
 
         public async Task<bool> RemoveAsync(string id)
@@ -36,7 +36,7 @@ namespace LexiconLMSBlazor.Client.Services
             return (await httpClient.DeleteAsync($"api/CourseDto/{id}")).IsSuccessStatusCode;
         }
 
-        public async Task<bool> PutAsync(string id, CourseDto courseDto)
+        public async Task<bool> PutAsync(string id, Temp1Dto courseDto)
         {
             return (await httpClient.PutAsJsonAsync($"api/CourseDto/{id}", courseDto)).IsSuccessStatusCode;
         }

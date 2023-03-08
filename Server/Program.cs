@@ -19,13 +19,16 @@ namespace LexiconLMSBlazor.Server
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false) // Ändrade till false pga inloggningsproblem.
                 .AddRoles<IdentityRole>() // ny
-                .AddEntityFrameworkStores<ApplicationDbContext>() // ny
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             builder.Services.AddIdentityServer()
-                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options =>
+                {
+                    options.IdentityResources["openid"].UserClaims.Add("role"); // ny
+                    options.ApiResources.Single().UserClaims.Add("role"); // ny
+                });
 
             builder.Services.AddAuthentication()
                 .AddIdentityServerJwt();

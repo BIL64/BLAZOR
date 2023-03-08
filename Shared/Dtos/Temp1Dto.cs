@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LexiconLMSBlazor.Shared.Dtos
 {
-    public class CourseDto
+    public class Temp1Dto
     {
         public int Id { get; set; }
 
@@ -24,7 +24,7 @@ namespace LexiconLMSBlazor.Shared.Dtos
         public DateTime EndDate { get; set; }
 
         // Enumerable Type
-        public ICollection<Module> Modules { get; set; } = new List<Module>();
+        //public ICollection<Module> Modules { get; set; } = new List<Module>();
 
         //public ICollection<ApplicationUser> Users { get; set; } = new List<ApplicationUser>();
     }
