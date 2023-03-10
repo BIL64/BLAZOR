@@ -3,9 +3,9 @@
 @inject NavigationManager Navigation
 @inject IAuthorizationService AuthorizationService
 
-<div class="top-row ps-3 navbar navbar-dark">
+<div class="top-row ps-1 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">LexiconLMSBlazor</a>
+        <a class="navbar-brand" href=""><img style="width: 215px" src="images/LexiconLMSBlazor.png" alt="Brand image"/></a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -77,13 +77,13 @@
     private async Task ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
-        await Navlogin();
+        await OnInitializedAsync();
     }
 
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; } // Tillhör autentiseringen.
 
-    private async Task Navlogin() // Autentisering.
+    protected override async Task OnInitializedAsync() // Autentisering.
     {
         if (authenticationState is not null)
         {

@@ -11,12 +11,10 @@ namespace LexiconLMSBlazor.Server.Models
         [Required]
         public string LastName { get; set; } = string.Empty;
 
-        public string FullName => $"{FirstName} {LastName}";
-
         // Foreign Key
         public int? CourseId { get; set; }
 
-        // Enumerable Type
-        public Course? Course { get; set; }
+        // Foreign Type
+        public Course? Course { get; set; } 
     }
 }

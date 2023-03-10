@@ -1,10 +1,66 @@
 ﻿@page "/studentall"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using LexiconLMSBlazor.Client.Services
+@using LexiconLMSBlazor.Shared.Dtos;
+@attribute [Authorize]
+@*Både studenter och lärare har åtkomst hit*@
 
 <PageTitle>Student all</PageTitle>
 
+<h3>@Emptydb</h3>
 
-<h3>StudentAll</h3>
+@if (students == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Email</th>
+                <th>Course</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var data in students)
+            {
+                <tr>
+                    <td>@data.FirstName @data.LastName</td>
+                    <td>@data.Email</td>
+                    <td>@data.CourseName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
 
+    private List<AppUserDto> students = new List<AppUserDto>();
+
+    [Inject]
+    private IAppUserDtoClient appuserClient { get; set; } = default!;
+
+    private string Emptydb { get; set; } = "List of students";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var appusers = await appuserClient.GetAsync();
+
+        if (appusers is not null)
+        {
+            foreach (var item in appusers)
+            {
+                if (item.UserRole == 1) students.Add(item);
+            }
+            if (students.Count < 1) Emptydb = "No students !";
+        }
+        else
+        {
+            Emptydb = "No students !";
+        }
+    }
 }

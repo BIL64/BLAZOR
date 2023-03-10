@@ -1,9 +1,70 @@
 ﻿@page "/teacherallteachers"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using LexiconLMSBlazor.Client.Services
+@using LexiconLMSBlazor.Shared.Dtos;
+@attribute [Authorize]
+@*Endast lärare har åtkomst hit*@
 
 <PageTitle>Teacher all teachers</PageTitle>
 
-<h3>Teacher all teachers</h3>
+<AuthorizeView Roles="Teacher">
+    <Authorized>
+        <h3>@Emptydb</h3>
+
+        @if (teachers == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Teacher</th>
+                        <th>Email</th>
+                        <th>Course</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var data in teachers)
+                    {
+                        <tr>
+                            <td>@data.FirstName @data.LastName</td>
+                            <td>@data.Email</td>
+                            <td>@data.CourseName</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </Authorized>
+</AuthorizeView>
 
 @code {
 
+    private List<AppUserDto> teachers = new List<AppUserDto>();
+
+    [Inject]
+    private IAppUserDtoClient appuserClient { get; set; } = default!;
+
+    private string Emptydb { get; set; } = "List of teachers";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var appusers = await appuserClient.GetAsync();
+
+        if (appusers is not null)
+        {
+            foreach (var item in appusers)
+            {
+                if (item.UserRole == 2) teachers.Add(item);
+            }
+            if (teachers.Count < 1) Emptydb = "No teachers !";
+        }
+        else
+        {
+            Emptydb = "No teachers !";
+        }
+    }
 }

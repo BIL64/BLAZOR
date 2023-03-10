@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using System.IdentityModel.Tokens.Jwt;
+using static LexiconLMSBlazor.Server.Controllers.AppUserController;
 
 namespace LexiconLMSBlazor.Server
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -30,12 +32,36 @@ namespace LexiconLMSBlazor.Server
                     options.ApiResources.Single().UserClaims.Add("role"); // ny
                 });
 
+            //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("role"); // Ny
+
             builder.Services.AddAuthentication()
                 .AddIdentityServerJwt();
 
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
+
+            // SeedData
+            using (var scope = app.Services.CreateScope())
+            {
+                var serviceProvider = scope.ServiceProvider;
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+
+                //db.Database.EnsureDeleted(); // Om en ny seedning ska göras vid varje uppstart.
+                //db.Database.Migrate();
+                //db.Database.EnsureCreated();
+
+                try
+                {
+                    await SeedData.InitAsync(db, serviceProvider);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    throw;
+                }
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

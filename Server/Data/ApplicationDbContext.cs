@@ -1,8 +1,10 @@
 ﻿using Duende.IdentityServer.EntityFramework.Options;
 using LexiconLMSBlazor.Server.Models;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using static LexiconLMSBlazor.Client.Pages.StudentAll;
 
 namespace LexiconLMSBlazor.Server.Data
 {
