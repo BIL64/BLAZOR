@@ -1,54 +1,122 @@
 ﻿@page "/teacherallteachers"
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@using LexiconLMSBlazor.Client.Services
-@using LexiconLMSBlazor.Shared.Dtos;
+@using System.Diagnostics;
+@inject NavigationManager Navigation
 @attribute [Authorize]
+@*Av Björn Lindqvist*@
 @*Endast lärare har åtkomst hit*@
 
 <PageTitle>Teacher all teachers</PageTitle>
 
 <AuthorizeView Roles="Teacher">
     <Authorized>
-        <h3>@Emptydb</h3>
+<h3 class="@Emptydbcolor" @onclick="Refresh">@Emptydb</h3> @*Ändringsbar rubrik som kan användas för att uppdatera sidan*@
 
-        @if (teachers == null)
-        {
-            <p><em>Loading...</em></p>
-        }
-        else
-        {
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Teacher</th>
-                        <th>Email</th>
-                        <th>Course</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var data in teachers)
+@if (teachers == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Teacher</th>
+                <th>Email</th>
+                <th>Course</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var data in teachers)
+            {
+                <tr>
+                    <td>@data.FirstName @data.LastName</td>
+                    <td>@data.Email</td>
+                    <td>
+                        @foreach (var item in courses) // Hämtar kursen för användaren.
+                        {
+                            if (item.Id == data.CourseId)
+                            {
+                                IsCourse = true;
+                                <span>@item.Name</span>
+                            }
+                        }
+                        @if (!IsCourse)
+                        {
+                            <span>No course yet...</span>
+                        }
+                        @{IsCourse = false;}
+                    </td>
+                    <td class="noline">
+                        @if (@data.UserRole == 0)
+                        {
+                            if (data.Id is not null) // CSS!
+                            {
+                                <button type="button" class="text-white regbtn" @onclick=" _ => GetRegistered(data.Id)" title="Not yet authorized user">Not registered</button>
+                            }
+                        }
+                    @if (data.Id is not null && data.UserRole != 0)
                     {
-                        <tr>
-                            <td>@data.FirstName @data.LastName</td>
-                            <td>@data.Email</td>
-                            <td>@data.CourseName</td>
-                        </tr>
+                        <button type="button" class="text-white coursebtn" @onclick="Explorer" title="Add document to teacher">DOC</button> // CSS!
                     }
-                </tbody>
-            </table>
-        }
-    </Authorized>
+                    @if (data.Id is not null && data.UserRole != 0)
+                    {
+                        <button type="button" class="text-white coursebtn" @onclick="OpenCloseCourse" title="Add/change course for student">Course</button> // CSS!
+                        <div class="dropdown">
+                            <button type="button" class="@CourseClass">+</button>
+                            <div class="dropdown-content">
+                                @foreach (var item in courses)
+                                {
+                                    <a @onclick="_ => GetCourse(data.Id, item.Id)">@item.Name</a> // Lägger in en ny kurs för användaren.
+                                }
+                            </div>
+                        </div>
+                    }
+                    @if (data.Id is not null)
+                    {
+                        <button type="button" class="oi oi-warning text-white delbtn" @onclick=" _ => DeletePage(data.Id)" title="Delete or redirect user"></button> // CSS!
+                    }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<DeleteTeacher @ref="deleteRef" /> @*Delete-fönster.*@
+
+</Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
 </AuthorizeView>
 
 @code {
 
+    private DeleteTeacher deleteRef; // Delete-fönster.
+
+    private void DeletePage(string id) // Delete-fönster.
+    {
+        Navstatic.GuidId = id;
+        deleteRef.Show("");
+    }
+
     private List<AppUserDto> teachers = new List<AppUserDto>();
+
+    private List<CourseDto> courses = new List<CourseDto>();
 
     [Inject]
     private IAppUserDtoClient appuserClient { get; set; } = default!;
 
+    [Inject]
+    private ICourseDtoClient courseClient { get; set; } = default!;
+
     private string Emptydb { get; set; } = "List of teachers";
+
+    private string CourseClass = "text-white coursebtn closecourse";
+
+    private string Emptydbcolor { get; set; } = "headeroff";
+
+    private bool IsCourse;
 
     protected override async Task OnInitializedAsync()
     {
@@ -58,7 +126,7 @@
         {
             foreach (var item in appusers)
             {
-                if (item.UserRole == 2) teachers.Add(item);
+                if (item.UserRole == 0 || item.UserRole == 2) teachers.Add(item);
             }
             if (teachers.Count < 1) Emptydb = "No teachers !";
         }
@@ -66,5 +134,53 @@
         {
             Emptydb = "No teachers !";
         }
+
+        var course = await courseClient.GetAsync();
+
+        if (course is not null)
+        {
+            courses = course.ToList();
+        }
+    }
+
+    private void Explorer()
+    {
+        Process.Start("explorer.exe", @"C:\Users");
+    }
+
+    private void OpenCloseCourse() // Öppnar/stänger +knapp. CSS!
+    {
+        if (CourseClass == "text-white coursebtn closecourse")
+        {
+            CourseClass = "text-white coursebtn opencourse";
+        }
+        else
+        {
+            CourseClass = "text-white coursebtn closecourse";
+        }
+    }
+
+    private async Task GetRegistered(string id) // För oregistrerade.
+    {
+        await appuserClient.PreAsync(id, 2);
+        Navigation.NavigateTo("/teacherallteachers", true);
+    }
+
+    private async Task GetCourse(string id, int courseId) // Lägger in ny kurs + feedback.
+    {
+        courseId = courseId + 100;
+        await appuserClient.PreAsync(id, courseId);
+        Emptydb = "This teacher has now been updated...";
+        Emptydbcolor = "headeron";
+        base.StateHasChanged();
+        await Task.Delay(2000);
+        Emptydb = "List of teachers";
+        Emptydbcolor = "headerrefresh";
+    }
+
+    private void Refresh() // Efter en mängd kurstilldelningar önskar man uppdatera?
+    {
+        Navigation.NavigateTo("/teacherallteachers", true);
+        Emptydbcolor = "headeroff";
     }
 }

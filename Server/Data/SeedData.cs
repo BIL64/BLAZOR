@@ -3,7 +3,7 @@ using LexiconLMSBlazor.Server.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace LexiconLMSBlazor.Server.Data
+namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
 {
     public class SeedData
     {

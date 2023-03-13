@@ -1,0 +1,84 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using LexiconLMSBlazor.Client.Services
+@using LexiconLMSBlazor.Shared.Dtos;
+@inject NavigationManager Navigation
+@attribute [Authorize]
+@*Av Sukhrob Ilyosbekov - Stack Overflow*@
+@*Endast lärare har åtkomst hit*@
+
+@{
+    var showClass = IsVisible ? "d-block" : "d-none";
+}
+
+<AuthorizeView Roles ="Teacher">
+    <Authorized>
+<div class="toast-container p-3 @showClass" data-bs-autohide="true" data-bs-delay="5000">
+    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">@HeaderText</strong>
+            <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+        </div>
+
+        <div class="toast-body">
+            @BodyText
+            <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove this user from the system">DELETE NOW</button>
+            <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+            <button type="button" class="text-white remnot" @onclick="Redirect" title="Make this student to a teacher...">To teacher!</button>
+        </div>
+    </div>
+</div>
+
+    </Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    [Parameter]
+    public string? HeaderText { get; set; }
+
+    [Parameter]
+    public string? BodyText { get; set; }
+
+    [Inject]
+    private IAppUserDtoClient appuserClient { get; set; } = default!;
+
+    public void Show(string bodyText, string headerText = "Remove this user...")
+    {
+        HeaderText = headerText;
+        BodyText = bodyText;
+        IsVisible = true;
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        HeaderText = string.Empty;
+        BodyText = string.Empty;
+        IsVisible = false;
+        StateHasChanged();
+    }
+
+    private async Task DeleteNow()
+    {
+        await appuserClient.RemAsync(Navstatic.GuidId);
+        Navigation.NavigateTo("/teacherallstudents", true);
+        Close();
+    }
+
+    private async Task Redirect()
+    {
+        await appuserClient.PreAsync(Navstatic.GuidId, 12);
+        Navigation.NavigateTo("/teacherallstudents", true);
+        Close();
+    }
+}

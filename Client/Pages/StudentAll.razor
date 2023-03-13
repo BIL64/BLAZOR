@@ -1,13 +1,12 @@
 ﻿@page "/studentall"
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@using LexiconLMSBlazor.Client.Services
-@using LexiconLMSBlazor.Shared.Dtos;
 @attribute [Authorize]
+@*Av Björn Lindqvist*@
 @*Både studenter och lärare har åtkomst hit*@
 
 <PageTitle>Student all</PageTitle>
 
+<AuthorizeView Roles="Student, Teacher">
+    <Authorized>
 <h3>@Emptydb</h3>
 
 @if (students == null)
@@ -27,24 +26,51 @@ else
         <tbody>
             @foreach (var data in students)
             {
-                <tr>
+                <tr>                    
                     <td>@data.FirstName @data.LastName</td>
                     <td>@data.Email</td>
-                    <td>@data.CourseName</td>
+                    <td>
+                        @foreach (var item in courses) // Hämtar kursen för användaren.
+                        {
+                            if (item.Id == data.CourseId)
+                            {
+                                IsCourse = true;
+                                <span>@item.Name</span>
+                            }
+                        }
+                        @if (!IsCourse)
+                        {
+                            <span>No course yet...</span>
+                        }
+                        @{IsCourse = false;}
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
 }
+</Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
 
 @code {
 
     private List<AppUserDto> students = new List<AppUserDto>();
 
+    private List<CourseDto> courses = new List<CourseDto>();
+
     [Inject]
     private IAppUserDtoClient appuserClient { get; set; } = default!;
 
-    private string Emptydb { get; set; } = "List of students";
+    [Inject]
+    private ICourseDtoClient courseClient { get; set; } = default!;
+
+    private string Emptydb = "List of students";
+
+    private bool IsCourse;
 
     protected override async Task OnInitializedAsync()
     {
@@ -61,6 +87,13 @@ else
         else
         {
             Emptydb = "No students !";
+        }
+
+        var course = await courseClient.GetAsync();
+
+        if (course is not null)
+        {
+            courses = course.ToList();
         }
     }
 }

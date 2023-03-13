@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LexiconLMSBlazor.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230310152346_Init")]
+    [Migration("20230312201630_Init")]
     partial class Init
     {
         /// <inheritdoc />

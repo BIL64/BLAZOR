@@ -101,3 +101,134 @@ a, .btn-link {
     }
 
 /*Egenhändigt skrivna CSS-kommandon börjar här*/
+
+    .bhover:hover {
+        font-weight: bold;
+    }
+
+.noline {
+    border: none;
+}
+
+.headeroff {
+    color: black;
+}
+
+.headeron {
+    color: darkorange;
+}
+
+.headerrefresh {
+    color: blue;
+    cursor: pointer;
+}
+
+.closecourse {
+    display: none;
+}
+
+.opencourse {
+    display: block;
+}
+
+.regbtn {
+    margin-right: 20px;
+    background-color: lightslategray;
+    border-color: yellow;
+}
+
+    .regbtn:hover {
+        background-color:black;
+    }
+
+.coursebtn {
+    margin-right: 20px;
+    padding: 3px;
+    border-radius: 5px;
+    background-color: lightslategray;
+    border: none;
+}
+
+    .coursebtn:hover {
+        background-color: darkcyan;
+    }
+
+.delbtn {
+    position: relative;
+    top: 3.5px;
+    padding: 7px;
+    border-radius: 5px;
+    background-color: lightslategray;
+    border: none;
+}
+
+    .delbtn:hover {
+        background-color: red;
+    }
+
+.remyes {
+    height: 30px;
+    border: none;
+    border-radius: 5px;
+    margin-right: 20px;
+    background-color: darkorange;
+}
+
+    .remyes:hover {
+        background-color: red;
+    }
+
+.remnot {
+    height: 30px;
+    border: none;
+    border-radius: 5px;
+    margin-right: 20px;
+    background-color: lightslategray;
+}
+
+    .remnot:hover {
+        background-color: darkcyan;
+    }
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: -10px;
+    left: -70px;
+    cursor: pointer;
+    background-color: #f9f9f9;
+    min-width: 178px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+    /* Links inside the dropdown */
+    .dropdown-content a {
+        color: black;
+        padding: 6px 8px;
+        border-radius: 5px;
+        text-decoration: none;
+        display: block;
+    }
+
+        /* Change color of dropdown links on hover */
+        .dropdown-content a:hover {
+            background-color: #a1e1e1
+        }
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .coursebtn {
+    background-color: darkcyan;
+}

@@ -15,10 +15,20 @@ namespace LexiconLMSBlazor.Client.Services
             this.httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async Task<IEnumerable<AppUserDto>?> GetAsync()
+        public async Task<IEnumerable<AppUserDto>?> GetAsync() // Hämtar och listar användare.
         {
             var response = await httpClient.GetFromJsonAsync<List<AppUserDto>>("api/AppUser");
             return response;
+        }
+
+        public async Task<bool> PreAsync(string id, int prefix) // Tilldelar en roll eller ett kurs-id för en användare.
+        {
+            return (await httpClient.PutAsJsonAsync($"api/AppUser/{id}/{prefix}", prefix)).IsSuccessStatusCode;
+        }
+
+        public async Task<bool> RemAsync(string id) // Tar bort en användare från systemet.
+        {
+            return (await httpClient.DeleteAsync($"api/AppUser/{id}")).IsSuccessStatusCode;
         }
     }
 }

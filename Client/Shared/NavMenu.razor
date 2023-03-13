@@ -1,7 +1,4 @@
-﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@using Microsoft.AspNetCore.Authorization
-@inject NavigationManager Navigation
-@inject IAuthorizationService AuthorizationService
+﻿@inject IAuthorizationService AuthorizationService
 
 <div class="top-row ps-1 navbar navbar-dark">
     <div class="container-fluid">
@@ -12,6 +9,7 @@
     </div>
 </div>
 
+@*Av Björn Lindqvist*@
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
         @if (Navstatic.Logintype != "") // Statisk sträng.
@@ -21,47 +19,47 @@
             </div>
         }
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
-                <span class="@Navstatic.Homeclass" aria-hidden="true"></span> Refresh
+            <NavLink class="@Navstatic.Hclass1" href="/" Match="NavLinkMatch.All">
+                <span class="@Navstatic.Hclass2" aria-hidden="true"></span> Refresh
             </NavLink>
         </div>
         @if (Navstatic.Navbtn1 != "") // Statisk sträng 1.
         {
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@Navstatic.Navlink1">
-                    <span aria-hidden="true"></span>@Navstatic.Navbtn1
+                <NavLink class="nav-link bhover" href="@Navstatic.Navlink1">
+                    @Navstatic.Navbtn1
                 </NavLink>
             </div>
         }
         @if (Navstatic.Navbtn2 != "") // Statisk sträng 2.
         {
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@Navstatic.Navlink2">
-                    <span aria-hidden="true"></span>@Navstatic.Navbtn2
+                <NavLink class="nav-link bhover" href="@Navstatic.Navlink2">
+                    @Navstatic.Navbtn2
                 </NavLink>
             </div>
         }
         @if (Navstatic.Navbtn3 != "") // Statisk sträng 3.
         {
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@Navstatic.Navlink3">
-                    <span aria-hidden="true"></span>@Navstatic.Navbtn3
+                <NavLink class="nav-link bhover" href="@Navstatic.Navlink3">
+                    @Navstatic.Navbtn3
                 </NavLink>
             </div>
         }
         @if (Navstatic.Navbtn4 != "") // Statisk sträng 4.
         {
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@Navstatic.Navlink4">
-                    <span aria-hidden="true"></span>@Navstatic.Navbtn4
+                <NavLink class="nav-link bhover" href="@Navstatic.Navlink4">
+                    @Navstatic.Navbtn4
                 </NavLink>
             </div>
         }
         @if (Navstatic.Navbtn5 != "") // Statisk sträng 5 (reserv).
         {
             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@Navstatic.Navlink5">
-                    <span aria-hidden="true"></span>@Navstatic.Navbtn5
+                <NavLink class="nav-link bhover" href="@Navstatic.Navlink5">
+                    @Navstatic.Navbtn5
                 </NavLink>
             </div>
         }
@@ -95,7 +93,8 @@
                 if (user.IsInRole("Student")) // Den inloggade är en student.
                 {
                     Navstatic.Logintype = "S T U D E N T";
-                    Navstatic.Homeclass = "";
+                    Navstatic.Hclass1 = "nav-link bhover";
+                    Navstatic.Hclass2 = "";
                     Navstatic.Navbtn1 = "Course";
                     Navstatic.Navlink1 = "studentfetch";
                     Navstatic.Navbtn2 = "Students";
@@ -110,7 +109,8 @@
                 if (user.IsInRole("Teacher")) // Den inloggade är en lärare.
                 {
                     Navstatic.Logintype = "T E A C H E R";
-                    Navstatic.Homeclass = "";
+                    Navstatic.Hclass1 = "nav-link bhover";
+                    Navstatic.Hclass2 = "";
                     Navstatic.Navbtn1 = "All courses";
                     Navstatic.Navlink1 = "teacherfetch";
                     Navstatic.Navbtn2 = "Add course";
