@@ -1,4 +1,5 @@
 ﻿@page "/studentall"
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
 @attribute [Authorize]
 @*Av Björn Lindqvist*@
 @*Både studenter och lärare har åtkomst hit*@
@@ -30,7 +31,7 @@ else
                     <td>@data.FirstName @data.LastName</td>
                     <td>@data.Email</td>
                     <td>
-                        @foreach (var item in courses) // Hämtar kursen för användaren.
+                        @foreach (var item in courses) // Hämtar kursen som motsvarar dess id.
                         {
                             if (item.Id == data.CourseId)
                             {
@@ -62,6 +63,8 @@ else
 
     private List<CourseDto> courses = new List<CourseDto>();
 
+    private AppUserDto loggeduser = new AppUserDto(); // Info om den som för tillfället är inloggad.
+
     [Inject]
     private IAppUserDtoClient appuserClient { get; set; } = default!;
 
@@ -74,13 +77,23 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
+
         var appusers = await appuserClient.GetAsync();
 
-        if (appusers is not null)
+        if (appusers is not null && name is not null)
         {
+            foreach (var item in appusers) // Hämtar den som för tillfället är inloggad.
+            {
+                if (item.Email == name) loggeduser = item;
+            }
+
             foreach (var item in appusers)
             {
-                if (item.UserRole == 1) students.Add(item);
+                // Filtrerar ut studenter knutna till den kurs som är samma som den som för tillfället är inloggad.
+                if (item.UserRole == 1 && item.CourseId == loggeduser.CourseId) students.Add(item);
             }
             if (students.Count < 1) Emptydb = "No students !";
         }

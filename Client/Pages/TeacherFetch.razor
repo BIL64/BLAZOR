@@ -1,9 +1,91 @@
 ﻿@page "/teacherfetch"
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject NavigationManager Navigation
+@attribute [Authorize]
+@*Av Björn Lindqvist*@
+@*Endast lärare har åtkomst hit*@
 
 <PageTitle>Teacher fetch</PageTitle>
 
-<h3>Teacher fetch</h3>
+<AuthorizeView Roles="Teacher">
+    <Authorized>
+        <h3>@TeacherName</h3>
+        <br />
+        <p>Plats för dokument...</p>
+
+        @if (courses == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            @foreach (var data in courses)
+            {
+                StartDate = data.StartDate.ToString().Substring(0, 10);
+                EndDate = data.EndDate.ToString().Substring(0, 10);
+                <section class="coursebox" @onclick=" _ => RedirectToCourse(data.Id)"><em>@data.Name&nbsp;</em><b style="margin-left: auto">@StartDate | @EndDate</b></section>
+            }
+        }
+    </Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
 
+    private List<CourseDto> courses = new List<CourseDto>();
+
+    [Inject]
+    private ICourseDtoClient courseClient { get; set; } = default!;
+
+    [Inject]
+    private IAppUserDtoClient appuserClient { get; set; } = default!;
+
+    private AppUserDto loggeduser = new AppUserDto(); // Info om den som för tillfället är inloggad.
+
+    private string TeacherName = string.Empty;
+    private string StartDate = string.Empty;
+    private string EndDate = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
+
+        var course = await courseClient.GetAsync();
+        var appusers = await appuserClient.GetAsync();
+
+        if (course is not null)
+        {
+            courses = course.ToList();
+        }
+
+        if (appusers is not null && name is not null)
+        {
+            foreach (var item in appusers) // Hämtar den som för tillfället är inloggad.
+            {
+                if (item.Email == name) loggeduser = item;
+            }
+        }
+
+        TeacherName = $"Hello, {loggeduser.FirstName} {loggeduser.LastName}!";
+
+        Navstatic.Hhref = "/"; // Uppdaterar navmenyn.
+        Navstatic.Navbtn1 = "All courses";
+        Navstatic.Navlink1 = "teacherfetch";
+        Navstatic.Navbtn2 = "Add course";
+        Navstatic.Navlink2 = "teacheraddcourse";
+        Navstatic.Navbtn3 = "All teachers";
+        Navstatic.Navlink3 = "teacherallteachers";
+        Navstatic.Navbtn4 = "All students";
+        Navstatic.Navlink4 = "teacherallstudents";
+    }
+
+    private void RedirectToCourse(int id)
+    {
+        Navstatic.IntId = id;
+        Navigation.NavigateTo("/coursedetails", true);
+    }
 }

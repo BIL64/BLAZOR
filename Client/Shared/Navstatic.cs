@@ -3,6 +3,8 @@ public class Navstatic // Statisk klass med variabler som är åtkomliga överal
 {
     public static string Logintype { get; set; } = string.Empty;
 
+    public static string Hhref { get; set; } = "/";
+
     public static string Hclass1 { get; set; } = "nav-link";
 
     public static string Hclass2 { get; set; } = "oi oi-home";
@@ -26,6 +28,8 @@ public class Navstatic // Statisk klass med variabler som är åtkomliga överal
     public static string Navbtn5 { get; set; } = string.Empty; // Reserv.
 
     public static string Navlink5 { get; set; } = string.Empty;
+
+    public static int IntId { get; set; }
 
     public static string GuidId { get; set; } = string.Empty;
 }
