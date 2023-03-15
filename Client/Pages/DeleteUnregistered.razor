@@ -20,7 +20,7 @@
             @BodyText
             <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove this user from the system">DELETE NOW</button>
             <button type="button" class="text-white remnot" @onclick="Close">NO</button>
-            <button type="button" class="text-white remnot" @onclick="Redirect" title="Make this teacher to a student...">To student!</button>
+            <button type="button" class="text-white remnot" @onclick="Redirect" title="Make this visitor to a teacher...">To teacher!</button>
         </div>
     </div>
 </div>
@@ -67,14 +67,14 @@
     private async Task DeleteNow()
     {
         await appuserClient.RemAsync(Navstatic.GuidId);
-        Navigation.NavigateTo("/teacherallteachers", true);
+        Navigation.NavigateTo("/teacherallunregistered", true);
         Close();
     }
 
     private async Task Redirect()
     {
-        await appuserClient.PreAsync(Navstatic.GuidId, 11);
-        Navigation.NavigateTo("/teacherallteachers", true);
+        await appuserClient.PreAsync(Navstatic.GuidId, 12);
+        Navigation.NavigateTo("/teacherallunregistered", true);
         Close();
     }
 }

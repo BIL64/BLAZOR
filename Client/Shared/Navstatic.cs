@@ -25,11 +25,9 @@ public class Navstatic // Statisk klass med variabler som är åtkomliga överal
 
     public static string Navlink4 { get; set; } = string.Empty;
 
-    public static string Navbtn5 { get; set; } = string.Empty; // Reserv.
+    public static string Navbtn5 { get; set; } = string.Empty;
 
     public static string Navlink5 { get; set; } = string.Empty;
-
-    public static int IntId { get; set; }
 
     public static string GuidId { get; set; } = string.Empty;
 }

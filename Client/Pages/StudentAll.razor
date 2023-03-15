@@ -8,7 +8,7 @@
 
 <AuthorizeView Roles="Student, Teacher">
     <Authorized>
-<h3>@Emptydb</h3>
+<h4>@Emptydb</h4>
 
 @if (students == null)
 {
@@ -69,7 +69,7 @@ else
     private IAppUserDtoClient appuserClient { get; set; } = default!;
 
     [Inject]
-    private ICourseDtoClient courseClient { get; set; } = default!;
+    private IXDtoClient xClient { get; set; } = default!;
 
     private string Emptydb = "List of students";
 
@@ -81,16 +81,16 @@ else
         var user = authstate.User;
         var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
 
-        var appusers = await appuserClient.GetAsync();
+        var appuser = await appuserClient.GetAsync();
 
-        if (appusers is not null && name is not null)
+        if (appuser is not null && name is not null)
         {
-            foreach (var item in appusers) // Hämtar den som för tillfället är inloggad.
+            foreach (var item in appuser) // Hämtar den som för tillfället är inloggad.
             {
                 if (item.Email == name) loggeduser = item;
             }
 
-            foreach (var item in appusers)
+            foreach (var item in appuser)
             {
                 // Filtrerar ut studenter knutna till den kurs som är samma som den som för tillfället är inloggad.
                 if (item.UserRole == 1 && item.CourseId == loggeduser.CourseId) students.Add(item);
@@ -102,7 +102,7 @@ else
             Emptydb = "No students !";
         }
 
-        var course = await courseClient.GetAsync();
+        var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
 
         if (course is not null)
         {

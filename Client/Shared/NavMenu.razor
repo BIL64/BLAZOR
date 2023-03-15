@@ -55,7 +55,7 @@
                 </NavLink>
             </div>
         }
-        @if (Navstatic.Navbtn5 != "") // Statisk sträng 5 (reserv).
+        @if (Navstatic.Navbtn5 != "") // Statisk sträng 5.
         {
             <div class="nav-item px-3">
                 <NavLink class="nav-link bhover" href="@Navstatic.Navlink5">
@@ -103,6 +103,8 @@
                     Navstatic.Navlink3 = "";
                     Navstatic.Navbtn4 = "";
                     Navstatic.Navlink4 = "";
+                    Navstatic.Navbtn5 = "";
+                    Navstatic.Navlink5 = "";
                     base.StateHasChanged();
                 }
 
@@ -119,6 +121,8 @@
                     Navstatic.Navlink3 = "teacherallteachers";
                     Navstatic.Navbtn4 = "All students";
                     Navstatic.Navlink4 = "teacherallstudents";
+                    Navstatic.Navbtn5 = "All unregistered";
+                    Navstatic.Navlink5 = "teacherallunregistered";
                     base.StateHasChanged();
                 }
             }

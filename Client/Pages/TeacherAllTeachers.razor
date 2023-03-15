@@ -9,7 +9,7 @@
 
 <AuthorizeView Roles="Teacher">
     <Authorized>
-<h3 class="@Emptydbcolor" @onclick="Refresh">@Emptydb</h3> @*Ändringsbar rubrik som kan användas för att uppdatera sidan*@
+<h4 class="@Emptydbcolor" @onclick="Refresh">@Emptydb</h4> @*Ändringsbar rubrik som kan användas för att uppdatera sidan*@
 
 @if (teachers == null)
 {
@@ -47,13 +47,6 @@ else
                         @{IsCourse = false;}
                     </td>
                     <td class="noline">
-                        @if (@data.UserRole == 0)
-                        {
-                            if (data.Id is not null) // CSS!
-                            {
-                                <button type="button" class="text-white regbtn" @onclick=" _ => GetRegistered(data.Id)" title="Not yet authorized user">Not registered</button>
-                            }
-                        }
                     @if (data.Id is not null && data.UserRole != 0)
                     {
                         <button type="button" class="text-white coursebtn" @onclick="Explorer" title="Add document to teacher">DOC</button> // CSS!
@@ -108,7 +101,7 @@ else
     private IAppUserDtoClient appuserClient { get; set; } = default!;
 
     [Inject]
-    private ICourseDtoClient courseClient { get; set; } = default!;
+    private IXDtoClient xClient { get; set; } = default!;
 
     private string Emptydb { get; set; } = "List of teachers";
 
@@ -120,13 +113,13 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var appusers = await appuserClient.GetAsync();
+        var appuser = await appuserClient.GetAsync();
 
-        if (appusers is not null)
+        if (appuser is not null)
         {
-            foreach (var item in appusers)
+            foreach (var item in appuser)
             {
-                if (item.UserRole == 0 || item.UserRole == 2) teachers.Add(item);
+                if (item.UserRole == 2) teachers.Add(item);
             }
             if (teachers.Count < 1) Emptydb = "No teachers !";
         }
@@ -135,7 +128,7 @@ else
             Emptydb = "No teachers !";
         }
 
-        var course = await courseClient.GetAsync();
+        var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
 
         if (course is not null)
         {
@@ -160,12 +153,6 @@ else
         }
     }
 
-    private async Task GetRegistered(string id) // För oregistrerade.
-    {
-        await appuserClient.PreAsync(id, 2);
-        Navigation.NavigateTo("/teacherallteachers", true);
-    }
-
     private async Task GetCourse(string id, int courseId) // Lägger in ny kurs + feedback.
     {
         courseId = courseId + 100;
@@ -173,7 +160,7 @@ else
         Emptydb = "This teacher has now been updated...";
         Emptydbcolor = "headeron";
         base.StateHasChanged();
-        await Task.Delay(2000);
+        await Task.Delay(1000);
         Emptydb = "List of teachers";
         Emptydbcolor = "headerrefresh";
     }

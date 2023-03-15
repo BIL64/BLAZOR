@@ -22,8 +22,11 @@ namespace LexiconLMSBlazor.Server.Models
 
         [Required]
         public DateTime EndDate { get; set; }
-        // Foreign Keys
-        public int ActivityTypeId { get; set; }
 
+        // Foreign Key
+        public int? ModuleId { get; set; }
+
+        // Foreign Key
+        public int? ActivityTypeId { get; set; }
     }
 }

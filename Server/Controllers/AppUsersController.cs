@@ -11,13 +11,13 @@ namespace LexiconLMSBlazor.Server.Controllers
 {
     [Route("api/AppUser")]
     [ApiController]
-    public class AppUserController : ControllerBase
+    public class AppUsersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userman;
         private readonly ILogger<OidcConfigurationController> _logger;
 
-        public AppUserController(ApplicationDbContext context, UserManager<ApplicationUser> UserManager, ILogger<OidcConfigurationController> logger)
+        public AppUsersController(ApplicationDbContext context, UserManager<ApplicationUser> UserManager, ILogger<OidcConfigurationController> logger)
         {
             _context = context;
             this._userman = UserManager;

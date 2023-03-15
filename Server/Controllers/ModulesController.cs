@@ -7,10 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LexiconLMSBlazor.Server.Data;
 using LexiconLMSBlazor.Server.Models;
+using LexiconLMSBlazor.Shared.Dtos;
 
 namespace LexiconLMSBlazor.Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Module")]
     [ApiController]
     public class ModulesController : ControllerBase
     {
@@ -21,15 +22,27 @@ namespace LexiconLMSBlazor.Server.Controllers
             _context = context;
         }
 
-        // GET: api/Modules
+        // Av Björn Lindqvist
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Module>>> GetModule()
+        public async Task<ActionResult<IEnumerable<ModuleDto>>> GetModule()
         {
-          if (_context.Module == null)
-          {
-              return NotFound();
-          }
-            return await _context.Module.ToListAsync();
+            if (_context.Module == null)
+            {
+                return BadRequest();
+            }
+
+            var dto = _context.Module
+                .Select(d => new ModuleDto
+                {
+                    Id = d.Id,
+                    Name = d.Name,
+                    Description = d.Description,
+                    StartDate = d.StartDate,
+                    EndDate = d.EndDate,
+                    CourseId = (int)d.CourseId!
+                });
+
+            return await dto.ToListAsync();
         }
 
         // GET: api/Modules/5

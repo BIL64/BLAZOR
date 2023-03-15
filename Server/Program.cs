@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System.IdentityModel.Tokens.Jwt;
-using static LexiconLMSBlazor.Server.Controllers.AppUserController;
+using static LexiconLMSBlazor.Server.Controllers.AppUsersController;
 
 namespace LexiconLMSBlazor.Server
 {
@@ -41,27 +41,27 @@ namespace LexiconLMSBlazor.Server
 
             var app = builder.Build();
 
-            //// SeedData av Björn Lindqvist och Jean-Yves Michel
-            //using (var scope = app.Services.CreateScope())
-            //{
-            //    var serviceProvider = scope.ServiceProvider;
-            //    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            // SeedData av Björn Lindqvist och Jean-Yves Michel
+            using (var scope = app.Services.CreateScope())
+            {
+                var serviceProvider = scope.ServiceProvider;
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
 
-            //    //db.Database.EnsureDeleted(); // Om en ny seedning ska göras vid varje uppstart.
-            //    //db.Database.Migrate();
-            //    //db.Database.EnsureCreated();
+                //db.Database.EnsureDeleted(); // Om en ny seedning ska göras vid varje uppstart.
+                //db.Database.Migrate();
+                //db.Database.EnsureCreated();
 
-            //    try
-            //    {
-            //        await SeedData.InitAsync(db, serviceProvider);
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        Console.WriteLine(e.Message);
-            //        throw;
-            //    }
-            //}
+                try
+                {
+                    await SeedData.InitAsync(db, serviceProvider);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    throw;
+                }
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

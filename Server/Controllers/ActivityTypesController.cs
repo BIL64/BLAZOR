@@ -7,10 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LexiconLMSBlazor.Server.Data;
 using LexiconLMSBlazor.Server.Models;
+using LexiconLMSBlazor.Shared.Dtos;
 
 namespace LexiconLMSBlazor.Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Acttype")]
     [ApiController]
     public class ActivityTypesController : ControllerBase
     {
@@ -23,13 +24,21 @@ namespace LexiconLMSBlazor.Server.Controllers
 
         // GET: api/ActivityTypes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ActivityType>>> GetActivityType()
+        public async Task<ActionResult<IEnumerable<ActivityTypeDto>>> GetActivityType()
         {
-          if (_context.ActivityType == null)
-          {
-              return NotFound();
-          }
-            return await _context.ActivityType.ToListAsync();
+            if (_context.ActivityType == null)
+            {
+                return BadRequest();
+            }
+
+            var dto = _context.ActivityType
+                .Select(d => new ActivityTypeDto
+                {
+                    Id = d.Id,
+                    Name = d.Name
+                });
+
+            return await dto.ToListAsync();
         }
 
         // GET: api/ActivityTypes/5

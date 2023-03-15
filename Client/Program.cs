@@ -18,7 +18,7 @@ namespace LexiconLMSBlazor.Client
 
             // NuGet: Microsoft.Extensions.Http
             builder.Services.AddHttpClient<IAppUserDtoClient, AppUserDtoClient>();
-            builder.Services.AddHttpClient<ICourseDtoClient, CourseDtoClient>();
+            builder.Services.AddHttpClient<IXDtoClient, XDtoClient>();
 
             // Supply HttpClient instances that include access tokens when making requests to the server project
             builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("LexiconLMSBlazor.ServerAPI"));

@@ -30,14 +30,34 @@ namespace LexiconLMSBlazor.Server.Controllers
             {
                 return BadRequest();
             }
+            
             var dto = _context.Course
-                .Select(e => new CourseDto
+                .Select(c => new CourseDto
                 {
-                    Id = e.Id,
-                    Name = e.Name,
-                    Description = e.Description,
-                    StartDate = e.StartDate,
-                    EndDate = e.EndDate
+                    Id = c.Id,
+                    Name = c.Name,
+                    Description = c.Description,
+                    StartDate = c.StartDate,
+                    EndDate = c.EndDate,
+                    Modules = c.Modules.Select(m => new ModuleDto
+                    {
+                        Id = m.Id,
+                        Name = m.Name,
+                        Description= m.Description,
+                        StartDate = m.StartDate,
+                        EndDate = m.EndDate,
+                        CourseId = (int)m.CourseId!,
+                        Activities = m.Activities.Select(a => new ActivityDto
+                         {
+                            Id = a.Id,
+                            Name = a.Name,
+                            Description = a.Description,
+                            StartDate = a.StartDate,
+                            EndDate = a.EndDate,
+                            ModuleId = (int)a.ModuleId!,
+                            ActivityTypeId = (int)a.ActivityTypeId!
+                         })
+                    })
                 });
 
             return await dto.ToListAsync();

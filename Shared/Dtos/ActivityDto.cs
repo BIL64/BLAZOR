@@ -1,6 +1,6 @@
 ﻿namespace LexiconLMSBlazor.Shared.Dtos
 {
-    public class CourseDto
+    public class ActivityDto
     {
         public int Id { get; set; }
 
@@ -12,7 +12,9 @@
 
         public DateTime EndDate { get; set; }
 
-        public IEnumerable<ModuleDto> Modules { get; set; } = new List<ModuleDto>();
+        public int ModuleId { get; set; }
+
+        public int ActivityTypeId { get; set; }
     }
 }
 

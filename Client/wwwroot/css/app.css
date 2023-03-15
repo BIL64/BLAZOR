@@ -117,6 +117,27 @@ a, .btn-link {
     background-color: ghostwhite; 
 }
 
+.modulebox {
+    display: flex;
+    width: 100%;
+    cursor: pointer;
+    padding: 10px;
+    border: none;
+    border-radius: 5px 5px 0px 0px;
+    background-color: sandybrown;
+}
+
+.activitybox {
+    display: flex;
+    width: 100%;
+    cursor: pointer;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 0px 0px 5px 5px;
+    background-color:lightblue ;
+}
+
 .noline {
     border: none;
 }

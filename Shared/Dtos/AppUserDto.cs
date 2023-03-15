@@ -12,6 +12,6 @@
 
         public int UserRole { get; set; }
 
-        public int CourseId { get; set; } = 0;
+        public int CourseId { get; set; }
     }
 }

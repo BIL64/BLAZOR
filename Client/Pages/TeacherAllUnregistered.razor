@@ -1,0 +1,103 @@
+﻿@page "/teacherallunregistered"
+@using System.Diagnostics;
+@inject NavigationManager Navigation
+@attribute [Authorize]
+@*Av Björn Lindqvist*@
+@*Endast lärare har åtkomst hit*@
+
+<PageTitle>Teacher all unregistered</PageTitle>
+
+<AuthorizeView Roles ="Teacher">
+    <Authorized>
+<h4>@Emptydb</h4>
+
+@if (visitors == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Visitor</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var data in visitors)
+            {
+                <tr>
+                    <td>@data.FirstName @data.LastName</td>
+                    <td>@data.Email</td>
+                    <td class="noline">
+                        @if (@data.UserRole == 0) // CSS!
+                        {
+                            if (data.Id is not null)
+                            {
+                                <button type="button" class="text-white regbtn" @onclick=" _ => GetRegistered(data.Id)" title="Not yet authorized student">Register now!</button>
+                            }
+                        }
+                        @if (data.Id is not null)
+                        {
+                            <button type="button" class="oi oi-warning text-white delbtn" @onclick=" _ => DeletePage(data.Id)" title="Delete or redirect user"></button> // CSS!
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<DeleteUnregistered @ref="deleteRef" /> @*Delete-fönster.*@
+
+</Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private DeleteUnregistered deleteRef; // Delete-fönster.
+
+    private void DeletePage(string id) // Delete-fönster.
+    {
+        Navstatic.GuidId = id;
+        deleteRef.Show("");
+    }
+
+    private List<AppUserDto> visitors = new List<AppUserDto>();
+
+    [Inject]
+    private IAppUserDtoClient appuserClient { get; set; } = default!;
+
+
+    private string Emptydb = "List of unregistered";
+
+    private bool IsCourse;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var appuser = await appuserClient.GetAsync();
+
+        if (appuser is not null)
+        {
+            foreach (var item in appuser)
+            {
+                if (item.UserRole < 1) visitors.Add(item);
+            }
+            if (visitors.Count < 1) Emptydb = "No unregistered !";
+        }
+        else
+        {
+            Emptydb = "No unregistered !";
+        }
+    }
+
+    private async Task GetRegistered(string id) // Registrerar den oregistrerade.
+    {
+        await appuserClient.PreAsync(id, 1);
+        Navigation.NavigateTo("/teacherallunregistered", true );
+    }
+}

@@ -171,7 +171,7 @@ namespace LexiconLMSBlazor.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ActivityTypeId")
+                    b.Property<int?>("ActivityTypeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -355,7 +355,6 @@ namespace LexiconLMSBlazor.Server.Migrations
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 

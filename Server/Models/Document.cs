@@ -21,7 +21,7 @@ namespace LexiconLMSBlazor.Server.Models
         public string Author { get; set; } = string.Empty;
 
         [Timestamp]
-        public byte[] TimeStamp { get; set; }
+        public byte[]? TimeStamp { get; set; }
 
         [Required]
         public string Link { get; set; } = string.Empty;

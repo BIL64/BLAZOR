@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LexiconLMSBlazor.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230312201630_Init")]
+    [Migration("20230314185901_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -174,7 +174,7 @@ namespace LexiconLMSBlazor.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ActivityTypeId")
+                    b.Property<int?>("ActivityTypeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -358,7 +358,6 @@ namespace LexiconLMSBlazor.Server.Migrations
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 

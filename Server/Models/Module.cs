@@ -24,6 +24,9 @@ namespace LexiconLMSBlazor.Server.Models
         [Required]
         public DateTime EndDate { get; set; }
 
+        // Foreign Key
+        public int? CourseId { get; set; }
+
         // Enumerable Type
         public ICollection<Activity> Activities { get; set; } = new List<Activity>();
     }
