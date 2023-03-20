@@ -123,7 +123,5 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
 
             return courses;
         }
-
-
     }
 }

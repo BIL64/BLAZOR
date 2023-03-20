@@ -40,6 +40,7 @@ namespace LexiconLMSBlazor.Server.Controllers
                     dto.FirstName = user.FirstName;
                     dto.LastName = user.LastName;
                     dto.Email = user.Email;
+                    dto.PhoneNumber = user.PhoneNumber;
                     if (user.CourseId is not null) dto.CourseId = (int)user.CourseId; else dto.CourseId = 0;
                     dto.UserRole = await UserRole(user); // Måste vara await pga Task<int>.
                     dtolist.Add(dto);

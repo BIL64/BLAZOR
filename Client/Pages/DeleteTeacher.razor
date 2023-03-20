@@ -1,4 +1,6 @@
 ﻿@inject NavigationManager Navigation
+@inject IAppUserDtoClient appuserClient
+@inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Sukhrob Ilyosbekov - Stack Overflow*@
 @*Endast lärare har åtkomst hit*@
@@ -9,7 +11,7 @@
 
 <AuthorizeView Roles ="Teacher">
     <Authorized>
-<div class="toast-container p-3 @showClass" data-bs-autohide="true" data-bs-delay="5000">
+    <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
     <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
             <strong class="me-auto">@HeaderText</strong>
@@ -45,11 +47,11 @@
     [Parameter]
     public string? BodyText { get; set; }
 
-    [Inject]
-    private IAppUserDtoClient appuserClient { get; set; } = default!;
-
     public void Show(string bodyText, string headerText = "Remove this user...")
     {
+        xnav.SetDone("hide", "");
+        xnav.SetError("hide", "");
+
         HeaderText = headerText;
         BodyText = bodyText;
         IsVisible = true;
@@ -66,14 +68,20 @@
 
     private async Task DeleteNow()
     {
-        await appuserClient.RemAsync(Navstatic.GuidId);
+        xnav.SetDone("xnavdone", "This teacher was deleted.");
+        xnav.SetError("hide", "");
+
+        await appuserClient.RemAsync(Auxx.GuidId);
         Navigation.NavigateTo("/teacherallteachers", true);
         Close();
     }
 
     private async Task Redirect()
     {
-        await appuserClient.PreAsync(Navstatic.GuidId, 11);
+        xnav.SetDone("xnavdone", "This teacher was redirected to a student.");
+        xnav.SetError("hide", "");
+
+        await appuserClient.PreAsync(Auxx.GuidId, 11);
         Navigation.NavigateTo("/teacherallteachers", true);
         Close();
     }

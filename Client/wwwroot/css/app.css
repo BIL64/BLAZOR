@@ -106,36 +106,98 @@ a, .btn-link {
         font-weight: bold;
     }
 
+.show {
+    display: block;
+}
+
+.hide {
+    display: none;
+}
+
+.xnavdone {
+    display: block;
+    font-size: 0.8rem;
+    width: 95%;
+    padding: 5px;
+    margin: 2%;
+    border: 1px antiquewhite solid;
+    color: antiquewhite;
+}
+
+.xnaverror {
+    display: block;
+    font-size: 0.8rem;
+    width: 95%;
+    padding: 5px;
+    margin: 2%;
+    margin-top: 10%;
+    border: 1px yellow solid;
+    color: yellow;
+}
+
 .coursebox {
-    display: inline-flex;
-    width: 45%;
-    cursor: pointer;
+    display: block;
+    width: 100%;
     padding: 10px;
-    margin: 5px;
+    margin-bottom: 10px;
     border: 4px darkgray solid;
     border-radius: 5px;
     background-color: ghostwhite; 
 }
 
+.courseeditbox {
+    display: block;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px black solid;
+    background-color: ghostwhite;
+}
+
 .modulebox {
-    display: flex;
+    display: block;
     width: 100%;
-    cursor: pointer;
     padding: 10px;
     border: none;
     border-radius: 5px 5px 0px 0px;
     background-color: sandybrown;
 }
 
-.activitybox {
-    display: flex;
-    width: 100%;
-    cursor: pointer;
+.moduleeditbox {
+    display: block;
     padding: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    border: 1px black solid;
+    background-color: sandybrown;
+}
+
+.activitybox {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
     border: none;
     border-radius: 0px 0px 5px 5px;
-    background-color:lightblue ;
+    background-color: lightblue;
+}
+
+.activityeditbox {
+    display: block;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px black solid;
+    border-radius: 5px;
+    background-color: lightblue;
+}
+
+.documentbtn {
+    font-size: 0.8rem;
+    padding-right: 20px;
+    padding-left: 20px;
+    margin-top: 10px;
+    border-radius: 20px;
+    color: white;
+    background-color: grey;
+    border: 1px aquamarine solid;
 }
 
 .noline {
@@ -153,14 +215,6 @@ a, .btn-link {
 .headerrefresh {
     color: blue;
     cursor: pointer;
-}
-
-.closecourse {
-    display: none;
-}
-
-.opencourse {
-    display: block;
 }
 
 .regbtn {
@@ -263,4 +317,45 @@ a, .btn-link {
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .dropdown:hover .coursebtn {
     background-color: darkcyan;
+}
+
+/*CSS för av/på ställare GeeksforGeeks*/
+
+/* toggle in label designing */
+.toggle {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 18px;
+    background-color: yellow;
+    border-radius: 12px;
+    border: 2px solid gray;
+}
+
+    /* After slide changes */
+    .toggle:after {
+        content: '';
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border-radius: 100%;
+        background-color: gray;
+        top: 0px;
+        left: 0px;
+        transition: all 0.5s;
+    }
+
+/* Checkbox checked effect */
+.checkbox:checked + .toggle::after {
+    left: 22px;
+}
+
+/* Checkbox checked toggle label bg color */
+.checkbox:checked + .toggle {
+    background-color: aqua;
+}
+
+/* Checkbox vanished */
+.checkbox {
+    display: none;
 }

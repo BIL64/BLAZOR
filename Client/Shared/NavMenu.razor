@@ -1,131 +1,141 @@
-﻿@inject IAuthorizationService AuthorizationService
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject XNavMenu xnav
+@*Av Jonny Walter*@
 
-<div class="top-row ps-1 navbar navbar-dark">
+<div class="top-row ps-2 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href=""><img style="width: 215px" src="images/LexiconLMSBlazor.png" alt="Brand image"/></a>
+        <a class="navbar-brand" href=""><img style="width: 215px" src="images/LexiconLMSBlazor.png" alt="Brand image" /></a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>
 </div>
 
-@*Av Björn Lindqvist*@
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        @if (Navstatic.Logintype != "") // Statisk sträng.
+<AuthorizeView Roles="Student, Teacher">
+    <Authorized>
+        @if (context.User.IsInRole("Student"))
         {
-            <div style="text-align: center; padding: 20px; color: white">
-                @Navstatic.Logintype
-            </div>
+            Logintype = "S T U D E N T";
+            Navbtn1 = "Course";
+            Navlink1 = "studentfetch";
+            Navbtn2 = "Students";
+            Navlink2 = "studentall";
+            Navbtn3 = string.Empty;
+            Navlink3 = string.Empty;
+            Navbtn4 = string.Empty;
+            Navlink4 = string.Empty;
+            Navbtn5 = string.Empty;
         }
-        <div class="nav-item px-3">
-            <NavLink class="@Navstatic.Hclass1" href="@Navstatic.Hhref" Match="NavLinkMatch.All">
-                <span class="@Navstatic.Hclass2" aria-hidden="true"></span> Refresh
-            </NavLink>
+
+        @if (context.User.IsInRole("Teacher"))
+        {
+            Logintype = "T E A C H E R";
+            Navbtn1 = "All courses";
+            Navlink1 = "teacherallcourses";
+            Navbtn2 = "Add course";
+            Navlink2 = "teacheraddcourse";
+            Navbtn3 = "All teachers";
+            Navlink3 = "teacherallteachers";
+            Navbtn4 = "All students";
+            Navlink4 = "teacherallstudents";
+            Navbtn5 = "All unregistered";
+            Navlink5 = "teacherallunregistered";
+        }
+
+        <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+            <nav class="flex-column">
+                @if (Logintype != string.Empty) // Statisk sträng.
+                {
+                    <div style="text-align: center; padding: 20px; color: white">
+                        @Logintype
+                    </div>
+                }
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link bhover" href="/" Match="NavLinkMatch.All">
+                        <span aria-hidden="true"></span> Home
+                    </NavLink>
+                </div>
+                @if (Navbtn1 != string.Empty) // Statisk sträng 1.
+                {
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link bhover" href="@Navlink1">
+                            <span aria-hidden="true"></span>@Navbtn1
+                        </NavLink>
+                    </div>
+                }
+                @if (Navbtn2 != string.Empty) // Statisk sträng 2.
+                {
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link bhover" href="@Navlink2">
+                            <span aria-hidden="true"></span>@Navbtn2
+                        </NavLink>
+                    </div>
+                }
+                @if (Navbtn3 != string.Empty) // Statisk sträng 3.
+                {
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link bhover" href="@Navlink3">
+                            <span aria-hidden="true"></span>@Navbtn3
+                        </NavLink>
+                    </div>
+                }
+                @if (Navbtn4 != string.Empty) // Statisk sträng 4.
+                {
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link bhover" href="@Navlink4">
+                            <span aria-hidden="true"></span>@Navbtn4
+                        </NavLink>
+                    </div>
+                }
+                @if (Navbtn5 != string.Empty) // Statisk sträng 5.
+                {
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link bhover" href="@Navlink5">
+                            <span aria-hidden="true"></span>@Navbtn5
+                        </NavLink>
+                    </div>
+                }
+            </nav>
+            <footer class="@xnav.classDoneMess">
+                <div>Done:</div>
+                <div>@xnav.DoneMess</div>
+            </footer>
+            <footer class="@xnav.classErrorMess">
+                <div>Error:</div>
+                <div>@xnav.ErrorMess</div>
+            </footer>
         </div>
-        @if (Navstatic.Navbtn1 != "") // Statisk sträng 1.
-        {
-            <div class="nav-item px-3">
-                <NavLink class="nav-link bhover" href="@Navstatic.Navlink1">
-                    @Navstatic.Navbtn1
-                </NavLink>
-            </div>
-        }
-        @if (Navstatic.Navbtn2 != "") // Statisk sträng 2.
-        {
-            <div class="nav-item px-3">
-                <NavLink class="nav-link bhover" href="@Navstatic.Navlink2">
-                    @Navstatic.Navbtn2
-                </NavLink>
-            </div>
-        }
-        @if (Navstatic.Navbtn3 != "") // Statisk sträng 3.
-        {
-            <div class="nav-item px-3">
-                <NavLink class="nav-link bhover" href="@Navstatic.Navlink3">
-                    @Navstatic.Navbtn3
-                </NavLink>
-            </div>
-        }
-        @if (Navstatic.Navbtn4 != "") // Statisk sträng 4.
-        {
-            <div class="nav-item px-3">
-                <NavLink class="nav-link bhover" href="@Navstatic.Navlink4">
-                    @Navstatic.Navbtn4
-                </NavLink>
-            </div>
-        }
-        @if (Navstatic.Navbtn5 != "") // Statisk sträng 5.
-        {
-            <div class="nav-item px-3">
-                <NavLink class="nav-link bhover" href="@Navstatic.Navlink5">
-                    @Navstatic.Navbtn5
-                </NavLink>
-            </div>
-        }
-    </nav>
-</div>
+    </Authorized>
+    <NotAuthorized>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
+
+    private string Logintype = string.Empty;
+    private string Homeclass = string.Empty;
+    private string Navbtn1 = string.Empty;
+    private string Navlink1 = string.Empty;
+    private string Navbtn2 = string.Empty;
+    private string Navlink2 = string.Empty;
+    private string Navbtn3 = string.Empty;
+    private string Navlink3 = string.Empty;
+    private string Navbtn4 = string.Empty;
+    private string Navlink4 = string.Empty;
+    private string Navbtn5 = string.Empty;
+    private string Navlink5 = string.Empty;
 
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    private async Task ToggleNavMenu()
+    private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
-        await OnInitializedAsync();
     }
 
-    [CascadingParameter]
-    private Task<AuthenticationState>? authenticationState { get; set; } // Tillhör autentiseringen.
-
-    protected override async Task OnInitializedAsync() // Autentisering.
+    protected override void OnInitialized()
     {
-        if (authenticationState is not null)
-        {
-            var authState = await authenticationState;
-            var user = authState?.User;
-
-            if (user is not null && user.Identity is not null && user.Identity.IsAuthenticated)
-            {
-                if (user.IsInRole("Student")) // Den inloggade är en student.
-                {
-                    Navstatic.Logintype = "S T U D E N T";
-                    Navstatic.Hclass1 = "nav-link bhover";
-                    Navstatic.Hclass2 = "";
-                    Navstatic.Navbtn1 = "Course";
-                    Navstatic.Navlink1 = "studentfetch";
-                    Navstatic.Navbtn2 = "Students";
-                    Navstatic.Navlink2 = "studentall";
-                    Navstatic.Navbtn3 = "";
-                    Navstatic.Navlink3 = "";
-                    Navstatic.Navbtn4 = "";
-                    Navstatic.Navlink4 = "";
-                    Navstatic.Navbtn5 = "";
-                    Navstatic.Navlink5 = "";
-                    base.StateHasChanged();
-                }
-
-                if (user.IsInRole("Teacher")) // Den inloggade är en lärare.
-                {
-                    Navstatic.Logintype = "T E A C H E R";
-                    Navstatic.Hclass1 = "nav-link bhover";
-                    Navstatic.Hclass2 = "";
-                    Navstatic.Navbtn1 = "All courses";
-                    Navstatic.Navlink1 = "teacherfetch";
-                    Navstatic.Navbtn2 = "Add course";
-                    Navstatic.Navlink2 = "teacheraddcourse";
-                    Navstatic.Navbtn3 = "All teachers";
-                    Navstatic.Navlink3 = "teacherallteachers";
-                    Navstatic.Navbtn4 = "All students";
-                    Navstatic.Navlink4 = "teacherallstudents";
-                    Navstatic.Navbtn5 = "All unregistered";
-                    Navstatic.Navlink5 = "teacherallunregistered";
-                    base.StateHasChanged();
-                }
-            }
-        }
+        xnav.OnChange += StateHasChanged;
     }
 }

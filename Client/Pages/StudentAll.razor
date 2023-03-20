@@ -1,5 +1,8 @@
 ﻿@page "/studentall"
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject IAppUserDtoClient appuserClient
+@inject IXDtoClient xClient
+@inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Björn Lindqvist*@
 @*Både studenter och lärare har åtkomst hit*@
@@ -21,15 +24,17 @@ else
             <tr>
                 <th>Student</th>
                 <th>Email</th>
+                <th>Phone number</th>
                 <th>Course</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var data in students)
             {
-                <tr>                    
+                <tr style="color: darkblue">                    
                     <td>@data.FirstName @data.LastName</td>
                     <td>@data.Email</td>
+                    <td>@data.PhoneNumber</td>
                     <td>
                         @foreach (var item in courses) // Hämtar kursen som motsvarar dess id.
                         {
@@ -56,20 +61,13 @@ else
     </NotAuthorized>
 </AuthorizeView>
 
-
 @code {
 
-    private List<AppUserDto> students = new List<AppUserDto>();
+    private List<AppUserDto> students = new();
 
-    private List<CourseDto> courses = new List<CourseDto>();
+    private List<CourseDto> courses = new();
 
-    private AppUserDto loggeduser = new AppUserDto(); // Info om den som för tillfället är inloggad.
-
-    [Inject]
-    private IAppUserDtoClient appuserClient { get; set; } = default!;
-
-    [Inject]
-    private IXDtoClient xClient { get; set; } = default!;
+    private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
 
     private string Emptydb = "List of students";
 
@@ -77,6 +75,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        xnav.SetDone("hide", "");
+        xnav.SetError("hide", "");
+
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         var user = authstate.User;
         var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.

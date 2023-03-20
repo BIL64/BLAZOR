@@ -1,5 +1,5 @@
 ﻿@inject NavigationManager Navigation
-@inject IAppUserDtoClient appuserClient
+@inject IXDtoClient xClient
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Sukhrob Ilyosbekov - Stack Overflow*@
@@ -20,9 +20,8 @@
 
         <div class="toast-body">
             @BodyText
-            <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove this user from the system">DELETE NOW</button>
+            <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove this module from the system">DELETE NOW</button>
             <button type="button" class="text-white remnot" @onclick="Close">NO</button>
-            <button type="button" class="text-white remnot" @onclick="Redirect" title="Make this student to a teacher...">To teacher!</button>
         </div>
     </div>
 </div>
@@ -47,14 +46,11 @@
     [Parameter]
     public string? BodyText { get; set; }
 
-    public async Task Show(string bodyText, string headerText = "Remove this user...")
+    public void Show(string bodyText, string headerText = "Remove this module...")
     {
         xnav.SetDone("hide", "");
         xnav.SetError("hide", "");
 
-        IsVisible = false;
-        StateHasChanged();
-        await Task.Delay(200);
         HeaderText = headerText;
         BodyText = bodyText;
         IsVisible = true;
@@ -71,21 +67,11 @@
 
     private async Task DeleteNow()
     {
-        xnav.SetDone("xnavdone", "This student was deleted.");
+        xnav.SetDone("xnavdone", "This module was deleted.");
         xnav.SetError("hide", "");
 
-        await appuserClient.RemAsync(Auxx.GuidId);
-        Navigation.NavigateTo("/teacherallstudents", true);
-        Close();
-    }
-
-    private async Task Redirect()
-    {
-        xnav.SetDone("xnavdone", "This student was redirected to a teacher.");
-        xnav.SetError("hide", "");
-
-        await appuserClient.PreAsync(Auxx.GuidId, 12);
-        Navigation.NavigateTo("/teacherallstudents", true);
+        await xClient.RemAsync(Auxx.IntId, "api/Module");
+        Navigation.NavigateTo("/teacherfetch", true);
         Close();
     }
 }

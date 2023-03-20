@@ -49,10 +49,10 @@ namespace LexiconLMSBlazor.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Module>> GetModule(int id)
         {
-          if (_context.Module == null)
-          {
-              return NotFound();
-          }
+            if (_context.Module == null)
+            {
+                return NotFound();
+            }
             var @module = await _context.Module.FindAsync(id);
 
             if (@module == null)
@@ -99,10 +99,10 @@ namespace LexiconLMSBlazor.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<Module>> PostModule(Module @module)
         {
-          if (_context.Module == null)
-          {
-              return Problem("Entity set 'ApplicationDbContext.Module'  is null.");
-          }
+            if (_context.Module == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Module'  is null.");
+            }
             _context.Module.Add(@module);
             await _context.SaveChangesAsync();
 
@@ -117,6 +117,7 @@ namespace LexiconLMSBlazor.Server.Controllers
             {
                 return NotFound();
             }
+
             var @module = await _context.Module.FindAsync(id);
             if (@module == null)
             {

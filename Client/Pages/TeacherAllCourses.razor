@@ -1,0 +1,157 @@
+﻿@page "/teacherallcourses"
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject NavigationManager Navigation
+@inject IAppUserDtoClient appuserClient
+@inject IXDtoClient xClient
+@inject XNavMenu xnav
+@attribute [Authorize]
+@*Av Björn Lindqvist*@
+@*Endast lärare har åtkomst hit*@
+
+<PageTitle>Teacher all courses</PageTitle>
+
+<AuthorizeView Roles="Teacher">
+    <Authorized>
+        <h4>@TeacherName</h4>
+        <br />
+        <EditForm Context="searchlmslexnet" Model="@courses" OnSubmit="OnInitializedAsync">
+            <span class="nav m-lg-auto input-group">
+                <InputText class="form-control" @bind-Value="searchString" placeholder="Course name" />
+                <span class="nav m-lg-auto input-group-append">
+                    <button type="submit" class="btn m-lg-auto btn-outline-dark">Search</button>
+                </span>
+            </span>
+        </EditForm>
+
+        <br />
+        <p>Plats för dokument...</p>
+
+        @if (courses == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            @foreach (var data in courses)
+            {
+                <section class="coursebox">
+                    <div style="display: flex; width: 100%">
+                        <div style="width: 75%; text-align: left">
+                            @data.Id.&nbsp; <em style="cursor: pointer" title="@data.Description -Click for edit-"
+                            @onclick=" _ => RedirectToCourse(data.Id)">@data.Name &nbsp;</em>
+                        </div>
+                            <b style="margin-left: auto">@StartEndDate(data.StartDate, data.EndDate)</b>&nbsp;
+                        <div style="margin-left: auto; margin-right: 0">
+                            <NavLink style="cursor: pointer" class="oi oi-warning text-warning"
+                            @onclick=" _ => DeleteControl(data.Id)" Title="Delete course"></NavLink>
+                        </div>
+                    </div>
+                </section>
+            }
+        }
+
+<DeleteCourse @ref="deleteRef" /> @*Delete-fönster.*@
+
+    </Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private DeleteCourse deleteRef; // Delete-fönster.
+
+    private void DeleteItem(int id) // Delete-fönster.
+    {
+        Auxx.IntId = id;
+        deleteRef.Show("");
+    }
+
+    private List<CourseDto> courses = new();
+
+    private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
+
+    private string TeacherName = string.Empty;
+    private string searchString = string.Empty;
+    private bool DeleteFlag;
+
+    protected override async Task OnInitializedAsync()
+    {
+        xnav.SetDone("hide", "");
+        xnav.SetError("hide", "");
+
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
+
+        var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
+        var appuser = await appuserClient.GetAsync();
+
+        xnav.SetError("hide", ""); // Test!
+
+        courses.Clear(); // Sökfunktionen kräver att listan rensas.
+
+        if (course is not null)
+        {
+            foreach (var item in course)
+            {
+                // Sökfiltrering med IndexOf: kursnamn.
+                if (!string.IsNullOrWhiteSpace(searchString))
+                {
+                    if (item.Name.ToLower().IndexOf(searchString.ToLower()) != - 1) courses.Add(item);
+                }
+                else
+                {
+                    courses.Add(item);
+                }
+            }
+        }
+
+        if (appuser is not null && name is not null)
+        {
+            foreach (var item in appuser) // Hämtar den som för tillfället är inloggad.
+            {
+                if (item.Email == name) loggeduser = item;
+            }
+        }
+
+        TeacherName = $"Hello, {loggeduser.FirstName} {loggeduser.LastName}!";
+    }
+
+    private void DeleteControl(int id)
+    {
+        foreach (var cour in courses)
+        {
+            if (cour.Id == id)
+            {
+                DeleteFlag = true;
+
+                foreach (var mod in cour.Modules) // Kollar om det finns några moduler.
+                {
+                    DeleteFlag = false;
+                }
+            }
+        }
+        if (DeleteFlag)
+        {
+            DeleteItem(id);
+            DeleteFlag = false;
+        }
+        else
+        {
+            xnav.SetError("xnaverror", "All modules and activities belonging to a course must be deleted before a course can be deleted.");
+            xnav.SetDone("hide", "");
+        }
+    }
+
+    private string StartEndDate(DateTime start, DateTime end) // Returnerar datumsträng.
+    {
+        return $"{start.ToString().Substring(0, 10)} | {end.ToString().Substring(0, 10)}";
+    }
+
+    private void RedirectToCourse(int id)
+    {
+        Navigation.NavigateTo($"/coursedetail/{id}", true);
+    }
+}

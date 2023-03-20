@@ -1,6 +1,9 @@
 ﻿@page "/teacherallstudents"
 @using System.Diagnostics;
 @inject NavigationManager Navigation
+@inject IAppUserDtoClient appuserClient
+@inject IXDtoClient xClient
+@inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Björn Lindqvist*@
 @*Endast lärare har åtkomst hit*@
@@ -17,20 +20,31 @@
 }
 else
 {
+    <EditForm Context="searchlmslexnet" Model="@students" OnSubmit="OnInitializedAsync">
+        <span class="nav m-lg-auto input-group">
+            <InputText class="form-control" @bind-Value="searchString" placeholder="First or last name" />
+            <span class="nav m-lg-auto input-group-append">
+                <button type="submit" class="btn m-lg-auto btn-outline-dark">Search</button>
+            </span>
+        </span>
+    </EditForm>
+
     <table class="table">
         <thead>
             <tr>
                 <th>Student</th>
                 <th>Email</th>
+                <th>Phone number</th>
                 <th>Course</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var data in students)
             {
-                <tr>
+                <tr style="color: darkblue">
                     <td>@data.FirstName @data.LastName</td>
                     <td>@data.Email</td>
+                    <td>@data.PhoneNumber</td>
                     <td>
                         @foreach (var item in courses) // Hämtar kursen för användaren.
                         {
@@ -75,7 +89,7 @@ else
     </table>
 }
 
-<DeleteStudent @ref="deleteRef" /> @*Delete-fönster.*@
+<DeleteStudent @ref="deleteRef" /> @*Delete-fönster*@
 
 </Authorized>
     <NotAuthorized>
@@ -87,41 +101,54 @@ else
 
     private DeleteStudent deleteRef; // Delete-fönster.
 
-    private void DeletePage(string id) // Delete-fönster.
+    private async Task DeletePage(string id) // Delete-fönster.
     {
-        Navstatic.GuidId = id;
-        deleteRef.Show("");
+        Auxx.GuidId = id;
+        await deleteRef.Show("");
     }
 
-    private List<AppUserDto> students = new List<AppUserDto>();
+    private List<AppUserDto> students = new();
 
-    private List<CourseDto> courses = new List<CourseDto>();
-
-    [Inject]
-    private IAppUserDtoClient appuserClient { get; set; } = default!;
-
-    [Inject]
-    private IXDtoClient xClient { get; set; } = default!;
+    private List<CourseDto> courses = new();
 
     private string Emptydb = "List of students";
 
-    private string CourseClass = "text-white coursebtn closecourse";
+    private string CourseClass = "text-white coursebtn hide";
 
-    private string Emptydbcolor = "headeroff";
+    private string Emptydbcolor = string.Empty;
 
     private bool IsCourse;
 
+    private string searchString = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
+        xnav.SetDone("hide", "");
+        xnav.SetError("hide", "");
+
         var appuser = await appuserClient.GetAsync();
+
+        students.Clear(); // Sökfunktionen kräver att listan rensas.
+        Emptydb = "List of students";
 
         if (appuser is not null)
         {
             foreach (var item in appuser)
             {
-                if (item.UserRole == 1) students.Add(item);
+                // Sökfiltrering med IndexOf: förnamn, efternamn och kurs.
+                if (!string.IsNullOrWhiteSpace(searchString))
+                {
+                    if (item.UserRole == 1 && (item.FirstName.ToLower().IndexOf(searchString.ToLower()) != -1 ||
+                    item.LastName.ToLower().IndexOf(searchString.ToLower()) != -1 ||
+                    item.LastName.ToLower().IndexOf(searchString.ToLower()) != -1)) students.Add(item);
+                }
+                else
+                {
+                    if (item.UserRole == 1) students.Add(item);
+                }
             }
             if (students.Count < 1) Emptydb = "No students !";
+            if (!string.IsNullOrWhiteSpace(searchString) && students.Count < 1) Emptydb = "There is no student with that name...";
         }
         else
         {
@@ -143,13 +170,13 @@ else
 
     private void OpenCloseCourse() // Öppnar/stänger +knapp. CSS!
     {
-        if (CourseClass == "text-white coursebtn closecourse")
+        if (CourseClass == "text-white coursebtn hide")
         {
-            CourseClass = "text-white coursebtn opencourse";
+            CourseClass = "text-white coursebtn show";
         }
         else
         {
-            CourseClass = "text-white coursebtn closecourse";
+            CourseClass = "text-white coursebtn hide";
         }
     }
 

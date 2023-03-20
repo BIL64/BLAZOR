@@ -1,6 +1,8 @@
 ﻿@page "/teacherallunregistered"
 @using System.Diagnostics;
 @inject NavigationManager Navigation
+@inject IAppUserDtoClient appuserClient
+@inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Björn Lindqvist*@
 @*Endast lärare har åtkomst hit*@
@@ -22,6 +24,7 @@ else
             <tr>
                 <th>Visitor</th>
                 <th>Email</th>
+                <th>Phone number</th>
             </tr>
         </thead>
         <tbody>
@@ -30,6 +33,7 @@ else
                 <tr>
                     <td>@data.FirstName @data.LastName</td>
                     <td>@data.Email</td>
+                    <td>@data.PhoneNumber</td>
                     <td class="noline">
                         @if (@data.UserRole == 0) // CSS!
                         {
@@ -49,7 +53,7 @@ else
     </table>
 }
 
-<DeleteUnregistered @ref="deleteRef" /> @*Delete-fönster.*@
+<DeleteUnregistered @ref="deleteRef" /> @*Delete-fönster*@
 
 </Authorized>
     <NotAuthorized>
@@ -63,15 +67,11 @@ else
 
     private void DeletePage(string id) // Delete-fönster.
     {
-        Navstatic.GuidId = id;
+        Auxx.GuidId = id;
         deleteRef.Show("");
     }
 
-    private List<AppUserDto> visitors = new List<AppUserDto>();
-
-    [Inject]
-    private IAppUserDtoClient appuserClient { get; set; } = default!;
-
+    private List<AppUserDto> visitors = new();
 
     private string Emptydb = "List of unregistered";
 
@@ -79,6 +79,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        xnav.SetDone("hide", "");
+        xnav.SetError("hide", "");
+
         var appuser = await appuserClient.GetAsync();
 
         if (appuser is not null)

@@ -10,6 +10,8 @@
 
         public string? Email { get; set; } = string.Empty;
 
+        public string? PhoneNumber { get; set; } = string.Empty;
+
         public int UserRole { get; set; }
 
         public int CourseId { get; set; }

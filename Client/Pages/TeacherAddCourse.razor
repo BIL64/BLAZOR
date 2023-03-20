@@ -1,9 +1,679 @@
-﻿@page "/teacheraddcourse"
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Logging;
+
+@page "/teacheraddcourse"
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject NavigationManager Navigation
+@inject ILogger<TeacherAddCourse> Logger
+@inject IXDtoClient xClient
+@inject IJSRuntime JsRuntime
+@inject XNavMenu xnav
+@attribute [Authorize]
+@*Av Björn Lindqvist*@
+@*Endast lärare har åtkomst hit*@
 
 <PageTitle>Teacher add course</PageTitle>
 
-<h3>Teacher add course</h3>
+<AuthorizeView Roles="Teacher">
+    <Authorized>
+    <h3>Add a course with modules, activities, and documents...</h3>
+    <br />
+
+    <section class="@classCourse">
+        <div style="display: flex; width: 80%">
+            <div style="width: 50%; text-align: left"><h5>Add course:</h5></div>
+            <div style="margin-left: auto; margin-right: 0"><h6>@stepCourse</h6></div>
+        </div>
+        <EditForm EditContext="courseContext" Context="courselmslexnet" OnValidSubmit="HandleSubmitCourse">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group m-3">
+                <label for="Name">Name</label>
+                <InputText id="Name" class="form-control" @bind-Value="course.Name" placeholder="Enter name" />
+            </div>
+            <div class="form-group m-3">
+                <label for="Description">Description</label>
+                <InputTextArea id="Description" class="form-control" @bind-Value="course.Description" placeholder="Enter description" />
+            </div>
+            <div class="form-group m-3">
+                <label for="Startdate">Start date</label>
+                <InputDate id="Startdate" class="form-control" @bind-Value="course.StartDate" />
+            </div>
+            <div class="form-group m-3">
+                <label for="Enddate">End date</label>
+                <InputDate id="Enddate" class="form-control" @bind-Value="course.EndDate" />
+            </div>
+            <div class="form-group m-3">
+                <button type="button" class="@classCouRegBtn" @onclick="RegretRefresh" title="Avoid add course">Regret</button>&nbsp;&nbsp;
+                <button type="submit" class="@classCouSubBtn" title="Save only this course">Save</button>&nbsp;&nbsp;
+                <button type="button" class="@classCouBtn" @onclick ="AddModule" title="To step 2: Add module">Add module</button>
+            </div>
+        </EditForm>
+    </section>
+
+    @do // Repeteringsdel för moduler och aktiviteter.
+    {
+        repeatModule = false;
+
+        <section class="@classModule">
+            <div style="display: flex; width: 80%">
+                <div style="width: 50%; text-align: left"><h5>Add module:</h5></div>
+                <div style="margin-left: auto; margin-right: 0"><h6>@stepModule</h6></div>
+            </div>
+            <EditForm EditContext="moduleContext" Context="modulelmslexnet" OnValidSubmit="HandleSubmitModule">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="form-group m-3">
+                    <label for="Name">Name</label>
+                    <InputText id="Name" class="form-control" @bind-Value="module.Name" placeholder="Enter name" />
+                </div>
+                <div class="form-group m-3">
+                    <label for="Description">Description</label>
+                    <InputTextArea id="Description" class="form-control" @bind-Value="module.Description" placeholder="Enter description" />
+                </div>
+                <div class="form-group m-3">
+                    <label for="Startdate">Start date</label>
+                    <InputDate id="Startdate" class="form-control" @bind-Value="module.StartDate" />
+                </div>
+                <div class="form-group m-3">
+                    <label for="Enddate">End date</label>
+                    <InputDate id="Enddate" class="form-control" @bind-Value="module.EndDate" />
+                </div>
+                <div class="form-group m-md-3">
+                    <InputCheckbox id="switch" class="control-label checkbox" type="checkbox" @bind-Value="DateControl" />
+                        <label class="control-label toggle" for="switch" title="To avoid entangled dates"></label>
+                    @if (DateControl)
+                    {
+                        <span style="position: relative; top: -3px"> Date controll ON</span>
+                    }
+                    else
+                    {
+                        <span style="position: relative; top: -3px"> Date control OFF</span>
+                    }
+                </div>
+                <div class="form-group m-3">
+                    <button type="button" class="@classModRegBtn" @onclick="RegretRefresh" title="Avoid add course with modules">Regret</button>&nbsp;&nbsp;
+                    <button type="submit" class="@classModBtn" title="To step 3: Add activity">Add activity</button>&nbsp;&nbsp;
+                    <button type="button" class="@classModSubNotBtn" @onclick="SaveButNotMod" title="Save course but not this module">Save but not this module</button>
+                </div>
+            </EditForm>
+        </section>
+
+        do // Repeteringsdel för aktiviteter.
+        {
+            <h5>@TestMess1</h5>
+            <h5>@TestMess2</h5>
+            repeatActivity = false;
+
+            <section class="@classActivi">
+                <div style="display: flex; width: 80%">
+                    <div style="width: 50%; text-align: left"><h5>Add activity:</h5></div>
+                    <div style="margin-left: auto; margin-right: 0"><h6>@stepActivi</h6></div>
+                </div>
+                <EditForm EditContext="activityContext" Context="activitylmslexnet" OnValidSubmit="HandleSubmitActivity">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <div class="form-group m-3">
+                        <label for="Name">Name</label>
+                        <InputText id="Name" class="form-control" @bind-Value="activity.Name" placeholder="Enter name" />
+                    </div>
+                    <div class="form-group m-3">
+                        <label for="Typename">Type</label>
+                        <InputSelect class="form-control" id="Typename" @bind-Value="activityType.Name">
+                            @foreach (var acttype in activitytypelist)
+                            {
+                                <option value="@acttype.Name">@acttype.Name</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="form-group m-3">
+                        <label for="Description">Description</label>
+                        <InputTextArea id="Description" class="form-control" @bind-Value="activity.Description" placeholder="Enter description" />
+                    </div>
+                    <div class="form-group m-3">
+                        <label for="Startdate">Start date</label>
+                        <InputDate id="Startdate" class="form-control" @bind-Value="activity.StartDate" />
+                    </div>
+                    <div class="form-group m-3">
+                        <label for="Enddate">End date</label>
+                        <InputDate id="Enddate" class="form-control" @bind-Value="activity.EndDate" />
+                    </div>
+                    <div class="form-group m-3">
+                        <button type="button" class="@classActRegBtn" @onclick="RegretRefresh" title="Avoid add course with modules and activities">Regret</button>&nbsp;&nbsp;
+                        <button type="button" class="@classActBtn" @onclick="AddMoreActivities" title="Add more activities">Add more activities</button>&nbsp;&nbsp;
+                        <button type="submit" class="@classActSubBtn" title="Save and done">Save and done</button>&nbsp;&nbsp;
+                        <button type="button" class="@classActBtn" @onclick="AddMoreModules" title="Save this and add more modules">Save and add more modules</button>&nbsp;&nbsp;
+                        <button type="button" class="@classActSubNotBtn" @onclick="SaveButNotAct" title="Save earlier but not this activity">Save but not this</button>
+                    </div>
+                </EditForm>
+            </section>
+
+            <section class="@classTable"> @*Hjälptabeller vid inmatning av moduler och aktiviteter*@ 
+                <div style="display: flex; width: 100%">
+                    <h4 style="width: 75%; text-align: left">COURSE: @course.Name</h4>
+                    <h5 style="margin-left: auto; margin-right: 0">@StartEndDate(course.StartDate, course.EndDate)</h5>
+                </div>
+                <h6>Modules...</h6>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Module name</th>
+                            <th>Module description</th>
+                            <th>Module date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                    @foreach (var mod in modulelist)
+                    {
+                        <tr>
+                            <td>@mod.Name</td>
+                            <td>@mod.Description</td>
+                            <td>@StartEndDate(mod.StartDate, mod.EndDate)</td>
+                        </tr>
+                    }
+                </table>
+                <br />
+                <h6>Activities for module @module.Name</h6>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Activity name</th>
+                            <th>Activity type</th>
+                            <th>Activity description</th>
+                            <th>Activity date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                    @foreach (var act in activitylist)
+                    {
+                        <tr>
+                            <td>@act.Name</td>
+                            <td>@act.ActivityTypeName</td>
+                            <td>@act.Description</td>
+                            <td>@StartEndDate(act.StartDate, act.EndDate)</td>
+                        </tr>
+                    }
+                </table>
+            </section>
+
+        } while (repeatActivity);
+
+    } while (repeatModule);
+</Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
 
+    private EditContext courseContext = default!; // Formulärkontexter.
+    private EditContext moduleContext = default!;
+    private EditContext activityContext = default!;
+
+    private CourseDto course = new();
+
+    private ModuleDto module = new();
+
+    private ActivityDto activity = new();
+
+    private ActivityTypeDto activityType = new();
+
+    private List<ModuleDto> modulelist = new();
+
+    private List<ActivityDto> activitylist = new();
+
+    private List<ActivityTypeDto> activitytypelist = new();
+
+    private string DefaultType = string.Empty; // Den första aktivitetstypen tilldelas ifall ingen valdes i formuläret.
+
+    private string TestMess1 = string.Empty; // Test.
+    private string TestMess2 = string.Empty; // Test.
+
+    private bool repeatModule; // Om flera moduler ska läggas in.
+    private bool repeatActivity; // Om flera aktiviteter ska läggas in.
+                                 //private bool saveModButNot; // Flagga om man ångrar en modul. 
+    private bool saveActButNot; // Flagga om man ångrar en aktivitet.
+    private bool DateControl = true; // När man vill slippa datumkontrollen.
+
+    private int CourseID = 0; // Kursens Id.
+    private int CountModules = 0; // Räknar antalet moduler.
+
+    private string stepCourse = "Step 1 of 3";
+    private string stepModule = "Step 2 of 3";
+    private string stepActivi = "Step 3 of 3";
+
+    // Klassvariabler för att visa/inte visa formulär.
+    private string classCourse = "courseeditbox";
+    private string classModule = "hide";
+    private string classActivi = "hide";
+    private string classTable = "hide";
+
+    // Klassvariabler för att visa/inte visa knappar.
+    private string classCouRegBtn = "btn btn-danger btn-sm";
+    private string classCouSubBtn = "btn btn-success btn-sm";
+    private string classCouBtn = "btn btn-primary btn-sm";
+    private string classModRegBtn = "btn btn-danger btn-sm";
+    private string classModSubBtn = "btn btn-success btn-sm";
+    private string classModBtn = "btn btn-primary btn-sm";
+    private string classActRegBtn = "btn btn-danger btn-sm";
+    private string classActSubBtn = "btn btn-success btn-sm";
+    private string classModSubNotBtn = "hide";
+    private string classActSubNotBtn = "hide";
+    private string classActBtn = "btn btn-primary btn-sm";
+
+    protected override async Task OnInitializedAsync()
+    {
+        xnav.SetDone("hide", "");
+        xnav.SetError("hide", "");
+
+        courseContext = new EditContext(course); // Formulärkontext.
+        moduleContext = new EditContext(module);
+        activityContext = new EditContext(activity);
+
+        var actType = await xClient.GetAsync<IEnumerable<ActivityTypeDto>>("api/Acttype");
+
+        if (actType is not null) // Hämtar aktivitetstyper.
+        {
+            activitytypelist = actType.ToList();
+        }
+
+        var firstacttype = new ActivityTypeDto();
+        firstacttype = activitytypelist.ElementAt(0);
+        DefaultType = firstacttype.Name; // Laddar default med den första aktivitetstypen.
+    }
+
+    private void RegretRefresh()
+    {
+        xnav.SetDone("xnavdone", "The course was NOT created.");
+        xnav.SetError("hide", "");
+        Navigation.NavigateTo("/teacheraddcourse", true);
+    }
+
+    private async Task HandleSubmitCourse()
+    {
+        Logger.LogInformation("HandleSubmit called");
+
+        if (course.StartDate <= course.EndDate)
+        {
+            await AddCourseToDB(); // Sparar enbart kursen i databasen.
+
+            await CreateAndRefresh();
+        }
+        else
+        {
+            xnav.SetError("xnaverror", "Date course mismatch (start date is greater than end date).");
+            xnav.SetDone("hide", "");
+        }
+    }
+
+    private void HandleSubmitModule()
+    {
+        Logger.LogInformation("HandleSubmit called");
+
+        var lmod = GetNewModObject(module);
+
+        if (DateModuleControl())
+        {
+            classActivi = "activityeditbox";
+            classTable = "activityeditbox";
+            stepModule = "Module ready...";
+            classModRegBtn = "hide";
+            classModBtn = "hide";
+            classModSubNotBtn = "hide";
+            modulelist.Add(lmod);
+        }
+    }
+
+    private async Task HandleSubmitActivity()
+    {
+        Logger.LogInformation("HandleSubmit called");
+
+        var lact = await GetNewActObject(activity);
+
+        lact.ActivityTypeName = activityType.Name;
+
+        if (lact.ActivityTypeName == "") lact.ActivityTypeName = DefaultType;
+
+        if (DateActivityControl())
+        {
+            activitylist.Add(lact);
+
+            await AddAllToDB(); // Adderar till databasen.
+
+            await CreateAndRefresh();
+        }
+    }
+
+    private async Task SaveButNotMod() // Om man ångrar en modul.
+    {
+        xnav.SetDone("xnavdone", "Your course was created.");
+        xnav.SetError("hide", "");
+        base.StateHasChanged();
+        await Task.Delay(3000);
+        Navigation.NavigateTo("/teacheraddcourse", true);
+    }
+
+    private string StartEndDate(DateTime start, DateTime end) // Returnerar datumsträng.
+    {
+        return $"{start.ToString().Substring(0, 10)} | {end.ToString().Substring(0, 10)}";
+    }
+
+    private void AddModule()
+    {
+        if (course.StartDate <= course.EndDate)
+        {
+            classModule = "moduleeditbox";
+            stepCourse = "Course ready...";
+            classCouRegBtn = "hide";
+            classCouSubBtn = "hide";
+            classCouBtn = "hide";
+            xnav.SetError("hide", "");
+        }
+        else
+        {
+            xnav.SetError("xnaverror", "Date module mismatch (start date is greater than end date).");
+            xnav.SetDone("hide", "");
+        }
+    }
+
+    private async Task AddMoreModules()
+    {
+        var lact = await GetNewActObject(activity);
+
+        lact.ActivityTypeName = activityType.Name;
+
+        if (lact.ActivityTypeName == "") lact.ActivityTypeName = DefaultType;
+
+        if (DateActivityControl() || saveActButNot)
+        {
+            if (saveActButNot)
+            {
+                xnav.SetError("hide", "");
+                xnav.SetDone("hide", "");
+            }
+            else activitylist.Add(lact);
+            saveActButNot = false;
+            repeatModule = true;
+            classActivi = "hide";
+            classModRegBtn = "btn btn-danger btn-sm";
+            classModBtn = "btn btn-primary btn-sm";
+            classModSubNotBtn = "btn btn-success btn-sm";
+
+            await AddAllToDB(); // Adderar till databasen.
+
+            CountModules++;
+            activitylist.Clear();
+        }
+    }
+
+    private async Task SaveButNotAct() // Om man ångrar en aktivitet.
+    {
+        saveActButNot = true;
+        await AddMoreModules();
+    }
+
+    private async Task AddMoreActivities()
+    {
+        var lact = await GetNewActObject(activity);
+
+        lact.ActivityTypeName = activityType.Name;
+
+        if (lact.ActivityTypeName == "") lact.ActivityTypeName = DefaultType;
+
+        if (DateActivityControl())
+        {
+            repeatActivity = true;
+            activitylist.Add(lact);
+            classActivi = "hide";
+            base.StateHasChanged();
+            await Task.Delay(100);
+            classActSubNotBtn = "btn btn-primary btn-sm";
+            classActivi = "activityeditbox";
+        }
+    }
+
+    private async Task CreateAndRefresh()
+    {
+        xnav.SetDone("xnavdone", "Your course was created.");
+        xnav.SetError("hide", "");
+        base.StateHasChanged();
+        await Task.Delay(3000);
+        Navigation.NavigateTo("/teacheraddcourse", true);
+    }
+
+    private async Task AddCourseToDB()
+    {
+        await xClient.PostAsync<CourseDto>(course, "api/Course");
+    }
+
+    private async Task AddAllToDB() // Adderar till databasen men utan den sista aktiviteten... 
+    {
+        if (CountModules < 1) // Enbart en modul.
+        {
+            await xClient.PostAsync<CourseDto>(course, "api/Course");
+
+            var courses = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
+
+            if (courses is not null)
+            {
+                foreach (var cour in courses)
+                {
+                    if (cour.Name == course.Name && cour.StartDate == course.StartDate && cour.EndDate == course.EndDate) CourseID = cour.Id;
+                }
+
+            }
+
+            var lmod = GetNewModObject(module);
+            await xClient.PostAsync<ModuleDto>(lmod, "api/Module");
+
+            foreach (var act in activitylist)
+            {
+                var lact = await GetNewActObject(act);
+                await xClient.PostAsync<ActivityDto>(lact, "api/Activity");
+            }
+        }   
+
+        if (CountModules > 0) // De andra modulerna.
+        {
+            var lmod = GetNewModObject(module);
+            await xClient.PostAsync<ModuleDto>(lmod, "api/Module");
+
+            foreach (var act in activitylist)
+            {
+                var lact = await GetNewActObject(act);
+                await xClient.PostAsync<ActivityDto>(lact, "api/Activity");
+            }
+        }
+    }
+
+    private ModuleDto GetNewModObject(ModuleDto mod) // Nytt modulobjekt.
+    {
+        var dto = new ModuleDto
+            {
+                Id = mod.Id,
+                Name = mod.Name,
+                Description = mod.Description,
+                StartDate = mod.StartDate,
+                EndDate = mod.EndDate,
+                CourseId = CourseID
+            };
+        return dto;
+    }
+
+    private async Task<ActivityDto> GetNewActObject(ActivityDto act) // Nytt aktivitetsobject.
+    {
+        int ActivityTypeID = 0;
+        var items = await xClient.GetAsync<IEnumerable<ActivityTypeDto>>("api/Acttype");
+
+        if (items is not null)
+        {
+            foreach (var acttype in items)
+            {
+                if (acttype.Name == act.ActivityTypeName) ActivityTypeID = acttype.Id;
+            }
+        }
+
+        var dto = new ActivityDto
+        {
+            Id = act.Id,
+            Name = act.Name,
+            Description = act.Description,
+            StartDate = act.StartDate,
+            EndDate = act.EndDate,
+            ActivityTypeId = ActivityTypeID,
+            ModuleId = await GetIdModule("api/Module")
+        };
+        return dto;
+    }
+
+    private async Task<int> GetIdModule(string route) // Returnerar id för modulen.
+    {
+        int ModuleID = 0;
+        var items = await xClient.GetAsync<IEnumerable<ModuleDto>>(route);
+
+        if (items is not null)
+        {
+            foreach (var mod in items)
+            {
+                if (mod.Name == module.Name && mod.StartDate == module.StartDate && mod.EndDate == module.EndDate) ModuleID = mod.Id;
+            }
+        }
+        return ModuleID;
+    }
+
+    private bool DateModuleControl() // Kontroll av datum för moduler.
+    {
+        bool case1 = false;
+        bool case2 = false;
+        int Count = 2;
+
+        if (module.StartDate > module.EndDate) case1 = true; // Felaktigt start/slutdatum.
+
+        if (!case1 && DateControl)
+        {
+            int[] datearray = new int[1000000];
+            string dates = "";
+
+            for (int i = 0; i < 1000000; i++) // Nollställer arrayen.
+            {
+                datearray[i] = 0;
+            }
+
+            // Lägger in datum (som integer) på olika platser i arrayen.
+            datearray[PlacingInArray(course.StartDate)] = 1;
+            datearray[PlacingInArray(course.EndDate)] = 1;
+
+            foreach (var mod in modulelist)
+            {
+                datearray[PlacingInArray(mod.StartDate)] = Count;
+                datearray[PlacingInArray(mod.EndDate)] = Count;
+                Count++;
+            }
+            datearray[PlacingInArray(module.StartDate)] = Count;
+            datearray[PlacingInArray(module.EndDate)] = Count;
+
+            foreach (var arr in datearray) // Lägger in siffror i rad i en sträng.
+            {
+                if (arr > 0) dates += arr.ToString();
+            }
+
+            for (int i = 1; i < dates.Length / 2 + 1; i++) // Kollar om både start- och slutdatumet är samma som tidigare.
+            {
+                if (dates.IndexOf(i.ToString()) == -1) case2 = true;
+            }
+
+            for (int i = dates.Length; i > 0; i--) // Tar successivt bort nummerpar.
+            {
+                if (dates.IndexOf(i.ToString() + i.ToString()) != -1) dates = dates.Replace(i.ToString() + i.ToString(), "");
+            }
+
+            if (dates.Length > 0) case2 = true; // Inga siffror kvar, ingen osymmetri!
+        }
+
+        return CaseFalure(case1, case2);
+    }
+
+    private bool DateActivityControl() // Kontroll av datum för aktiviteter.
+    {
+        bool case1 = false;
+        bool case2 = false;
+        int Count = 2;
+
+        if (activity.StartDate > activity.EndDate) case1 = true; // Felaktigt start/slutdatum.
+
+        if (!case1 && DateControl)
+        {
+            int[] datearray = new int[1000000];
+            string dates = "";
+
+            for (int i = 0; i < 1000000; i++) // Nollställer arrayen.
+            {
+                datearray[i] = 0;
+            }
+
+            // Lägger in datum (som integer) på olika platser i arrayen.
+            datearray[PlacingInArray(module.StartDate)] = 1;
+            datearray[PlacingInArray(module.EndDate)] = 1;
+
+            foreach (var act in activitylist)
+            {
+                datearray[PlacingInArray(act.StartDate)] = Count;
+                datearray[PlacingInArray(act.EndDate)] = Count;
+                Count++;
+            }
+            datearray[PlacingInArray(activity.StartDate)] = Count;
+            datearray[PlacingInArray(activity.EndDate)] = Count;
+
+            foreach (var arr in datearray) // Lägger in siffror i rad i en sträng.
+            {
+                if (arr > 0) dates += arr.ToString();
+            }
+
+            for (int i = 1; i < dates.Length / 2 + 1; i++) // Kollar om både start- och slutdatumet är samma som tidigare.
+            {
+                if (dates.IndexOf(i.ToString()) == -1) case2 = true;
+            }
+
+            for (int i = dates.Length; i > 0; i--) // Tar successivt bort nummerpar.
+            {
+                if (dates.IndexOf(i.ToString() + i.ToString()) != -1) dates = dates.Replace(i.ToString() + i.ToString(), "");
+            }
+
+            if (dates.Length > 0) case2 = true; // Inga siffror kvar, ingen osymmetri!
+        }
+
+        return CaseFalure(case1, case2);
+    }
+
+    private bool CaseFalure(bool c1, bool c2) // Returnerar resultat och felmeddelanden.
+    {
+        bool result = true;
+
+        if (c1 || c2)
+        {
+            xnav.SetError("xnaverror", "Date mismatch (start date is greater than end date).");
+            if (c2) xnav.SetError("xnaverror", "Date mismatch (entangled dates).");
+            xnav.SetDone("hide", "");
+        }
+        if (!c1 && !c2)
+        {
+            xnav.SetError("hide", "");
+            xnav.SetDone("hide", "");
+        }
+        if (c1 || c2) result = false;
+
+        return result;
+    }
+
+    private int PlacingInArray(DateTime date) // Omvandlar ett datum till ett nummer (ex. 2023-01-01 --> 230101).
+    {
+        int number = int.Parse(date.ToString().Substring(2, 2)) +
+        int.Parse(date.ToString().Substring(5, 2)) +
+        int.Parse(date.ToString().Substring(8, 2));
+
+        return number;
+    }
 }

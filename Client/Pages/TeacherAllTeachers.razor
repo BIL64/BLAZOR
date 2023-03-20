@@ -1,6 +1,9 @@
 ﻿@page "/teacherallteachers"
 @using System.Diagnostics;
 @inject NavigationManager Navigation
+@inject IAppUserDtoClient appuserClient
+@inject IXDtoClient xClient
+@inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Björn Lindqvist*@
 @*Endast lärare har åtkomst hit*@
@@ -22,15 +25,17 @@ else
             <tr>
                 <th>Teacher</th>
                 <th>Email</th>
+                <th>Phone number</th>
                 <th>Course</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var data in teachers)
             {
-                <tr>
+                <tr style="color: darkred">
                     <td>@data.FirstName @data.LastName</td>
                     <td>@data.Email</td>
+                    <td>@data.PhoneNumber</td>
                     <td>
                         @foreach (var item in courses) // Hämtar kursen för användaren.
                         {
@@ -75,7 +80,7 @@ else
     </table>
 }
 
-<DeleteTeacher @ref="deleteRef" /> @*Delete-fönster.*@
+<DeleteTeacher @ref="deleteRef" /> @*Delete-fönster*@
 
 </Authorized>
     <NotAuthorized>
@@ -89,30 +94,27 @@ else
 
     private void DeletePage(string id) // Delete-fönster.
     {
-        Navstatic.GuidId = id;
+        Auxx.GuidId = id;
         deleteRef.Show("");
     }
 
-    private List<AppUserDto> teachers = new List<AppUserDto>();
+    private List<AppUserDto> teachers = new();
 
-    private List<CourseDto> courses = new List<CourseDto>();
+    private List<CourseDto> courses = new();
 
-    [Inject]
-    private IAppUserDtoClient appuserClient { get; set; } = default!;
+    private string Emptydb = "List of teachers";
 
-    [Inject]
-    private IXDtoClient xClient { get; set; } = default!;
+    private string CourseClass = "text-white coursebtn hide";
 
-    private string Emptydb { get; set; } = "List of teachers";
-
-    private string CourseClass = "text-white coursebtn closecourse";
-
-    private string Emptydbcolor { get; set; } = "headeroff";
+    private string Emptydbcolor = "headeroff";
 
     private bool IsCourse;
 
     protected override async Task OnInitializedAsync()
     {
+        xnav.SetDone("hide", "");
+        xnav.SetError("hide", "");
+
         var appuser = await appuserClient.GetAsync();
 
         if (appuser is not null)
@@ -143,13 +145,13 @@ else
 
     private void OpenCloseCourse() // Öppnar/stänger +knapp. CSS!
     {
-        if (CourseClass == "text-white coursebtn closecourse")
+        if (CourseClass == "text-white coursebtn hide")
         {
-            CourseClass = "text-white coursebtn opencourse";
+            CourseClass = "text-white coursebtn show";
         }
         else
         {
-            CourseClass = "text-white coursebtn closecourse";
+            CourseClass = "text-white coursebtn hide";
         }
     }
 

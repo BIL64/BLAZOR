@@ -19,7 +19,7 @@ namespace LexiconLMSBlazor.Client.Services
             return response;
         }
 
-        public async Task<T?> GetAsync<T>(string id, string route)
+        public async Task<T?> GetAsync<T>(int id, string route)
         {
             var response = await httpClient.GetFromJsonAsync<T>($"{route}/{id}");
             return response;
@@ -31,12 +31,12 @@ namespace LexiconLMSBlazor.Client.Services
             return response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<T>() : default(T);
         }
 
-        public async Task<bool> RemoveAsync<T>(string id, string route)
+        public async Task<bool> RemAsync(int id, string route)
         {
             return (await httpClient.DeleteAsync($"{route}/{id}")).IsSuccessStatusCode;
         }
 
-        public async Task<bool> PutAsync<T>(string id, T dto, string route)
+        public async Task<bool> PutAsync<T>(int id, T dto, string route)
         {
             return (await httpClient.PutAsJsonAsync($"{route}/{id}", dto)).IsSuccessStatusCode;
         }

@@ -23,6 +23,8 @@ namespace LexiconLMSBlazor.Client
             // Supply HttpClient instances that include access tokens when making requests to the server project
             builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("LexiconLMSBlazor.ServerAPI"));
 
+            builder.Services.AddScoped<XNavMenu>();
+
             builder.Services.AddApiAuthorization();
 
             await builder.Build().RunAsync();

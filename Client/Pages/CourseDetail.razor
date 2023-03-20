@@ -1,6 +1,8 @@
-﻿@page "/coursedetails/{IId:int}"
+﻿@page "/coursedetail/{IId:int}"
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject NavigationManager Navigation
+@inject IXDtoClient xClient
+@inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Björn Lindqvist*@
 @*Endast lärare har åtkomst hit*@
@@ -13,7 +15,6 @@
             <div style="width: 75%; text-align: left"><h3>Administration of course @CourseId: @CourseName</h3></div>
             <div style="margin-left: auto; margin-right: 0"><h5>@CourseDate</h5></div>
         </nav>
-
         <br />
         <p>Plats för dokument...</p>
 
@@ -25,12 +26,24 @@
         {
             @foreach (var data in modules)
             {
-                <section class="modulebox" @onclick=" _ => EditModule(data.Id)"><b title="@data.Description">Module @data.Id: <em>@data.Name &nbsp;</em></b>
-                    <b style="margin-left: auto">@StartEndDate(data.StartDate, data.EndDate)</b></section>
+                <section class="modulebox">
+                    <div style="display: flex; width: 100%">
+                        <div style="width: 75%; text-align: left">
+                            <b title="@data.Description -Click for edit-">Module @data.Id: <em style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name &nbsp;</em></b>
+                        </div>
+                        <div style="margin-left: auto; margin-right: 0"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
+                    </div>
+                    <div style="display: flex; width: 100%">
+                        <div style="width: 75%; text-align: left"><button type="button" class="documentbtn">Documents Module</button></div>
+                        <div style="margin-left: auto; margin-right: 0">
+                            <NavLink style="cursor: pointer"  class="oi oi-warning text-primary mt-2" @onclick=" _ => DeleteControll(data.Id)" Title="Delete module"></NavLink>
+                        </div>
+                    </div>
+                </section>
 
-                <section class="activitybox">
+                <article class="activitybox">
 
-                    <table class="table" style="color: #555"> @*Grå text.*@
+                    <table class="table" style="color: #555"> @*Grå text*@
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -43,11 +56,11 @@
                         <tbody>
                             @foreach (var act in activities)
                             {
-                                <tr @onclick=" _ => EditActivity(act.Id)">
+                                <tr>
                                     @if (act.ModuleId == data.Id)
                                     {
                                         <td>@act.Id</td>
-                                        <td><em title="@act.Description">@act.Name</em></td>
+                                        <td><em style="cursor: pointer" title="@act.Description -Click for edit-" @onclick=" _ => EditActivity(act.Id)">@act.Name</em></td>
                                         <td>
                                             @foreach (var actype in activityTypes)
                                             {
@@ -63,9 +76,14 @@
                             }
                         </tbody>
                     </table>
-                </section>
+                    <div><button type="button" class="documentbtn">Documents Activity</button></div>
+                    
+                </article>
             }
         }
+
+<DeleteModule @ref="deleteRef" /> @*Delete-fönster*@
+
     </Authorized>
     <NotAuthorized>
         <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
@@ -77,28 +95,31 @@
     [Parameter]
     public int IId { get; set; }
 
-    private List<CourseDto> courses = new List<CourseDto>();
+    private DeleteModule deleteRef; // Delete-fönster.
 
-    private List<ModuleDto> modules = new List<ModuleDto>();
+    private void DeleteItem(int id) // Delete-fönster.
+    {
+        Auxx.IntId = id;
+        deleteRef.Show("");
+    }
 
-    private List<ActivityDto> activities = new List<ActivityDto>();
+    private List<CourseDto> courses = new();
 
-    private List<ActivityTypeDto> activityTypes = new List<ActivityTypeDto>();
+    private List<ModuleDto> modules = new();
 
-    [Inject]
-    private IXDtoClient xClient { get; set; } = default!;
+    private List<ActivityDto> activities = new();
 
-    //private AppUserDto loggeduser = new AppUserDto(); // Info om den som för tillfället är inloggad.
+    private List<ActivityTypeDto> activityTypes = new();
 
     private string CourseName = string.Empty;
     private int CourseId;
     private string CourseDate = string.Empty;
+    private bool DeleteFlag;
 
     protected override async Task OnInitializedAsync()
     {
-        //var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
-        //var user = authstate.User;
-        //var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
+        xnav.SetDone("hide", "");
+        xnav.SetError("hide", "");
 
         var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
         var activityType = await xClient.GetAsync<IEnumerable<ActivityTypeDto>>("api/Acttype");
@@ -139,6 +160,35 @@
     private string StartEndDate(DateTime start, DateTime end) // Returnerar datumsträng.
     {
         return $"{start.ToString().Substring(0, 10)} | {end.ToString().Substring(0, 10)}";
+    }
+
+    private void DeleteControll(int id)
+    {
+        foreach (var cour in courses)
+        {
+            foreach (var mod in cour.Modules)
+            {
+                if (mod.Id == id)
+                {
+                    DeleteFlag = true;
+
+                    foreach (var act in mod.Activities) // Kollar om det finns några aktiviteter.
+                    {
+                        DeleteFlag = false;
+                    }
+                }
+            }
+        }
+        if (DeleteFlag)
+        {
+            DeleteItem(id);
+            DeleteFlag = false;
+        }
+        else
+        {
+            xnav.SetError("xnaverror", "All activities belonging to a module must be deleted before a module can be deleted.");
+            xnav.SetDone("hide", "");
+        }
     }
 
     private void EditModule(int id)
