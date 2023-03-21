@@ -1,25 +1,24 @@
-﻿@page "/coursedetail/{IId:int}"
+﻿@page "/studentallstudents"
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject NavigationManager Navigation
+@inject IAppUserDtoClient appuserClient
 @inject IXDtoClient xClient
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Björn Lindqvist*@
-@*Endast lärare har åtkomst hit*@
+@*Både studenter och lärare har åtkomst hit*@
 
-<PageTitle>Teacher fetch</PageTitle>
+<PageTitle>Student all students</PageTitle>
 
-<AuthorizeView Roles="Teacher">
+<AuthorizeView Roles="Student, Teacher">
     <Authorized>
         <nav style="display: flex; width: 100%">
-            <div style="width: 75%; text-align: left"><h3 style="cursor: pointer" @onclick=" _ => EditCourse(CourseId)">Administration of course @CourseId: @CourseName</h3></div>
-        <div style="margin-left: auto; margin-right: 0"><h5>@CourseDate</h5></div>
+            <div style="width: 75%; text-align: left"><h3>@loggeduser.FirstName, this is your course: @CourseName</h3></div>
+            <div style="margin-left: auto; margin-right: 0"><h5>@CourseDate</h5></div>
         </nav>
         <br />
         <p>Plats för dokument...</p>
 
-        <h5>@TestMess1</h5>
-        <h5>@TestMess2</h5>
         @if (modules == null)
         {
             <p><em>Loading...</em></p>
@@ -31,23 +30,18 @@
                 <section class="modulebox">
                     <div style="display: flex; width: 100%">
                         <div style="width: 75%; text-align: left">
-                            <b title="@data.Description -Click for edit-">Module @data.Id: <em style="cursor: pointer"
-                                @onclick=" _ => EditModule(data.Id)">@data.Name &nbsp;</em></b>
+                            <b title="@data.Description">Module @data.Id: <em>@data.Name &nbsp;</em></b>
                         </div>
                         <div style="margin-left: auto; margin-right: 0"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
                     </div>
                     <div style="display: flex; width: 100%">
                         <div style="width: 75%; text-align: left"><button type="button" class="documentbtn">Documents Module</button></div>
-                        <div style="margin-left: auto; margin-right: 0">
-                            <NavLink style="cursor: pointer" class="oi oi-circle-x text-primary mt-2 text-decoration-none"
-                            @onclick=" _ => DeleteControll(data.Id)" Title="Delete module"></NavLink>
-                        </div>
                     </div>
                 </section>
 
                 <article class="activitybox">
 
-                    <table class="table" style="color: #555"> @*Grå text*@
+                    <table class="table" style="color: #555">@*Grå text*@
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -64,8 +58,7 @@
                                     @if (act.ModuleId == data.Id)
                                     {
                                         <td>@act.Id</td>
-                                        <td><em style="cursor: pointer" title="@act.Description -Click for edit-"
-                                            @onclick=" _ => EditActivity(act.Id)">@act.Name</em></td>
+                                        <td><em title="@act.Description">@act.Name</em></td>
                                         <td>
                                             @foreach (var actype in activityTypes)
                                             {
@@ -82,7 +75,7 @@
                         </tbody>
                     </table>
                     <div><button type="button" class="documentbtn">Documents Activity</button></div>
-                    
+
                 </article>
             }
         }
@@ -95,9 +88,6 @@
 
 @code {
 
-    [Parameter]
-    public int IId { get; set; }
-
     private List<CourseDto> courses = new();
 
     private List<ModuleDto> modules = new();
@@ -106,28 +96,37 @@
 
     private List<ActivityTypeDto> activityTypes = new();
 
+    private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
+
     private string CourseName = string.Empty;
     private int CourseId;
     private string CourseDate = string.Empty;
     private bool DeleteFlag;
-    private string TestMess1 = string.Empty; // Test.
-    private string TestMess2 = string.Empty; // Test.
 
     protected override async Task OnInitializedAsync()
     {
         xnav.SetDone("hide", "");
         xnav.SetError("hide", "");
 
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
+
+        var appuser = await appuserClient.GetAsync();
+
         var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
         var activityType = await xClient.GetAsync<IEnumerable<ActivityTypeDto>>("api/Acttype");
 
-        if (course is not null) courses = course.ToList();
-
-        if (course is not null)
+        if (course is not null && appuser is not null)
         {
+            foreach (var item in appuser) // Hämtar den som för tillfället är inloggad.
+            {
+                if (item.Email == name) loggeduser = item;
+            }
+
             foreach (var cour in course)
             {
-                if (cour.Id == IId) // Hämtar Kursinfo.
+                if (cour.Id == loggeduser.CourseId) // Hämtar Kursinfo.
                 {
                     CourseName = cour.Name;
                     CourseId = cour.Id;
@@ -145,7 +144,10 @@
                 }
             }
         }
-        if (modules.Count < 1) CourseName = "No modules could be find...";
+        else
+        {
+            CourseName = "No course could be find...";
+        }
 
         if (activityType is not null) // Hämtar aktivitetstyper.
         {
@@ -156,53 +158,5 @@
     private string StartEndDate(DateTime start, DateTime end) // Returnerar datumsträng.
     {
         return $"{start.ToString().Substring(0, 10)} | {end.ToString().Substring(0, 10)}";
-    }
-
-    private async Task DeleteControll(int id)
-    {
-        foreach (var cour in courses)
-        {
-            foreach (var mod in cour.Modules)
-            {
-                if (mod.Id == id)
-                {
-                    DeleteFlag = true;
-                    foreach (var act in mod.Activities) // Kollar om det finns några aktiviteter.
-                    {
-                        DeleteFlag = false;
-                    }
-                }
-            }
-        }
-        if (DeleteFlag)
-        {
-            xnav.SetDone("xnavdone", "This module was deleted.");
-            xnav.SetError("hide", "");
-            StateHasChanged();
-            await Task.Delay(1000);
-            await xClient.RemAsync(id, "api/Module");
-            Navigation.NavigateTo("/teacherallcourses", true);
-            DeleteFlag = false;
-        }
-        else
-        {
-            xnav.SetError("xnaverror", "All activities belonging to a module must be deleted before a module can be deleted.");
-            xnav.SetDone("hide", "");
-        }
-    }
-
-    private void EditCourse(int id)
-    {
-        Navigation.NavigateTo($"/courseeditcourse/{id}", true);
-    }
-
-    private void EditModule(int id)
-    {
-        Navigation.NavigateTo($"/courseeditmodule/{id}", true);
-    }
-
-    private void EditActivity(int id)
-    {
-        Navigation.NavigateTo($"/courseeditactivity/{id}", true);
     }
 }

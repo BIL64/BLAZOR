@@ -19,6 +19,20 @@
 }
 else
 {
+    <EditForm Context="searchlmslexnet" Model="@visitors" OnSubmit="OnInitializedAsync">
+        <span class="nav m-lg-auto input-group">
+            <InputText class="form-control" @bind-Value="searchString" placeholder="First or last name" />
+            <span class="nav m-lg-auto input-group-append">
+                <button type="submit" class="btn m-lg-auto btn-outline-dark">Search</button>
+            </span>
+            <span class="nav m-lg-auto input-group-append">
+                <button type="button" class="btn m-lg-auto btn-outline-dark" @onclick="DeleteAllVisitors">Delete all</button>
+            </span>
+        </span>
+    </EditForm>
+
+    <DeleteAllVisitors @ref="deleteAll" /> @*Delete-fönster*@
+
     <table class="table">
         <thead>
             <tr>
@@ -39,12 +53,14 @@ else
                         {
                             if (data.Id is not null)
                             {
-                                <button type="button" class="text-white regbtn" @onclick=" _ => GetRegistered(data.Id)" title="Not yet authorized student">Register now!</button>
+                                <button type="button" class="text-white regbtn" @onclick=" _ => GetRegistered(data.Id)"
+                                    title="Not yet authorized student">Register now!</button>
                             }
                         }
                         @if (data.Id is not null)
                         {
-                            <button type="button" class="oi oi-warning text-white delbtn" @onclick=" _ => DeletePage(data.Id)" title="Delete or redirect user"></button> // CSS!
+                            <button type="button" class="oi oi-circle-x text-white delbtn" @onclick=" _ => DeletePage(data.Id)"
+                                title="Delete or redirect user"></button> // CSS!
                         }
                     </td>
                 </tr>
@@ -65,10 +81,17 @@ else
 
     private DeleteUnregistered deleteRef; // Delete-fönster.
 
-    private void DeletePage(string id) // Delete-fönster.
+    private DeleteAllVisitors deleteAll; // Delete-fönster.
+
+    private async Task DeletePage(string id) // Delete-fönster.
     {
         Auxx.GuidId = id;
-        deleteRef.Show("");
+        await deleteRef.Show("");
+    }
+
+    private void DeleteAllVisitors() // Delete-fönster.
+    {
+        deleteAll.Show("");
     }
 
     private List<AppUserDto> visitors = new();
@@ -77,6 +100,8 @@ else
 
     private bool IsCourse;
 
+    private string searchString = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         xnav.SetDone("hide", "");
@@ -84,13 +109,27 @@ else
 
         var appuser = await appuserClient.GetAsync();
 
+        visitors.Clear(); // Sökfunktionen kräver att listan rensas.
+        Emptydb = "List of unregistered";
+
         if (appuser is not null)
         {
             foreach (var item in appuser)
             {
-                if (item.UserRole < 1) visitors.Add(item);
+                // Sökfiltrering med IndexOf: förnamn, efternamn och kurs.
+                if (!string.IsNullOrWhiteSpace(searchString))
+                {
+                    if (item.UserRole == 0 && (item.FirstName.ToLower().IndexOf(searchString.ToLower()) != -1 ||
+                    item.LastName.ToLower().IndexOf(searchString.ToLower()) != -1 ||
+                    item.LastName.ToLower().IndexOf(searchString.ToLower()) != -1)) visitors.Add(item);
+                }
+                else
+                {
+                    if (item.UserRole == 0) visitors.Add(item);
+                }
             }
             if (visitors.Count < 1) Emptydb = "No unregistered !";
+            if (!string.IsNullOrWhiteSpace(searchString) && visitors.Count < 1) Emptydb = "There is no visitor with that name...";
         }
         else
         {
@@ -101,6 +140,5 @@ else
     private async Task GetRegistered(string id) // Registrerar den oregistrerade.
     {
         await appuserClient.PreAsync(id, 1);
-        Navigation.NavigateTo("/teacherallunregistered", true );
     }
 }

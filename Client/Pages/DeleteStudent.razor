@@ -75,7 +75,6 @@
         xnav.SetError("hide", "");
 
         await appuserClient.RemAsync(Auxx.GuidId);
-        Navigation.NavigateTo("/teacherallstudents", true);
         Close();
     }
 
@@ -85,7 +84,6 @@
         xnav.SetError("hide", "");
 
         await appuserClient.PreAsync(Auxx.GuidId, 12);
-        Navigation.NavigateTo("/teacherallstudents", true);
         Close();
     }
 }

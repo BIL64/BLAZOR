@@ -41,4 +41,14 @@ namespace LexiconLMSBlazor.Client.Services
             return (await httpClient.PutAsJsonAsync($"{route}/{id}", dto)).IsSuccessStatusCode;
         }
     }
+
+    // Dimitri Björlingh:
+    //var res = await GetAsync2<ModuleDto>("api/modules/1");
+    //var res2 = await GetAsync2<IEnumerable<ModuleDto>>("api/modules");
+    //
+    //public async Task<T> GetAsync2<T>(string route)
+    //{
+    //    var response = await httpClient.GetFromJsonAsync<T>(route);
+    //    return response;
+    //}
 }

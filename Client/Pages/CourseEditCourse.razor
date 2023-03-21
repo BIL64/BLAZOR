@@ -1,0 +1,135 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Logging;
+
+@page "/courseeditcourse/{IId:int}"
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject NavigationManager Navigation
+@inject ILogger<TeacherAddCourse> Logger
+@inject IXDtoClient xClient
+@inject XNavMenu xnav
+@attribute [Authorize]
+@*Av Björn Lindqvist*@
+@*Endast lärare har åtkomst hit*@
+
+<PageTitle>Course edit course</PageTitle>
+
+<AuthorizeView Roles="Teacher">
+    <Authorized>
+    <section class="activityeditbox">
+        <h5>Edit course:</h5>
+        <EditForm EditContext="courseContext" Context="courselmslexnet" OnValidSubmit="HandleSubmitCourse">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group m-3">
+                <label for="Name">Name</label>
+                <InputText id="Name" class="form-control" @bind-Value="course.Name" placeholder="Enter name" />
+            </div>
+            <div class="form-group m-3">
+                <label for="Description">Description</label>
+                <InputTextArea id="Description" class="form-control" @bind-Value="course.Description" placeholder="Enter description" />
+            </div>
+            <div class="form-group m-3">
+                <label for="Startdate">Start date</label>
+                <InputDate id="Startdate" class="form-control" @bind-Value="course.StartDate" />
+            </div>
+            <div class="form-group m-3">
+                <label for="Enddate">End date</label>
+                <InputDate id="Enddate" class="form-control" @bind-Value="course.EndDate" />
+            </div>
+            <div class="form-group m-3">
+                <button type="button" class="btn btn-danger btn-sm m-1" @onclick="RegretRefresh" title="Avoid edit course">Regret</button>
+                <button type="submit" class="btn btn-primary btn-sm m-1" title="Save this edit form">Save</button>
+            </div>
+        </EditForm>
+    </section>
+
+    </Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    [Parameter]
+    public int IId { get; set; }
+
+    private EditContext courseContext = default!;
+
+    private CourseDto course = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        xnav.SetDone("hide", "");
+        xnav.SetError("hide", "");
+
+        courseContext = new EditContext(course); // Formulärkontext.
+
+        var allcourse = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
+
+        if (allcourse is not null)
+        {
+            foreach (var cour in allcourse)
+            {
+                if (cour.Id == IId) // Denna kurs.
+                {
+                    course.Id = cour.Id;
+                    course.Name = cour.Name;
+                    course.Description = cour.Description;
+                    course.StartDate = cour.StartDate;
+                    course.EndDate = cour.EndDate;
+                }
+            }
+        }
+    }
+
+    private async Task RegretRefresh()
+    {
+        xnav.SetDone("xnavdone", "The course was NOT edited or created.");
+        xnav.SetError("hide", "");
+        base.StateHasChanged();
+        await Task.Delay(1000);
+        Navigation.NavigateTo("/teacherallcourses", true);
+    }
+
+    private async Task HandleSubmitCourse()
+    {
+        Logger.LogInformation("HandleSubmit called");
+
+        if (course.StartDate > course.EndDate)
+        {
+            xnav.SetError("xnaverror", "Date mismatch (start date is greater than end date).");
+            xnav.SetDone("hide", "");
+        }
+        else
+        {
+            var lcour = new CourseDto
+            {
+                Id = course.Id,
+                Name = course.Name,
+                Description = course.Description,
+                StartDate = course.StartDate,
+                EndDate = course.EndDate
+            };
+
+            await xClient.PutAsync<CourseDto>(IId, lcour, "api/Course");
+            await CreateAndRefresh();
+        }
+    }
+
+    private async Task CreateAndRefresh()
+    {
+        xnav.SetDone("xnavdone", "Your course is edited.");
+        xnav.SetError("hide", "");
+        base.StateHasChanged();
+        await Task.Delay(3000);
+        Navigation.NavigateTo("/teacherallcourses", true);
+    }
+
+    private string StartEndDate(DateTime start, DateTime end) // Returnerar datumsträng.
+    {
+        return $"{start.ToString().Substring(0, 10)} | {end.ToString().Substring(0, 10)}";
+    }
+}
+
+

@@ -47,11 +47,14 @@
     [Parameter]
     public string? BodyText { get; set; }
 
-    public void Show(string bodyText, string headerText = "Remove this user...")
+    public async Task Show(string bodyText, string headerText = "Remove this user...")
     {
         xnav.SetDone("hide", "");
         xnav.SetError("hide", "");
 
+        IsVisible = false;
+        StateHasChanged();
+        await Task.Delay(200);
         HeaderText = headerText;
         BodyText = bodyText;
         IsVisible = true;
@@ -72,7 +75,6 @@
         xnav.SetError("hide", "");
 
         await appuserClient.RemAsync(Auxx.GuidId);
-        Navigation.NavigateTo("/teacherallteachers", true);
         Close();
     }
 
@@ -82,7 +84,6 @@
         xnav.SetError("hide", "");
 
         await appuserClient.PreAsync(Auxx.GuidId, 11);
-        Navigation.NavigateTo("/teacherallteachers", true);
         Close();
     }
 }

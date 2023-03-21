@@ -185,7 +185,6 @@ a, .btn-link {
     padding: 10px;
     margin-bottom: 20px;
     border: 1px black solid;
-    border-radius: 5px;
     background-color: lightblue;
 }
 
@@ -212,11 +211,6 @@ a, .btn-link {
     color: darkorange;
 }
 
-.headerrefresh {
-    color: blue;
-    cursor: pointer;
-}
-
 .regbtn {
     margin-right: 20px;
     background-color: lightslategray;
@@ -229,6 +223,7 @@ a, .btn-link {
 
 .coursebtn {
     margin-right: 20px;
+    margin-bottom: 5px;
     padding: 3px;
     border-radius: 5px;
     background-color: lightslategray;

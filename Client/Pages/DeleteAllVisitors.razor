@@ -1,5 +1,5 @@
 ﻿@inject NavigationManager Navigation
-@inject IXDtoClient xClient
+@inject IAppUserDtoClient appuserClient
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Sukhrob Ilyosbekov - Stack Overflow*@
@@ -11,7 +11,7 @@
 
 <AuthorizeView Roles ="Teacher">
     <Authorized>
-        <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
+    <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
     <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
             <strong class="me-auto">@HeaderText</strong>
@@ -20,7 +20,7 @@
 
         <div class="toast-body">
             @BodyText
-            <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove this course from the system">DELETE NOW</button>
+            <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove all visitors from the system">DELETE NOW</button>
             <button type="button" class="text-white remnot" @onclick="Close">NO</button>
         </div>
     </div>
@@ -46,7 +46,7 @@
     [Parameter]
     public string? BodyText { get; set; }
 
-    public void Show(string bodyText, string headerText = "Remove this course...")
+    public void Show(string bodyText, string headerText = "Remove ALL visitors!")
     {
         xnav.SetDone("hide", "");
         xnav.SetError("hide", "");
@@ -67,11 +67,21 @@
 
     private async Task DeleteNow()
     {
-        xnav.SetDone("xnavdone", "This course was deleted.");
+        xnav.SetDone("xnavdone", "All unregistered visitors were deleted.");
         xnav.SetError("hide", "");
 
-        await xClient.RemAsync(Auxx.IntId, "api/Course");
-        Navigation.NavigateTo("/teacherallcourses", true);
+        var appuser = await appuserClient.GetAsync();
+
+        if (appuser is not null)
+        {
+            HeaderText = "Working...";
+
+            foreach (var item in appuser)
+            {
+                if (item.UserRole == 0 && item.Id is not null) await appuserClient.RemAsync(item.Id);
+            }
+        }
+        HeaderText = string.Empty;
         Close();
     }
 }

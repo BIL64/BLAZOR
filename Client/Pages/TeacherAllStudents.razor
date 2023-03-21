@@ -12,7 +12,7 @@
 
 <AuthorizeView Roles ="Teacher">
     <Authorized>
-<h4 class="@Emptydbcolor" @onclick="Refresh">@Emptydb</h4> @*Ändringsbar rubrik som kan användas för att uppdatera sidan*@
+<h4 class="@Emptydbcolor">@Emptydb</h4>
 
 @if (students == null)
 {
@@ -22,7 +22,13 @@ else
 {
     <EditForm Context="searchlmslexnet" Model="@students" OnSubmit="OnInitializedAsync">
         <span class="nav m-lg-auto input-group">
-            <InputText class="form-control" @bind-Value="searchString" placeholder="First or last name" />
+            <InputText class="form-control" @bind-Value="searchString" placeholder="First name, last name or courses" />
+            <span class="nav m-lg-auto input-group-append">
+                <InputSelect class="form-select" aria-label="Default select example" @bind-Value="searchType">
+                    <option value="1">Name</option>
+                    <option value="2">Course</option>
+                </InputSelect>
+            </span>
             <span class="nav m-lg-auto input-group-append">
                 <button type="submit" class="btn m-lg-auto btn-outline-dark">Search</button>
             </span>
@@ -63,11 +69,13 @@ else
                     <td class="noline">
                         @if (data.Id is not null && data.UserRole != 0)
                         {
-                            <button type="button" class="text-white coursebtn" @onclick="Explorer" title="Add document to student">DOC</button> // CSS!
+                            <button type="button" class="text-white coursebtn" @onclick="Explorer"
+                            title="Add document to student">DOC</button> // CSS!
                         }
                         @if (data.Id is not null && data.UserRole != 0)
                         {
-                            <button type="button" class="text-white coursebtn" @onclick="OpenCloseCourse" title="Add/change course for student">Course</button> // CSS!
+                            <button type="button" class="text-white coursebtn" @onclick="OpenCloseCourse"
+                            title="Add/change course for student">Course</button> // CSS!
                             <div class="dropdown">
                                 <button type="button" class="@CourseClass">+</button>
                                 <div class="dropdown-content">
@@ -80,7 +88,8 @@ else
                         }
                         @if (data.Id is not null)
                         {
-                            <button type="button" class="oi oi-warning text-white delbtn" @onclick=" _ => DeletePage(data.Id)" title="Delete or redirect user"></button> // CSS!
+                            <button type="button" class="oi oi-circle-x text-white delbtn" @onclick=" _ => DeletePage(data.Id)"
+                                title="Delete or redirect user"></button> // CSS!
                         }
                     </td>
                 </tr>
@@ -115,51 +124,104 @@ else
 
     private string CourseClass = "text-white coursebtn hide";
 
-    private string Emptydbcolor = string.Empty;
+    private string Emptydbcolor = "headeroff";
 
     private bool IsCourse;
 
     private string searchString = string.Empty;
+    private byte searchType = 1;
 
     protected override async Task OnInitializedAsync()
     {
         xnav.SetDone("hide", "");
         xnav.SetError("hide", "");
-
-        var appuser = await appuserClient.GetAsync();
-
-        students.Clear(); // Sökfunktionen kräver att listan rensas.
         Emptydb = "List of students";
 
-        if (appuser is not null)
+        students.Clear(); // Sökfunktionen kräver att listorna rensas.
+        courses.Clear();
+
+        if (searchType == 1)
         {
-            foreach (var item in appuser)
+            var appuser = await appuserClient.GetAsync();
+
+            if (appuser is not null)
             {
-                // Sökfiltrering med IndexOf: förnamn, efternamn och kurs.
-                if (!string.IsNullOrWhiteSpace(searchString))
+                foreach (var item in appuser)
                 {
-                    if (item.UserRole == 1 && (item.FirstName.ToLower().IndexOf(searchString.ToLower()) != -1 ||
-                    item.LastName.ToLower().IndexOf(searchString.ToLower()) != -1 ||
-                    item.LastName.ToLower().IndexOf(searchString.ToLower()) != -1)) students.Add(item);
+                    // Sökfiltrering med IndexOf: förnamn eller efternamn.
+                    if (!string.IsNullOrWhiteSpace(searchString))
+                    {
+                        if (item.UserRole == 1 && (item.FirstName.ToLower().IndexOf(searchString.ToLower()) != -1 ||
+                        item.LastName.ToLower().IndexOf(searchString.ToLower()) != -1 ||
+                        item.LastName.ToLower().IndexOf(searchString.ToLower()) != -1)) students.Add(item);
+                    }
+                    else
+                    {
+                        if (item.UserRole == 1) students.Add(item);
+                    }
                 }
-                else
-                {
-                    if (item.UserRole == 1) students.Add(item);
-                }
+                if (students.Count < 1) Emptydb = "No students !";
+                if (!string.IsNullOrWhiteSpace(searchString) && students.Count < 1) Emptydb = "There is no student with that name...";
             }
-            if (students.Count < 1) Emptydb = "No students !";
-            if (!string.IsNullOrWhiteSpace(searchString) && students.Count < 1) Emptydb = "There is no student with that name...";
-        }
-        else
-        {
-            Emptydb = "No students !";
+            else
+            {
+                Emptydb = "No students !";
+            }
+
+            var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
+
+            if (course is not null)
+            {
+                courses = course.ToList();
+            }
         }
 
-        var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
-
-        if (course is not null)
+        if (searchType == 2)
         {
-            courses = course.ToList();
+            var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
+            var appuser = await appuserClient.GetAsync();
+
+            if (course is not null)
+            {
+                foreach (var item in course)
+                {
+                    // Sökfiltrering med IndexOf: kurs.
+                    if (!string.IsNullOrWhiteSpace(searchString))
+                    {
+                        if (item.Name.ToLower().IndexOf(searchString.ToLower()) != -1)
+                        {
+                            courses.Add(item);
+
+                            if (appuser is not null)
+                            {
+                                foreach (var app in appuser) // Letar efter den student (1) som har den kursen.
+                                {
+                                    if (app.UserRole == 1 && app.CourseId == item.Id) students.Add(app);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        courses.Add(item);
+                    }
+                }
+
+                if (appuser is not null && string.IsNullOrWhiteSpace(searchString))
+                {
+                    foreach (var app in appuser)
+                    {
+                        if (app.UserRole == 1) students.Add(app);
+                    }
+                }
+
+                if (courses.Count < 1) Emptydb = "No courses !";
+                if (!string.IsNullOrWhiteSpace(searchString) && courses.Count < 1) Emptydb = "There is no course with that name...";
+            }
+            else
+            {
+                Emptydb = "No courses !";
+            }
         }
     }
 
@@ -187,14 +249,9 @@ else
         Emptydb = "This student has now been updated...";
         Emptydbcolor = "headeron";
         base.StateHasChanged();
-        await Task.Delay(1500);
+        await Task.Delay(500);
         Emptydb = "List of students";
-        Emptydbcolor = "headerrefresh";
-    }
-
-    private void Refresh() // Efter en mängd kurstilldelningar önskar man uppdatera?
-    {
-        Navigation.NavigateTo("/teacherallstudents", true);
         Emptydbcolor = "headeroff";
+        await OnInitializedAsync();
     }
 }

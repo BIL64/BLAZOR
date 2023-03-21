@@ -12,7 +12,7 @@
 
 <AuthorizeView Roles="Teacher">
     <Authorized>
-<h4 class="@Emptydbcolor" @onclick="Refresh">@Emptydb</h4> @*Ändringsbar rubrik som kan användas för att uppdatera sidan*@
+<h4 class="@Emptydbcolor">@Emptydb</h4>
 
 @if (teachers == null)
 {
@@ -54,11 +54,13 @@ else
                     <td class="noline">
                     @if (data.Id is not null && data.UserRole != 0)
                     {
-                        <button type="button" class="text-white coursebtn" @onclick="Explorer" title="Add document to teacher">DOC</button> // CSS!
+                        <button type="button" class="text-white coursebtn" @onclick="Explorer"
+                        title="Add document to teacher">DOC</button> // CSS!
                     }
                     @if (data.Id is not null && data.UserRole != 0)
                     {
-                        <button type="button" class="text-white coursebtn" @onclick="OpenCloseCourse" title="Add/change course for student">Course</button> // CSS!
+                        <button type="button" class="text-white coursebtn" @onclick="OpenCloseCourse"
+                        title="Add/change course for student">Course</button> // CSS!
                         <div class="dropdown">
                             <button type="button" class="@CourseClass">+</button>
                             <div class="dropdown-content">
@@ -71,7 +73,8 @@ else
                     }
                     @if (data.Id is not null)
                     {
-                        <button type="button" class="oi oi-warning text-white delbtn" @onclick=" _ => DeletePage(data.Id)" title="Delete or redirect user"></button> // CSS!
+                        <button type="button" class="oi oi-circle-x text-white delbtn" @onclick=" _ => DeletePage(data.Id)"
+                            title="Delete or redirect user"></button> // CSS!
                     }
                     </td>
                 </tr>
@@ -92,10 +95,10 @@ else
 
     private DeleteTeacher deleteRef; // Delete-fönster.
 
-    private void DeletePage(string id) // Delete-fönster.
+    private async Task DeletePage(string id) // Delete-fönster.
     {
         Auxx.GuidId = id;
-        deleteRef.Show("");
+        await deleteRef.Show("");
     }
 
     private List<AppUserDto> teachers = new();
@@ -114,6 +117,9 @@ else
     {
         xnav.SetDone("hide", "");
         xnav.SetError("hide", "");
+
+        teachers.Clear(); // Sökfunktionen kräver att listorna rensas.
+        courses.Clear();
 
         var appuser = await appuserClient.GetAsync();
 
@@ -162,14 +168,9 @@ else
         Emptydb = "This teacher has now been updated...";
         Emptydbcolor = "headeron";
         base.StateHasChanged();
-        await Task.Delay(1000);
+        await Task.Delay(500);
         Emptydb = "List of teachers";
-        Emptydbcolor = "headerrefresh";
-    }
-
-    private void Refresh() // Efter en mängd kurstilldelningar önskar man uppdatera?
-    {
-        Navigation.NavigateTo("/teacherallteachers", true);
         Emptydbcolor = "headeroff";
+        await OnInitializedAsync();
     }
 }
