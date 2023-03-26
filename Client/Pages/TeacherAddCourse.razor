@@ -47,9 +47,42 @@
                 <button type="button" class="@classCouRegBtn m-1" @onclick="RegretRefresh" title="Avoid add course">Regret</button>
                 <button type="submit" class="@classCouSubBtn m-1" title="Save only this course">Save</button>
                 <button type="button" class="@classCouBtn m-1" @onclick="AddModule" title="To step 2: Add module">Add module</button>
+                <button type="button" class="@classCouBtn m-1" @onclick="AddActivityType" title="Add or edit activity types">Add / edit activity types</button>
             </div>
         </EditForm>
     </section>
+
+    @while (repeatActivityType) // Repeteringsdel för aktivitetstyper.
+    {
+        repeatActivityType = false;
+
+        <section class="@classActtyp">
+            <h5>Add or edit activity types:</h5>
+            <EditForm EditContext="activitytypeContext" Context="activitytypelmslexnet" OnValidSubmit="HandleSubmitActivityType">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="form-group m-3">
+                    <label for="Typename">Type</label>
+                    <InputSelect class="form-control" id="Typename" @bind-Value="activityType.Name">
+                        @foreach (var acttype in activitytypelist)
+                        {
+                            <option value="@acttype.Name">@acttype.Name</option>
+                        }
+                    </InputSelect>
+                    @{repeatActivityType = true;}
+                </div>
+                <div class="form-group m-3">
+                    <label for="New">New</label>
+                    <InputText id="New" class="form-control" @bind-Value="newActType" placeholder="Enter new name" />
+                </div>
+                <div class="form-group m-3">
+                    <button type="button" class="@classCouRegBtn m-1" @onclick="FinishActivityType" title="Finish add or delete activity type">Finish</button>
+                    <button type="submit" class="@classCouSubBtn m-1" title="Add this new activity type">Save new type</button>
+                    <button type="button" class="@classCouBtn m-1" @onclick="EditActivityType" title="Edit this activity type">Edit type</button>
+                </div>
+            </EditForm>
+        </section>
+    }
 
     @do // Repeteringsdel för moduler och aktiviteter.
     {
@@ -105,7 +138,7 @@
             <h5>@TestMess2</h5>
             repeatActivity = false;
 
-            <section class="@classActivi" style ="border-radius: 5px">
+            <section class="@classActivi">
                 <div style="display: flex; width: 80%">
                     <div style="width: 50%; text-align: left"><h5>Add activity:</h5></div>
                     <div style="margin-left: auto; margin-right: 0"><h6>@stepActivi</h6></div>
@@ -148,7 +181,7 @@
                 </EditForm>
             </section>
 
-            <section class="@classTable" style ="border-radius: 5px"> @*Hjälptabeller vid inmatning av moduler och aktiviteter*@ 
+            <section class="@classTable"> @*Hjälptabeller vid inmatning av moduler och aktiviteter*@ 
                 <div style="display: flex; width: 100%">
                     <h4 style="width: 75%; text-align: left">COURSE: @course.Name</h4>
                     <h5 style="margin-left: auto; margin-right: 0">@StartEndDate(course.StartDate, course.EndDate)</h5>
@@ -212,6 +245,7 @@
     private EditContext courseContext = default!; // Formulärkontexter.
     private EditContext moduleContext = default!;
     private EditContext activityContext = default!;
+    private EditContext activitytypeContext = default!;
 
     private CourseDto course = new();
 
@@ -227,13 +261,12 @@
 
     private List<ActivityTypeDto> activitytypelist = new();
 
-    private string DefaultType = string.Empty; // Den första aktivitetstypen tilldelas ifall ingen valdes i formuläret.
-
     private string TestMess1 = string.Empty; // Test.
     private string TestMess2 = string.Empty; // Test.
 
-    private bool repeatModule; // Om flera moduler ska läggas in.
-    private bool repeatActivity; // Om flera aktiviteter ska läggas in.
+    private bool repeatModule; // Om flera moduler ska läggas till.
+    private bool repeatActivity; // Om flera aktiviteter ska läggas till.
+    private bool repeatActivityType; // Om flera aktivitetstyper ska läggas till.
     private bool saveActButNot; // Flagga om man ångrar en aktivitet.
     private bool DateControl = true; // När man vill slippa datumkontrollen.
 
@@ -243,21 +276,23 @@
     private string stepCourse = "Step 1 of 3";
     private string stepModule = "Step 2 of 3";
     private string stepActivi = "Step 3 of 3";
+    private string newActType = string.Empty;
 
     // Klassvariabler för att visa/inte visa formulär.
     private string classCourse = "courseeditbox";
     private string classModule = "hide";
     private string classActivi = "hide";
+    private string classActtyp = "hide";
     private string classTable = "hide";
 
     // Klassvariabler för att visa/inte visa knappar.
-    private string classCouRegBtn = "btn btn-danger btn-sm";
+    private string classCouRegBtn = "btn btn-secondary btn-sm";
     private string classCouSubBtn = "btn btn-success btn-sm";
     private string classCouBtn = "btn btn-primary btn-sm";
-    private string classModRegBtn = "btn btn-danger btn-sm";
-    private string classModSubBtn = "btn btn-success btn-sm";
+    private string classModRegBtn = "btn btn-secondary btn-sm";
+    //private string classModSubBtn = "btn btn-success btn-sm";
     private string classModBtn = "btn btn-primary btn-sm";
-    private string classActRegBtn = "btn btn-danger btn-sm";
+    private string classActRegBtn = "btn btn-secondary btn-sm";
     private string classActSubBtn = "btn btn-success btn-sm";
     private string classModSubNotBtn = "hide";
     private string classActSubNotBtn = "hide";
@@ -265,12 +300,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        xnav.SetDone("hide", "");
-        xnav.SetError("hide", "");
+        xnav.SetReset('a');
 
         courseContext = new EditContext(course); // Formulärkontext.
         moduleContext = new EditContext(module);
         activityContext = new EditContext(activity);
+        activitytypeContext = new EditContext(activityType);
 
         var actType = await xClient.GetAsync<IEnumerable<ActivityTypeDto>>("api/Acttype");
 
@@ -278,19 +313,9 @@
         {
             activitytypelist = actType.ToList();
         }
-
         var firstacttype = new ActivityTypeDto();
         firstacttype = activitytypelist.ElementAt(0);
-        DefaultType = firstacttype.Name; // Laddar default med den första aktivitetstypen.
-    }
-
-    private async Task RegretRefresh()
-    {
-        xnav.SetDone("xnavdone", "The course was NOT edited or created.");
-        xnav.SetError("hide", "");
-        base.StateHasChanged();
-        await Task.Delay(2000);
-        Navigation.NavigateTo("/teacheraddcourse", true);
+        activityType.Name = firstacttype.Name;
     }
 
     private async Task HandleSubmitCourse()
@@ -300,22 +325,45 @@
         if (course.StartDate <= course.EndDate)
         {
             await xClient.PostAsync<CourseDto>(course, "api/Course"); // Sparar enbart kursen i databasen.
-
             await CreateAndRefresh();
         }
         else
         {
             xnav.SetError("xnaverror", "Date course mismatch (start date is greater than end date).");
-            xnav.SetDone("hide", "");
+            xnav.SetReset('e');
         }
     }
 
-    private void HandleSubmitModule()
+    private async Task HandleSubmitActivityType() // Sparar aktivitetstyp.
+    {
+        if (newActType == "") newActType = "-";
+
+        var dto = new ActivityTypeDto
+        {
+            Name = newActType
+        };
+
+        await xClient.PostAsync<ActivityTypeDto>(dto, "api/Acttype");
+
+        activitytypelist.Clear();
+
+        var items = await xClient.GetAsync<IEnumerable<ActivityTypeDto>>("api/Acttype");
+
+        if (items is not null) activitytypelist = items.ToList();
+
+        classActtyp = "hide";
+        await Intermission(100, true);
+        classActtyp = "activityeditbox";
+        repeatActivityType = true;
+    }
+
+    private async Task HandleSubmitModule()
     {
         Logger.LogInformation("HandleSubmit called");
 
         var lmod = GetNewModObject(module);
 
+        await Intermission(100, true);
         if (DateModuleControl())
         {
             classActivi = "activityeditbox";
@@ -336,35 +384,76 @@
 
         lact.ActivityTypeName = activityType.Name;
 
-        if (lact.ActivityTypeName == "") lact.ActivityTypeName = DefaultType;
-
+        await Intermission(100, true);
         if (DateActivityControl())
         {
             activitylist.Add(lact);
 
             await AddAllToDB(); // Adderar till databasen.
-
             await CreateAndRefresh();
         }
+    }
+
+    private void AddActivityType() // Hoppar till aktivitetstypfönstret.
+    {
+        classCourse = "hide";
+        classActtyp = "activityeditbox";
+        repeatActivityType = true;
+    }
+
+    private async Task EditActivityType() // Redigerar en aktivitetstyp.
+    {
+        var items = await xClient.GetAsync<IEnumerable<ActivityTypeDto>>("api/Acttype");
+
+        if (items is not null)
+        {
+            foreach (var acttype in items)
+            {
+                if (acttype.Name == activityType.Name) activityType.Id = acttype.Id;
+            }
+        }
+
+        if (newActType == "") newActType = "-";
+
+        var dto = new ActivityTypeDto
+        {
+            Id = activityType.Id,
+            Name = newActType
+        };
+
+        await xClient.PutAsync<ActivityTypeDto>(activityType.Id, dto, "api/Acttype");
+
+        activitytypelist.Clear();
+
+        items = await xClient.GetAsync<IEnumerable<ActivityTypeDto>>("api/Acttype");
+
+        if (items is not null) activitytypelist = items.ToList();
+
+        classActtyp = "hide";
+        await Intermission(100, true);
+        classActtyp = "activityeditbox";
+        repeatActivityType = true;
+    }
+
+    private async Task FinishActivityType()
+    {
+        xnav.SetDone("xnavdone", "Finish add or edit activity types.");
+        xnav.SetReset('d');
+        await Intermission(2000, false);
+        Navigation.NavigateTo("/teacheraddcourse", true);
     }
 
     private async Task SaveButNotMod() // Om man ångrar en modul.
     {
         xnav.SetDone("xnavdone", "Your course is created.");
-        xnav.SetError("hide", "");
-        base.StateHasChanged();
-        await Task.Delay(3000);
-        Navigation.NavigateTo("/teacheraddcourse", true);
+        xnav.SetReset('d');
+        await Intermission(3000, false);
+        Navigation.NavigateTo("/teacherallcourses", true);
     }
 
-    private string StartEndDate(DateTime start, DateTime end) // Returnerar datumsträng.
+    private async Task AddModule()
     {
-        return $"{start.ToString().Substring(0, 10)} | {end.ToString().Substring(0, 10)}";
-    }
-
-    private void AddModule()
-    {
-        if (course.StartDate <= course.EndDate)
+        if (course.StartDate <= course.EndDate && course.Name != "" && course.Description != "")
         {
             classModule = "moduleeditbox";
             stepCourse = "Course ready...";
@@ -375,8 +464,15 @@
         }
         else
         {
+            await Intermission(100, true);
             xnav.SetError("xnaverror", "Date module mismatch (start date is greater than end date).");
-            xnav.SetDone("hide", "");
+            if (course.Name == "")
+                xnav.SetError("xnaverror", "The Name field is required.");
+            if (course.Description == "")
+                xnav.SetError("xnaverror", "The Description field is required.");
+            if (course.Name == "" && course.Description == "")
+                xnav.SetError("xnaverror", "The Name and Description fields are required.");
+            xnav.SetReset('e');
         }
     }
 
@@ -386,20 +482,15 @@
 
         lact.ActivityTypeName = activityType.Name;
 
-        if (lact.ActivityTypeName == "") lact.ActivityTypeName = DefaultType;
-
+        await Intermission(100, true);
         if (DateActivityControl() || saveActButNot)
         {
-            if (saveActButNot)
-            {
-                xnav.SetError("hide", "");
-                xnav.SetDone("hide", "");
-            }
+            if (saveActButNot) xnav.SetReset('a');
             else activitylist.Add(lact);
             saveActButNot = false;
             repeatModule = true;
             classActivi = "hide";
-            classModRegBtn = "btn btn-danger btn-sm";
+            classActRegBtn = "hide";
             classModBtn = "btn btn-primary btn-sm";
             classModSubNotBtn = "btn btn-success btn-sm";
 
@@ -422,27 +513,37 @@
 
         lact.ActivityTypeName = activityType.Name;
 
-        if (lact.ActivityTypeName == "") lact.ActivityTypeName = DefaultType;
-
+        await Intermission(100, true);
         if (DateActivityControl())
         {
             repeatActivity = true;
             activitylist.Add(lact);
             classActivi = "hide";
-            base.StateHasChanged();
-            await Task.Delay(100);
+            await Intermission(100, false);
             classActSubNotBtn = "btn btn-primary btn-sm";
             classActivi = "activityeditbox";
         }
     }
 
+    private string StartEndDate(DateTime start, DateTime end) // Returnerar datumsträng.
+    {
+        return $"{start.ToString().Substring(0, 10)} | {end.ToString().Substring(0, 10)}";
+    }
+
+    private async Task RegretRefresh()
+    {
+        xnav.SetDone("xnavdone", "The course was NOT edited or created.");
+        xnav.SetReset('d');
+        await Intermission(2000, false);
+        Navigation.NavigateTo("/teacheraddcourse", true);
+    }
+
     private async Task CreateAndRefresh()
     {
         xnav.SetDone("xnavdone", "Your course is created.");
-        xnav.SetError("hide", "");
-        base.StateHasChanged();
-        await Task.Delay(3000);
-        Navigation.NavigateTo("/teacheraddcourse", true);
+        xnav.SetReset('d');
+        await Intermission(3000, false);
+        Navigation.NavigateTo("/teacherallcourses", true);
     }
 
     private async Task AddAllToDB() // Adderar till databasen men utan den sista aktiviteten... 
@@ -493,6 +594,7 @@
                 Description = mod.Description,
                 StartDate = mod.StartDate,
                 EndDate = mod.EndDate,
+                IsActive = mod.IsActive,
                 CourseId = CourseID
             };
         return dto;
@@ -512,14 +614,15 @@
         }
 
         var dto = new ActivityDto
-        {
-            Name = act.Name,
-            Description = act.Description,
-            StartDate = act.StartDate,
-            EndDate = act.EndDate,
-            ActivityTypeId = ActivityTypeID,
-            ModuleId = await GetIdModule("api/Module")
-        };
+            {
+                Name = act.Name,
+                Description = act.Description,
+                StartDate = act.StartDate,
+                EndDate = act.EndDate,
+                IsActive = act.IsActive,
+                ActivityTypeId = ActivityTypeID,
+                ModuleId = await GetIdModule("api/Module")
+            };
         return dto;
     }
 
@@ -650,12 +753,11 @@
         {
             xnav.SetError("xnaverror", "Date mismatch (start date is greater than end date).");
             if (c2) xnav.SetError("xnaverror", "Date mismatch (entangled dates).");
-            xnav.SetDone("hide", "");
+            xnav.SetReset('e');
         }
         if (!c1 && !c2)
         {
-            xnav.SetError("hide", "");
-            xnav.SetDone("hide", "");
+            xnav.SetReset('a');
         }
         if (c1 || c2) result = false;
 
@@ -669,5 +771,15 @@
         int.Parse(date.ToString().Substring(8, 2));
 
         return number;
+    }
+
+    private async Task Intermission(int time, bool hide) // Paus.
+    {
+        if (hide)
+        {
+            xnav.SetReset('a');
+        }
+        base.StateHasChanged();
+        await Task.Delay(time);
     }
 }

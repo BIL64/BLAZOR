@@ -98,14 +98,11 @@ else
 
     private string Emptydb = "List of unregistered";
 
-    private bool IsCourse;
-
     private string searchString = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        xnav.SetDone("hide", "");
-        xnav.SetError("hide", "");
+        xnav.SetReset('a');
 
         var appuser = await appuserClient.GetAsync();
 

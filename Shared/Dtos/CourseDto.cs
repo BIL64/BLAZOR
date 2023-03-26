@@ -17,6 +17,10 @@ namespace LexiconLMSBlazor.Shared.Dtos
         public DateTime EndDate { get; set; } = DateTime.Now;
 
         public IEnumerable<ModuleDto> Modules { get; set; } = new List<ModuleDto>();
+
+        public int Total_M { get; set; } // Antal moduler.
+
+        public int Total_S { get; set; } // Antal studenter.
     }
 }
 

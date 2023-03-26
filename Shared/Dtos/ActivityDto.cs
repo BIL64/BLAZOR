@@ -16,6 +16,8 @@ namespace LexiconLMSBlazor.Shared.Dtos
 
         public DateTime EndDate { get; set; } = DateTime.Now;
 
+        public bool IsActive { get; set; } = true;
+
         public int ModuleId { get; set; }
 
         public int ActivityTypeId { get; set; }

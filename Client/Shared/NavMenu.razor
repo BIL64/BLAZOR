@@ -44,7 +44,7 @@
 
         <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
             <nav class="flex-column">
-                @if (Logintype != string.Empty) // Statisk sträng.
+                @if (Logintype != string.Empty) // Student eller teacher.
                 {
                     <div style="text-align: center; padding: 20px; color: white">
                         @Logintype
@@ -55,7 +55,7 @@
                         <span aria-hidden="true"></span> Home
                     </NavLink>
                 </div>
-                @if (Navbtn1 != string.Empty) // Statisk sträng 1.
+                @if (Navbtn1 != string.Empty) // Menyval 1.
                 {
                     <div class="nav-item px-3">
                         <NavLink class="nav-link bhover" href="@Navlink1">
@@ -63,7 +63,7 @@
                         </NavLink>
                     </div>
                 }
-                @if (Navbtn2 != string.Empty) // Statisk sträng 2.
+                @if (Navbtn2 != string.Empty) // Menyval 2.
                 {
                     <div class="nav-item px-3">
                         <NavLink class="nav-link bhover" href="@Navlink2">
@@ -71,7 +71,7 @@
                         </NavLink>
                     </div>
                 }
-                @if (Navbtn3 != string.Empty) // Statisk sträng 3.
+                @if (Navbtn3 != string.Empty) // Menyval 3.
                 {
                     <div class="nav-item px-3">
                         <NavLink class="nav-link bhover" href="@Navlink3">
@@ -79,7 +79,7 @@
                         </NavLink>
                     </div>
                 }
-                @if (Navbtn4 != string.Empty) // Statisk sträng 4.
+                @if (Navbtn4 != string.Empty) // Menyval 4.
                 {
                     <div class="nav-item px-3">
                         <NavLink class="nav-link bhover" href="@Navlink4">
@@ -87,7 +87,7 @@
                         </NavLink>
                     </div>
                 }
-                @if (Navbtn5 != string.Empty) // Statisk sträng 5.
+                @if (Navbtn5 != string.Empty) // Menyval 5.
                 {
                     <div class="nav-item px-3">
                         <NavLink class="nav-link bhover" href="@Navlink5">
@@ -96,13 +96,19 @@
                     </div>
                 }
             </nav>
-            <footer class="@xnav.classDoneMess">
-                <div>Done:</div>
-                <div>@xnav.DoneMess</div>
-            </footer>
-            <footer class="@xnav.classErrorMess">
-                <div>Error:</div>
-                <div>@xnav.ErrorMess</div>
+            <footer class="xnavwindow">
+                <div class="@xnav.classInfoMess">
+                    <div>Info:</div>
+                    <div>@xnav.InfoMess</div>
+                </div>
+                <div class="@xnav.classDoneMess">
+                    <div>Done:</div>
+                    <div>@xnav.DoneMess</div>
+                </div>
+                <div class="@xnav.classErrorMess">
+                    <div>Error:</div>
+                    <div>@xnav.ErrorMess</div>
+                </div>
             </footer>
         </div>
     </Authorized>

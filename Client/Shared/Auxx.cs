@@ -5,5 +5,5 @@ public static class Auxx // Statisk klass med variabler som är åtkomliga över
 
     public static int IntId { get; set; }
 
-    public static string TestX { get; set; } = "Tom sträng!";
+    public static int CourseId { get; set; }
 }

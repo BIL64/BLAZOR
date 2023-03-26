@@ -1,16 +1,11 @@
 ﻿using Bogus;
-using Bogus.DataSets;
-using Bogus.Extensions.Sweden;
 using LexiconLMSBlazor.Server.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Reflection;
 using Module = LexiconLMSBlazor.Server.Models.Module;
 using Activity = LexiconLMSBlazor.Server.Models.Activity;
 
-namespace LexiconLMSBlazor.Server.Data
+namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
 {
     public class SeedDataUser
     {
@@ -162,7 +157,7 @@ namespace LexiconLMSBlazor.Server.Data
             {
                 var fName = faker.Name.FirstName();
                 var lName = faker.Name.LastName();
-                var email = faker.Internet.Email(fName, lName, "lexicon.fr");
+                var email = faker.Internet.Email(fName, lName, "lexicon.fr"); // SWE!
                 var phoneNumber = faker.Phone.PhoneNumberFormat();
 
                 var student = new ApplicationUser

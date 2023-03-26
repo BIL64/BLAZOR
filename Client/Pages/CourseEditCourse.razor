@@ -37,7 +37,7 @@
                 <InputDate id="Enddate" class="form-control" @bind-Value="course.EndDate" />
             </div>
             <div class="form-group m-3">
-                <button type="button" class="btn btn-danger btn-sm m-1" @onclick="RegretRefresh" title="Avoid edit course">Regret</button>
+                <button type="button" class="btn btn-secondary btn-sm m-1" @onclick="RegretRefresh" title="Avoid edit course">Regret</button>
                 <button type="submit" class="btn btn-primary btn-sm m-1" title="Save this edit form">Save</button>
             </div>
         </EditForm>
@@ -60,8 +60,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        xnav.SetDone("hide", "");
-        xnav.SetError("hide", "");
+        xnav.SetReset('a');
 
         courseContext = new EditContext(course); // Formulärkontext.
 
@@ -86,10 +85,9 @@
     private async Task RegretRefresh()
     {
         xnav.SetDone("xnavdone", "The course was NOT edited or created.");
-        xnav.SetError("hide", "");
-        base.StateHasChanged();
-        await Task.Delay(1000);
-        Navigation.NavigateTo("/teacherallcourses", true);
+        xnav.SetReset('d');
+        await Intermission(1000, false);
+        Navigation.NavigateTo($"/teacherallcourses", true);
     }
 
     private async Task HandleSubmitCourse()
@@ -98,8 +96,9 @@
 
         if (course.StartDate > course.EndDate)
         {
+            await Intermission(100, true);
             xnav.SetError("xnaverror", "Date mismatch (start date is greater than end date).");
-            xnav.SetDone("hide", "");
+            xnav.SetReset('e');
         }
         else
         {
@@ -120,15 +119,24 @@
     private async Task CreateAndRefresh()
     {
         xnav.SetDone("xnavdone", "Your course is edited.");
-        xnav.SetError("hide", "");
-        base.StateHasChanged();
-        await Task.Delay(3000);
-        Navigation.NavigateTo("/teacherallcourses", true);
+        xnav.SetReset('d');
+        await Intermission(3000, false);
+        Navigation.NavigateTo($"/coursedetail/{IId}", true);
     }
 
     private string StartEndDate(DateTime start, DateTime end) // Returnerar datumsträng.
     {
         return $"{start.ToString().Substring(0, 10)} | {end.ToString().Substring(0, 10)}";
+    }
+
+    private async Task Intermission(int time, bool hide) // Paus.
+    {
+        if (hide)
+        {
+            xnav.SetReset('a');
+        }
+        base.StateHasChanged();
+        await Task.Delay(time);
     }
 }
 

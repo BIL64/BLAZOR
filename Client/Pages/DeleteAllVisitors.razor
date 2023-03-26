@@ -48,8 +48,7 @@
 
     public void Show(string bodyText, string headerText = "Remove ALL visitors!")
     {
-        xnav.SetDone("hide", "");
-        xnav.SetError("hide", "");
+        xnav.SetReset('a');
 
         HeaderText = headerText;
         BodyText = bodyText;
@@ -68,7 +67,7 @@
     private async Task DeleteNow()
     {
         xnav.SetDone("xnavdone", "All unregistered visitors were deleted.");
-        xnav.SetError("hide", "");
+        xnav.SetReset('d');
 
         var appuser = await appuserClient.GetAsync();
 

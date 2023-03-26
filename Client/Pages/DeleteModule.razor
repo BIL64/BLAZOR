@@ -1,5 +1,5 @@
 ﻿@inject NavigationManager Navigation
-@inject IAppUserDtoClient appuserClient
+@inject IXDtoClient xClient
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Sukhrob Ilyosbekov - Stack Overflow*@
@@ -20,9 +20,8 @@
 
         <div class="toast-body">
             @BodyText
-            <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove this user from the system">DELETE NOW</button>
+            <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove this module and all its activities from the system">DELETE NOW</button>
             <button type="button" class="text-white remnot" @onclick="Close">NO</button>
-            <button type="button" class="text-white remnot" @onclick="Redirect" title="Make this visitor to a teacher...">To teacher!</button>
         </div>
     </div>
 </div>
@@ -47,13 +46,10 @@
     [Parameter]
     public string? BodyText { get; set; }
 
-    public async Task Show(string bodyText, string headerText = "Remove this user...")
+    public async Task Show(string bodyText, string headerText = "Remove this module...")
     {
         xnav.SetReset('a');
 
-        IsVisible = false;
-        StateHasChanged();
-        await Task.Delay(200);
         HeaderText = headerText;
         BodyText = bodyText;
         IsVisible = true;
@@ -70,19 +66,33 @@
 
     private async Task DeleteNow()
     {
-        xnav.SetDone("xnavdone", "This unregistered visitor was deleted.");
+        bool delAct;
+
+        xnav.SetDone("xnavdone", "This module and all its activities were deleted.");
         xnav.SetReset('d');
+        base.StateHasChanged();
+        await Task.Delay(3000);
+        
+        do // Så länge foren hittar aktiviteter som hör till modulen.
+        {
+            var allactivity = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
+            delAct = false;
 
-        await appuserClient.RemAsync(Auxx.GuidId);
-        Close();
-    }
+            if (allactivity is not null)
+            {
+                foreach (var act in allactivity)
+                {
+                    if (act.ModuleId == Auxx.IntId) // Dess aktiviteter.
+                    {
+                        await xClient.RemAsync(act.Id, "api/Activity");
+                        delAct = true;
+                    }
+                }
+            }
+        } while (delAct);
 
-    private async Task Redirect()
-    {
-        xnav.SetDone("xnavdone", "This unregistered visitors was redirected to a student.");
-        xnav.SetReset('d');
-
-        await appuserClient.PreAsync(Auxx.GuidId, 12);
+        await xClient.RemAsync(Auxx.IntId, "api/Module");
+        Navigation.NavigateTo($"/coursedetail/{Auxx.CourseId}", true);
         Close();
     }
 }

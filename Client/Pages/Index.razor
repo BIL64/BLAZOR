@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject XNavMenu xnav
 
 <PageTitle>Index</PageTitle>
 
@@ -10,3 +11,10 @@
 <footer class="text-lg-end text-info ">
     &copy Lexicon Grupp 3 - Mars 2023
 </footer>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        xnav.SetReset('a');
+    }
+}

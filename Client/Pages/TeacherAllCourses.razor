@@ -21,7 +21,7 @@
                     <button type="submit" class="btn m-lg-auto btn-outline-dark">Search</button>
                 </span>
                 <span class="nav m-lg-auto input-group-append">
-                    <button type="button" class="btn m-lg-auto btn-outline-dark" @onclick="ReverseOrder">Reverse order</button>
+                    <button type="button" class="btn m-lg-auto btn-outline-dark" @onclick="ReverseOrder">@textBtn</button>
                 </span>
             </span>
         </EditForm>
@@ -44,13 +44,43 @@
                         <div style="display: flex; width: 100%">
                             <div style="width: 75%; text-align: left">
                                 @data.Id.&nbsp; <em style="cursor: pointer" title="@data.Description -Click for edit-"
-                                @onclick=" _ => RedirectToCourse(data.Id)">@data.Name &nbsp;</em>
+                                @onclick=" _ => RedirectToCourse(data.Id)">@data.Name</em>
+                                @if (data.Total_M != 1)
+                                {
+                                    <span style="margin-left: 2%; color:sandybrown">@data.Total_M modules,</span>
+                                }
+                                else
+                                {
+                                    <span style="margin-left: 2%; color:sandybrown">@data.Total_M module,</span>
+                                }
+                                @if (data.Total_S != 1)
+                                {
+                                    <span style="margin-left: 2%; color:lightslategray">@data.Total_S students</span>
+                                }
+                                else
+                                {
+                                    <span style="margin-left: 2%; color:lightslategray">@data.Total_S student</span>
+                                }
                             </div>
                                 <b style="margin-left: auto">@StartEndDate(data.StartDate, data.EndDate)</b>&nbsp;
-                            <div style="margin-left: auto; margin-right: 0">
-                                <NavLink style="cursor: pointer" class="oi oi-circle-x text-warning text-decoration-none"
-                                @onclick=" _ => DeleteControl(data.Id)" Title="Delete course"></NavLink>
-                            </div>
+                                @if (data.Total_M > 0)
+                                {
+                                    <div style="margin-left: auto; margin-right: 0">
+                                        <NavLink style="cursor: pointer" class="oi oi-circle-x text-danger text-decoration-none"
+                                        @onclick=" _ => DeleteControl(data.Id)" Title="Delete course"></NavLink>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div style="margin-left: auto">
+                                        <NavLink style="cursor: pointer" class="oi oi-circle-x text-danger text-decoration-none"
+                                        @onclick=" _ => DeleteControl(data.Id)" Title="Delete course"></NavLink>
+                                    </div>
+                                    <div style="margin-left: auto; margin-right: 0">
+                                        <NavLink style="cursor: pointer; margin-left: 1%" class="oi oi-browser text-primary text-decoration-none"
+                                        @onclick=" _ => AddModule(data.Id)" Title="Add a blank module"></NavLink>
+                                    </div>  
+                                }
                         </div>
                     </section>
                 }
@@ -67,17 +97,19 @@
 
     private List<CourseDto> courses = new();
 
+    private List<ModuleDto> modules = new();
+
     private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
 
     private string TeacherName = string.Empty;
     private string searchString = string.Empty;
+    private string textBtn = "First first";
     private bool DeleteFlag;
     private bool RepeatTable;
 
     protected override async Task OnInitializedAsync()
     {
-        xnav.SetDone("hide", "");
-        xnav.SetError("hide", "");
+        xnav.SetReset('a');
 
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         var user = authstate.User;
@@ -85,8 +117,6 @@
 
         var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
         var appuser = await appuserClient.GetAsync();
-
-        xnav.SetError("hide", ""); // Test!
 
         courses.Clear(); // Sökfunktionen kräver att listan rensas.
 
@@ -104,6 +134,7 @@
                     courses.Add(item);
                 }
             }
+            courses = Enumerable.Reverse(courses).ToList();
         }
 
         if (appuser is not null && name is not null)
@@ -129,27 +160,40 @@
                 {
                     DeleteFlag = false;
                 }
+
+                var appuser = await appuserClient.GetAsync();
+
+                if (appuser is not null)
+                {
+                    foreach (var user in appuser) // Kollar om det finns några användare knutna till kursen.
+                    {
+                        if (user.CourseId == id) DeleteFlag = false;
+                    }
+                }
             }
         }
+
+
         if (DeleteFlag)
         {
             xnav.SetDone("xnavdone", "This course was deleted.");
-            xnav.SetError("hide", "");
-            StateHasChanged();
-            await Task.Delay(2000);
+            xnav.SetReset('d');
+            await Intermission(2000, false);
             await xClient.RemAsync(id, "api/Course");
             Navigation.NavigateTo("/teacherallcourses", true);
             DeleteFlag = false;
         }
         else
         {
-            xnav.SetError("xnaverror", "All modules and activities belonging to a course must be deleted before a course can be deleted.");
-            xnav.SetDone("hide", "");
+            await Intermission(100, true);
+            xnav.SetError("xnaverror", "All modules, activities, and users belonging to a course must first be deleted or redirected before a course can be deleted.");
+            xnav.SetReset('e');
         }
     }
 
     private void ReverseOrder()
     {
+        if (textBtn == "First first") textBtn = "Last first"; else textBtn = "First first";
         courses = Enumerable.Reverse(courses).ToList();
         RepeatTable = true;
     }
@@ -162,5 +206,64 @@
     private void RedirectToCourse(int id)
     {
         Navigation.NavigateTo($"/coursedetail/{id}", true);
+    }
+
+    private async Task AddModule(int id)
+    {
+        int ModuleID = 0;
+
+        var lmod = new ModuleDto
+            {
+                Name = "Not yet a name",
+                Description = "Not yet a description",
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now,
+                IsActive = true,
+                CourseId = id
+            };
+
+            await xClient.PostAsync<ModuleDto>(lmod, "api/Module");
+
+            var allmod = await xClient.GetAsync<IEnumerable<ModuleDto>>("api/Module");
+
+            if (allmod is not null)
+            {
+                foreach (var mod in allmod)
+                {
+                    if (mod.Name == lmod.Name && mod.StartDate == lmod.StartDate && mod.EndDate == lmod.EndDate) ModuleID = mod.Id;
+                }
+            }
+
+            var lact = new ActivityDto
+                {
+                    Name = "Not yet a name",
+                    Description = "Not yet a description",
+                    StartDate = DateTime.Now,
+                    EndDate = DateTime.Now,
+                    IsActive = true,
+                    ActivityTypeId = 1,
+                    ModuleId = ModuleID
+                };
+
+            await xClient.PostAsync<ActivityDto>(lact, "api/Activity");
+            await CreateAndRefresh(id);
+    }
+
+    private async Task CreateAndRefresh(int id)
+    {
+        xnav.SetDone("xnavdone", "An empty module was added.");
+        xnav.SetReset('d');
+        await Intermission(2000, false);
+        Navigation.NavigateTo($"/coursedetail/{id}", true);
+    }
+
+    private async Task Intermission(int time, bool hide) // Paus.
+    {
+        if (hide)
+        {
+            xnav.SetReset('a');
+        }
+        base.StateHasChanged();
+        await Task.Delay(time);
     }
 }

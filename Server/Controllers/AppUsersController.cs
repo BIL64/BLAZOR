@@ -3,9 +3,7 @@ using LexiconLMSBlazor.Server.Data;
 using LexiconLMSBlazor.Server.Models;
 using Microsoft.AspNetCore.Identity;
 using LexiconLMSBlazor.Shared.Dtos;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Humanizer;
 
 namespace LexiconLMSBlazor.Server.Controllers
 {

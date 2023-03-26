@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LexiconLMSBlazor.Server.Data;
 using LexiconLMSBlazor.Server.Models;
@@ -39,6 +34,8 @@ namespace LexiconLMSBlazor.Server.Controllers
                     Description = c.Description,
                     StartDate = c.StartDate,
                     EndDate = c.EndDate,
+                    Total_M = c.Modules.Count,
+                    Total_S = c.Users.Count,
                     Modules = c.Modules.Select(m => new ModuleDto
                     {
                         Id = m.Id,
@@ -46,6 +43,7 @@ namespace LexiconLMSBlazor.Server.Controllers
                         Description= m.Description,
                         StartDate = m.StartDate,
                         EndDate = m.EndDate,
+                        IsActive = m.IsActive,
                         CourseId = (int)m.CourseId!,
                         Activities = m.Activities.Select(a => new ActivityDto
                          {
@@ -54,6 +52,7 @@ namespace LexiconLMSBlazor.Server.Controllers
                             Description = a.Description,
                             StartDate = a.StartDate,
                             EndDate = a.EndDate,
+                            IsActive = a.IsActive,
                             ModuleId = (int)a.ModuleId!,
                             ActivityTypeId = (int)a.ActivityTypeId!
                          })

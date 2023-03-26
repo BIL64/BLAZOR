@@ -7,13 +7,19 @@
 @*Av Björn Lindqvist*@
 @*Endast lärare har åtkomst hit*@
 
-<PageTitle>Teacher fetch</PageTitle>
+<PageTitle>Course detail</PageTitle>
 
 <AuthorizeView Roles="Teacher">
     <Authorized>
         <nav style="display: flex; width: 100%">
-            <div style="width: 75%; text-align: left"><h3 style="cursor: pointer" @onclick=" _ => EditCourse(CourseId)">Administration of course @CourseId: @CourseName</h3></div>
-        <div style="margin-left: auto; margin-right: 0"><h5>@CourseDate</h5></div>
+            <div style="width: 75%; text-align: left"><h3>Administration of course @CourseId: @NoModels
+                    <i style="cursor: pointer" @onclick=" _ => EditCourse(CourseId)" title="@CourseDescription -Click for edit-">@CourseName</i>
+                </h3>
+            </div>
+            <div style="margin-left: auto; margin-right: auto"><h5>@CourseDate</h5></div>
+            <div style="margin-left: auto; margin-right: 0"><button type="button" class="text-white delbtn"
+                @onclick=" _ => StudentPage()" title="Shortcut to student page">S</button>
+            </div>
         </nav>
         <br />
         <p>Plats för dokument...</p>
@@ -28,62 +34,161 @@
         {
             @foreach (var data in modules)
             {
-                <section class="modulebox">
-                    <div style="display: flex; width: 100%">
-                        <div style="width: 75%; text-align: left">
-                            <b title="@data.Description -Click for edit-">Module @data.Id: <em style="cursor: pointer"
-                                @onclick=" _ => EditModule(data.Id)">@data.Name &nbsp;</em></b>
+                if (data.IsActive)
+                {
+                    <section class="modulebox">
+                        <div style="display: flex; width: 100%">
+                            <div style="width: 75%; text-align: left">
+                                <b title="@data.Description -Click for edit-">Module @data.Id:
+                                    <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
+                            </div>
+                            <div style="margin-left: auto; margin-right: 0"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
                         </div>
-                        <div style="margin-left: auto; margin-right: 0"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
-                    </div>
-                    <div style="display: flex; width: 100%">
-                        <div style="width: 75%; text-align: left"><button type="button" class="documentbtn">Documents Module</button></div>
-                        <div style="margin-left: auto; margin-right: 0">
-                            <NavLink style="cursor: pointer" class="oi oi-circle-x text-primary mt-2 text-decoration-none"
-                            @onclick=" _ => DeleteControll(data.Id)" Title="Delete module"></NavLink>
+                        <div style="display: flex; width: 100%">
+                            <div style="width: 75%; text-align: left"><button type="button" class="documentbtn">Documents Module</button></div>
+                            <div style="margin-left: auto; margin-right: 0">
+                                <NavLink style="cursor: pointer" class="oi oi-arrow-circle-bottom text-primary mt-2 text-decoration-none"
+                                    @onclick=" _ => DisableModule(data.Id)" title="Disable this module"></NavLink>
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                <article class="activitybox">
+                    <article class="activitybox">
 
-                    <table class="table" style="color: #555"> @*Grå text*@
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Aktivity</th>
-                                <th>Type</th>
-                                <th>Date</th>
-                                <th>Items</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var act in activities)
-                            {
+                        <table class="table" style="color: #555"> @*Grå text*@
+                            <thead>
                                 <tr>
-                                    @if (act.ModuleId == data.Id)
-                                    {
-                                        <td>@act.Id</td>
-                                        <td><em style="cursor: pointer" title="@act.Description -Click for edit-"
-                                            @onclick=" _ => EditActivity(act.Id)">@act.Name</em></td>
-                                        <td>
-                                            @foreach (var actype in activityTypes)
-                                            {
-                                                if (actype.Id == act.ActivityTypeId)
-                                                {
-                                                    @actype.Name
-                                                }
-                                            }
-                                        </td>
-                                        <td>@StartEndDate(act.StartDate, act.EndDate)</td>
-                                    }
+                                    <th>No</th>
+                                    <th>Aktivity</th>
+                                    <th>Type</th>
+                                    <th>Date</th>
+                                    <th>Items</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                    <div><button type="button" class="documentbtn">Documents Activity</button></div>
+                            </thead>
+                            <tbody>
+                                @foreach (var act in activities)
+                                {
+                                    if (act.IsActive)
+                                    {
+                                        <tr>
+                                            @if (act.ModuleId == data.Id)
+                                            {
+                                                <td>@act.Id</td>
+                                                <td>
+                                                    <i style="cursor: pointer" title="@act.Description -Click for edit-"
+                                                        @onclick=" _ => EditActivity(act.Id)">@act.Name</i>
+                                                </td>
+                                                <td>
+                                                    @foreach (var actype in activityTypes)
+                                                    {
+                                                        if (actype.Id == act.ActivityTypeId)
+                                                        {
+                                                            @actype.Name
+                                                        }
+                                                    }
+                                                </td>
+                                                <td>@StartEndDate(act.StartDate, act.EndDate)</td>
+                                                <td>
+                                                    <div style="margin-left: auto; margin-right: 0">
+                                                        <NavLink style="cursor: pointer" class="oi oi-arrow-circle-bottom text-primary mt-2 text-decoration-none"
+                                                            @onclick=" _ => DisableActivity(act.Id)" title="Disable this activity"></NavLink>
+                                                    </div>
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        <tr style="color:#AAA; background-color:#EEE">
+                                            @if (act.ModuleId == data.Id)
+                                            {
+                                                <td>@act.Id</td>
+                                                <td>
+                                                    <i style="cursor: pointer" title="@act.Description -Click for edit-"
+                                                        @onclick=" _ => EditActivity(act.Id)">@act.Name</i>
+                                                </td>
+                                                <td>
+                                                    <div style="font-weight: bold; color:red">DISABLE</div>
+                                                </td>
+                                                <td>@StartEndDate(act.StartDate, act.EndDate)</td>
+                                                <td>
+                                                    <div style="margin-left: auto; margin-right: 0">
+                                                        <NavLink style="cursor: pointer" class="oi oi-arrow-circle-top text-primary mt-2 text-decoration-none"
+                                                            @onclick=" _ => ActivateActivity(act.Id)" title="Activate this activity"></NavLink>
+                                                    </div>
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                        <div><button type="button" class="documentbtn">Documents Activity</button></div>
+
+                    </article>
+                }
+                else
+                {
+                    <section class="modulebox" style="color:grey; background-color:lightgrey">
+                        <div style="display: flex; width: 100%">
+                            <div style="width: 75%; text-align: left">
+                                <b title="@data.Description -Click for edit-">
+                                    Module @data.Id:
+                                    <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i>
+                                </b>
+                            </div>
+                            <div style="margin-left: auto; margin-right: 0"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
+                        </div>
+                        <div style="display: flex; width: 100%">
+                            <div style="width: 75%; text-align: left"><button type="button" class="documentbtn">Documents Module</button></div>
+                            <div style="font-weight: bold; color:red">DISABLE</div>
+                            <div style="margin-left: auto; margin-right: 0">
+                                <NavLink style="cursor: pointer" class="oi oi-arrow-circle-top text-primary mt-2 text-decoration-none"
+                                    @onclick=" _ => ActivateModule(data.Id)" title="Activate this module"></NavLink>
+                            </div>
+                        </div>
+                    </section>
+
+                    <article class="activitybox" style="background-color:#EEE">
+
+                        <table class="table" style="color:#AAA"> @*Grå text*@
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Aktivity</th>
+                                    <th>Type</th>
+                                    <th>Date</th>
+                                    <th>Items</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var act in activities)
+                                {
+                                    <tr>
+                                        @if (act.ModuleId == data.Id)
+                                        {
+                                            <td>@act.Id</td>
+                                            <td><i style="cursor: pointer" title="@act.Description -Click for edit-"
+                                                @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
+                                            <td>
+                                                @foreach (var actype in activityTypes)
+                                                {
+                                                    if (actype.Id == act.ActivityTypeId)
+                                                    {
+                                                        @actype.Name
+                                                    }
+                                                }
+                                            </td>
+                                            <td>@StartEndDate(act.StartDate, act.EndDate)</td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <div><button type="button" class="documentbtn">Documents Activity</button></div>
                     
-                </article>
+                    </article>
+                }
             }
         }
 
@@ -107,16 +212,21 @@
     private List<ActivityTypeDto> activityTypes = new();
 
     private string CourseName = string.Empty;
-    private int CourseId;
+    private string NoModels = string.Empty;
+    private string CourseDescription = string.Empty;
     private string CourseDate = string.Empty;
-    private bool DeleteFlag;
+    private int CourseId;
+
     private string TestMess1 = string.Empty; // Test.
     private string TestMess2 = string.Empty; // Test.
 
     protected override async Task OnInitializedAsync()
     {
-        xnav.SetDone("hide", "");
-        xnav.SetError("hide", "");
+        xnav.SetReset('a');
+
+        courses.Clear(); // Direkt feedback kräver att listorna rensas.
+        modules.Clear();
+        activities.Clear();
 
         var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
         var activityType = await xClient.GetAsync<IEnumerable<ActivityTypeDto>>("api/Acttype");
@@ -130,6 +240,7 @@
                 if (cour.Id == IId) // Hämtar Kursinfo.
                 {
                     CourseName = cour.Name;
+                    CourseDescription = cour.Description;
                     CourseId = cour.Id;
                     CourseDate = StartEndDate(cour.StartDate, cour.EndDate);
 
@@ -145,7 +256,11 @@
                 }
             }
         }
-        if (modules.Count < 1) CourseName = "No modules could be find...";
+        if (modules.Count < 1)
+        {
+            NoModels = "No modules could be find...";
+            CourseName = "";
+        }
 
         if (activityType is not null) // Hämtar aktivitetstyper.
         {
@@ -158,37 +273,120 @@
         return $"{start.ToString().Substring(0, 10)} | {end.ToString().Substring(0, 10)}";
     }
 
-    private async Task DeleteControll(int id)
+    private async Task DisableModule(int id) // Växlar till inaktiv modul.
     {
-        foreach (var cour in courses)
+        var module = await xClient.GetAsync<IEnumerable<ModuleDto>>("api/Module");
+
+        if (module is not null)
         {
-            foreach (var mod in cour.Modules)
+            foreach (var mod in module)
             {
                 if (mod.Id == id)
                 {
-                    DeleteFlag = true;
-                    foreach (var act in mod.Activities) // Kollar om det finns några aktiviteter.
-                    {
-                        DeleteFlag = false;
-                    }
+                    var lmod = GetNewModObject(mod, false);
+                    await xClient.PutAsync<ModuleDto>(id, lmod, "api/Module");
+                    var element = modules.FirstOrDefault(e => e.Id == id);
+                    if (element is not null) element = lmod;
                 }
             }
         }
-        if (DeleteFlag)
+        await OnInitializedAsync();
+    }
+
+    private async Task DisableActivity(int id) // Växlar till inaktiv aktivitet.
+    {
+        var activity = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
+
+        if (activity is not null)
         {
-            xnav.SetDone("xnavdone", "This module was deleted.");
-            xnav.SetError("hide", "");
-            StateHasChanged();
-            await Task.Delay(1000);
-            await xClient.RemAsync(id, "api/Module");
-            Navigation.NavigateTo("/teacherallcourses", true);
-            DeleteFlag = false;
+            foreach (var act in activity)
+            {
+                if (act.Id == id)
+                {
+                    var lact = GetNewActObject(act, false);
+                    await xClient.PutAsync<ActivityDto>(id, lact, "api/Activity");
+                    var element = activities.FirstOrDefault(e => e.Id == id);
+                    if (element is not null) element = lact;
+                }
+            }
         }
-        else
+        await OnInitializedAsync();
+    }
+
+    private async Task ActivateModule(int id) // Växlar till aktiv modul.
+    {
+        var module = await xClient.GetAsync<IEnumerable<ModuleDto>>("api/Module");
+
+        if (module is not null)
         {
-            xnav.SetError("xnaverror", "All activities belonging to a module must be deleted before a module can be deleted.");
-            xnav.SetDone("hide", "");
+            foreach (var mod in module)
+            {
+                if (mod.Id == id)
+                {
+                    var lmod = GetNewModObject(mod, true);
+                    await xClient.PutAsync<ModuleDto>(id, lmod, "api/Module");
+                    var element = modules.FirstOrDefault(e => e.Id == id);
+                    if (element is not null) element = lmod;
+                }
+            }
         }
+        await OnInitializedAsync();
+    }
+
+    private async Task ActivateActivity(int id) // Växlar till aktiv aktivitet.
+    {
+        var activity = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
+
+        if (activity is not null)
+        {
+            foreach (var act in activity)
+            {
+                if (act.Id == id)
+                {
+                    var lact = GetNewActObject(act, true);
+                    await xClient.PutAsync<ActivityDto>(id, lact, "api/Activity");
+                    var element = activities.FirstOrDefault(e => e.Id == id);
+                    if (element is not null) element = lact;
+                }
+            }
+        }
+        await OnInitializedAsync();
+    }
+
+    private ModuleDto GetNewModObject(ModuleDto mod, bool isactive) // Nytt modulobjekt.
+    {
+        var dto = new ModuleDto
+            {
+                Id = mod.Id,
+                Name = mod.Name,
+                Description = mod.Description,
+                StartDate = mod.StartDate,
+                EndDate = mod.EndDate,
+                IsActive = isactive,
+                CourseId = mod.CourseId
+            };
+        return dto;
+    }
+
+    private ActivityDto GetNewActObject(ActivityDto act, bool isactive) // Nytt aktivitetsobject.
+    {
+        var dto = new ActivityDto
+            {
+                Id = act.Id,
+                Name = act.Name,
+                Description = act.Description,
+                StartDate = act.StartDate,
+                EndDate = act.EndDate,
+                IsActive = isactive,
+                ActivityTypeId = act.ActivityTypeId,
+                ModuleId = act.ModuleId
+            };
+        return dto;
+    }
+
+    private void StudentPage()
+    {
+        Navigation.NavigateTo($"/studentallstudents", true);
     }
 
     private void EditCourse(int id)
@@ -204,5 +402,15 @@
     private void EditActivity(int id)
     {
         Navigation.NavigateTo($"/courseeditactivity/{id}", true);
+    }
+
+    private async Task Intermission(int time, bool hide) // Paus.
+    {
+        if (hide)
+        {
+            xnav.SetReset('a');
+        }
+        base.StateHasChanged();
+        await Task.Delay(time);
     }
 }

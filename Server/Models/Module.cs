@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace LexiconLMSBlazor.Server.Models
 {
@@ -23,6 +17,8 @@ namespace LexiconLMSBlazor.Server.Models
 
         [Required]
         public DateTime EndDate { get; set; }
+
+        public bool IsActive { get; set; } = true;
 
         // Foreign Key
         public int? CourseId { get; set; }

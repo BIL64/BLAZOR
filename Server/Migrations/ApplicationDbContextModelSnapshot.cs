@@ -181,6 +181,9 @@ namespace LexiconLMSBlazor.Server.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("ModuleId")
                         .HasColumnType("int");
 
@@ -383,6 +386,9 @@ namespace LexiconLMSBlazor.Server.Migrations
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()

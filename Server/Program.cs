@@ -54,7 +54,7 @@ namespace LexiconLMSBlazor.Server
 
                 try
                 {
-                    await SeedData.InitAsync(db, serviceProvider);
+                    await SeedDataUser.InitAsync(db, serviceProvider);
                 }
                 catch (Exception e)
                 {

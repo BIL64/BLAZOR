@@ -13,7 +13,9 @@
 <AuthorizeView Roles="Student, Teacher">
     <Authorized>
         <nav style="display: flex; width: 100%">
-            <div style="width: 75%; text-align: left"><h3>@loggeduser.FirstName, this is your course: @CourseName</h3></div>
+            <div style="width: 75%; text-align: left"><h3>@loggeduser.FirstName, this is your course:
+                <em style="cursor: pointer" @onclick=" _ => InfoTitle(CourseDescription)">@CourseName</em></h3>
+            </div>
             <div style="margin-left: auto; margin-right: 0"><h5>@CourseDate</h5></div>
         </nav>
         <br />
@@ -27,56 +29,62 @@
         {
             @foreach (var data in modules)
             {
-                <section class="modulebox">
-                    <div style="display: flex; width: 100%">
-                        <div style="width: 75%; text-align: left">
-                            <b title="@data.Description">Module @data.Id: <em>@data.Name &nbsp;</em></b>
+                if (data.IsActive)
+                {
+                    <section class="modulebox">
+                        <div style="display: flex; width: 100%">
+                            <div style="width: 75%; text-align: left">
+                                <b>Module @data.Id: <em style="cursor: pointer" @onclick=" _ => InfoTitle(data.Description)">@data.Name</em></b>
+                            </div>
+                            <div style="margin-left: auto; margin-right: 0"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
                         </div>
-                        <div style="margin-left: auto; margin-right: 0"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
-                    </div>
-                    <div style="display: flex; width: 100%">
-                        <div style="width: 75%; text-align: left"><button type="button" class="documentbtn">Documents Module</button></div>
-                    </div>
-                </section>
+                        <div style="display: flex; width: 100%">
+                            <div style="width: 75%; text-align: left"><button type="button" class="documentbtn">Documents Module</button></div>
+                        </div>
+                    </section>
 
-                <article class="activitybox">
+                    <article class="activitybox">
 
-                    <table class="table" style="color: #555">@*Grå text*@
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Aktivity</th>
-                                <th>Type</th>
-                                <th>Date</th>
-                                <th>Items</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var act in activities)
-                            {
+                        <table class="table" style="color: #555">@*Grå text*@
+                            <thead>
                                 <tr>
-                                    @if (act.ModuleId == data.Id)
-                                    {
-                                        <td>@act.Id</td>
-                                        <td><em title="@act.Description">@act.Name</em></td>
-                                        <td>
-                                            @foreach (var actype in activityTypes)
-                                            {
-                                                if (actype.Id == act.ActivityTypeId)
-                                                {
-                                                    @actype.Name
-                                                }
-                                            }
-                                        </td>
-                                        <td>@StartEndDate(act.StartDate, act.EndDate)</td>
-                                    }
+                                    <th>No</th>
+                                    <th>Aktivity</th>
+                                    <th>Type</th>
+                                    <th>Date</th>
+                                    <th>Items</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                    <div><button type="button" class="documentbtn">Documents Activity</button></div>
+                            </thead>
+                            <tbody>
+                                @foreach (var act in activities)
+                                {
+                                    if (act.IsActive)
+                                    {
+                                        <tr>
+                                            @if (act.ModuleId == data.Id)
+                                            {
+                                                <td>@act.Id</td>
+                                                <td><em style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</em></td>
+                                                <td>
+                                                    @foreach (var actype in activityTypes)
+                                                    {
+                                                        if (actype.Id == act.ActivityTypeId)
+                                                        {
+                                                            @actype.Name
+                                                        }
+                                                    }
+                                                </td>
+                                                <td>@StartEndDate(act.StartDate, act.EndDate)</td>
+                                            }
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                        <div><button type="button" class="documentbtn">Documents Activity</button></div>
 
-                </article>
+                    </article>
+                }
             }
         }
 
@@ -99,14 +107,13 @@
     private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
 
     private string CourseName = string.Empty;
+    private string CourseDescription = string.Empty;
     private int CourseId;
     private string CourseDate = string.Empty;
-    private bool DeleteFlag;
 
     protected override async Task OnInitializedAsync()
     {
-        xnav.SetDone("hide", "");
-        xnav.SetError("hide", "");
+        xnav.SetReset('a');
 
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         var user = authstate.User;
@@ -129,6 +136,7 @@
                 if (cour.Id == loggeduser.CourseId) // Hämtar Kursinfo.
                 {
                     CourseName = cour.Name;
+                    CourseDescription = cour.Description;
                     CourseId = cour.Id;
                     CourseDate = StartEndDate(cour.StartDate, cour.EndDate);
 
@@ -158,5 +166,11 @@
     private string StartEndDate(DateTime start, DateTime end) // Returnerar datumsträng.
     {
         return $"{start.ToString().Substring(0, 10)} | {end.ToString().Substring(0, 10)}";
+    }
+
+    private void InfoTitle(string description)
+    {
+        xnav.SetInfo("xnavinfo", description);
+        xnav.SetReset('i');
     }
 }

@@ -114,25 +114,51 @@ a, .btn-link {
     display: none;
 }
 
-.xnavdone {
+i {
+    color: darkblue;
+    text-decoration: underline;
+}
+
+.xnavwindow {
     display: block;
     font-size: 0.8rem;
     width: 95%;
+    padding: 2px;
+    margin-top: 10%;
+    margin-left: 2%;
+    border-radius: 5px;
+    background-color:deepskyblue ;
+}
+
+.xnavinfo {
+    display: block;
+    font-size: 0.8rem;
+    width: 94%;
     padding: 5px;
-    margin: 2%;
-    border: 1px antiquewhite solid;
-    color: antiquewhite;
+    margin: 3%;
+    color: white;
+}
+
+.xnavdone {
+    display: block;
+    font-size: 0.8rem;
+    width: 94%;
+    padding: 5px;
+    margin: 3%;
+    border: 2px darkblue solid;
+    border-radius: 5px;
+    color: darkblue;
 }
 
 .xnaverror {
     display: block;
     font-size: 0.8rem;
-    width: 95%;
+    width: 94%;
     padding: 5px;
-    margin: 2%;
-    margin-top: 10%;
-    border: 1px yellow solid;
-    color: yellow;
+    margin: 3%;
+    border: 2px red solid;
+    border-radius: 5px;
+    color: red;
 }
 
 .coursebox {
@@ -149,7 +175,8 @@ a, .btn-link {
     display: block;
     padding: 10px;
     margin-bottom: 20px;
-    border: 1px black solid;
+    border: 4px lightgrey solid;
+    border-radius: 8px;
     background-color: ghostwhite;
 }
 
@@ -166,7 +193,8 @@ a, .btn-link {
     display: block;
     padding: 10px;
     margin-bottom: 20px;
-    border: 1px black solid;
+    border: 4px grey solid;
+    border-radius: 8px;
     background-color: sandybrown;
 }
 
@@ -184,7 +212,8 @@ a, .btn-link {
     display: block;
     padding: 10px;
     margin-bottom: 20px;
-    border: 1px black solid;
+    border: 4px grey solid;
+    border-radius: 8px;
     background-color: lightblue;
 }
 

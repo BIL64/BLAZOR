@@ -49,12 +49,13 @@
 
     public async Task Show(string bodyText, string headerText = "Remove this user...")
     {
-        xnav.SetDone("hide", "");
-        xnav.SetError("hide", "");
+        xnav.SetReset('a');
 
         IsVisible = false;
         StateHasChanged();
         await Task.Delay(200);
+        xnav.SetDone("xnavdone", "Keep in mind that the delete window can be found last in the table. Use search to more easily reach all delete functions.");
+        xnav.SetReset('d');
         HeaderText = headerText;
         BodyText = bodyText;
         IsVisible = true;
@@ -72,7 +73,7 @@
     private async Task DeleteNow()
     {
         xnav.SetDone("xnavdone", "This student was deleted.");
-        xnav.SetError("hide", "");
+        xnav.SetReset('d');
 
         await appuserClient.RemAsync(Auxx.GuidId);
         Close();
@@ -81,7 +82,7 @@
     private async Task Redirect()
     {
         xnav.SetDone("xnavdone", "This student was redirected to a teacher.");
-        xnav.SetError("hide", "");
+        xnav.SetReset('d');
 
         await appuserClient.PreAsync(Auxx.GuidId, 12);
         Close();

@@ -1,4 +1,5 @@
 ﻿@page "/teacherallteachers"
+
 @using System.Diagnostics;
 @inject NavigationManager Navigation
 @inject IAppUserDtoClient appuserClient
@@ -52,13 +53,11 @@ else
                         @{IsCourse = false;}
                     </td>
                     <td class="noline">
-                    @if (data.Id is not null && data.UserRole != 0)
+                    @if (data.Id is not null)
                     {
                         <button type="button" class="text-white coursebtn" @onclick="Explorer"
                         title="Add document to teacher">DOC</button> // CSS!
-                    }
-                    @if (data.Id is not null && data.UserRole != 0)
-                    {
+
                         <button type="button" class="text-white coursebtn" @onclick="OpenCloseCourse"
                         title="Add/change course for student">Course</button> // CSS!
                         <div class="dropdown">
@@ -70,11 +69,9 @@ else
                                 }
                             </div>
                         </div>
-                    }
-                    @if (data.Id is not null)
-                    {
+
                         <button type="button" class="oi oi-circle-x text-white delbtn" @onclick=" _ => DeletePage(data.Id)"
-                            title="Delete or redirect user"></button> // CSS!
+                        title="Delete or redirect user"></button> // CSS!
                     }
                     </td>
                 </tr>
@@ -115,8 +112,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        xnav.SetDone("hide", "");
-        xnav.SetError("hide", "");
+        xnav.SetReset('a');
 
         teachers.Clear(); // Sökfunktionen kräver att listorna rensas.
         courses.Clear();
@@ -167,10 +163,20 @@ else
         await appuserClient.PreAsync(id, courseId);
         Emptydb = "This teacher has now been updated...";
         Emptydbcolor = "headeron";
-        base.StateHasChanged();
-        await Task.Delay(500);
+        await Intermission(500, false);
         Emptydb = "List of teachers";
         Emptydbcolor = "headeroff";
         await OnInitializedAsync();
+    }
+
+    private async Task Intermission(int time, bool hide) // Paus.
+    {
+        if (hide)
+        {
+            xnav.SetDone("hide", "");
+            xnav.SetError("hide", "");
+        }
+        base.StateHasChanged();
+        await Task.Delay(time);
     }
 }
