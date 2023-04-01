@@ -1,19 +1,51 @@
 ﻿@inject NavigationManager Navigation
+@inject IXDtoClient xClient
+@inject XNavMenu xnav
 
 <AuthorizeView>
     <Authorized>
+        <span class="@xnav.classRegStatus">@xnav.RegText</span>
         <a href="authentication/profile">Hello, @context.User.Identity?.Name!</a>
         <button class="nav-link btn btn-link" @onclick="BeginLogOut">Log out</button>
     </Authorized>
     <NotAuthorized>
-        <a href="authentication/register">Register</a>
+        <span class="@xnav.classReg"><a href="authentication/register">Register</a></span>
         <a href="authentication/login">Log in</a>
     </NotAuthorized>
 </AuthorizeView>
 
 @code{
+
     private void BeginLogOut()
     {
         Navigation.NavigateToLogout("authentication/logout");
     }
- }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var regist = await xClient.GetAsync<RegisterDto>(1, "api/Register");
+
+            if (regist is not null) xnav.classReg = regist.RegClass;
+            else xnav.classReg = "show";
+        }
+        catch
+        {
+            xnav.classReg = "show";
+        }
+
+        if (xnav.classReg == "show")
+        {
+            xnav.classRegStatus = "regon";
+            xnav.RegText = "REG ON";
+        }
+        else
+        {
+            xnav.classRegStatus = "regoff";
+            xnav.RegText = "REG OFF";
+        }
+
+        xnav.OnChange += StateHasChanged;
+    }
+}

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LexiconLMSBlazor.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230323162509_Init")]
+    [Migration("20230329113654_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -405,6 +405,22 @@ namespace LexiconLMSBlazor.Server.Migrations
                     b.HasIndex("CourseId");
 
                     b.ToTable("Module");
+                });
+
+            modelBuilder.Entity("LexiconLMSBlazor.Server.Models.Register", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("RegClass")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Register");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

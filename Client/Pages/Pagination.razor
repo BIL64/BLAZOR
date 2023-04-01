@@ -1,0 +1,111 @@
+﻿@inject IXDtoClient xClient
+@inject XNavMenu xnav
+@attribute [Authorize]
+@*Av Sukhrob Ilyosbekov - Stack Overflow*@
+@*Endast lärare har åtkomst hit*@
+
+@{
+    var showClass = IsVisible ? "d-block" : "d-none";
+}
+
+<AuthorizeView Roles ="Teacher">
+    <Authorized>
+    <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
+    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">@HeaderText</strong>
+            <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+        </div>
+
+        <div class="toast-body">
+            @BodyText
+            <EditForm Model="@xClient" Context="paginationlmslexnet" OnSubmit="HandleSubmitPagination">
+                <div class="form-group m-md-3">
+                    <InputCheckbox id="switch" class="control-label checkbox" type="checkbox" @bind-Value="PagOn" />
+                        <label class="control-label toggle" for="switch"></label>
+                    @if (PagOn)
+                    {
+                        <span style="position: relative; top: -3px"> Pagination ON</span>
+                    }
+                    else
+                    {
+                        <span style="position: relative; top: -3px"> Pagination OFF</span>
+                    }
+                </div>
+                <div class="form-group m-3">
+                    <label for="Rows">Set rows</label>
+                    <InputNumber id="Rows" class="form-control" @bind-Value="PagRows" Min="1" title="Maximum number of rows for a page" placeholder="Enter rows" />
+                </div>
+                <div class="form-group m-3">
+                    <button type="submit" class="text-white rembtn" style="margin-right: 20px">Save settings</button>
+                    <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+    </Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    [Parameter]
+    public string? HeaderText { get; set; }
+
+    [Parameter]
+    public string? BodyText { get; set; }
+
+    private bool PagOn;
+
+    private int PagRows;
+
+    public void Show(string bodyText, string headerText = "Pagination settings...")
+    {
+        xnav.SetReset('a');
+
+        PagOn = Auxx.PagOn;
+        PagRows = Auxx.PagRows;
+        HeaderText = headerText;
+        BodyText = bodyText;
+        IsVisible = true;
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        HeaderText = string.Empty;
+        BodyText = string.Empty;
+        IsVisible = false;
+        StateHasChanged();
+    }
+
+    private async Task HandleSubmitPagination()
+    {
+        try
+        {
+            Auxx.PagOn = PagOn;
+            Auxx.PagRows = PagRows;
+            StateHasChanged();
+            await xClient.SetStorage<string>("Pag1On", PagOn.ToString());
+            await xClient.SetStorage<string>("Pag1Rows", PagRows.ToString());
+        }
+        catch
+        {
+            xnav.SetError("xnaverror", "An error occurred while saving to local storage.");
+            xnav.SetReset('e');
+            StateHasChanged();
+            await Task.Delay(3000);
+        }
+        Close(); // Ingen omnavigering eftersom det nollställer de statiska variablerna.
+    }
+}

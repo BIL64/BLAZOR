@@ -45,22 +45,35 @@
                             <div style="width: 75%; text-align: left">
                                 @data.Id.&nbsp; <em style="cursor: pointer" title="@data.Description -Click for edit-"
                                 @onclick=" _ => RedirectToCourse(data.Id)">@data.Name</em>
-                                @if (data.Total_M != 1)
-                                {
-                                    <span style="margin-left: 2%; color:sandybrown">@data.Total_M modules,</span>
-                                }
-                                else
-                                {
-                                    <span style="margin-left: 2%; color:sandybrown">@data.Total_M module,</span>
-                                }
-                                @if (data.Total_S != 1)
-                                {
-                                    <span style="margin-left: 2%; color:lightslategray">@data.Total_S students</span>
-                                }
-                                else
-                                {
-                                    <span style="margin-left: 2%; color:lightslategray">@data.Total_S student</span>
-                                }
+
+                                @if (data.Total_M == 1) SP = "module"; else SP = "modules";
+                                <span style="margin-left: 2%; color:sandybrown" class="dropdown">
+                                    <span><span>@data.Total_M</span><span>&nbsp;@SP,</span></span>
+                                    <span style="font-size: 0.78rem; padding: 3px" class="dropdown-content">
+                                        @foreach (var item in modules) // Snabbtitt.
+                                        {
+                                            if (item.CourseId == data.Id)
+                                            {
+                                                <div>@item.Id. @item.Name</div>
+                                            }
+                                        }
+                                    </span>
+                                </span>
+
+                                @if (data.Total_S == 1) SP = "student"; else SP = "students";
+                                <span style="margin-left: 2%; color:slategray" class="dropdown">
+                                    <span><span>@data.Total_S</span><span>&nbsp;@SP</span></span>
+                                    <span style="font-size: 0.78rem; padding: 3px" class="dropdown-content">
+                                        @foreach (var item in users) // Snabbtitt.
+                                        {
+                                            if (item.CourseId == data.Id)
+                                            {
+                                                <div>@item.FirstName @item.LastName</div>
+                                            }
+                                        }
+                                    </span>
+                                </span>
+
                             </div>
                                 <b style="margin-left: auto">@StartEndDate(data.StartDate, data.EndDate)</b>&nbsp;
                                 @if (data.Total_M > 0)
@@ -99,10 +112,13 @@
 
     private List<ModuleDto> modules = new();
 
+    private List<AppUserDto> users = new();
+
     private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
 
     private string TeacherName = string.Empty;
     private string searchString = string.Empty;
+    private string SP = string.Empty;
     private string textBtn = "First first";
     private bool DeleteFlag;
     private bool RepeatTable;
@@ -116,7 +132,11 @@
         var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
 
         var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
+        var module = await xClient.GetAsync<IEnumerable<ModuleDto>>("api/Module");
         var appuser = await appuserClient.GetAsync();
+
+        if (module is not null) modules = module.ToList(); // För snabbtitt.
+        if (appuser is not null) users = appuser.ToList();
 
         courses.Clear(); // Sökfunktionen kräver att listan rensas.
 

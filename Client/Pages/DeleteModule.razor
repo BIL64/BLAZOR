@@ -70,7 +70,7 @@
 
         xnav.SetDone("xnavdone", "This module and all its activities were deleted.");
         xnav.SetReset('d');
-        base.StateHasChanged();
+        StateHasChanged();
         await Task.Delay(3000);
         
         do // Så länge foren hittar aktiviteter som hör till modulen.

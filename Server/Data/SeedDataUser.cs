@@ -151,13 +151,13 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
         private static List<ApplicationUser> GenerateStudents(int nrOfStudents)
         {
             var students = new List<ApplicationUser>();
-            var faker = new Faker("fr");
+            var faker = new Faker("sv");
 
             for (int i = 0; i < nrOfStudents; i++)
             {
                 var fName = faker.Name.FirstName();
                 var lName = faker.Name.LastName();
-                var email = faker.Internet.Email(fName, lName, "lexicon.fr"); // SWE!
+                var email = faker.Internet.Email(fName, lName, "lexicon.sv"); // SWE!
                 var phoneNumber = faker.Phone.PhoneNumberFormat();
 
                 var student = new ApplicationUser

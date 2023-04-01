@@ -12,6 +12,12 @@
 
     public string ErrorMess { get; private set; } = string.Empty;
 
+    public string? classReg { get; set; } // show or hide.
+
+    public string? classRegStatus { get; set; } // regon or regoff.
+
+    public string? RegText { get; set; } // REG ON or REG OFF.
+
     public event Action? OnChange;
 
     public void SetInfo(string classx, string info)
@@ -32,6 +38,21 @@
     {
         classErrorMess = classx;
         ErrorMess = error;
+        NotifyStateChanged();
+    }
+
+    public void SetReg(bool onoff)
+    {
+        if (onoff)
+        {
+            classRegStatus = "regon";
+            RegText = "REG ON";
+        }
+        else
+        {
+            classRegStatus = "regoff";
+            RegText = "REG OFF";
+        }
         NotifyStateChanged();
     }
 

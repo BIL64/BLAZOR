@@ -1,5 +1,4 @@
-﻿@inject NavigationManager Navigation
-@inject IAppUserDtoClient appuserClient
+﻿@inject IAppUserDtoClient appuserClient
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Sukhrob Ilyosbekov - Stack Overflow*@
@@ -54,8 +53,8 @@
         IsVisible = false;
         StateHasChanged();
         await Task.Delay(200);
-        xnav.SetDone("xnavdone", "Keep in mind that the delete window can be found last in the table. Use search to more easily reach all delete functions.");
-        xnav.SetReset('d');
+        xnav.SetInfo("xnavdone", "Remember the delete window only can be found at the bottom of the table. Use search for more easily reach all functions.");
+        xnav.SetReset('i');
         HeaderText = headerText;
         BodyText = bodyText;
         IsVisible = true;
@@ -76,6 +75,7 @@
         xnav.SetReset('d');
 
         await appuserClient.RemAsync(Auxx.GuidId);
+        Auxx.DelFlag = true;
         Close();
     }
 
@@ -85,6 +85,7 @@
         xnav.SetReset('d');
 
         await appuserClient.PreAsync(Auxx.GuidId, 12);
+        Auxx.DelFlag = true;
         Close();
     }
 }

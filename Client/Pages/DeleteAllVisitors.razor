@@ -1,5 +1,5 @@
-﻿@inject NavigationManager Navigation
-@inject IAppUserDtoClient appuserClient
+﻿@inject IAppUserDtoClient appuserClient
+@inject IXDtoClient xClient
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Sukhrob Ilyosbekov - Stack Overflow*@
@@ -22,6 +22,7 @@
             @BodyText
             <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove all visitors from the system">DELETE NOW</button>
             <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+            <button type="button" class="text-white rembtn" @onclick="RegOnOff" title="Set register for visitors ON/OFF">REG ON/OFF</button>
         </div>
     </div>
 </div>
@@ -46,7 +47,7 @@
     [Parameter]
     public string? BodyText { get; set; }
 
-    public void Show(string bodyText, string headerText = "Remove ALL visitors!")
+    public void Show(string bodyText, string headerText = "Remove all visitors or set register on/off")
     {
         xnav.SetReset('a');
 
@@ -81,6 +82,60 @@
             }
         }
         HeaderText = string.Empty;
+        Close();
+    }
+
+    private async Task RegOnOff()
+    {
+        bool failure = false;
+
+        try
+        {
+            var regist = await xClient.GetAsync<RegisterDto>(1, "api/Register");
+            if (regist is not null && regist.RegClass == "hide") xnav.classReg = "show";
+            if (regist is not null && regist.RegClass == "show") xnav.classReg = "hide";
+        }
+        catch
+        {
+            xnav.SetError("xnaverror", "The register value in DB is not reachable.");
+            xnav.SetReset('e');
+            failure = true;
+        }
+
+        if (!failure && xnav.classReg == "show")
+        {
+            var lreg = new RegisterDto
+            {
+                Id = 1,
+                RegClass = "show"
+            };
+            await xClient.PutAsync<RegisterDto>(1, lreg, "api/Register");
+
+            xnav.SetDone("xnavdone", "Register for visitors is activated.");
+            xnav.SetReset('d');
+            xnav.SetReg(true);
+        }
+
+        if (!failure && xnav.classReg == "hide")
+        {
+            var lreg = new RegisterDto
+                {
+                    Id = 1,
+                    RegClass = "hide"
+                };
+            await xClient.PutAsync<RegisterDto>(1, lreg, "api/Register");
+
+            xnav.SetDone("xnavdone", "Register for visitors is disable.");
+            xnav.SetReset('d');
+            xnav.SetReg(false);
+        }
+
+        if (!failure && xnav.classReg != "show" && xnav.classReg != "hide")
+        {
+            xnav.SetError("xnaverror", "The register value in DB is corrupted. Id = 1 and RegClass = ”show” or RegClass = ”hide”");
+            xnav.SetReset('e');
+        }
+
         Close();
     }
 }

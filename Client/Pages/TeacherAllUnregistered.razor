@@ -2,6 +2,7 @@
 @using System.Diagnostics;
 @inject NavigationManager Navigation
 @inject IAppUserDtoClient appuserClient
+@inject HttpClient Http
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Björn Lindqvist*@
@@ -26,7 +27,7 @@ else
                 <button type="submit" class="btn m-lg-auto btn-outline-dark">Search</button>
             </span>
             <span class="nav m-lg-auto input-group-append">
-                <button type="button" class="btn m-lg-auto btn-outline-dark" @onclick="DeleteAllVisitors">Delete all</button>
+                <button type="button" class="btn m-lg-auto btn-outline-dark" @onclick="DeleteAllVisitors">Delete all or set REG</button>
             </span>
         </span>
     </EditForm>

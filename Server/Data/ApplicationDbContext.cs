@@ -18,5 +18,6 @@ namespace LexiconLMSBlazor.Server.Data
         public DbSet<Activity> Activity { get; set; } = default!;
         public DbSet<ActivityType> ActivityType { get; set; } = default!;
         public DbSet<Document> Document { get; set; } = default!;
+        public DbSet<Register> Register { get; set; } = default!;
     }
 }

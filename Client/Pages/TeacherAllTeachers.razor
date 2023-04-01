@@ -21,6 +21,18 @@
 }
 else
 {
+    <EditForm Context="searchlmslexnet" Model="@teachers" OnSubmit="OnInitializedAsync">
+        <span class="nav m-lg-auto input-group">
+            <InputText class="form-control" @bind-Value="searchString" placeholder="First or last name" />
+            <span class="nav m-lg-auto input-group-append">
+                <button type="submit" class="btn m-lg-auto btn-outline-dark">Search</button>
+            </span>
+            <span class="nav m-lg-auto input-group-append">
+                <button type="button" @onclick="SortName" class="btn m-lg-auto btn-outline-dark">Sort names</button>
+            </span>
+        </span>
+    </EditForm>
+
     <table class="table">
         <thead>
             <tr>
@@ -96,6 +108,12 @@ else
     {
         Auxx.GuidId = id;
         await deleteRef.Show("");
+
+        if (Auxx.DelFlag)
+        {
+            await OnInitializedAsync();
+            Auxx.DelFlag = false;
+        }
     }
 
     private List<AppUserDto> teachers = new();
@@ -110,6 +128,8 @@ else
 
     private bool IsCourse;
 
+    private string searchString = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         xnav.SetReset('a');
@@ -123,9 +143,19 @@ else
         {
             foreach (var item in appuser)
             {
-                if (item.UserRole == 2) teachers.Add(item);
+                // Sökfiltrering med IndexOf: förnamn eller efternamn.
+                if (!string.IsNullOrWhiteSpace(searchString))
+                {
+                    if (item.UserRole == 2 && (item.FirstName.ToLower().IndexOf(searchString.ToLower()) != -1 ||
+                    item.LastName.ToLower().IndexOf(searchString.ToLower()) != -1)) teachers.Add(item);
+                }
+                else
+                {
+                    if (item.UserRole == 2) teachers.Add(item);
+                }
             }
             if (teachers.Count < 1) Emptydb = "No teachers !";
+            if (!string.IsNullOrWhiteSpace(searchString) && teachers.Count < 1) Emptydb = "There is no teacher with that name...";
         }
         else
         {
@@ -157,13 +187,18 @@ else
         }
     }
 
+    private void SortName() // Sorterar studenter efter deras namn.
+    {
+        teachers = teachers.OrderBy(o => o.FirstName).ToList();
+    }
+
     private async Task GetCourse(string id, int courseId) // Lägger in ny kurs + feedback.
     {
         courseId = courseId + 100;
         await appuserClient.PreAsync(id, courseId);
         Emptydb = "This teacher has now been updated...";
         Emptydbcolor = "headeron";
-        await Intermission(500, false);
+        await Intermission(1000, false);
         Emptydb = "List of teachers";
         Emptydbcolor = "headeroff";
         await OnInitializedAsync();
