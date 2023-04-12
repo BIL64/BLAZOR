@@ -22,7 +22,7 @@
             <EditForm Model="@xClient" Context="paginationlmslexnet" OnSubmit="HandleSubmitPagination">
                 <div class="form-group m-md-3">
                     <InputCheckbox id="switch" class="control-label checkbox" type="checkbox" @bind-Value="PagOn" />
-                        <label class="control-label toggle" for="switch"></label>
+                    <label class="control-label toggle" for="switch"></label>
                     @if (PagOn)
                     {
                         <span style="position: relative; top: -3px"> Pagination ON</span>
@@ -32,9 +32,15 @@
                         <span style="position: relative; top: -3px"> Pagination OFF</span>
                     }
                 </div>
-                <div class="form-group m-3">
-                    <label for="Rows">Set rows</label>
-                    <InputNumber id="Rows" class="form-control" @bind-Value="PagRows" Min="1" title="Maximum number of rows for a page" placeholder="Enter rows" />
+                <div class="form-group row">
+                    <span class="col-6">
+                        <label for="Rows">Set rows</label>
+                        <InputNumber id="Rows" class="form-control" @bind-Value="PagRows" Min="1" title="Maximum number of rows for a page" placeholder="Enter rows" />
+                    </span>
+                    <span class="col-6">
+                        <label for="Red">Set reducing nr.</label>
+                        <InputNumber id="Red" class="form-control" @bind-Value="PagRed" Min="1" title="To reduce the number of visible buttons" placeholder="Enter reducing nr" />
+                    </span>
                 </div>
                 <div class="form-group m-3">
                     <button type="submit" class="text-white rembtn" style="margin-right: 20px">Save settings</button>
@@ -69,12 +75,15 @@
 
     private int PagRows;
 
+    private int PagRed;
+
     public void Show(string bodyText, string headerText = "Pagination settings...")
     {
         xnav.SetReset('a');
 
         PagOn = Auxx.PagOn;
         PagRows = Auxx.PagRows;
+        PagRed = Auxx.PagRed;
         HeaderText = headerText;
         BodyText = bodyText;
         IsVisible = true;
@@ -95,9 +104,11 @@
         {
             Auxx.PagOn = PagOn;
             Auxx.PagRows = PagRows;
+            Auxx.PagRed = PagRed;
             StateHasChanged();
-            await xClient.SetStorage<string>("Pag1On", PagOn.ToString());
-            await xClient.SetStorage<string>("Pag1Rows", PagRows.ToString());
+            await xClient.SetStorage<string>($"Pag{Auxx.PagId}On", PagOn.ToString());
+            await xClient.SetStorage<string>($"Pag{Auxx.PagId}Rows", PagRows.ToString());
+            await xClient.SetStorage<string>($"Pag{Auxx.PagId}Red", PagRed.ToString());
         }
         catch
         {
@@ -106,6 +117,6 @@
             StateHasChanged();
             await Task.Delay(3000);
         }
-        Close(); // Ingen omnavigering eftersom det nollställer de statiska variablerna.
+        Close(); // Ingen omnavigering eftersom det nollställer alla statiska variabler.
     }
 }

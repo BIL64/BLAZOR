@@ -28,14 +28,14 @@
             var regist = await xClient.GetAsync<RegisterDto>(1, "api/Register");
 
             if (regist is not null) xnav.classReg = regist.RegClass;
-            else xnav.classReg = "show";
+            else xnav.classReg = "d-block";
         }
         catch
         {
-            xnav.classReg = "show";
+            xnav.classReg = "d-block";
         }
 
-        if (xnav.classReg == "show")
+        if (xnav.classReg == "d-block")
         {
             xnav.classRegStatus = "regon";
             xnav.RegText = "REG ON";

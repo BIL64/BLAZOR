@@ -75,7 +75,7 @@
         xnav.SetReset('d');
 
         await appuserClient.RemAsync(Auxx.GuidId);
-        Auxx.DelFlag = true;
+        Auxx.PagFlag = true;
         Close();
     }
 
@@ -85,7 +85,7 @@
         xnav.SetReset('d');
 
         await appuserClient.PreAsync(Auxx.GuidId, 12);
-        Auxx.DelFlag = true;
+        Auxx.PagFlag = true;
         Close();
     }
 }

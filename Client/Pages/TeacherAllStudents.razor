@@ -112,23 +112,30 @@ else
     {
         <section class="@Auxx.classPag">
             <div style="margin-left: auto; margin-right: auto">
-                @{var Pnum = new List<int>(); string classBtn; Auxx.PagCount = 0;} @*Skapar en lista för att kunna välja en sida*@
+                @{var Pnum = new List<int>(); Auxx.PagCount = 0;} @*Skapar en lista för att kunna välja en sida*@
                 @for (int i = 1; i <= (int)Math.Ceiling((decimal)this.students.Count / Auxx.PagRows); i++) Pnum.Add(i); @*Antal sidor beräknas*@
-                <span><button class="oi oi-caret-left btn btn-dark px-2 mx-2" @onclick=" _ => PagBtnSet(Auxx.PagPage - 1, 0)"></button></span> @*>>>Sidoknapp*@
+                <span><button class="oi oi-caret-left btn btn-dark px-2 mx-2" @onclick=" _ => PagBtnSet(Auxx.PagPage - 1, 0)"></button></span> @*<<Sidoknapp*@
                 @foreach (var n in Pnum) // Radar upp sidnummerknappar och markerar numret man klickar på.
                 {
-                    if (n == Auxx.PagPage) classBtn = "pagbtnact"; else classBtn = "pagbtn"; @*Nummerknappar*@
-                    <span><button type="button" class="@classBtn" @onclick=" _ => PagBtnSet(n, 0)">@n</button></span>
+                    if (n == Auxx.PagPage) // Markering av sidnummer.
+                    {
+                        <span><button type="button" class="pagbtnact" @onclick=" _ => PagBtnSet(n, 0)">@n</button></span>
+                    }
+                    else
+                    if (n % Auxx.PagRed == 0) // Övriga sidor med eller utan reduktion.
+                    {
+                        <span><button type="button" class="pagbtn" @onclick=" _ => PagBtnSet(n, 0)">@n</button></span>
+                    }
                 }
-                <span><button class="oi oi-caret-right btn btn-dark px-2 mx-2" @onclick=" _ => PagBtnSet(Auxx.PagPage + 1, Pnum.Count)"></button> @*<<<Sidoknapp*@
+                <span><button class="oi oi-caret-right btn btn-dark px-2 mx-2" @onclick=" _ => PagBtnSet(Auxx.PagPage + 1, Pnum.Count)"></button> @*>>Sidoknapp*@
                 <span class="pagfind">&lsaquo;@students.Count&rsaquo;</span></span>  @*Antal hittade*@
-                @{Auxx.classPag = "dflex";} @*Förhindrar att sidoknapparna syns vid reloading*@
+                @{Auxx.classPag = "d-flex";} @*Förhindrar att sidoknapparna syns vid reloading*@
             </div>
         </section>
     }
     else
     {
-        <footer class="dflex"> @*Antal hittade*@
+        <footer class="d-flex"> @*Antal hittade*@
             <div class="pagfind">&lsaquo;@students.Count&rsaquo;</div>
         </footer>
     }
@@ -150,7 +157,34 @@ else
 
     private void PagControl() // Pagineringsfönster.
     {
+        Auxx.PagId = 1; // <-- samma identitetsvärde!
         paginationRef.Show("");
+    }
+
+    private async Task LoadPag()  // Pagineringsinställningar.
+    {
+        try // Alla variabler till pagineringen är statiska.
+        {
+            Auxx.PagOn = bool.Parse(await xClient.GetStorage<string>("Pag1On")); // <-- samma identitetsvärde!
+            Auxx.PagRows = int.Parse(await xClient.GetStorage<string>("Pag1Rows")); // <-- samma identitetsvärde!
+            Auxx.PagRed = int.Parse(await xClient.GetStorage<string>("Pag1Red")); // <-- samma identitetsvärde!
+            Auxx.PagCount = 0;
+            Auxx.PagPage = 1;
+            Auxx.classPag = "d-flex";
+        }
+        catch
+        {
+            xnav.SetError("xnaverror", "An error occurred while trying to open local storage.");
+            xnav.SetReset('e');
+            base.StateHasChanged();
+            await Task.Delay(3000);
+            Auxx.PagOn = false;
+            Auxx.PagCount = 0;
+            Auxx.PagRows = 10; // Noll ger "division by zero"
+            Auxx.PagRed = 1;
+            Auxx.PagPage = 1;
+            Auxx.classPag = "d-flex";
+        }
     }
 
     private async Task DeletePage(string id) // Delete-fönster.
@@ -158,11 +192,7 @@ else
         Auxx.GuidId = id;
         await deleteRef.Show("");
 
-        if (Auxx.DelFlag)
-        {
-            await OnInitializedAsync();
-            Auxx.DelFlag = false;
-        }
+        if (Auxx.PagFlag) await OnInitializedAsync();
     }
 
     private List<AppUserDto> students = new();
@@ -171,7 +201,7 @@ else
 
     private string Emptydb = "List of students";
 
-    private string CourseClass = "text-white coursebtn hide";
+    private string CourseClass = "text-white coursebtn d-none";
 
     private string Emptydbcolor = "headeroff";
 
@@ -187,30 +217,12 @@ else
         xnav.SetReset('a');
         Emptydb = "List of students";
 
-        if (Auxx.PagRows == 0) // Paginering.
+        if (Auxx.PagRows == 0) await LoadPag(); // Paginering.
+        else
         {
-            try // Alla variabler till pagineringen är statiska.
-            {
-                Auxx.PagOn = bool.Parse(await xClient.GetStorage<string>("Pag1On"));
-                Auxx.PagRows = int.Parse(await xClient.GetStorage<string>("Pag1Rows"));
-                Auxx.PagCount = 0;
-                Auxx.PagPage = 1;
-                Auxx.classPag = "dflex";
-            }
-            catch
-            {
-                xnav.SetError("xnaverror", "An error occurred while trying to open local storage.");
-                xnav.SetReset('e');
-                base.StateHasChanged();
-                await Task.Delay(3000);
-                Auxx.PagOn = false;
-                Auxx.PagCount = 0;
-                Auxx.PagRows = 10; // Noll ger "division by zero"
-                Auxx.PagPage = 1;
-                Auxx.classPag = "dflex";
-            }
+            if (!Auxx.PagFlag) Auxx.classPag = "d-none"; // Förhindrar att knapparna synliggörs.
+            Auxx.PagFlag = false;
         }
-        else if (!Auxx.DelFlag) Auxx.classPag = "hide"; // Förhindrar att knapparna synliggörs.
 
         students.Clear(); // Sökfunktionen kräver att listorna rensas.
         courses.Clear();
@@ -290,7 +302,7 @@ else
                 }
 
                 if (courses.Count < 1) Emptydb = "No courses !";
-                if (!string.IsNullOrWhiteSpace(searchString) && courses.Count < 1) Emptydb = "There is no course with that name...";
+                if (!string.IsNullOrWhiteSpace(searchString) && students.Count < 1) Emptydb = "There is no course with that name...";
             }
             else
             {
@@ -323,13 +335,13 @@ else
 
     private void OpenCloseCourse() // Öppnar/stänger +knapp. CSS!
     {
-        if (CourseClass == "text-white coursebtn hide")
+        if (CourseClass == "text-white coursebtn d-none")
         {
-            CourseClass = "text-white coursebtn show";
+            CourseClass = "text-white coursebtn d-block";
         }
         else
         {
-            CourseClass = "text-white coursebtn hide";
+            CourseClass = "text-white coursebtn d-none";
         }
     }
 
@@ -342,6 +354,7 @@ else
         await Intermission(1000, false);
         Emptydb = "List of students";
         Emptydbcolor = "headeroff";
+        Auxx.PagFlag = true;
         await OnInitializedAsync();
     }
 
@@ -359,13 +372,12 @@ else
 
     private bool PagProceed() // Paginering.
     {
-        bool Proceed = true;
+        bool Proceed = false;
 
         // Om man söker ett objekt på en sida med ett högt nummer.
         if (Auxx.PagPage > (int)Math.Ceiling((decimal)this.students.Count / Auxx.PagRows)) Auxx.PagPage = 1;
 
         if ((Auxx.PagCount >= Auxx.PagRows * (Auxx.PagPage - 1) && Auxx.PagCount < Auxx.PagRows * Auxx.PagPage) || !Auxx.PagOn) Proceed = true;
-        else Proceed = false;
 
         return Proceed;
     }
@@ -376,7 +388,7 @@ else
         if (page > pnum && pnum != 0) page = pnum;
 
         Auxx.PagPage = page;
-        Auxx.classPag = "hide";
+        Auxx.classPag = "d-none";
 
         await OnInitializedAsync();
     }

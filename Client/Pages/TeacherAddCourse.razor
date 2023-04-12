@@ -279,10 +279,10 @@
 
     // Klassvariabler för att visa/inte visa formulär.
     private string classCourse = "courseeditbox";
-    private string classModule = "hide";
-    private string classActivi = "hide";
-    private string classActtyp = "hide";
-    private string classTable = "hide";
+    private string classModule = "d-none";
+    private string classActivi = "d-none";
+    private string classActtyp = "d-none";
+    private string classTable = "d-none";
 
     // Klassvariabler för att visa/inte visa knappar.
     private string classCouRegBtn = "btn btn-secondary btn-sm";
@@ -293,8 +293,8 @@
     private string classModBtn = "btn btn-primary btn-sm";
     private string classActRegBtn = "btn btn-secondary btn-sm";
     private string classActSubBtn = "btn btn-success btn-sm";
-    private string classModSubNotBtn = "hide";
-    private string classActSubNotBtn = "hide";
+    private string classModSubNotBtn = "d-none";
+    private string classActSubNotBtn = "d-none";
     private string classActBtn = "btn btn-primary btn-sm";
 
     protected override async Task OnInitializedAsync()
@@ -350,7 +350,7 @@
 
         if (items is not null) activitytypelist = items.ToList();
 
-        classActtyp = "hide";
+        classActtyp = "d-none";
         await Intermission(100, true);
         classActtyp = "activityeditbox";
         repeatActivityType = true;
@@ -368,9 +368,9 @@
             classActivi = "activityeditbox";
             classTable = "activityeditbox";
             stepModule = "Module ready...";
-            classModRegBtn = "hide";
-            classModBtn = "hide";
-            classModSubNotBtn = "hide";
+            classModRegBtn = "d-none";
+            classModBtn = "d-none";
+            classModSubNotBtn = "d-none";
             modulelist.Add(lmod);
         }
     }
@@ -395,7 +395,7 @@
 
     private void AddActivityType() // Hoppar till aktivitetstypfönstret.
     {
-        classCourse = "hide";
+        classCourse = "d-none";
         classActtyp = "activityeditbox";
         repeatActivityType = true;
     }
@@ -428,7 +428,7 @@
 
         if (items is not null) activitytypelist = items.ToList();
 
-        classActtyp = "hide";
+        classActtyp = "d-none";
         await Intermission(100, true);
         classActtyp = "activityeditbox";
         repeatActivityType = true;
@@ -456,10 +456,10 @@
         {
             classModule = "moduleeditbox";
             stepCourse = "Course ready...";
-            classCouRegBtn = "hide";
-            classCouSubBtn = "hide";
-            classCouBtn = "hide";
-            xnav.SetError("hide", "");
+            classCouRegBtn = "d-none";
+            classCouSubBtn = "d-none";
+            classCouBtn = "d-none";
+            xnav.SetError("d-none", "");
         }
         else
         {
@@ -488,8 +488,8 @@
             else activitylist.Add(lact);
             saveActButNot = false;
             repeatModule = true;
-            classActivi = "hide";
-            classActRegBtn = "hide";
+            classActivi = "d-none";
+            classActRegBtn = "d-none";
             classModBtn = "btn btn-primary btn-sm";
             classModSubNotBtn = "btn btn-success btn-sm";
 
@@ -517,7 +517,7 @@
         {
             repeatActivity = true;
             activitylist.Add(lact);
-            classActivi = "hide";
+            classActivi = "d-none";
             await Intermission(100, false);
             classActSubNotBtn = "btn btn-primary btn-sm";
             classActivi = "activityeditbox";

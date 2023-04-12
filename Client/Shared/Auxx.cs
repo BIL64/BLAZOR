@@ -7,15 +7,19 @@ public static class Auxx // Statisk klass med variabler som är åtkomliga över
 
     public static int CourseId { get; set; }
 
-    public static bool DelFlag { get; set; }
+    public static bool PagOn { get; set; } // Paginering - On/Off.
 
-    public static bool PagOn { get; set; } // Paginering.
+    public static byte PagId { get; set; } // Paginering - Identitetsnr.
 
-    public static int PagCount { get; set; } // Paginering.
+    public static int PagCount { get; set; } // Paginering - Antal forloopar.
 
-    public static int PagRows { get; set; } // Paginering.
+    public static int PagRows { get; set; } // Paginering - Satta rader.
 
-    public static int PagPage { get; set; } // Paginering.
+    public static int PagRed { get; set; } // Paginering - Reduceringstal.
 
-    public static string classPag = "dflex"; // Paginering.
+    public static int PagPage { get; set; } // Paginering - Antal sidor.
+
+    public static string classPag { get; set; } = "d-flex"; // Paginering - display:flex.
+
+    public static bool PagFlag { get; set; } // Paginering - Förhindrar utmörkning.
 }

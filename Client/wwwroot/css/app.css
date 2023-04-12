@@ -106,18 +106,6 @@ a, .btn-link {
         font-weight: bold;
     }
 
-.show {
-    display: block;
-}
-
-.hide {
-    display: none;
-}
-
-.dflex {
-    display: flex;
-}
-
 .regon {
     font-size: 0.73rem;
     margin-left: 0;

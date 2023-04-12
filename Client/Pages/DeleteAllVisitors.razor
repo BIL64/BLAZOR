@@ -92,8 +92,8 @@
         try
         {
             var regist = await xClient.GetAsync<RegisterDto>(1, "api/Register");
-            if (regist is not null && regist.RegClass == "hide") xnav.classReg = "show";
-            if (regist is not null && regist.RegClass == "show") xnav.classReg = "hide";
+            if (regist is not null && regist.RegClass == "d-none") xnav.classReg = "d-block";
+            if (regist is not null && regist.RegClass == "d-block") xnav.classReg = "d-none";
         }
         catch
         {
@@ -102,12 +102,12 @@
             failure = true;
         }
 
-        if (!failure && xnav.classReg == "show")
+        if (!failure && xnav.classReg == "d-block")
         {
             var lreg = new RegisterDto
             {
                 Id = 1,
-                RegClass = "show"
+                RegClass = "d-block"
             };
             await xClient.PutAsync<RegisterDto>(1, lreg, "api/Register");
 
@@ -116,12 +116,12 @@
             xnav.SetReg(true);
         }
 
-        if (!failure && xnav.classReg == "hide")
+        if (!failure && xnav.classReg == "d-none")
         {
             var lreg = new RegisterDto
                 {
                     Id = 1,
-                    RegClass = "hide"
+                    RegClass = "d-none"
                 };
             await xClient.PutAsync<RegisterDto>(1, lreg, "api/Register");
 
@@ -130,9 +130,9 @@
             xnav.SetReg(false);
         }
 
-        if (!failure && xnav.classReg != "show" && xnav.classReg != "hide")
+        if (!failure && xnav.classReg != "d-block" && xnav.classReg != "d-none")
         {
-            xnav.SetError("xnaverror", "The register value in DB is corrupted. Id = 1 and RegClass = ”show” or RegClass = ”hide”");
+            xnav.SetError("xnaverror", "The register value in DB is corrupted. Id = 1 and RegClass = ”d-block” or RegClass = ”d-none”");
             xnav.SetReset('e');
         }
 

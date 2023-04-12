@@ -53,7 +53,7 @@ namespace LexiconLMSBlazor.Client.Services
         {
             await _localStorageService.SetItemAsync(name, value);
         }
-        // ex. await xClient.SetStorage<string>("storage_name", "show");
+        // ex. await xClient.SetStorage<string>("storage_name", "d-block");
     }
 
     // Dimitri Björlingh:

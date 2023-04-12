@@ -1,14 +1,14 @@
 ﻿public class XNavMenu // Klass som kan kommunicera med navmenyn.
 {
-    public string classInfoMess { get; private set; } = "hide";
+    public string classInfoMess { get; private set; } = "d-none";
 
     public string InfoMess { get; private set; } = string.Empty;
 
-    public string classDoneMess { get; private set; } = "hide";
+    public string classDoneMess { get; private set; } = "d-none";
 
     public string DoneMess { get; private set; } = string.Empty;
 
-    public string classErrorMess { get; private set; } = "hide";
+    public string classErrorMess { get; private set; } = "d-none";
 
     public string ErrorMess { get; private set; } = string.Empty;
 
@@ -63,8 +63,8 @@
             case 'i':
             case 'I':
                 {
-                    classDoneMess = "hide";
-                    classErrorMess = "hide";
+                    classDoneMess = "d-none";
+                    classErrorMess = "d-none";
                     DoneMess = string.Empty;
                     ErrorMess = string.Empty;
                     NotifyStateChanged();
@@ -73,8 +73,8 @@
             case 'd':
             case 'D':
                 {
-                    classInfoMess = "hide";
-                    classErrorMess = "hide";
+                    classInfoMess = "d-none";
+                    classErrorMess = "d-none";
                     InfoMess = string.Empty;
                     ErrorMess = string.Empty;
                     NotifyStateChanged();
@@ -83,8 +83,8 @@
             case 'e':
             case 'E':
                 {
-                    classInfoMess = "hide";
-                    classDoneMess = "hide";
+                    classInfoMess = "d-none";
+                    classDoneMess = "d-none";
                     InfoMess = string.Empty;
                     DoneMess = string.Empty;
                     NotifyStateChanged();
@@ -92,9 +92,9 @@
                 }
             default:
                 {
-                    classInfoMess = "hide";
-                    classDoneMess = "hide";
-                    classErrorMess = "hide";
+                    classInfoMess = "d-none";
+                    classDoneMess = "d-none";
+                    classErrorMess = "d-none";
                     InfoMess = string.Empty;
                     DoneMess = string.Empty;
                     ErrorMess = string.Empty;

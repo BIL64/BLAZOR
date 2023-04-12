@@ -49,7 +49,7 @@
                                 @if (data.Total_M == 1) SP = "module"; else SP = "modules";
                                 <span style="margin-left: 2%; color:sandybrown" class="dropdown">
                                     <span><span>@data.Total_M</span><span>&nbsp;@SP,</span></span>
-                                    <span style="font-size: 0.78rem; padding: 3px" class="dropdown-content">
+                                    <span style="font-size: 0.78rem; padding: 3px; cursor: default" class="dropdown-content">
                                         @foreach (var item in modules) // Snabbtitt.
                                         {
                                             if (item.CourseId == data.Id)
@@ -60,10 +60,10 @@
                                     </span>
                                 </span>
 
-                                @if (data.Total_S == 1) SP = "student"; else SP = "students";
+                                @if (data.Total_S == 1) SP = "participant"; else SP = "participants";
                                 <span style="margin-left: 2%; color:slategray" class="dropdown">
                                     <span><span>@data.Total_S</span><span>&nbsp;@SP</span></span>
-                                    <span style="font-size: 0.78rem; padding: 3px" class="dropdown-content">
+                                    <span style="font-size: 0.78rem; padding: 3px; cursor: default" class="dropdown-content">
                                         @foreach (var item in users) // Snabbtitt.
                                         {
                                             if (item.CourseId == data.Id)
