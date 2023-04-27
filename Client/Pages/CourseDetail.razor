@@ -1,5 +1,4 @@
 ﻿@page "/coursedetail/{IId:int}"
-@inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject NavigationManager Navigation
 @inject IXDtoClient xClient
 @inject XNavMenu xnav
@@ -12,7 +11,7 @@
 <AuthorizeView Roles="Teacher">
     <Authorized>
         <nav style="display: flex; width: 100%">
-            <div style="width: 75%; text-align: left"><h3>Administration of course @CourseId: @NoModels
+            <div style="width: 75%; text-align: left"><h3>Administration of course @CourseId: @NoModules
                     <i style="cursor: pointer" @onclick=" _ => EditCourse(CourseId)" title="@CourseDescription -Click for edit-">@CourseName</i>
                 </h3>
             </div>
@@ -20,9 +19,42 @@
             <div style="margin-left: auto; margin-right: 0"><button type="button" class="text-white delbtn"
                 @onclick=" _ => StudentPage()" title="Shortcut to student page">S</button>
             </div>
+        </nav> 
+        <nav style="display: flex; width: 100%">
+            <div style="margin-left: auto; margin-right: 0; margin-top: 20px;"><button type="button" class="docplusbtn"
+                @onclick=" _ => DocSaveControl(IId, 2, CourseName)" title="Add a document to this course">+ DOC</button>
+            </div>
         </nav>
-        <br />
-        <p>Plats för dokument...</p>
+
+        <div class="container"> @*Eventuella dokument som ingår läggs ut här*@
+            <div class="d-flex flex-wrap">
+                @foreach (var doc in documents)
+                {
+                    <ul class="nav">
+                        @if (doc.Id4Course == CourseId)
+                        {
+                            <li class="doclink" title="File: @doc.Description by @doc.Author @doc.TimeStamp">
+                                <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)">@doc.DocName</span>
+                                <span class="oi oi-file text-primary text-decoration-none docicon"
+                                @onclick=" _ => DocEditControl(doc.Id, 2)"></span>
+                            </li>
+                            Empty = false;
+                        }
+                    </ul>
+                }
+                <ul class="nav">
+                    @if (!Empty)
+                    {
+                        <li class="oi oi-aperture text-primary text-decoration-none" style="position: relative; top: 9px"
+                            title="Mouse over: Refresh docs and page" @onmouseover="RefreshPage">
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div><br />
+
+        <DocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
+        <DocumentEdit @ref="doceditRef" /> @*Filredigeringsfönster*@
 
         <h5>@TestMess1</h5>
         <h5>@TestMess2</h5>
@@ -40,15 +72,32 @@
                         <div style="display: flex; width: 100%">
                             <div style="width: 75%; text-align: left">
                                 <b title="@data.Description -Click for edit-">Module @data.Id:
-                                    <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
+                                <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
                             </div>
                             <div style="margin-left: auto; margin-right: 0"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
                         </div>
                         <div style="display: flex; width: 100%">
-                            <div style="width: 75%; text-align: left"><button type="button" class="documentbtn">Documents Module</button></div>
+                            <div style="width: 75%; text-align: left; margin-top: 20px">
+                                <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(data.Id, 3, data.Name)" title="Add a document to this module">+ DOC</button>
+                                <div class="dropdoc">
+                                    <button type="button" class="docviewbtn">DOCs</button>
+                                    <div class="dropdoc-content">
+                                        @foreach (var doc in documents)
+                                        {
+                                            if (doc.ModuleId == data.Id)
+                                            {
+                                                // Öppnar filen samt visar dokumentets formulärdata.
+                                                <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
+                                                title="File: @doc.Description by @doc.Author @doc.TimeStamp">@doc.DocName</a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+
+                            </div>
                             <div style="margin-left: auto; margin-right: 0">
                                 <NavLink style="cursor: pointer" class="oi oi-arrow-circle-bottom text-primary mt-2 text-decoration-none"
-                                    @onclick=" _ => DisableModule(data.Id)" title="Disable this module"></NavLink>
+                                @onclick=" _ => DisableModule(data.Id)" title="Disable this module"></NavLink>
                             </div>
                         </div>
                     </section>
@@ -89,10 +138,42 @@
                                                 </td>
                                                 <td>@StartEndDate(act.StartDate, act.EndDate)</td>
                                                 <td>
-                                                    <div style="margin-left: auto; margin-right: 0">
-                                                        <NavLink style="cursor: pointer" class="oi oi-arrow-circle-bottom text-primary mt-2 text-decoration-none"
-                                                            @onclick=" _ => DisableActivity(act.Id)" title="Disable this activity"></NavLink>
+                                                    <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(act.Id, 4, act.Name)"
+                                                    title="Add a document to this activity">+ DOC</button>
+                                                    <div class="dropdoc">
+                                                        <button type="button" class="docviewbtn">DOCs</button>
+                                                        <div class="dropdoc-content">
+                                                            @{Empty = true;}
+                                                            @foreach (var doc in documents)
+                                                            {
+                                                                if (doc.ActivityId == act.Id)
+                                                                {
+                                                                    if (doc.DocName != "")
+                                                                    {
+                                                                        // Öppnar filen samt visar dokumentets formulärdata.
+                                                                        <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
+                                                                        title="File: @doc.Description by @doc.Author @doc.TimeStamp">@doc.DocName</a>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <a @onclick="_ => ShowMessage(doc.Description, doc.Author, doc.TimeStamp)"
+                                                                        title="Mess: @doc.Description @doc.TimeStamp">By @doc.Author</a>
+                                                                    }
+                                                                    Empty = false;
+                                                                }
+                                                            }
+                                                        </div>
                                                     </div>
+                                                    
+                                                    <NavLink style="cursor: pointer" class="oi oi-arrow-circle-bottom text-primary mt-2 text-decoration-none"
+                                                    @onclick=" _ => DisableActivity(act.Id)" title="Disable this activity"></NavLink>
+                                                </td>
+                                                <td>
+                                                    @if (!Empty)
+                                                    {
+                                                        <span class="oi oi-aperture text-primary text-decoration-none" style="position: relative; top: 5px"
+                                                        title="Press for refresh docs and page" @onclick="RefreshPage"></span>
+                                                    }
                                                 </td>
                                             }
                                         </tr>
@@ -105,7 +186,7 @@
                                                 <td>@act.Id</td>
                                                 <td>
                                                     <i style="cursor: pointer" title="@act.Description -Click for edit-"
-                                                        @onclick=" _ => EditActivity(act.Id)">@act.Name</i>
+                                                    @onclick=" _ => EditActivity(act.Id)">@act.Name</i>
                                                 </td>
                                                 <td>
                                                     <div style="font-weight: bold; color:red">DISABLE</div>
@@ -113,8 +194,8 @@
                                                 <td>@StartEndDate(act.StartDate, act.EndDate)</td>
                                                 <td>
                                                     <div style="margin-left: auto; margin-right: 0">
-                                                        <NavLink style="cursor: pointer" class="oi oi-arrow-circle-top text-primary mt-2 text-decoration-none"
-                                                            @onclick=" _ => ActivateActivity(act.Id)" title="Activate this activity"></NavLink>
+                                                    <NavLink style="cursor: pointer" class="oi oi-arrow-circle-top text-primary mt-2 text-decoration-none"
+                                                    @onclick=" _ => ActivateActivity(act.Id)" title="Activate this activity"></NavLink>
                                                     </div>
                                                 </td>
                                             }
@@ -123,7 +204,6 @@
                                 }
                             </tbody>
                         </table>
-                        <div><button type="button" class="documentbtn">Documents Activity</button></div>
 
                     </article>
                 }
@@ -140,11 +220,10 @@
                             <div style="margin-left: auto; margin-right: 0"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
                         </div>
                         <div style="display: flex; width: 100%">
-                            <div style="width: 75%; text-align: left"><button type="button" class="documentbtn">Documents Module</button></div>
-                            <div style="font-weight: bold; color:red">DISABLE</div>
+                            <div style="font-weight: bold; color:red; margin-left: auto; margin-right: auto">DISABLE</div>
                             <div style="margin-left: auto; margin-right: 0">
                                 <NavLink style="cursor: pointer" class="oi oi-arrow-circle-top text-primary mt-2 text-decoration-none"
-                                    @onclick=" _ => ActivateModule(data.Id)" title="Activate this module"></NavLink>
+                                @onclick=" _ => ActivateModule(data.Id)" title="Activate this module"></NavLink>
                             </div>
                         </div>
                     </section>
@@ -185,7 +264,6 @@
                                 }
                             </tbody>
                         </table>
-                        <div><button type="button" class="documentbtn">Documents Activity</button></div>
                     
                     </article>
                 }
@@ -203,6 +281,38 @@
     [Parameter]
     public int IId { get; set; }
 
+    private DocumentAdd? docsaveRef; // Filsparfönster.
+
+    private async Task DocSaveControl(int id, byte doctype, string name) // Filsparfönster.
+    {
+        Auxx.IntId = id;
+        Auxx.DocType = doctype;
+        Auxx.Name4Type = name;
+        await docsaveRef!.Show();
+
+        if (Auxx.Flag)
+        {
+            await OnInitializedAsync();
+            Auxx.Flag = false;
+        }
+    }
+
+    private DocumentEdit? doceditRef; // Filredigeringsfönster.
+
+    private async Task DocEditControl(int id, byte doctype) // Filredigeringsfönster.
+    {
+        Auxx.IntId = id;
+        Auxx.DocType = doctype;
+        Auxx.documents = documents;
+        doceditRef!.Show();
+
+        if (Auxx.Flag)
+        {
+            await OnInitializedAsync();
+            Auxx.Flag = false;
+        }
+    }
+
     private List<CourseDto> courses = new();
 
     private List<ModuleDto> modules = new();
@@ -211,11 +321,14 @@
 
     private List<ActivityTypeDto> activityTypes = new();
 
+    private List<DocumentDto> documents = new();
+
     private string CourseName = string.Empty;
-    private string NoModels = string.Empty;
+    private string NoModules = string.Empty;
     private string CourseDescription = string.Empty;
     private string CourseDate = string.Empty;
     private int CourseId;
+    private bool Empty;
 
     private string TestMess1 = string.Empty; // Test.
     private string TestMess2 = string.Empty; // Test.
@@ -227,9 +340,13 @@
         courses.Clear(); // Direkt feedback kräver att listorna rensas.
         modules.Clear();
         activities.Clear();
+        Empty = true;
 
         var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
         var activityType = await xClient.GetAsync<IEnumerable<ActivityTypeDto>>("api/Acttype");
+        var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+
+        if (document is not null) documents = document.ToList(); // Hämtar alla dokument.
 
         if (course is not null) courses = course.ToList();
 
@@ -258,7 +375,7 @@
         }
         if (modules.Count < 1)
         {
-            NoModels = "No modules could be find...";
+            NoModules = "No modules could be find...";
             CourseName = "";
         }
 
@@ -386,7 +503,7 @@
 
     private void StudentPage()
     {
-        Navigation.NavigateTo($"/studentallstudents", true);
+        Navigation.NavigateTo($"/studentcourse", true);
     }
 
     private void EditCourse(int id)
@@ -402,6 +519,22 @@
     private void EditActivity(int id)
     {
         Navigation.NavigateTo($"/courseeditactivity/{id}", true);
+    }
+
+    private async Task OpenFileControl(int ix, string filename)
+    {
+        await xClient.OpenFile(ix, filename);
+    }
+
+    private void ShowMessage(string description, string author, string timestamp)
+    {
+        xnav.SetInfo("xnavinfo", description + " by " + author + " Created: " + timestamp);
+        xnav.SetReset('i');
+    }
+
+    private async Task RefreshPage()
+    {
+        await OnInitializedAsync();
     }
 
     private async Task Intermission(int time, bool hide) // Paus.

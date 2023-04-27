@@ -1,0 +1,90 @@
+﻿@inject ILogger<CourseDetail> Logger
+@inject IXDtoClient xClient
+@inject XNavMenu xnav
+@attribute [Authorize]
+@*Av Sukhrob Ilyosbekov - Stack Overflow*@
+@*Både studenter och lärare har åtkomst hit*@
+
+@{
+    var showClass = IsVisible ? "d-block" : "d-none";
+}
+
+<AuthorizeView Roles ="Student, Teacher">
+    <Authorized>
+    <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
+    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">@HeaderText</strong>
+            <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+        </div>
+
+        <div class="toast-body">         
+            <div style="font-size: 0.9rem; font-weight: bold">@document.DocName</div>
+            <div class="m-3">@document.Description</div>
+            <div class="m-3">By: @document.Author</div>
+            <div class="m-3">Created: @document.TimeStamp</div>
+            <div class="m-3">
+                <button type="button" class="text-white remyes" @onclick="DeleteFile" title="Remove this file from the system">Delete file</button>
+                <button type="button" class="text-white remnot" @onclick="Close">Exit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    [Parameter]
+    public string? HeaderText { get; set; }
+
+    private DocumentDto document = new();
+
+    public void Show()
+    {
+        xnav.SetReset('a');
+        HeaderText = "Your document file...";
+
+        foreach (var doc in Auxx.documents)
+        {
+            if (doc.Id == Auxx.IntId)
+            {
+                document.Id = doc.Id;
+                document.NameIx = doc.NameIx;
+                document.DocName = doc.DocName;
+                document.Description = doc.Description;
+                document.Author = doc.Author;
+                document.TimeStamp = doc.TimeStamp;
+            }
+        }
+        IsVisible = true;
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        HeaderText = string.Empty;
+        IsVisible = false;
+        StateHasChanged();
+    }
+
+    private async Task DeleteFile()
+    {
+        await xClient.RemAsync(document.Id, "api/Document");
+        await xClient.DeleteFile(document.NameIx + document.DocName);
+        xnav.SetDone("xnavdone", "This document file was deleted.");
+        xnav.SetReset('d');
+        Auxx.Flag = true;
+        Close();
+    }
+}

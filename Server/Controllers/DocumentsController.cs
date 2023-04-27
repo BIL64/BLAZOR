@@ -2,10 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using LexiconLMSBlazor.Server.Data;
 using LexiconLMSBlazor.Server.Models;
+using LexiconLMSBlazor.Shared.Dtos;
 
 namespace LexiconLMSBlazor.Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Document")]
     [ApiController]
     public class DocumentsController : ControllerBase
     {
@@ -18,13 +19,29 @@ namespace LexiconLMSBlazor.Server.Controllers
 
         // GET: api/Documents
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Document>>> GetDocument()
+        public async Task<ActionResult<IEnumerable<DocumentDto>>> GetDocument()
         {
-          if (_context.Document == null)
-          {
-              return NotFound();
-          }
-            return await _context.Document.ToListAsync();
+            if (_context.Document == null)
+            {
+                return NotFound();
+            }
+
+            var dto = _context.Document
+                  .Select(d => new DocumentDto
+                  {
+                      Id = d.Id,
+                      NameIx = d.NameIx,
+                      DocName = d.DocName,
+                      Description = d.Description,
+                      Author = d.Author,
+                      TimeStamp = d.TimeStamp,
+                      UserId = d.UserId,
+                      Id4Course = d.Id4Course,
+                      ModuleId = d.ModuleId,
+                      ActivityId = d.ActivityId
+                  });
+
+            return await dto.ToListAsync();
         }
 
         // GET: api/Documents/5

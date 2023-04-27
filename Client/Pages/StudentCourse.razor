@@ -1,0 +1,343 @@
+﻿@page "/studentcourse"
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject NavigationManager Navigation
+@inject IAppUserDtoClient appuserClient
+@inject IXDtoClient xClient
+@inject XNavMenu xnav
+@attribute [Authorize]
+@*Av Björn Lindqvist*@
+@*Både studenter och lärare har åtkomst hit*@
+
+<PageTitle>Student course</PageTitle>
+
+<AuthorizeView Roles="Student, Teacher">
+    <Authorized>
+        <nav style="display: flex; width: 100%">
+            <div style="width: 75%; text-align: left"><h3>@loggeduser.FirstName, this is your course:
+                <em style="cursor: pointer" @onclick=" _ => InfoTitle(CourseDescription)">@CourseName</em></h3>
+            </div>
+            <div style="margin-left: auto; margin-right: 0"><h5>@CourseDate</h5></div>
+        </nav><br />
+
+        <div class="container"> @*Eventuella dokument som ingår läggs ut här*@
+            <div class="d-flex flex-wrap">
+                @foreach (var doc in documents)
+                {
+                    <ul class="nav">
+                        @if (doc.Id4Course == CourseId)
+                        {
+                            <li class="doclink">
+                                <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title="Mandatory post">@doc.DocName</span>
+                                <span class="oi oi-file text-primary text-decoration-none docicon"
+                                @onclick=" _ => DocUserControl(doc.Id)"></span>
+                            </li>
+                            Empty = false;
+                        }
+
+                        @if (doc.UserId == loggeduser.Id && doc.DocName != "")
+                        {
+                            <li class="doclink" style="background-color:lavenderblush">
+                                <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title="Personal post">@doc.DocName</span>
+                                <span class="oi oi-file text-primary text-decoration-none docicon"
+                                @onclick=" _ => DocUserControl(doc.Id)"></span>
+                            </li>
+                            Empty = false;
+                        }
+
+                        @if (doc.UserId == loggeduser.Id && doc.DocName == "")
+                        {
+                            <li class="oi oi-file text-danger text-decoration-none docicon"
+                                style="position: relative; top: 10px; margin-right: 22px"
+                                @onmouseover=" _ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                @onclick=" _ => DeleteMess(doc.Id)">
+                            </li>
+                            Empty = false;
+                        }
+                    </ul>
+                }
+                <ul class="nav">
+                    @if (!Empty)
+                    {
+                        <li class="oi oi-aperture text-primary text-decoration-none" style="position: relative; top: 9px"
+                            title="Press for refresh docs and page" @onclick="RefreshPage">
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div><br />
+
+        <DeleteMess @ref="deleteRef" /> @*Delete-fönster*@
+        <DocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
+        <DocumentUser @ref="docuserRef" /> @*Filmottagarefönster*@
+
+        @if (modules == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            @foreach (var data in modules)
+            {
+                if (data.IsActive)
+                {
+                    <section class="modulebox">
+                        <div style="display: flex; width: 100%">
+                            <div style="width: 75%; text-align: left">
+                                <b>Module @data.Id: <em style="cursor: pointer" @onclick=" _ => InfoTitle(data.Description)">@data.Name</em></b>
+                            </div>
+                            <div style="margin-left: auto; margin-right: 0"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
+                        </div>
+                        <div style="display: flex; width: 100%; margin-top: 10px">
+                            <div class="dropdoc">
+                                <button type="button" class="docviewbtn">DOCs</button>
+                                <div class="dropdoc-content">
+                                    @foreach (var doc in documents)
+                                    {
+                                        if (doc.ModuleId == data.Id)
+                                        {
+                                            // Öppnar filen samt visar dokumentets formulärdata.
+                                            <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
+                                            title="@doc.Description by @doc.Author @doc.TimeStamp"
+                                            @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)">@doc.DocName</a>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <article class="activitybox">
+
+                        <table class="table" style="color: #555">@*Grå text*@
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Aktivity</th>
+                                    <th>Type</th>
+                                    <th>Date</th>
+                                    <th>Items</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var act in activities)
+                                {
+                                    if (act.IsActive)
+                                    {
+                                        <tr>
+                                            @if (act.ModuleId == data.Id)
+                                            {
+                                                <td>@act.Id</td>
+                                                <td><em style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</em></td>
+                                                <td>
+                                                    @foreach (var actype in activityTypes)
+                                                    {
+                                                        if (actype.Id == act.ActivityTypeId)
+                                                        {
+                                                            @actype.Name
+                                                        }
+                                                    }
+                                                </td>
+                                                <td>@StartEndDate(act.StartDate, act.EndDate)</td>
+                                                <td>
+                                                    @{Empty = true;}
+                                                    <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(act.Id, 40, act.Name)"
+                                                    title="Add a document or a message to this activity">+ DOC</button>
+                                                    <div class="dropdoc">
+                                                        <button type="button" class="docviewbtn">DOCs</button>
+                                                        <div class="dropdoc-content">
+                                                            @foreach (var doc in documents)
+                                                            {
+                                                                if (doc.ActivityId == act.Id)
+                                                                {
+                                                                    if (doc.DocName != "")
+                                                                    {
+                                                                        // Öppnar filen samt visar dokumentets formulärdata.
+                                                                        <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
+                                                                        title="@doc.Description by @doc.Author @doc.TimeStamp"
+                                                                        @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)">@doc.DocName</a>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <a @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                                                        title="@doc.Description by @doc.Author @doc.TimeStamp">By @doc.Author</a>
+                                                                    }
+                                                                    Empty = false;
+                                                                }
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    @if (!Empty)
+                                                    {
+                                                        <span class="oi oi-aperture text-primary text-decoration-none" style="position: relative; top: 2px"
+                                                        title="Press for refresh docs and page" @onclick="RefreshPage"></span>
+                                                    }
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+
+                    </article>
+                }
+            }
+        }
+
+    </Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private DeleteMess? deleteRef; // Delete-fönster.
+
+    private async Task DeleteMess(int id) // Delete-fönster.
+    {
+        Auxx.IntId = id;
+        deleteRef!.Show();
+
+        if (Auxx.Flag) await OnInitializedAsync();
+    }
+
+    private DocumentAdd? docsaveRef; // Filsparfönster.
+
+    private async Task DocSaveControl(int id, byte doctype, string name) // Filsparfönster.
+    {
+        Auxx.IntId = id;
+        Auxx.DocType = doctype;
+        Auxx.Name4Type = name;
+        await docsaveRef!.Show();
+
+        if (Auxx.Flag)
+        {
+            await OnInitializedAsync();
+            Auxx.Flag = false;
+        }
+    }
+
+    private DocumentUser? docuserRef; // Filmottagarefönster.
+
+    private async Task DocUserControl(int id) // Filmottagarefönster.
+    {
+        Auxx.IntId = id;
+        Auxx.documents = documents;
+        docuserRef!.Show();
+
+        if (Auxx.Flag)
+        {
+            await OnInitializedAsync();
+            Auxx.Flag = false;
+        }
+    }
+
+    private List<CourseDto> courses = new();
+
+    private List<ModuleDto> modules = new();
+
+    private List<ActivityDto> activities = new();
+
+    private List<ActivityTypeDto> activityTypes = new();
+
+    private List<DocumentDto> documents = new();
+
+    private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
+
+    private string CourseName = string.Empty;
+    private string CourseDescription = string.Empty;
+    private int CourseId;
+    private string CourseDate = string.Empty;
+    private bool Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        xnav.SetReset('a');
+
+        courses.Clear();
+        modules.Clear();
+        activities.Clear();
+        activityTypes.Clear();
+        Empty = true;
+
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
+
+        var appuser = await appuserClient.GetAsync();
+
+        var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
+        var activityType = await xClient.GetAsync<IEnumerable<ActivityTypeDto>>("api/Acttype");
+        var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+
+        if (document is not null) documents = document.ToList();
+
+        if (course is not null && appuser is not null)
+        {
+            foreach (var item in appuser) // Hämtar den som för tillfället är inloggad.
+            {
+                if (item.Email == name) loggeduser = item;
+            }
+
+            foreach (var cour in course)
+            {
+                if (cour.Id == loggeduser.CourseId) // Hämtar Kursinfo.
+                {
+                    CourseName = cour.Name;
+                    CourseDescription = cour.Description;
+                    CourseId = cour.Id;
+                    CourseDate = StartEndDate(cour.StartDate, cour.EndDate);
+
+                    foreach (var mod in cour.Modules) // Hämtar moduler.
+                    {
+                        modules.Add(mod);
+
+                        foreach (var act in mod.Activities) // Hämtar aktiviteter.
+                        {
+                            activities.Add(act);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            CourseName = "No course could be find...";
+        }
+
+        if (activityType is not null) // Hämtar aktivitetstyper.
+        {
+            activityTypes = activityType.ToList();
+        }
+    }
+
+    private string StartEndDate(DateTime start, DateTime end) // Returnerar datumsträng.
+    {
+        return $"{start.ToString().Substring(0, 10)} | {end.ToString().Substring(0, 10)}";
+    }
+
+    private void InfoTitle(string description)
+    {
+        xnav.SetInfo("xnavinfo", description);
+        xnav.SetReset('i');
+    }
+
+    private async Task OpenFileControl(int ix, string filename)
+    {
+        await xClient.OpenFile(ix, filename);
+    }
+
+    private async Task RefreshPage()
+    {
+        await OnInitializedAsync();
+    }
+
+    private void ShowInfoControl(string description, string author, string timestamp)
+    {
+        xnav.SetInfo("xnavinfo", description + " by " + author + " Created: " + timestamp);
+        xnav.SetReset('i');
+    }
+}

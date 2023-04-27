@@ -67,12 +67,43 @@
                 <button type="button" class="btn btn-secondary btn-sm m-1" @onclick="RegretRefresh" title="Avoid edit module">Regret</button>
                 <button type="submit" class="btn btn-primary btn-sm m-1" title="Save this edit form">Save</button>
                 <button type="button" class="btn btn-primary btn-sm m-1" @onclick="AddThisModule" title="Add this module with one blank activity">Add this module</button>
-                <button type="button" class="btn btn-danger btn-sm" @onclick=" _ => DeleteModule()" title="Remove this module and all its activities">Delete module</button>
+                <button type="button" class="btn btn-danger btn-sm" @onclick=" _ => DeleteModule()"
+                    title="Remove this module, all activities, and all its documents">Delete module</button>
             </div>
         </EditForm>
     </section>
 
-<DeleteModule @ref="deleteRef" /> @*Delete-fönster*@
+    <DeleteModule @ref="deleteRef" /> @*Delete-fönster*@
+
+        <div class="container"> @*Eventuella dokument som ingår läggs ut här*@
+            <div class="d-flex flex-wrap">
+                @{bool Empty = true;}
+                @foreach (var doc in documents)
+                {
+                    <ul class="nav">
+                        @if (doc.ModuleId == IId)
+                        {
+                            <li class="doclink" title="File: @doc.Description by @doc.Author @doc.TimeStamp">
+                                <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)">@doc.DocName</span>
+                                <span class="oi oi-file text-primary text-decoration-none docicon"
+                                @onclick=" _ => DocEditControl(doc.Id, 3)"></span>
+                            </li>
+                            Empty = false;
+                        }
+                    </ul>
+                }
+                <ul class="nav">
+                    @if (!Empty)
+                    {
+                        <li class="oi oi-aperture text-primary text-decoration-none" style="position: relative; top: 9px"
+                            title="Mouse over: Refresh docs and page" @onmouseover="RefreshPage">
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div><br />
+
+    <DocumentEdit @ref="doceditRef" /><br /><br /> @*Filredigeringsfönster*@
 
     </Authorized>
     <NotAuthorized>
@@ -85,13 +116,29 @@
     [Parameter]
     public int IId { get; set; }
 
-    private DeleteModule deleteRef; // Delete-fönster.
+    private DeleteModule? deleteRef; // Delete-fönster.
 
     private async Task DeleteModule() // Delete-fönster.
     {
         Auxx.CourseId = CourseID;
         Auxx.IntId = ModuleID;
-        await deleteRef.Show("");
+        await deleteRef!.Show();
+    }
+
+    private DocumentEdit? doceditRef; // Filredigeringsfönster.
+
+    private async Task DocEditControl(int id, byte doctype) // Filredigeringsfönster.
+    {
+        Auxx.IntId = id;
+        Auxx.DocType = doctype;
+        Auxx.documents = documents;
+        doceditRef!.Show();
+
+        if (Auxx.Flag)
+        {
+            await OnInitializedAsync();
+            Auxx.Flag = false;
+        }
     }
 
     private EditContext moduleContext = default!; // Formulärkontexter.
@@ -102,6 +149,8 @@
 
     private List<ModuleDto> modulelist = new();
 
+    private List<DocumentDto> documents = new();
+
     private int ModuleID; // Modulens Id.
     private int CourseID; // Kursens id.
 
@@ -109,9 +158,14 @@
     {
         xnav.SetReset('a');
 
+        modulelist.Clear();
+
         moduleContext = new EditContext(module); // Formulärkontext.
 
         var allmod = await xClient.GetAsync<IEnumerable<ModuleDto>>("api/Module");
+
+        var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+        if (document is not null) documents = document.ToList(); // Hämtar alla dokument.
 
         if (allmod is not null)
         {
@@ -238,6 +292,16 @@
     private string StartEndDate(DateTime start, DateTime end) // Returnerar datumsträng.
     {
         return $"{start.ToString().Substring(0, 10)} | {end.ToString().Substring(0, 10)}";
+    }
+
+    private async Task OpenFileControl(int ix, string filename)
+    {
+        await xClient.OpenFile(ix, filename);
+    }
+
+    private async Task RefreshPage()
+    {
+        await OnInitializedAsync();
     }
 
     private async Task Intermission(int time, bool hide) // Paus.

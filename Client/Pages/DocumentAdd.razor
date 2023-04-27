@@ -1,0 +1,301 @@
+﻿@using System.Net.Http.Headers
+@using System.Text.Json
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject IAppUserDtoClient appuserClient
+@inject ILogger<CourseDetail> Logger
+@inject IXDtoClient xClient
+@inject XNavMenu xnav
+@attribute [Authorize]
+@*Av Sukhrob Ilyosbekov - Stack Overflow*@
+@*Både studenter och lärare har åtkomst hit*@
+
+@{
+    var showClass = IsVisible ? "d-block" : "d-none";
+}
+
+<AuthorizeView Roles ="Student, Teacher">
+    <Authorized>
+    <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
+    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">@HeaderText</strong>
+            <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+        </div>
+
+        <div class="toast-body">
+            <EditForm Model="@document" Context="documentaddlmslexnet" OnValidSubmit="HandleSubmitDocument">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div style="font-size: 0.8rem; color:darkblue"><em>For @Auxx.Name4Type...</em></div>
+                <div class="@classFile">
+                    <InputFile class="form-control text-white" style="background-color:blueviolet" OnChange="@OnInputFileChange" />
+                </div>
+                <div class="form-group m-3">
+                    <label for="Description">Description / message</label>
+                    <InputTextArea id="Description" class="form-control" @bind-Value="document.Description" placeholder="Enter description" />
+                </div>
+                <div class="@classFile">
+                    <label for="Author">Author / sender</label>
+                    <InputText id="Author" class="form-control" @bind-Value="document.Author" />
+                </div>
+                <div class="form-group m-3">
+                    <button type="submit" class="text-white rembtn" style="margin-right: 15px">Save</button>
+                    <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+                    <button type="button" class="@classBtn" @onclick="ToggleFileMess" title="Toggle between file and message">File/Message</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+    </Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    [Parameter]
+    public string? HeaderText { get; set; }
+
+    private int NameIndex;
+    private bool Upload = false;
+    private string classFile = "form-group m-md-3";
+    private string classBtn = "d-none";
+    private string FileName = string.Empty;
+
+    List<UploadResult> uploadResults = new();
+
+    private MultipartFormDataContent content = new();
+
+    private DocumentDto document = new();
+
+    private List<AppUserDto> users = new();
+
+    private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
+
+    public async Task Show()
+    {
+        xnav.SetReset('a');
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
+        var appuser = await appuserClient.GetAsync();
+        if (appuser is not null) users = appuser.ToList();
+
+        if (appuser is not null && name is not null)
+        {
+            foreach (var item in appuser) // Hämtar den som för tillfället är inloggad.
+            {
+                if (item.Email == name) loggeduser = item;
+            }
+        }
+
+        if (Auxx.DocType == 1) HeaderText = "Add USER document file...";
+        if (Auxx.DocType == 2) HeaderText = "Add COURSE document file...";
+        if (Auxx.DocType == 3) HeaderText = "Add MODULE document file...";
+        if (Auxx.DocType == 4) HeaderText = "Add ACTIVITY document file...";
+        if (Auxx.DocType == 10) HeaderText = "Add USER file or message...";
+        if (Auxx.DocType == 20) HeaderText = "Add COURSE file or message...";
+        if (Auxx.DocType == 30) HeaderText = "Add MODULE file or message...";
+        if (Auxx.DocType == 40) HeaderText = "Add ACTIVITY file or message...";
+        if (Auxx.DocType > 5) classBtn = "text-white rembtn";
+        uploadResults = new();
+        content = new();
+        document = new();
+        document.Author = loggeduser.FirstName + ' ' + loggeduser.LastName;
+        NameIndex = 0;
+        IsVisible = true;
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        HeaderText = string.Empty;
+        IsVisible = false;
+        StateHasChanged();
+    }
+
+    private async Task OnInputFileChange(InputFileChangeEventArgs e) // Sparar en eller flera filer på servern.
+    {
+        List<File> files = new();
+        int maxAllowedFiles = 1; // Max 1 fil!
+        long maxFileSize = 1024 * 977; // Max 1Mb.
+
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            var response = new ExistDto();
+
+            do // Ökar filnamsindexet tills filnamnet är unikt.
+            {
+                NameIndex++;
+                response = await xClient.ExistFile<ExistDto>(NameIndex + file.Name, "Filesave");
+            } while (response is not null && response.IsFile);
+
+            if (response is not null)
+            {
+                if (uploadResults.SingleOrDefault(f => f.FileName == file.Name) is null)
+                {
+                    try
+                    {
+                        files.Add(new() { Name = file.Name });
+                        FileName = file.Name;
+
+                        var fileContent = new StreamContent(file.OpenReadStream(maxFileSize));
+                        fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+
+                        content.Add(content: fileContent, name: "\"files\"", fileName: NameIndex + file.Name);
+                        Upload = true;
+
+                        xnav.SetDone("xnavdone", "Selected file Ok. " + NameIndex + file.Name);
+                        xnav.SetReset('d');
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogInformation("{file.Name} not selected (Err: 6): {ex.Message}", file.Name, ex.Message);
+
+                        uploadResults.Add(
+                            new()
+                                {
+                                    FileName = file.Name,
+                                    ErrorCode = 6,
+                                    Uploaded = false
+                                });
+
+                        Upload = false;
+                        xnav.SetError("xnaverror", $"{file.Name} not selected (Err: 6): {ex.Message}");
+                        xnav.SetReset('e');
+                    }
+                }
+            }
+            else
+            {
+                Logger.LogInformation("{file.Name} error on upload (Err: 3).", file.Name);
+                uploadResults.Add(
+                    new()
+                        {
+                            FileName = file.Name,
+                            ErrorCode = 3,
+                            Uploaded = false
+                        });
+
+                Upload = false;
+                xnav.SetError("xnaverror", "Failed to set a unique filename index.");
+                xnav.SetReset('e');
+            }
+        }
+    }
+
+    private async Task HandleSubmitDocument()
+    {
+        Logger.LogInformation("HandleSubmit called");
+
+        if (Upload && classFile == "form-group m-md-3")
+        {
+            await UploadFile();
+
+            var ldoc = new DocumentDto
+                {
+                    NameIx = NameIndex,
+                    DocName = FileName,
+                    Description = document.Description,
+                    Author = document.Author,
+                    TimeStamp = DateTime.Now.ToString(),
+                    UserId = "",
+                    Id4Course = 0,
+                    ModuleId = 0,
+                    ActivityId = 0
+                };
+
+            if (Auxx.DocType == 1 || Auxx.DocType == 10) ldoc.UserId = Auxx.GuidId;
+            if (Auxx.DocType == 2 || Auxx.DocType == 20) ldoc.Id4Course = Auxx.IntId;
+            if (Auxx.DocType == 3 || Auxx.DocType == 30) ldoc.ModuleId = Auxx.IntId;
+            if (Auxx.DocType == 4 || Auxx.DocType == 40) ldoc.ActivityId = Auxx.IntId;
+
+            await xClient.PostAsync<DocumentDto>(ldoc, "api/Document");
+            xnav.SetDone("xnavdone", "Your document file was added.");
+            xnav.SetReset('d');
+            Auxx.Flag = true;
+            Close();
+        }
+        else
+        {
+            if (classFile == "form-group m-md-3")
+            {
+                xnav.SetError("xnaverror", "The file was not approved or was never selected.");
+                xnav.SetReset('e');
+            }
+        }
+
+        if (classFile == "d-none")
+        {
+            var ldoc = new DocumentDto
+                {
+                    NameIx = 0,
+                    DocName = "",
+                    Description = document.Description,
+                    Author = loggeduser.FirstName + ' ' + loggeduser.LastName,
+                    TimeStamp = DateTime.Now.ToString(),
+                    UserId = "",
+                    Id4Course = 0,
+                    ModuleId = 0,
+                    ActivityId = 0
+                };
+
+            if (Auxx.DocType == 10) ldoc.UserId = Auxx.GuidId;
+            if (Auxx.DocType == 20) ldoc.Id4Course = Auxx.IntId;
+            if (Auxx.DocType == 30) ldoc.ModuleId = Auxx.IntId;
+            if (Auxx.DocType == 40) ldoc.ActivityId = Auxx.IntId;
+
+            await xClient.PostAsync<DocumentDto>(ldoc, "api/Document");
+            xnav.SetDone("xnavdone", "Your message was posted.");
+            xnav.SetReset('d');
+            Auxx.Flag = true;
+            Close();
+        }
+    }
+
+    private async Task UploadFile()
+    {
+        var response = await xClient.PostFile(content); // Postoperationen!
+
+        if (response.IsSuccessStatusCode)
+        {
+            var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                };
+
+            using var responseStream = await response.Content.ReadAsStreamAsync();
+
+            var newUploadResults = await JsonSerializer
+                .DeserializeAsync<IList<UploadResult>>(responseStream, options);
+
+            if (newUploadResults is not null)
+            {
+                uploadResults = uploadResults.Concat(newUploadResults).ToList();
+            }
+        }
+    }
+
+    private void ToggleFileMess()
+    {
+        if (classFile == "form-group m-md-3")
+        {
+            classFile = "d-none";
+            HeaderText = "* M E S S A G E *";
+        }
+        else
+        {
+            classFile = "form-group m-md-3";
+            HeaderText = "* F I L E *";
+        }
+    }
+}

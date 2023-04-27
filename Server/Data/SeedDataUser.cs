@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Module = LexiconLMSBlazor.Server.Models.Module;
 using Activity = LexiconLMSBlazor.Server.Models.Activity;
+using System.Linq.Expressions;
 
 namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
 {
@@ -22,7 +23,6 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
             userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
             ArgumentNullException.ThrowIfNull(userManager);
 
-
             var teacherEmail = "teacher@lms.se";
 
             var teacherPassword = "Pass@Word00!";
@@ -35,6 +35,8 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
             var teacher = await AddTeacherAsync(teacherEmail, teacherPassword);
 
             await AddToRolesAsync(teacher, roleNames); //OK
+
+            var register = GenerateRegClass(); //BL
 
             var activityTypes = GenerateActivityTypes(); //OK
 
@@ -50,11 +52,17 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
                 course.Users = students;
             }
 
+            db.Add(register); //BL
             db.AddRange(activityTypes); //OK
-
 
             await db.AddRangeAsync(courses); //OK
             await db.SaveChangesAsync();
+        }
+
+        private static Register GenerateRegClass()
+        {
+            var reg = new Register { RegClass = "d-block" };
+            return reg;
         }
 
         private static List<ActivityType> GenerateActivityTypes()
@@ -67,7 +75,6 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
                 new ActivityType{ Name = "Lectures"},
                 new ActivityType{ Name = "Other"},
             };
-
             return list;
         }
 
@@ -86,7 +93,6 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
         private static List<Activity> GenerateActivities(int nrOfActivities)
         {
             var faker = new Faker("sv");
-
             var activities = new List<Activity>();
 
             for (int i = 0; i < nrOfActivities; i++)
@@ -99,16 +105,13 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
                     EndDate = faker.Date.Recent(),
                     ActivityTypeId = faker.Random.Number(1, 5)
                 };
-
                 activities.Add(temp);
             }
-
             return activities;
         }
 
         private static IEnumerable<Course> GenerateCourses(int nrOfCourses)
         {
-
             var courses = new List<Course>();
             var faker = new Faker("sv");
             var rnd = new Random();
@@ -117,7 +120,7 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
             {
                 var modules = new List<Module>();
 
-                int rak = rnd.Next(1, 4);
+                int rak = rnd.Next(1, 8);
                 for (int j = 0; j < rak; j++)
                 {
                     modules.Add(new Module
@@ -140,13 +143,11 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
                     Modules = modules,
 
                 };
-
                 courses.Add(temp);
-
             }
-
             return courses;
         }
+
         //Students Part Added in version 2
         private static List<ApplicationUser> GenerateStudents(int nrOfStudents)
         {
@@ -172,7 +173,6 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
 
                 students.Add(student);
             }
-
             return students;
         }
         private static async Task AddToRolesAsync(ApplicationUser teacher, string[] roleNames)
@@ -184,6 +184,7 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
                 if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
             }
         }
+
         private static async Task<ApplicationUser> AddTeacherAsync(string teacherEmail, string teacherPW)
         {
             var findTeacherByEmail = await userManager.FindByEmailAsync(teacherEmail);
@@ -202,9 +203,9 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
 
             return teacher;
         }
+
         private static async Task AddStudentsAsync(List<ApplicationUser> students, string role, string password)
         {
-
             foreach (var student in students)
             {
 
@@ -217,6 +218,5 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
                 await userManager.AddToRoleAsync(student, role);
             }
         }
-
     }
 }

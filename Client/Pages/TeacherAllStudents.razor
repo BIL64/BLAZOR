@@ -45,6 +45,8 @@ else
     </EditForm>
 
     <Pagination @ref="paginationRef" /> @*Pagineringsfönster*@
+    <DocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
+    <DocumentEdit @ref="doceditRef" /> @*Filredigeringsfönster*@
 
     <table class="table">
         <thead>
@@ -82,14 +84,28 @@ else
                         <td class="noline">
                             @if (data.Id is not null)
                             {
-                                <button type="button" class="text-white coursebtn" @onclick="Explorer"
-                                title="Add document to student">DOC</button> // CSS!
+                                // Laddar upp ett privat dokument till en särskild student.
+                                <button type="button" class="text-white coursebtn" @onclick=" _ => LoadFile(data.Id, 10, data.FirstName + ' ' + data.LastName)"
+                                title="Add document to student">+Doc</button> // CSS!
+                                <div class="dropdoc">
+                                    <button type="button" class="@DocClass">Docs</button>
+                                    <div class="dropdoc-content">
+                                        @foreach (var doc in documents)
+                                        {
+                                            if (doc.UserId == data.Id)
+                                            {
+                                                <a @onclick="_ => DocEditControl(doc.Id, 1)"
+                                                title="File: @doc.Description by @doc.Author @doc.TimeStamp">@doc.Id. @doc.DocName</a> // Öppnar filen (dokumentet).
+                                            }
+                                        }
+                                    </div>
+                                </div>
  
                                 <button type="button" class="text-white coursebtn" @onclick="OpenCloseCourse"
                                 title="Add/change course for student">Course</button> // CSS!
-                                <div class="dropdown">
+                                <div class="dropuse">
                                     <button type="button" class="@CourseClass">+</button>
-                                    <div class="dropdown-content">
+                                    <div class="dropuse-content">
                                         @foreach (var item in courses)
                                         {
                                             <a @onclick="_ => GetCourse(data.Id, item.Id)">@item.Name</a> // Lägger in en ny kurs för användaren.
@@ -108,7 +124,7 @@ else
         </tbody>
     </table>
 
-    if (Auxx.PagOn) // Paginering.
+    if (Auxx.PagOn) // PAGINERING.
     {
         <section class="@Auxx.classPag">
             <div style="margin-left: auto; margin-right: auto">
@@ -125,6 +141,10 @@ else
                     if (n % Auxx.PagRed == 0) // Övriga sidor med eller utan reduktion.
                     {
                         <span><button type="button" class="pagbtn" @onclick=" _ => PagBtnSet(n, 0)">@n</button></span>
+                    }
+                    if (Auxx.PagRed > 1) // Mellanslag vid reduktion.
+                    {
+                        <span>&nbsp;</span>
                     }
                 }
                 <span><button class="oi oi-caret-right btn btn-dark px-2 mx-2" @onclick=" _ => PagBtnSet(Auxx.PagPage + 1, Pnum.Count)"></button> @*>>Sidoknapp*@
@@ -151,14 +171,14 @@ else
 
 @code {
 
-    private Pagination paginationRef; // Pagineringsfönster.
+    private Pagination? paginationRef; // Pagineringsfönster.
 
-    private DeleteStudent deleteRef; // Delete-fönster.
+    private DeleteStudent? deleteRef; // Delete-fönster.
 
     private void PagControl() // Pagineringsfönster.
     {
         Auxx.PagId = 1; // <-- samma identitetsvärde!
-        paginationRef.Show("");
+        paginationRef!.Show();
     }
 
     private async Task LoadPag()  // Pagineringsinställningar.
@@ -181,7 +201,7 @@ else
             Auxx.PagOn = false;
             Auxx.PagCount = 0;
             Auxx.PagRows = 10; // Noll ger "division by zero"
-            Auxx.PagRed = 1;
+            Auxx.PagRed = 1; // Noll ger "division by zero"
             Auxx.PagPage = 1;
             Auxx.classPag = "d-flex";
         }
@@ -190,18 +210,47 @@ else
     private async Task DeletePage(string id) // Delete-fönster.
     {
         Auxx.GuidId = id;
-        await deleteRef.Show("");
+        await deleteRef!.Show();
 
-        if (Auxx.PagFlag) await OnInitializedAsync();
+        if (Auxx.Flag) await OnInitializedAsync();
+    }
+
+    private DocumentAdd? docsaveRef; // Filsparfönster.
+
+    private async Task DocSaveControl(string id, byte doctype, string name) // Filsparfönster.
+    {
+        Auxx.GuidId = id;
+        Auxx.DocType = doctype;
+        Auxx.Name4Type = name;
+        await docsaveRef!.Show();
+    }
+
+    private DocumentEdit? doceditRef; // Filredigeringsfönster.
+
+    private async Task DocEditControl(int id, byte doctype) // Filredigeringsfönster.
+    {
+        Auxx.IntId = id;
+        Auxx.DocType = doctype;
+        Auxx.documents = documents;
+        doceditRef!.Show();
+
+        if (Auxx.Flag)
+        {
+            await OnInitializedAsync();
+            Auxx.Flag = false;
+        }
     }
 
     private List<AppUserDto> students = new();
 
     private List<CourseDto> courses = new();
 
+    private List<DocumentDto> documents = new();
+
     private string Emptydb = "List of students";
 
-    private string CourseClass = "text-white coursebtn d-none";
+    private string DocClass = "d-none";
+    private string CourseClass = "d-none";
 
     private string Emptydbcolor = "headeroff";
 
@@ -217,12 +266,15 @@ else
         xnav.SetReset('a');
         Emptydb = "List of students";
 
-        if (Auxx.PagRows == 0) await LoadPag(); // Paginering.
+        if (Auxx.PagRows == 0 || Auxx.PagRed == 0) await LoadPag(); // Paginering.
         else
         {
-            if (!Auxx.PagFlag) Auxx.classPag = "d-none"; // Förhindrar att knapparna synliggörs.
-            Auxx.PagFlag = false;
+            if (!Auxx.Flag) Auxx.classPag = "d-none"; // Förhindrar att knapparna synliggörs.
+            Auxx.Flag = false;
         }
+
+        var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+        if (document is not null) documents = document.ToList(); // Hämtar alla dokument.
 
         students.Clear(); // Sökfunktionen kräver att listorna rensas.
         courses.Clear();
@@ -328,21 +380,21 @@ else
         }
     }
 
-    private void Explorer()
+    private async Task LoadFile(string id, byte doctype, string name) // Öppnar filsparfönster.
     {
-        Process.Start("explorer.exe", @"C:\Users");
+        if (DocClass == "text-white coursebtn") DocClass = "d-none"; // Stänger dokumentvisning.
+        else
+        {
+            DocClass = "text-white coursebtn";
+            await DocSaveControl(id, doctype, name);
+        }
     }
 
     private void OpenCloseCourse() // Öppnar/stänger +knapp. CSS!
     {
-        if (CourseClass == "text-white coursebtn d-none")
-        {
-            CourseClass = "text-white coursebtn d-block";
-        }
-        else
-        {
-            CourseClass = "text-white coursebtn d-none";
-        }
+        if (CourseClass == "d-none")
+        CourseClass = "text-white coursebtn";
+        else CourseClass = "d-none";
     }
 
     private async Task GetCourse(string id, int courseId) // Lägger in ny kurs + feedback.
@@ -354,7 +406,7 @@ else
         await Intermission(1000, false);
         Emptydb = "List of students";
         Emptydbcolor = "headeroff";
-        Auxx.PagFlag = true;
+        Auxx.Flag = true;
         await OnInitializedAsync();
     }
 

@@ -1,4 +1,5 @@
 ﻿using Blazored.LocalStorage;
+using Microsoft.JSInterop;
 using System.Net.Http.Json;
 
 namespace LexiconLMSBlazor.Client.Services
@@ -7,12 +8,14 @@ namespace LexiconLMSBlazor.Client.Services
     {
         private readonly HttpClient _httpClient;
         private readonly ILocalStorageService _localStorageService;
+        private readonly IJSRuntime _js;
 
-        public XDtoClient(HttpClient httpClient, ILocalStorageService localStorageService)
+        public XDtoClient(HttpClient httpClient, ILocalStorageService localStorageService, IJSRuntime jS)
         {
             _httpClient = httpClient;
             _localStorageService = localStorageService; // LocalStorage.
             httpClient.BaseAddress = new Uri("https://localhost:7044"); // Lokal databas.            
+            _js = jS;
         }
 
         public async Task<T?> GetAsync<T>(string route)
@@ -47,13 +50,33 @@ namespace LexiconLMSBlazor.Client.Services
         {
             return await _localStorageService.GetItemAsync<T>(name);
         }
-        // ex. string = await xClient.GetStorage<string>("storage_name");
 
         public async Task SetStorage<T>(string name, string value) // LocalStorage Set.
         {
             await _localStorageService.SetItemAsync(name, value);
         }
-        // ex. await xClient.SetStorage<string>("storage_name", "d-block");
+
+        public async Task<HttpResponseMessage> PostFile(MultipartFormDataContent content) // Sparar namnkrypterade filer på servern.
+        {
+            var response = await _httpClient.PostAsync($"{_httpClient.BaseAddress}Filesave", content);
+            return response;
+        }
+
+        public async Task OpenFile(int ix, string filename) // Öppnar en fil med hjälp av ett javascript.
+        {
+            await _js.InvokeVoidAsync("triggerFileDownload", filename, $"{_httpClient.BaseAddress}Documents/{ix.ToString() + filename}");
+        }
+
+        public async Task<T?> ExistFile<T>(string filename, string route) // Kollar om filens filnamn redan existerar.
+        {
+            var response = await _httpClient.GetFromJsonAsync<T>($"{route}/{filename}");
+            return response;
+        }
+
+        public async Task<bool> DeleteFile(string filename) // Tar bort en namnkrypterad fil på servern.
+        {
+            return (await _httpClient.DeleteAsync($"Filesave/{filename}")).IsSuccessStatusCode;
+        }
     }
 
     // Dimitri Björlingh:

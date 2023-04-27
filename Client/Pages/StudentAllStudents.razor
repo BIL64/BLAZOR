@@ -1,6 +1,5 @@
 ﻿@page "/studentallstudents"
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
-@inject NavigationManager Navigation
 @inject IAppUserDtoClient appuserClient
 @inject IXDtoClient xClient
 @inject XNavMenu xnav
@@ -12,83 +11,110 @@
 
 <AuthorizeView Roles="Student, Teacher">
     <Authorized>
-        <nav style="display: flex; width: 100%">
-            <div style="width: 75%; text-align: left"><h3>@loggeduser.FirstName, this is your course:
-                <em style="cursor: pointer" @onclick=" _ => InfoTitle(CourseDescription)">@CourseName</em></h3>
-            </div>
-            <div style="margin-left: auto; margin-right: 0"><h5>@CourseDate</h5></div>
-        </nav>
-        <br />
-        <p>Plats för dokument...</p>
+<h4>@Emptydb</h4>
 
-        @if (modules == null)
-        {
-            <p><em>Loading...</em></p>
-        }
-        else
-        {
-            @foreach (var data in modules)
+@if (students == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <EditForm Context="searchlmslexnet" Model="@students" OnSubmit="OnInitializedAsync">
+        <span class="nav m-lg-auto input-group">
+            <InputText class="form-control" @bind-Value="searchString" placeholder="First or last name" />
+            <span class="nav m-lg-auto input-group-append">
+                <button type="submit" class="btn m-lg-auto btn-outline-dark">Search</button>
+            </span>
+            <span class="nav m-lg-auto input-group-append">
+                <button type="button" @onclick="SortName" class="btn m-lg-auto btn-outline-dark">Sort names</button>
+            </span>
+        </span>
+    </EditForm>
+
+    <DocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Email</th>
+                <th>Phone number</th>
+                <th>Course</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var data in students)
             {
-                if (data.IsActive)
+                if (data.UserRole == 2)
                 {
-                    <section class="modulebox">
-                        <div style="display: flex; width: 100%">
-                            <div style="width: 75%; text-align: left">
-                                <b>Module @data.Id: <em style="cursor: pointer" @onclick=" _ => InfoTitle(data.Description)">@data.Name</em></b>
-                            </div>
-                            <div style="margin-left: auto; margin-right: 0"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
-                        </div>
-                        <div style="display: flex; width: 100%">
-                            <div style="width: 75%; text-align: left"><button type="button" class="documentbtn">Documents Module</button></div>
-                        </div>
-                    </section>
-
-                    <article class="activitybox">
-
-                        <table class="table" style="color: #555">@*Grå text*@
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Aktivity</th>
-                                    <th>Type</th>
-                                    <th>Date</th>
-                                    <th>Items</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var act in activities)
+                    <tr style="color: darkred">                    
+                        <td>@data.FirstName @data.LastName (teacher)</td>
+                        <td>@data.Email</td>
+                        <td>@data.PhoneNumber</td>
+                        <td>
+                            @foreach (var item in courses) // Hämtar kursen som motsvarar dess id.
+                            {
+                                if (item.Id == data.CourseId)
                                 {
-                                    if (act.IsActive)
-                                    {
-                                        <tr>
-                                            @if (act.ModuleId == data.Id)
-                                            {
-                                                <td>@act.Id</td>
-                                                <td><em style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</em></td>
-                                                <td>
-                                                    @foreach (var actype in activityTypes)
-                                                    {
-                                                        if (actype.Id == act.ActivityTypeId)
-                                                        {
-                                                            @actype.Name
-                                                        }
-                                                    }
-                                                </td>
-                                                <td>@StartEndDate(act.StartDate, act.EndDate)</td>
-                                            }
-                                        </tr>
-                                    }
+                                    IsCourse = true;
+                                    <span>@item.Name</span>
                                 }
-                            </tbody>
-                        </table>
-                        <div><button type="button" class="documentbtn">Documents Activity</button></div>
+                            }
+                            @if (!IsCourse)
+                            {
+                                <span>No course yet...</span>
+                            }
+                            @{IsCourse = false;}
+                        </td>
+                        <td class="noline">
+                            @if (data.Id is not null)
+                            {
+                                <button type="button" class="text-white coursebtn" @onclick=" _ => DocSaveControl(data.Id, 10, data.FirstName + ' ' + data.LastName)"
+                                title="Add document to student">+Doc</button> // CSS!
+                            }
+                        </td>
+                    </tr>
+                }
 
-                    </article>
+                if (data.UserRole == 1)
+                {
+                    <tr style="color: darkblue">                    
+                        <td>@data.FirstName @data.LastName</td>
+                        <td>@data.Email</td>
+                        <td>@data.PhoneNumber</td>
+                        <td>
+                            @foreach (var item in courses) // Hämtar kursen som motsvarar dess id.
+                            {
+                                if (item.Id == data.CourseId)
+                                {
+                                    IsCourse = true;
+                                    <span>@item.Name</span>
+                                }
+                            }
+                            @if (!IsCourse)
+                            {
+                                <span>No course yet...</span>
+                            }
+                            @{IsCourse = false;}
+                        </td>
+                        <td class="noline">
+                            @if (data.Id is not null)
+                            {
+                                <button type="button" class="text-white coursebtn" @onclick=" _ => DocSaveControl(data.Id, 10, data.FirstName + ' ' + data.LastName)"
+                                title="Add document to student">+Doc</button> // CSS!
+                            }
+                        </td>
+                    </tr>
                 }
             }
-        }
+        </tbody>
+    </table>
 
-    </Authorized>
+    <footer class="d-flex"> @*Antal hittade*@
+        <div class="pagfind">&lsaquo;@students.Count&rsaquo;</div>
+    </footer>
+}
+</Authorized>
     <NotAuthorized>
         <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
     </NotAuthorized>
@@ -96,24 +122,34 @@
 
 @code {
 
+    private DocumentAdd? docsaveRef; // Filsparfönster.
+
+    private async Task DocSaveControl(string id, byte doctype, string name) // Filsparfönster.
+    {
+        Auxx.GuidId = id;
+        Auxx.DocType = doctype;
+        Auxx.Name4Type = name;
+        await docsaveRef!.Show();
+    }
+
+    private List<AppUserDto> students = new();
+
     private List<CourseDto> courses = new();
-
-    private List<ModuleDto> modules = new();
-
-    private List<ActivityDto> activities = new();
-
-    private List<ActivityTypeDto> activityTypes = new();
 
     private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
 
-    private string CourseName = string.Empty;
-    private string CourseDescription = string.Empty;
-    private int CourseId;
-    private string CourseDate = string.Empty;
+    private string Emptydb = "List of students";
+    private string searchString = string.Empty;
+
+    private bool IsCourse;
 
     protected override async Task OnInitializedAsync()
     {
         xnav.SetReset('a');
+        Emptydb = "List of students";
+
+        students.Clear(); // Sökfunktionen kräver att listorna rensas.
+        courses.Clear();
 
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         var user = authstate.User;
@@ -121,56 +157,43 @@
 
         var appuser = await appuserClient.GetAsync();
 
-        var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
-        var activityType = await xClient.GetAsync<IEnumerable<ActivityTypeDto>>("api/Acttype");
-
-        if (course is not null && appuser is not null)
+        if (appuser is not null && name is not null)
         {
             foreach (var item in appuser) // Hämtar den som för tillfället är inloggad.
             {
                 if (item.Email == name) loggeduser = item;
             }
 
-            foreach (var cour in course)
+            foreach (var item in appuser)
             {
-                if (cour.Id == loggeduser.CourseId) // Hämtar Kursinfo.
+                // Sökfiltrering med IndexOf: förnamn eller efternamn + filtrering av studener knutna till den kurs som den som för tillfället är inloggad.
+                if (!string.IsNullOrWhiteSpace(searchString))
                 {
-                    CourseName = cour.Name;
-                    CourseDescription = cour.Description;
-                    CourseId = cour.Id;
-                    CourseDate = StartEndDate(cour.StartDate, cour.EndDate);
-
-                    foreach (var mod in cour.Modules) // Hämtar moduler.
-                    {
-                        modules.Add(mod);
-
-                        foreach (var act in mod.Activities) // Hämtar aktiviteter.
-                        {
-                            activities.Add(act);
-                        }
-                    }
+                    if (item.CourseId == loggeduser.CourseId && (item.FirstName.ToLower().IndexOf(searchString.ToLower()) != -1 ||
+                    item.LastName.ToLower().IndexOf(searchString.ToLower()) != -1)) students.Add(item);
+                }
+                else
+                {
+                    if (item.CourseId == loggeduser.CourseId) students.Add(item);
                 }
             }
+            if (students.Count < 1) Emptydb = "No students !";
         }
         else
         {
-            CourseName = "No course could be find...";
+            Emptydb = "No students !";
         }
 
-        if (activityType is not null) // Hämtar aktivitetstyper.
+        var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
+
+        if (course is not null)
         {
-            activityTypes = activityType.ToList();
+            courses = course.ToList();
         }
     }
 
-    private string StartEndDate(DateTime start, DateTime end) // Returnerar datumsträng.
+    private void SortName() // Sorterar studenter efter deras namn.
     {
-        return $"{start.ToString().Substring(0, 10)} | {end.ToString().Substring(0, 10)}";
-    }
-
-    private void InfoTitle(string description)
-    {
-        xnav.SetInfo("xnavinfo", description);
-        xnav.SetReset('i');
+        students = students.OrderBy(o => o.FirstName).ToList();
     }
 }

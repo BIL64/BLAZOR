@@ -46,7 +46,7 @@ namespace LexiconLMSBlazor.Server.Controllers
                         IsActive = m.IsActive,
                         CourseId = (int)m.CourseId!,
                         Activities = m.Activities.Select(a => new ActivityDto
-                         {
+                        {
                             Id = a.Id,
                             Name = a.Name,
                             Description = a.Description,

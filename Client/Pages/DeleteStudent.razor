@@ -18,7 +18,6 @@
         </div>
 
         <div class="toast-body">
-            @BodyText
             <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove this user from the system">DELETE NOW</button>
             <button type="button" class="text-white remnot" @onclick="Close">NO</button>
             <button type="button" class="text-white remnot" @onclick="Redirect" title="Make this student to a teacher...">To teacher!</button>
@@ -43,10 +42,7 @@
     [Parameter]
     public string? HeaderText { get; set; }
 
-    [Parameter]
-    public string? BodyText { get; set; }
-
-    public async Task Show(string bodyText, string headerText = "Remove this user...")
+    public async Task Show()
     {
         xnav.SetReset('a');
 
@@ -55,8 +51,7 @@
         await Task.Delay(200);
         xnav.SetInfo("xnavdone", "Remember the delete window only can be found at the bottom of the table. Use search for more easily reach all functions.");
         xnav.SetReset('i');
-        HeaderText = headerText;
-        BodyText = bodyText;
+        HeaderText = "Remove this user...";
         IsVisible = true;
         StateHasChanged();
     }
@@ -64,7 +59,6 @@
     private void Close()
     {
         HeaderText = string.Empty;
-        BodyText = string.Empty;
         IsVisible = false;
         StateHasChanged();
     }
@@ -75,7 +69,7 @@
         xnav.SetReset('d');
 
         await appuserClient.RemAsync(Auxx.GuidId);
-        Auxx.PagFlag = true;
+        Auxx.Flag = true;
         Close();
     }
 
@@ -85,7 +79,7 @@
         xnav.SetReset('d');
 
         await appuserClient.PreAsync(Auxx.GuidId, 12);
-        Auxx.PagFlag = true;
+        Auxx.Flag = true;
         Close();
     }
 }

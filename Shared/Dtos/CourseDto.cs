@@ -21,6 +21,8 @@ namespace LexiconLMSBlazor.Shared.Dtos
         public int Total_M { get; set; } // Antal moduler.
 
         public int Total_S { get; set; } // Antal studenter.
+
+        public int Total_D { get; set; } // Antal dokument.
     }
 }
 

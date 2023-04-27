@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LexiconLMSBlazor.Server.Models
+namespace LexiconLMSBlazor.Shared.Dtos
 {
-    public class Document
+    public class DocumentDto
     {
         public int Id { get; set; }
 

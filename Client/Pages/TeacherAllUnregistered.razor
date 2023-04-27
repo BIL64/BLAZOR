@@ -80,19 +80,25 @@ else
 
 @code {
 
-    private DeleteUnregistered deleteRef; // Delete-fönster.
+    private DeleteUnregistered? deleteRef; // Delete-fönster.
 
-    private DeleteAllVisitors deleteAll; // Delete-fönster.
+    private DeleteAllVisitors? deleteAll; // Delete-fönster.
 
     private async Task DeletePage(string id) // Delete-fönster.
     {
         Auxx.GuidId = id;
-        await deleteRef.Show("");
+        await deleteRef!.Show();
+
+        if (Auxx.Flag)
+        {
+            await OnInitializedAsync();
+            Auxx.Flag = false;
+        }
     }
 
     private void DeleteAllVisitors() // Delete-fönster.
     {
-        deleteAll.Show("");
+        deleteAll!.Show();
     }
 
     private List<AppUserDto> visitors = new();
@@ -137,6 +143,19 @@ else
 
     private async Task GetRegistered(string id) // Registrerar den oregistrerade.
     {
+        await Intermission(500, true);
+        xnav.SetDone("xnavdone", "This visitor was registered.");
+        xnav.SetReset('d');
         await appuserClient.PreAsync(id, 1);
+    }
+
+    private async Task Intermission(int time, bool hide) // Paus.
+    {
+        if (hide)
+        {
+            xnav.SetReset('a');
+        }
+        base.StateHasChanged();
+        await Task.Delay(time);
     }
 }

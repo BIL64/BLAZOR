@@ -1,7 +1,7 @@
 ﻿@page "/teacherallcourses"
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
-@inject NavigationManager Navigation
 @inject IAppUserDtoClient appuserClient
+@inject NavigationManager Navigation
 @inject IXDtoClient xClient
 @inject XNavMenu xnav
 @attribute [Authorize]
@@ -13,7 +13,49 @@
 <AuthorizeView Roles="Teacher">
     <Authorized>
         <h4>@TeacherName</h4>
-        <br />
+
+        <div class="container"> @*Eventuella dokument som ingår läggs ut här*@
+            <div class="d-flex flex-wrap">
+                @{bool Empty = true;}
+                @foreach (var doc in documents)
+                {
+                    <ul class="nav">
+                        @if (doc.UserId == loggeduser.Id)
+                        {
+                            if (doc.DocName != "")
+                            {
+                                <li class="doclink" style="background-color:lavenderblush">
+                                    <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title="Personal post">@doc.Id. @doc.DocName</span>
+                                    <span class="oi oi-file text-primary text-decoration-none docicon"
+                                    @onclick=" _ => DocUserControl(doc.Id)"></span>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="oi oi-file text-danger text-decoration-none docicon"
+                                    style="position: relative; top: 10px; margin-right: 22px"
+                                    @onmouseover=" _ => ShowMessage(doc.Description, doc.Author, doc.TimeStamp)"
+                                    @onclick=" _ => DeleteMess(doc.Id)">
+                                </li>
+                            }
+                            Empty = false;
+                        }
+                    </ul>
+                }
+                <ul class="nav">
+                    @if (!Empty)
+                    {
+                        <li class="oi oi-aperture text-primary text-decoration-none" style="position: relative; top: 9px"
+                            title="Press for refresh docs and page" @onclick="RefreshPage">
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div><br />
+
+        <DeleteMess @ref="deleteRef" /> @*Delete-fönster*@
+        <DocumentUser @ref="docuserRef" /> @*Filmottagarefönster*@
+
         <EditForm Context="searchlmslexnet" Model="@courses" OnSubmit="OnInitializedAsync">
             <span class="nav m-lg-auto input-group">
                 <InputText class="form-control" @bind-Value="searchString" placeholder="Course name" />
@@ -24,10 +66,7 @@
                     <button type="button" class="btn m-lg-auto btn-outline-dark" @onclick="ReverseOrder">@textBtn</button>
                 </span>
             </span>
-        </EditForm>
-
-        <br />
-        <p>Plats för dokument...</p>
+        </EditForm><br />
 
         @do
         {
@@ -47,28 +86,80 @@
                                 @onclick=" _ => RedirectToCourse(data.Id)">@data.Name</em>
 
                                 @if (data.Total_M == 1) SP = "module"; else SP = "modules";
-                                <span style="margin-left: 2%; color:sandybrown" class="dropdown">
+                                <span style="margin-left: 2%; color:sandybrown" class="dropuse">
                                     <span><span>@data.Total_M</span><span>&nbsp;@SP,</span></span>
-                                    <span style="font-size: 0.78rem; padding: 3px; cursor: default" class="dropdown-content">
+                                    <span style="font-size: 0.78rem; padding: 3px; cursor: default" class="dropuse-content">
                                         @foreach (var item in modules) // Snabbtitt.
                                         {
                                             if (item.CourseId == data.Id)
                                             {
-                                                <div>@item.Id. @item.Name</div>
+                                                <div>@item.Name</div>
                                             }
                                         }
                                     </span>
                                 </span>
 
                                 @if (data.Total_S == 1) SP = "participant"; else SP = "participants";
-                                <span style="margin-left: 2%; color:slategray" class="dropdown">
-                                    <span><span>@data.Total_S</span><span>&nbsp;@SP</span></span>
-                                    <span style="font-size: 0.78rem; padding: 3px; cursor: default" class="dropdown-content">
+                                <span style="margin-left: 2%; color:slategray" class="dropuse">
+                                    <span><span>@data.Total_S</span><span>&nbsp;@SP,</span></span>
+                                    <span style="font-size: 0.78rem; padding: 3px; cursor: default" class="dropuse-content">
                                         @foreach (var item in users) // Snabbtitt.
                                         {
                                             if (item.CourseId == data.Id)
                                             {
-                                                <div>@item.FirstName @item.LastName</div>
+                                                if (item.UserRole == 1)
+                                                {
+                                                    <div>@item.FirstName @item.LastName</div>
+                                                }
+
+                                                if (item.UserRole == 2)
+                                                {
+                                                    <div style="color:darkred">@item.FirstName @item.LastName</div>
+                                                }
+                                            }
+                                        }
+                                    </span>
+                                </span>
+
+                                @if (data.Total_D == 1) SP = "document"; else SP = "documents";
+                                <span style="margin-left: 2%; color:darkblue" class="dropuse">
+                                    <span><span>@data.Total_D</span><span>&nbsp;@SP</span></span>
+                                    <span style="font-size: 0.78rem; padding: 3px; cursor: default" class="dropuse-content">
+                                        @foreach (var item in documents) // Snabbtitt och som här gäller alla ev dokument i en kurs.
+                                        {
+                                            if (item.Id4Course == data.Id)
+                                            {
+                                                if (item.DocName != "")
+                                                {
+                                                    <div>@item.DocName</div>
+                                                }
+                                                else
+                                                {
+                                                    <div style="color:darkmagenta">From @item.Author</div>
+                                                }
+                                            }
+
+                                            foreach (var mod in modules)
+                                            {
+                                                if (mod.CourseId == data.Id && item.ModuleId == mod.Id)
+                                                {
+                                                    <div>@item.DocName</div>
+                                                }
+
+                                                foreach (var act in activities)
+                                                {
+                                                    if (mod.CourseId == data.Id && act.ModuleId == mod.Id && item.ActivityId == act.Id)
+                                                    {
+                                                        if (item.DocName != "")
+                                                        {
+                                                            <div>@item.DocName</div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div style="color:darkmagenta">From @item.Author</div>
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     </span>
@@ -108,9 +199,38 @@
 
 @code {
 
+    private DeleteMess? deleteRef; // Delete-fönster.
+
+    private async Task DeleteMess(int id) // Delete-fönster.
+    {
+        Auxx.IntId = id;
+        deleteRef!.Show();
+
+        if (Auxx.Flag) await OnInitializedAsync();
+    }
+
+    private DocumentUser? docuserRef; // Filmottagarefönster.
+
+    private async Task DocUserControl(int id) // Filmottagarefönster.
+    {
+        Auxx.IntId = id;
+        Auxx.documents = documents;
+        docuserRef!.Show();
+
+        if (Auxx.Flag)
+        {
+            await OnInitializedAsync();
+            Auxx.Flag = false;
+        }
+    }
+
     private List<CourseDto> courses = new();
 
     private List<ModuleDto> modules = new();
+
+    private List<ActivityDto> activities = new();
+
+    private List<DocumentDto> documents = new();
 
     private List<AppUserDto> users = new();
 
@@ -133,9 +253,13 @@
 
         var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
         var module = await xClient.GetAsync<IEnumerable<ModuleDto>>("api/Module");
+        var activity = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
+        var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
         var appuser = await appuserClient.GetAsync();
 
         if (module is not null) modules = module.ToList(); // För snabbtitt.
+        if (activity is not null) activities = activity.ToList();
+        if (document is not null) documents = document.ToList();
         if (appuser is not null) users = appuser.ToList();
 
         courses.Clear(); // Sökfunktionen kräver att listan rensas.
@@ -155,6 +279,30 @@
                 }
             }
             courses = Enumerable.Reverse(courses).ToList();
+        }
+
+        foreach (var c in courses) // Räknar samman alla kursdokument.
+        {
+            int FindDoc = 0;
+
+            foreach (var d in documents)
+            {
+                if (d.Id4Course == c.Id) c.Total_D++;
+            }
+
+            foreach (var m in c.Modules)
+            {
+                foreach (var d in documents)
+                {
+                    if (d.ModuleId == m.Id) FindDoc++;
+
+                    foreach (var a in m.Activities)
+                    {
+                        if (d.ActivityId == a.Id) FindDoc++;
+                    }
+                }
+            }
+            c.Total_D += FindDoc;
         }
 
         if (appuser is not null && name is not null)
@@ -190,15 +338,24 @@
                         if (user.CourseId == id) DeleteFlag = false;
                     }
                 }
+
+                var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+
+                if (document is not null)
+                {
+                    foreach (var doc in document) // Kollar om det finns några dokument knutna till kursen.
+                    {
+                        if (doc.Id4Course == id) DeleteFlag = false;
+                    }
+                }
             }
         }
-
 
         if (DeleteFlag)
         {
             xnav.SetDone("xnavdone", "This course was deleted.");
             xnav.SetReset('d');
-            await Intermission(2000, false);
+            await Intermission(3000, false);
             await xClient.RemAsync(id, "api/Course");
             Navigation.NavigateTo("/teacherallcourses", true);
             DeleteFlag = false;
@@ -206,7 +363,8 @@
         else
         {
             await Intermission(100, true);
-            xnav.SetError("xnaverror", "All modules, activities, and users belonging to a course must first be deleted or redirected before a course can be deleted.");
+            xnav.SetError("xnaverror", "All modules, activities, document, message, and users belonging to a course" +
+            " must first be deleted or redirected before a course can be deleted.");
             xnav.SetReset('e');
         }
     }
@@ -275,6 +433,22 @@
         xnav.SetReset('d');
         await Intermission(2000, false);
         Navigation.NavigateTo($"/coursedetail/{id}", true);
+    }
+
+    private async Task OpenFileControl(int ix, string filename)
+    {
+        await xClient.OpenFile(ix, filename);
+    }
+
+    private void ShowMessage(string description, string author, string timestamp)
+    {
+        xnav.SetInfo("xnavinfo", description + " by " + author + " Created: " + timestamp);
+        xnav.SetReset('i');
+    }
+
+    private async Task RefreshPage()
+    {
+        await OnInitializedAsync();
     }
 
     private async Task Intermission(int time, bool hide) // Paus.

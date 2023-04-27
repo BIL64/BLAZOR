@@ -1,0 +1,137 @@
+﻿@inject ILogger<CourseDetail> Logger
+@inject IXDtoClient xClient
+@inject XNavMenu xnav
+@attribute [Authorize]
+@*Av Sukhrob Ilyosbekov - Stack Overflow*@
+@*Både studenter och lärare har åtkomst hit*@
+
+@{
+    var showClass = IsVisible ? "d-block" : "d-none";
+}
+
+<AuthorizeView Roles ="Student, Teacher">
+    <Authorized>
+    <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
+    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">@HeaderText</strong>
+            <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+        </div>
+
+        <div class="toast-body">
+            <EditForm Model="@document" Context="documenteditlmslexnet" OnValidSubmit="HandleSubmitDocument">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="form-group" style="font-size: 0.9rem; font-weight: bold; cursor: pointer" title="Open file"
+                @onclick=" _ => OpenFileControl(document.NameIx, document.DocName)">@document.DocName</div>
+                <div class="form-group m-3">
+                    <label for="Description">Description</label>
+                    <InputTextArea id="Description" class="form-control" @bind-Value="document.Description" placeholder="Enter description" />
+                </div>
+                <div class="form-group m-3">
+                    <label for="Author">Author (sender)</label>
+                    <InputText id="Author" class="form-control" @bind-Value="document.Author" placeholder="Enter author" />
+                </div>
+                <div class="form-group m-3">
+                    <button type="submit" class="text-white rembtn" style="margin-right: 15px">Edit form</button>
+                    <button type="button" class="text-white remyes" @onclick="DeleteFile" title="Remove this file from the system">Delete file</button>
+                    <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+    </Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    [Parameter]
+    public string? HeaderText { get; set; }
+
+    private DocumentDto document = new();
+
+    public void Show()
+    {
+        xnav.SetReset('a');
+        if (Auxx.DocType == 1) HeaderText = "Edit USER document file...";
+        if (Auxx.DocType == 2) HeaderText = "Edit COURSE document file...";
+        if (Auxx.DocType == 3) HeaderText = "Edit MODULE document file...";
+        if (Auxx.DocType == 4) HeaderText = "Edit ACTIVITY document file...";
+
+        foreach (var doc in Auxx.documents)
+        {
+            if (doc.Id == Auxx.IntId)
+            {
+                document.Id = doc.Id;
+                document.NameIx = doc.NameIx;
+                document.DocName = doc.DocName;
+                document.Description = doc.Description;
+                document.Author = doc.Author;
+                document.UserId = doc.UserId;
+                document.Id4Course = doc.Id4Course;
+                document.ModuleId = doc.ModuleId;
+                document.ActivityId = doc.ActivityId;
+            }
+        }
+        IsVisible = true;
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        HeaderText = string.Empty;
+        IsVisible = false;
+        StateHasChanged();
+    }
+
+    private async Task HandleSubmitDocument()
+    {
+        Logger.LogInformation("HandleSubmit called");
+
+        var ldoc = new DocumentDto
+        {
+            Id = document.Id,
+            NameIx = document.NameIx,
+            DocName = document.DocName,
+            Description = document.Description,
+            Author = document.Author,
+            TimeStamp = DateTime.Now.ToString(),
+            UserId = document.UserId,
+            Id4Course = document.Id4Course,
+            ModuleId = document.ModuleId,
+            ActivityId = document.ActivityId
+        };
+
+        await xClient.PutAsync<DocumentDto>(document.Id, ldoc, "api/Document");
+        xnav.SetDone("xnavdone", "Your document file was edited.");
+        xnav.SetReset('i');
+        Auxx.Flag = true;
+        Close();
+    }
+
+    private async Task DeleteFile()
+    {
+        await xClient.RemAsync(document.Id, "api/Document");
+        await xClient.DeleteFile(document.NameIx.ToString() + document.DocName);
+        xnav.SetDone("xnavdone", "Your document file was deleted.");
+        xnav.SetReset('d');
+        Auxx.Flag = true;
+        Close();
+    }
+
+    private async Task OpenFileControl(int ix, string filename)
+    {
+        await xClient.OpenFile(ix, filename);
+    }
+}

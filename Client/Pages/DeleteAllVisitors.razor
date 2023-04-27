@@ -19,7 +19,6 @@
         </div>
 
         <div class="toast-body">
-            @BodyText
             <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove all visitors from the system">DELETE NOW</button>
             <button type="button" class="text-white remnot" @onclick="Close">NO</button>
             <button type="button" class="text-white rembtn" @onclick="RegOnOff" title="Set register for visitors ON/OFF">REG ON/OFF</button>
@@ -44,15 +43,11 @@
     [Parameter]
     public string? HeaderText { get; set; }
 
-    [Parameter]
-    public string? BodyText { get; set; }
-
-    public void Show(string bodyText, string headerText = "Remove all visitors or set register on/off")
+    public void Show()
     {
         xnav.SetReset('a');
 
-        HeaderText = headerText;
-        BodyText = bodyText;
+        HeaderText = "Remove all visitors or set register on/off";
         IsVisible = true;
         StateHasChanged();
     }
@@ -60,7 +55,6 @@
     private void Close()
     {
         HeaderText = string.Empty;
-        BodyText = string.Empty;
         IsVisible = false;
         StateHasChanged();
     }

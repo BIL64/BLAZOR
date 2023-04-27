@@ -19,7 +19,6 @@
         </div>
 
         <div class="toast-body">
-            @BodyText
             <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove this module and all its activities from the system">DELETE NOW</button>
             <button type="button" class="text-white remnot" @onclick="Close">NO</button>
         </div>
@@ -43,15 +42,11 @@
     [Parameter]
     public string? HeaderText { get; set; }
 
-    [Parameter]
-    public string? BodyText { get; set; }
-
-    public async Task Show(string bodyText, string headerText = "Remove this module...")
+    public async Task Show()
     {
         xnav.SetReset('a');
 
-        HeaderText = headerText;
-        BodyText = bodyText;
+        HeaderText = "Remove this module...";
         IsVisible = true;
         StateHasChanged();
     }
@@ -59,37 +54,67 @@
     private void Close()
     {
         HeaderText = string.Empty;
-        BodyText = string.Empty;
         IsVisible = false;
         StateHasChanged();
     }
 
     private async Task DeleteNow()
     {
-        bool delAct;
-
-        xnav.SetDone("xnavdone", "This module and all its activities were deleted.");
+        xnav.SetDone("xnavdone", "This module and all its documents and activities were deleted.");
         xnav.SetReset('d');
         StateHasChanged();
         await Task.Delay(3000);
-        
-        do // Så länge foren hittar aktiviteter som hör till modulen.
-        {
-            var allactivity = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
-            delAct = false;
 
-            if (allactivity is not null)
+        // Dokument som hör till modulens aktiviteter.
+        var document1 = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+        var activity1 = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
+
+        if (activity1 is not null && document1 is not null)
+        {
+            foreach (var act in activity1)
             {
-                foreach (var act in allactivity)
+                if (act.ModuleId == Auxx.IntId) // Dess aktiviteter.
                 {
-                    if (act.ModuleId == Auxx.IntId) // Dess aktiviteter.
+                    foreach (var doc in document1) // Dess dokument.
                     {
-                        await xClient.RemAsync(act.Id, "api/Activity");
-                        delAct = true;
+                        if (doc.ActivityId == act.Id)
+                        {
+                            await xClient.DeleteFile(doc.NameIx.ToString() + doc.DocName);
+                            await xClient.RemAsync(doc.Id, "api/Document");
+                        }
                     }
                 }
             }
-        } while (delAct);
+        }
+
+        // Aktiviteter som hör till modulen.
+        var activity2 = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
+
+        if (activity2 is not null)
+        {
+            foreach (var act in activity2)
+            {
+                if (act.ModuleId == Auxx.IntId) // Dess aktiviteter.
+                {
+                    await xClient.RemAsync(act.Id, "api/Activity");
+                }
+            }
+        }
+
+        // Dokument som hör till modulen.
+        var document2 = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+
+        if (document2 is not null)
+        {
+            foreach (var doc in document2)
+            {
+                if (doc.ModuleId == Auxx.IntId) // Dess dokument.
+                {
+                    await xClient.DeleteFile(doc.NameIx.ToString() + doc.DocName);
+                    await xClient.RemAsync(doc.Id, "api/Document");
+                }
+            }
+        }
 
         await xClient.RemAsync(Auxx.IntId, "api/Module");
         Navigation.NavigateTo($"/coursedetail/{Auxx.CourseId}", true);

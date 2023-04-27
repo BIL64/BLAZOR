@@ -70,7 +70,8 @@
         <nav style="display: flex; width: 100%">
             <div style="width: 50%; text-align: left"><h5>Edit, add or delete activity:</h5></div>
             <div style="margin-left: auto; margin-right: 0">
-                <button type="button" class="btn btn-danger btn-sm" @onclick=" _ => DeleteControll(IId)" title="Remove this aktivity from the system">Delete immediately!</button>
+                <button type="button" class="btn btn-danger btn-sm" @onclick="DeleteControll"
+                title="Remove this activity and all its documents from the system">Delete immediately!</button>
             </div>
         </nav>
         <EditForm EditContext="activityContext" Context="activitylmslexnet" OnValidSubmit="HandleSubmitActivity">
@@ -109,6 +110,48 @@
         </EditForm>
     </section>
 
+        <div class="container"> @*Eventuella dokument som ingår läggs ut här*@
+            <div class="d-flex flex-wrap">
+                @{bool Empty = true;}
+                @foreach (var doc in documents)
+                {
+                    <ul class="nav">
+                        @if (doc.ActivityId == IId)
+                        {
+                            if (doc.DocName != "")
+                            {
+                                <li class="doclink" title="File: @doc.Description by @doc.Author @doc.TimeStamp">
+                                    <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)">@doc.DocName</span>
+                                    <span class="oi oi-file text-primary text-decoration-none docicon"
+                                    @onclick=" _ => DocEditControl(doc.Id, 4)"></span>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="oi oi-file text-danger text-decoration-none docicon"
+                                    style="position: relative; top: 10px; margin-right: 22px"
+                                    @onmouseover=" _ => ShowMessage(doc.Description, doc.Author, doc.TimeStamp)"
+                                    @onclick=" _ => DeleteMess(doc.Id)">
+                                </li>
+                            }
+                            Empty = false;
+                        }
+                    </ul>
+                }
+                <ul class="nav">
+                    @if (!Empty)
+                    {
+                        <li class="oi oi-aperture text-primary text-decoration-none" style="position: relative; top: 9px"
+                            title="Mouse over: Refresh docs and page" @onmouseover="RefreshPage">
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div><br />
+
+    <DeleteMess @ref="deleteRef" /> @*Delete-fönster*@
+    <DocumentEdit @ref="doceditRef" /><br /><br /> @*Filredigeringsfönster*@
+
     </Authorized>
     <NotAuthorized>
         <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
@@ -119,6 +162,32 @@
 
     [Parameter]
     public int IId { get; set; }
+
+    private DeleteMess? deleteRef; // Delete-fönster.
+
+    private async Task DeleteMess(int id) // Delete-fönster.
+    {
+        Auxx.IntId = id;
+        deleteRef!.Show();
+
+        if (Auxx.Flag) await OnInitializedAsync();
+    }
+
+    private DocumentEdit? doceditRef; // Filredigeringsfönster.
+
+    private async Task DocEditControl(int id, byte doctype) // Filredigeringsfönster.
+    {
+        Auxx.IntId = id;
+        Auxx.DocType = doctype;
+        Auxx.documents = documents;
+        doceditRef!.Show();
+
+        if (Auxx.Flag)
+        {
+            await OnInitializedAsync();
+            Auxx.Flag = false;
+        }
+    }
 
     private EditContext activityContext = default!; // Formulärkontexter.
 
@@ -136,6 +205,8 @@
 
     private List<ActivityTypeDto> activitytypelist = new();
 
+    private List<DocumentDto> documents = new();
+
     private string DefaultType = string.Empty;
     private string TestMess1 = string.Empty; // Test.
     private string TestMess2 = string.Empty; // Test.
@@ -146,9 +217,16 @@
     {
         xnav.SetReset('a');
 
+        modulelist.Clear();
+        activitylist.Clear();
+        activitytypelist.Clear();
+
         activityContext = new EditContext(activity); // Formulärkontext.
 
         var allact = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
+
+        var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+        if (document is not null) documents = document.ToList(); // Hämtar alla dokument.
 
         if (allact is not null)
         {
@@ -334,18 +412,49 @@
         Navigation.NavigateTo($"/coursedetail/{CourseID}", true);
     }
 
-    private async Task DeleteControll(int id)
+    private async Task DeleteControll()
     {
-        xnav.SetDone("xnavdone", "This activity was deleted.");
+        xnav.SetDone("xnavdone", "This activity and all its documents were deleted.");
         xnav.SetReset('d');
         await Intermission(1000, false);
-        await xClient.RemAsync(id, "api/Activity");
+
+        var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+
+        if (document is not null)
+        {
+            foreach (var doc in document)
+            {
+                if (doc.ActivityId == IId) // Dess dokument.
+                {
+                    await xClient.DeleteFile(doc.NameIx.ToString() + doc.DocName);
+                    await xClient.RemAsync(doc.Id, "api/Document");
+                }
+            }
+        }
+
+        await xClient.RemAsync(IId, "api/Activity");
         Navigation.NavigateTo($"/coursedetail/{CourseID}", true);
     }
 
     private string StartEndDate(DateTime start, DateTime end) // Returnerar datumsträng.
     {
         return $"{start.ToString().Substring(0, 10)} | {end.ToString().Substring(0, 10)}";
+    }
+
+    private async Task OpenFileControl(int ix, string filename)
+    {
+        await xClient.OpenFile(ix, filename);
+    }
+
+    private void ShowMessage(string description, string author, string timestamp)
+    {
+        xnav.SetInfo("xnavinfo", description + " by " + author + " Created: " + timestamp);
+        xnav.SetReset('i');
+    }
+
+    private async Task RefreshPage()
+    {
+        await OnInitializedAsync();
     }
 
     private async Task Intermission(int time, bool hide) // Paus.
