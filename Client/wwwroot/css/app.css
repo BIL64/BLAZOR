@@ -195,7 +195,19 @@ i {
     width: 100%;
     padding: 10px;
     border: none;
-    border-radius: 5px 5px 0px 0px;
+    border-radius: 5px 5px 0 0;
+    background-color: sandybrown;
+}
+
+.moduleboxtopic {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border-left: 5px outset;
+    border-top: 5px outset;
+    border-right: 5px outset;
+    border-color: aquamarine;
+    border-radius: 5px 5px 0 0;
     background-color: sandybrown;
 }
 
@@ -214,7 +226,20 @@ i {
     padding: 10px;
     margin-bottom: 20px;
     border: none;
-    border-radius: 0px 0px 5px 5px;
+    border-radius: 0 0 5px 5px;
+    background-color: lightblue;
+}
+
+.activityboxtopic {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-left: 5px outset;
+    border-bottom: 5px outset;
+    border-right: 5px outset;
+    border-color: aquamarine;
+    border-radius: 0 0 5px 5px;
     background-color: lightblue;
 }
 

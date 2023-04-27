@@ -25,7 +25,7 @@
                             if (doc.DocName != "")
                             {
                                 <li class="doclink" style="background-color:lavenderblush">
-                                    <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title="Personal post">@doc.Id. @doc.DocName</span>
+                                    <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title="Personal post">@doc.DocName</span>
                                     <span class="oi oi-file text-primary text-decoration-none docicon"
                                     @onclick=" _ => DocUserControl(doc.Id)"></span>
                                 </li>

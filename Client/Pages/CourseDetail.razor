@@ -68,7 +68,18 @@
             {
                 if (data.IsActive)
                 {
-                    <section class="modulebox">
+                    if (data.StartDate < DateTime.Now && data.EndDate > DateTime.Now)
+                    {
+                        classModTopic = "moduleboxtopic";
+                        classActTopic = "activityboxtopic";
+                    }
+                    else
+                    {
+                        classModTopic = "modulebox";
+                        classActTopic = "activitybox";
+                    }
+
+                    <section class="@classModTopic">
                         <div style="display: flex; width: 100%">
                             <div style="width: 75%; text-align: left">
                                 <b title="@data.Description -Click for edit-">Module @data.Id:
@@ -102,7 +113,7 @@
                         </div>
                     </section>
 
-                    <article class="activitybox">
+                    <article class="@classActTopic">
 
                         <table class="table" style="color: #555"> @*Grå text*@
                             <thead>
@@ -327,6 +338,8 @@
     private string NoModules = string.Empty;
     private string CourseDescription = string.Empty;
     private string CourseDate = string.Empty;
+    private string classModTopic = string.Empty;
+    private string classActTopic = string.Empty;
     private int CourseId;
     private bool Empty;
 

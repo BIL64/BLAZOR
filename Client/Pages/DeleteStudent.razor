@@ -1,4 +1,5 @@
 ﻿@inject IAppUserDtoClient appuserClient
+@inject IXDtoClient xClient
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Sukhrob Ilyosbekov - Stack Overflow*@
@@ -42,6 +43,10 @@
     [Parameter]
     public string? HeaderText { get; set; }
 
+    private List<DocumentDto> documents = new();
+
+    private List<AppUserDto> users = new();
+
     public async Task Show()
     {
         xnav.SetReset('a');
@@ -65,11 +70,36 @@
 
     private async Task DeleteNow()
     {
-        xnav.SetDone("xnavdone", "This student was deleted.");
-        xnav.SetReset('d');
+        bool FindDoc = false;
+        var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+        var appuser = await appuserClient.GetAsync();
 
-        await appuserClient.RemAsync(Auxx.GuidId);
-        Auxx.Flag = true;
+        if (document is not null) documents = document.ToList();
+        if (appuser is not null) users = appuser.ToList();
+
+        foreach (var use in users)
+        {
+            if (use.Id == Auxx.GuidId)
+            {
+                foreach (var doc in documents)
+                {
+                    if (doc.UserId == use.Id) FindDoc = true;
+                }
+            }
+        }
+
+        if (!FindDoc)
+        {
+            xnav.SetDone("xnavdone", "This student was deleted.");
+            xnav.SetReset('d');
+            await appuserClient.RemAsync(Auxx.GuidId);
+            Auxx.Flag = true;
+        }
+        else
+        {
+            xnav.SetError("xnaverror", "All documents or messages belonging to a student must first be deleted before the student can be deleted.");
+            xnav.SetReset('e');
+        }
         Close();
     }
 

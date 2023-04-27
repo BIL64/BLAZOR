@@ -9,7 +9,7 @@ public static class Auxx // Statisk klass med variabler som är åtkomliga över
 
     public static int CourseId { get; set; }
 
-    public static bool Flag { get; set; } // Olika uppgifter.
+    public static bool Flag { get; set; } // Olika syften.
 
     public static byte DocType { get; set; } // 1=User, 2=Course, 3=Module, 4=Activity.
 

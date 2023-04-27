@@ -60,7 +60,7 @@ else
                         }
                         @if (data.Id is not null)
                         {
-                            <button type="button" class="oi oi-circle-x text-white delbtn" @onclick=" _ => DeletePage(data.Id)"
+                            <button type="button" class="oi oi-circle-x text-white delbtn" @onclick=" _ => DeleteUser(data.Id)"
                                 title="Delete or redirect user"></button> // CSS!
                         }
                     </td>
@@ -84,7 +84,7 @@ else
 
     private DeleteAllVisitors? deleteAll; // Delete-fönster.
 
-    private async Task DeletePage(string id) // Delete-fönster.
+    private async Task DeleteUser(string id) // Delete-fönster.
     {
         Auxx.GuidId = id;
         await deleteRef!.Show();

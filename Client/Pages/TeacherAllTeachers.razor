@@ -33,6 +33,7 @@ else
         </span>
     </EditForm>
 
+    <DeleteMess @ref="messRef" /> @*Delete-fönster*@
     <DocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
     <DocumentEdit @ref="doceditRef" /> @*Filredigeringsfönster*@
 
@@ -80,8 +81,16 @@ else
                                 {
                                     if (doc.UserId == data.Id)
                                     {
-                                        <a @onclick="_ => DocEditControl(doc.Id, 1)"
-                                        title="File: @doc.Description by @doc.Author @doc.TimeStamp">@doc.Id. @doc.DocName</a> // Öppnar filen (dokumentet).
+                                        if (doc.DocName != "")
+                                        {
+                                            <a @onclick="_ => DocEditControl(doc.Id, 1)"
+                                            title="File: @doc.Description by @doc.Author @doc.TimeStamp">@doc.DocName</a> // Öppnar filen (dokumentet).
+                                        }
+                                        else
+                                        {
+                                            <a @onmouseover="_ => ShowMessage(doc.Description, doc.Author, doc.TimeStamp)" @onclick="_ => DeleteMess(doc.Id)"
+                                            title="Mess: @doc.Description by @doc.Author @doc.TimeStamp">From @doc.Author</a> // Visar meddelandet.
+                                        }
                                     }
                                 }
                             </div>
@@ -99,7 +108,7 @@ else
                             </div>
                         </div>
 
-                        <button type="button" class="oi oi-circle-x text-white delbtn" @onclick=" _ => DeletePage(data.Id)"
+                        <button type="button" class="oi oi-circle-x text-white delbtn" @onclick=" _ => DeleteUser(data.Id)"
                         title="Delete or redirect user"></button> // CSS!
                     }
                     </td>
@@ -109,7 +118,7 @@ else
     </table>
 }
 
-<DeleteTeacher @ref="deleteRef" /> @*Delete-fönster*@
+    <DeleteTeacher @ref="deleteRef" /> @*Delete-fönster*@
 
 </Authorized>
     <NotAuthorized>
@@ -119,9 +128,19 @@ else
 
 @code {
 
+    private DeleteMess? messRef; // Delete-fönster.
+
+    private async Task DeleteMess(int id) // Delete-fönster.
+    {
+        Auxx.IntId = id;
+        messRef!.Show();
+
+        if (Auxx.Flag) await OnInitializedAsync();
+    }
+
     private DeleteTeacher? deleteRef; // Delete-fönster.
 
-    private async Task DeletePage(string id) // Delete-fönster.
+    private async Task DeleteUser(string id) // Delete-fönster.
     {
         Auxx.GuidId = id;
         await deleteRef!.Show();
@@ -252,6 +271,12 @@ else
         Emptydbcolor = "headeroff";
         Auxx.Flag = true;
         await OnInitializedAsync();
+    }
+
+    private void ShowMessage(string description, string author, string timestamp)
+    {
+        xnav.SetInfo("xnavinfo", description + " by " + author + " Created: " + timestamp);
+        xnav.SetReset('i');
     }
 
     private async Task Intermission(int time, bool hide) // Paus.
