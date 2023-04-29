@@ -206,7 +206,7 @@
                     }
                 </table>
                 <br />
-                <h6>Activities for module @module.Name</h6>
+                <h6>Activities for this module</h6>
                 <table class="table">
                     <thead>
                         <tr>
@@ -289,7 +289,6 @@
     private string classCouSubBtn = "btn btn-success btn-sm";
     private string classCouBtn = "btn btn-primary btn-sm";
     private string classModRegBtn = "btn btn-secondary btn-sm";
-    //private string classModSubBtn = "btn btn-success btn-sm";
     private string classModBtn = "btn btn-primary btn-sm";
     private string classActRegBtn = "btn btn-secondary btn-sm";
     private string classActSubBtn = "btn btn-success btn-sm";
@@ -328,7 +327,7 @@
         }
         else
         {
-            xnav.SetError("xnaverror", "Date course mismatch (start date is greater than end date).");
+            xnav.SetError("xnaverror", "Course date mismatch (start date is greater than end date).");
             xnav.SetReset('e');
         }
     }
@@ -464,7 +463,7 @@
         else
         {
             await Intermission(100, true);
-            xnav.SetError("xnaverror", "Date module mismatch (start date is greater than end date).");
+            xnav.SetError("xnaverror", "Module date mismatch (start date is greater than end date).");
             if (course.Name == "")
                 xnav.SetError("xnaverror", "The Name field is required.");
             if (course.Description == "")
@@ -644,7 +643,7 @@
     {
         bool case1 = false;
         bool case2 = false;
-        int Count = 2;
+        int Count = 1;
 
         if (module.StartDate > module.EndDate) case1 = true; // Felaktigt start/slutdatum.
 
@@ -658,9 +657,10 @@
                 datearray[i] = 0;
             }
 
-            // Lägger in datum (som integer) på olika platser i arrayen.
-            datearray[PlacingInArray(course.StartDate)] = 1;
-            datearray[PlacingInArray(course.EndDate)] = 1;
+            // Lägger in siffror på olika platser i arrayen. En plats som dessförinnan var ett datum.
+            datearray[PlacingInArray(course.StartDate)] = Count;
+            datearray[PlacingInArray(course.EndDate)] = Count;
+            Count++;
 
             foreach (var mod in modulelist)
             {
@@ -670,13 +670,14 @@
             }
             datearray[PlacingInArray(module.StartDate)] = Count;
             datearray[PlacingInArray(module.EndDate)] = Count;
+            Count++;
 
             foreach (var arr in datearray) // Lägger in siffror i rad i en sträng.
             {
                 if (arr > 0) dates += arr.ToString();
             }
 
-            for (int i = 1; i < dates.Length / 2 + 1; i++) // Kollar om både start- och slutdatumet är samma som tidigare.
+            for (int i = 1; i < Count; i++) // Kollar om både start- och slutdatumet för en post blivit överskrivet av någon annan post.
             {
                 if (dates.IndexOf(i.ToString()) == -1) case2 = true;
             }
@@ -696,7 +697,7 @@
     {
         bool case1 = false;
         bool case2 = false;
-        int Count = 2;
+        int Count = 1;
 
         if (activity.StartDate > activity.EndDate) case1 = true; // Felaktigt start/slutdatum.
 
@@ -710,9 +711,10 @@
                 datearray[i] = 0;
             }
 
-            // Lägger in datum (som integer) på olika platser i arrayen.
-            datearray[PlacingInArray(module.StartDate)] = 1;
-            datearray[PlacingInArray(module.EndDate)] = 1;
+            // Lägger in siffror på olika platser i arrayen. En plats som dessförinnan var ett datum.
+            datearray[PlacingInArray(module.StartDate)] = Count;
+            datearray[PlacingInArray(module.EndDate)] = Count;
+            Count++;
 
             foreach (var act in activitylist)
             {
@@ -722,13 +724,14 @@
             }
             datearray[PlacingInArray(activity.StartDate)] = Count;
             datearray[PlacingInArray(activity.EndDate)] = Count;
+            Count++;
 
             foreach (var arr in datearray) // Lägger in siffror i rad i en sträng.
             {
                 if (arr > 0) dates += arr.ToString();
             }
 
-            for (int i = 1; i < dates.Length / 2 + 1; i++) // Kollar om både start- och slutdatumet är samma som tidigare.
+            for (int i = 1; i < Count; i++) // Kollar om både start- och slutdatumet för en post blivit överskrivet av någon annan post.
             {
                 if (dates.IndexOf(i.ToString()) == -1) case2 = true;
             }
@@ -765,10 +768,9 @@
 
     private int PlacingInArray(DateTime date) // Omvandlar ett datum till ett nummer (ex. 2023-01-01 --> 230101).
     {
-        int number = int.Parse(date.ToString().Substring(2, 2)) +
-        int.Parse(date.ToString().Substring(5, 2)) +
-        int.Parse(date.ToString().Substring(8, 2));
-
+        int number = int.Parse(date.ToString().Substring(2, 2) +
+        date.ToString().Substring(5, 2) +
+        date.ToString().Substring(8, 2));
         return number;
     }
 

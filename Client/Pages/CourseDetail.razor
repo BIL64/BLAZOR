@@ -16,8 +16,9 @@
                 </h3>
             </div>
             <div style="margin-left: auto; margin-right: auto"><h5>@CourseDate</h5></div>
-            <div style="margin-left: auto; margin-right: 0"><button type="button" class="text-white delbtn"
-                @onclick=" _ => StudentPage()" title="Shortcut to student page">S</button>
+            <div style="margin-left: auto; margin-right: 0">
+                <button type="button" class="text-white delbtn" @onclick="DateCheck" title="Perform Date Check for this course">DC</button>
+                <button type="button" class="text-white delbtn" @onclick="StudentPage" title="Shortcut to student page">S</button>
             </div>
         </nav> 
         <nav style="display: flex; width: 100%">
@@ -512,6 +513,97 @@
                 ModuleId = act.ModuleId
             };
         return dto;
+    }
+
+    private void DateCheck()
+    {
+        string EndCheck = string.Empty;
+        string CourseCheck = string.Empty;
+        string ModuleCheck = string.Empty;
+        string ActivityCheck = string.Empty;
+        int[] datearray = new int[1000000];
+        string dates = string.Empty;
+        int Count = 1;
+
+        for (int i = 0; i < 1000000; i++) // Nollställer arrayen.
+        {
+            datearray[i] = 0;
+        }
+
+        // Lägger in siffror på olika platser i arrayen. En plats som dessförinnan var ett datum.
+        foreach (var cour in courses)
+        {
+            if (cour.Id == IId) // Hämtar kursen.
+            {
+                // Kollar om kursens startdatum är större än slutdatumet.
+                if (cour.StartDate > cour.EndDate) CourseCheck = "Course date mismatch (start date is greater than end date). ";
+                datearray[PlacingInArray(cour.StartDate)] = Count;
+                datearray[PlacingInArray(cour.EndDate)] = Count;
+                Count++;
+
+                foreach (var mod in cour.Modules) // Hämtar kursens moduler.
+                {
+                    // Kollar om modulens startdatum är större än slutdatumet.
+                    if (mod.StartDate > mod.EndDate) ModuleCheck = "Module date mismatch (start date is greater than end date). ";
+                    datearray[PlacingInArray(mod.StartDate)] = Count;
+                    datearray[PlacingInArray(mod.EndDate)] = Count;
+                    Count++;
+
+                    foreach (var act in mod.Activities) // Hämtar kursens aktiviteter.
+                    {
+                        // Kollar om aktivitetens startdatum är större än slutdatumet.
+                        if (act.StartDate > act.EndDate) ActivityCheck = "Activity date mismatch (start date is greater than end date).";
+                        datearray[PlacingInArray(act.StartDate)] = Count;
+                        datearray[PlacingInArray(act.EndDate)] = Count;
+                        Count++;
+                    }
+                }
+            }
+        }
+
+        foreach (var arr in datearray) // Lägger in siffror i rad i en sträng.
+        {
+            if (arr > 0) dates += arr.ToString();
+        }
+
+        for (int i = 1; i < Count; i++) // Kollar om både start- och slutdatumet för en post blivit överskrivet av någon annan post.
+        {
+            if (dates.IndexOf(i.ToString()) == -1) EndCheck = "Date mismatch (entangled dates)";
+        }
+
+        for (int i = dates.Length; i > 0; i--) // Tar successivt bort nummerpar.
+        {
+            if (dates.IndexOf(i.ToString() + i.ToString()) != -1) dates = dates.Replace(i.ToString() + i.ToString(), "");
+        }
+
+        if (dates.Length > 0) EndCheck = "Date mismatch (entangled dates)"; // Inga siffror kvar, ingen osymmetri!
+
+        if (CourseCheck == "" && ModuleCheck == "" && ActivityCheck == "" && EndCheck == "")
+        {
+            xnav.SetDone("xnavdone", "No date errors could be found.");
+            xnav.SetReset('d');
+        }
+        else
+        {
+            if (EndCheck != "")
+            {
+                xnav.SetError("xnaverror", EndCheck);
+                xnav.SetReset('e');
+            }
+            else
+            {
+                xnav.SetError("xnaverror", CourseCheck + ModuleCheck + ActivityCheck);
+                xnav.SetReset('e');
+            }
+        }
+    }
+
+    private int PlacingInArray(DateTime date) // Omvandlar ett datum till ett nummer (ex. 2023-01-01 --> 230101).
+    {
+        int number = int.Parse(date.ToString().Substring(2, 2) +
+        date.ToString().Substring(5, 2) +
+        date.ToString().Substring(8, 2));
+        return number;
     }
 
     private void StudentPage()
