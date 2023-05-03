@@ -1,0 +1,131 @@
+﻿@inject NavigationManager Navigation
+@inject IXDtoClient xClient
+@inject XNavMenu xnav
+@attribute [Authorize]
+@*Av Sukhrob Ilyosbekov - Stack Overflow*@
+@*Både studenter och lärare har åtkomst hit*@
+
+@{
+    var showClass = IsVisible ? "d-block" : "d-none";
+}
+
+<AuthorizeView Roles ="Student, Teacher">
+    <Authorized>
+    <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
+        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">@HeaderText</strong>
+                <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+            </div>
+
+            <div class="toast-body">
+                <button type="button" class="text-white remnot" @onclick="Proceed">YES</button>
+                <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+            </div>
+            <div class="@classProceed">
+                <EditForm Model="@xClient" Context="deletealllmslexnet" OnSubmit="HandleSubmitDeleteAll">
+                    <div class="form-group m-3">
+                        <label for="Email">Enter your email address</label>
+                        <InputText id="Email" class="form-control" @bind-Value="Email" title="Users email" />
+                    </div>
+                    <div class="form-group m-3">
+                        <button type="submit" class="text-white remyes" title="Remove all documents and messages from the system">DELETE NOW</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+
+    </Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    [Parameter]
+    public string? HeaderText { get; set; }
+
+    public string classProceed = "d-none";
+    public string Email = string.Empty;
+
+    public void Show()
+    {
+        xnav.SetReset('a');
+
+        HeaderText = "Eliminate all your docs and mess...";
+        classProceed = "d-none";
+        IsVisible = true;
+        StateHasChanged();
+    }
+
+    private void Proceed()
+    {
+        classProceed = "d-block";
+    }
+
+    private void Close()
+    {
+        HeaderText = string.Empty;
+        IsVisible = false;
+        StateHasChanged();
+    }
+
+    private async Task HandleSubmitDeleteAll()
+    {
+        bool FindDoc = false;
+
+        if (Auxx.Loggeduser.Email == Email)
+        {
+            var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+
+            if (document is not null)
+            {
+                foreach (var doc in document)
+                {
+                    if (doc.UserId == Auxx.Loggeduser.Id)
+                    {
+                        await xClient.RemAsync(doc.Id, "api/Document");
+                        await xClient.DeleteFile(doc.NameIx.ToString() + doc.DocName);
+                        FindDoc = true;
+                    }
+                }
+            }
+
+            if (FindDoc)
+            {
+                HeaderText = string.Empty;
+                IsVisible = false;
+                StateHasChanged();
+                xnav.SetDone("xnavdone", "All your documents and messages were deleted.");
+                xnav.SetReset('d');
+                await Intermission(4000);
+                Navigation.NavigateTo("studentcourse", true);
+            }
+            else
+            {
+                xnav.SetDone("xnavdone", "No documents or messages could be found.");
+                xnav.SetReset('d');
+            }
+
+        }
+        else
+        {
+            xnav.SetError("xnaverror", "The email address was incorrect.");
+            xnav.SetReset('e');
+        }
+    }
+
+    private async Task Intermission(int time) // Paus.
+    {
+        base.StateHasChanged();
+        await Task.Delay(time);
+    }
+}

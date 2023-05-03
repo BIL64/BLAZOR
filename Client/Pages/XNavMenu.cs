@@ -4,6 +4,10 @@
 
     public string InfoMess { get; private set; } = string.Empty;
 
+    public string classMessMess { get; private set; } = "d-none";
+
+    public string MessMess { get; private set; } = string.Empty;
+
     public string classDoneMess { get; private set; } = "d-none";
 
     public string DoneMess { get; private set; } = string.Empty;
@@ -24,6 +28,13 @@
     {
         classInfoMess = classx;
         InfoMess = info;
+        NotifyStateChanged();
+    }
+
+    public void SetMess(string classx, string mess)
+    {
+        classMessMess = classx;
+        MessMess = mess;
         NotifyStateChanged();
     }
 
@@ -63,8 +74,22 @@
             case 'i':
             case 'I':
                 {
+                    classMessMess = "d-none";
                     classDoneMess = "d-none";
                     classErrorMess = "d-none";
+                    MessMess = string.Empty;
+                    DoneMess = string.Empty;
+                    ErrorMess = string.Empty;
+                    NotifyStateChanged();
+                    break;
+                }
+            case 'm':
+            case 'M':
+                {
+                    classInfoMess = "d-none";
+                    classDoneMess = "d-none";
+                    classErrorMess = "d-none";
+                    InfoMess = string.Empty;
                     DoneMess = string.Empty;
                     ErrorMess = string.Empty;
                     NotifyStateChanged();
@@ -74,8 +99,10 @@
             case 'D':
                 {
                     classInfoMess = "d-none";
+                    classMessMess = "d-none";
                     classErrorMess = "d-none";
                     InfoMess = string.Empty;
+                    MessMess = string.Empty;
                     ErrorMess = string.Empty;
                     NotifyStateChanged();
                     break;
@@ -84,8 +111,10 @@
             case 'E':
                 {
                     classInfoMess = "d-none";
+                    classMessMess = "d-none";
                     classDoneMess = "d-none";
                     InfoMess = string.Empty;
+                    MessMess = string.Empty;
                     DoneMess = string.Empty;
                     NotifyStateChanged();
                     break;
@@ -93,9 +122,11 @@
             default:
                 {
                     classInfoMess = "d-none";
+                    classMessMess = "d-none";
                     classDoneMess = "d-none";
                     classErrorMess = "d-none";
                     InfoMess = string.Empty;
+                    MessMess = string.Empty;
                     DoneMess = string.Empty;
                     ErrorMess = string.Empty;
                     NotifyStateChanged();

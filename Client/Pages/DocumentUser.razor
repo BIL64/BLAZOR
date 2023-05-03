@@ -12,24 +12,24 @@
 <AuthorizeView Roles ="Student, Teacher">
     <Authorized>
     <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
-    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-            <strong class="me-auto">@HeaderText</strong>
-            <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
-        </div>
+        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">@HeaderText</strong>
+                <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+            </div>
 
-        <div class="toast-body">         
-            <div style="font-size: 0.9rem; font-weight: bold">@document.DocName</div>
-            <div class="m-3">@document.Description</div>
-            <div class="m-3">By: @document.Author</div>
-            <div class="m-3">Created: @document.TimeStamp</div>
-            <div class="m-3">
-                <button type="button" class="text-white remyes" @onclick="DeleteFile" title="Remove this file from the system">Delete file</button>
-                <button type="button" class="text-white remnot" @onclick="Close">Exit</button>
+            <div class="toast-body">         
+                <div style="font-size: 0.9rem; font-weight: bold">@document.DocName</div>
+                <div class="m-3">@document.Description</div>
+                <div class="m-3">By: @document.Author</div>
+                <div class="m-3">Created: @document.TimeStamp</div>
+                <div class="m-3">
+                    <button type="button" class="@classDelete" @onclick="DeleteFile" title="Remove this file from the system">Delete file</button>
+                    <button type="button" class="text-white remnot" @onclick="Close">Exit</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     </Authorized>
     <NotAuthorized>
@@ -50,12 +50,17 @@
 
     private DocumentDto document = new();
 
+    private string classDelete = string.Empty;
+
     public void Show()
     {
         xnav.SetReset('a');
         HeaderText = "Your document file...";
 
-        foreach (var doc in Auxx.documents)
+        if (Auxx.Flag) classDelete = "text-white remyes";
+        else classDelete = "d-none";
+
+        foreach (var doc in Auxx.Documents)
         {
             if (doc.Id == Auxx.IntId)
             {
@@ -67,6 +72,7 @@
                 document.TimeStamp = doc.TimeStamp;
             }
         }
+        Auxx.Flag = false;
         IsVisible = true;
         StateHasChanged();
     }

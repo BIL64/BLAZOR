@@ -178,6 +178,7 @@ else
                 }
             }
             if (students.Count < 1) Emptydb = "No students !";
+            if(!string.IsNullOrWhiteSpace(searchString) && students.Count < 1) Emptydb = "There is no student or teacher with that name...";
         }
         else
         {

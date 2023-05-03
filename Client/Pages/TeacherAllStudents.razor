@@ -63,7 +63,7 @@ else
             {
                 if (PagProceed()) // Paginering.
                 {
-                    <tr style="color: darkblue">
+                    <tr style="color: darkblue" @onmouseover="DeleteRefresh">
                         <td>@data.FirstName @data.LastName</td>
                         <td>@data.Email</td>
                         <td>@data.PhoneNumber</td>
@@ -102,7 +102,7 @@ else
                                                 }
                                                 else
                                                 {
-                                                    <a @onmouseover="_ => ShowMessage(doc.Description, doc.Author, doc.TimeStamp)" @onclick="_ => DeleteMess(doc.Id)"
+                                                    <a @onmouseover="_ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)" @onclick="_ => DeleteMess(doc.Id)"
                                                     title="Mess: @doc.Description by @doc.Author @doc.TimeStamp">From @doc.Author</a> // Visar meddelandet.
                                                 }
                                             }
@@ -122,8 +122,8 @@ else
                                     </div>
                                 </div>
 
-                                <button type="button" class="oi oi-circle-x text-white delbtn" @onclick=" _ => DeleteUser(data.Id)"
-                                title="Delete or redirect user"></button> // CSS!
+                                <button type="button" class="oi oi-circle-x text-white delbtn"
+                                @onclick=" _ => DeleteUser(data.Id)" title="Delete or redirect user"></button> // CSS!
                             }
                         </td>
                     </tr>
@@ -218,20 +218,25 @@ else
         }
     }
 
-    private async Task DeleteMess(int id) // Delete-fönster.
+    private void DeleteMess(int id) // Delete-fönster.
     {
         Auxx.IntId = id;
         messRef!.Show();
-
-        if (Auxx.Flag) await OnInitializedAsync();
     }
 
     private async Task DeleteUser(string id) // Delete-fönster.
     {
         Auxx.GuidId = id;
         await deleteRef!.Show();
+    }
 
-        if (Auxx.Flag) await OnInitializedAsync();
+    private async Task DeleteRefresh() // Uppdaterar efter förändring av innehållet.
+    {
+        if (Auxx.Flag)
+        {
+            await OnInitializedAsync();
+            Auxx.Flag = false;
+        }
     }
 
     private DocumentAdd? docsaveRef; // Filsparfönster.
@@ -246,18 +251,12 @@ else
 
     private DocumentEdit? doceditRef; // Filredigeringsfönster.
 
-    private async Task DocEditControl(int id, byte doctype) // Filredigeringsfönster.
+    private void DocEditControl(int id, byte doctype) // Filredigeringsfönster.
     {
         Auxx.IntId = id;
         Auxx.DocType = doctype;
-        Auxx.documents = documents;
+        Auxx.Documents = documents;
         doceditRef!.Show();
-
-        if (Auxx.Flag)
-        {
-            await OnInitializedAsync();
-            Auxx.Flag = false;
-        }
     }
 
     private List<AppUserDto> students = new();
@@ -464,10 +463,10 @@ else
         await OnInitializedAsync();
     }
 
-    private void ShowMessage(string description, string author, string timestamp)
+    private void ShowMessControl(string description, string author, string timestamp)
     {
-        xnav.SetInfo("xnavinfo", description + " by " + author + " Created: " + timestamp);
-        xnav.SetReset('i');
+        xnav.SetMess("xnavmess", description + " by " + author + " Created: " + timestamp);
+        xnav.SetReset('m');
     }
 
     private async Task Intermission(int time, bool hide) // Paus.

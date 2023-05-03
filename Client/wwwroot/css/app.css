@@ -111,8 +111,8 @@ a, .btn-link {
     margin-left: 0;
     margin-right: auto;
     padding: 0 5px 0 5px;
-    border: 1px blue solid;
-    color: blue;
+    border: 1px red solid;
+    color: red;
 }
 
 .regoff {
@@ -120,8 +120,8 @@ a, .btn-link {
     margin-left: 0;
     margin-right: auto;
     padding: 0 5px 0 5px;
-    border: 1px red solid;
-    color: red;
+    border: 1px blue solid;
+    color: blue;
 }
 
 i {
@@ -142,11 +142,20 @@ i {
 
 .xnavinfo {
     display: block;
-    font-size: 0.8rem;
+    font-size: 0.97rem;
     width: 94%;
     padding: 5px;
     margin: 3%;
-    color: white;
+    color: black;
+}
+
+.xnavmess {
+    display: block;
+    font-size: 1.1rem;
+    width: 94%;
+    padding: 5px;
+    margin: 3%;
+    color: azure;
 }
 
 .xnavdone {
@@ -453,7 +462,7 @@ i {
 
         /* Change color of dropuse links on hover */
         .dropuse-content a:hover {
-            background-color: #a1e1e1
+            background-color: turquoise;
         }
 
 /* Show the dropuse menu on hover */
@@ -464,6 +473,7 @@ i {
 /* DROPDOC */
 /* The container <div> - needed to position the dropdoc content */
 .dropdoc {
+    color: black;
     position: relative;
     display: inline-block;
 }
@@ -483,8 +493,7 @@ i {
 
     /* Links inside the dropdoc */
     .dropdoc-content a {
-        font-size: 0.8rem;
-        color: black;
+        font-size: 0.78rem;
         padding: 2px 8px;
         border-radius: 5px;
         text-decoration: none;
@@ -493,7 +502,8 @@ i {
 
         /* Change color of dropdoc links on hover */
         .dropdoc-content a:hover {
-            background-color: limegreen;
+            color: white !important;
+            background-color: grey;
         }
 
 /* Show the dropdoc menu on hover */

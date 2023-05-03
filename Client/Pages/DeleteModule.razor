@@ -12,18 +12,18 @@
 <AuthorizeView Roles ="Teacher">
     <Authorized>
     <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
-    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-            <strong class="me-auto">@HeaderText</strong>
-            <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
-        </div>
+        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">@HeaderText</strong>
+                <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+            </div>
 
-        <div class="toast-body">
-            <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove this module and all its activities from the system">DELETE NOW</button>
-            <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+            <div class="toast-body">
+                <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove this module and all its activities from the system">DELETE NOW</button>
+                <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+            </div>
         </div>
     </div>
-</div>
 
     </Authorized>
     <NotAuthorized>

@@ -16,10 +16,13 @@
             <div style="width: 75%; text-align: left"><h3>@loggeduser.FirstName, this is your course:
                 <em style="cursor: pointer" @onclick=" _ => InfoTitle(CourseDescription)">@CourseName</em></h3>
             </div>
-            <div style="margin-left: auto; margin-right: 0"><h5>@CourseDate</h5></div>
+            <div style="margin-left: auto; margin-right: auto"><h5>@CourseDate</h5></div>
+            <div style="margin-left: auto; margin-right: 0">
+                <button type="button" class="text-white delbtn" @onclick="DeleteAll" title="Delete all documents and messages">E</button>
+            </div>
         </nav><br />
 
-        <div class="container"> @*Eventuella dokument som ingår läggs ut här*@
+        <div class="container" @onmouseover="DeleteRefresh"> @*Eventuella dokument som ingår läggs ut här*@
             <div class="d-flex flex-wrap">
                 @foreach (var doc in documents)
                 {
@@ -29,44 +32,56 @@
                             <li class="doclink">
                                 <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title="Mandatory post">@doc.DocName</span>
                                 <span class="oi oi-file text-primary text-decoration-none docicon"
-                                @onclick=" _ => DocUserControl(doc.Id)"></span>
+                                @onclick=" _ => DocUserControl(doc.Id, false)"></span>
                             </li>
-                            Empty = false;
                         }
 
                         @if (doc.UserId == loggeduser.Id && doc.DocName != "")
                         {
-                            <li class="doclink" style="background-color:lavenderblush">
-                                <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title="Personal post">@doc.DocName</span>
-                                <span class="oi oi-file text-primary text-decoration-none docicon"
-                                @onclick=" _ => DocUserControl(doc.Id)"></span>
-                            </li>
-                            Empty = false;
+                            if (DateTime.Parse(doc.TimeStamp).AddDays(1) > DateTime.Now)
+                            {
+                                <li class="doclink" style="background-color:lavenderblush; box-shadow: 0 0 10px plum">
+                                    <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title="Personal post">@doc.DocName</span>
+                                    <span class="oi oi-file text-primary text-decoration-none docicon"
+                                    @onclick=" _ => DocUserControl(doc.Id, true)"></span>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="doclink" style="background-color:lavenderblush">
+                                    <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title="Personal post">@doc.DocName</span>
+                                    <span class="oi oi-file text-primary text-decoration-none docicon"
+                                    @onclick=" _ => DocUserControl(doc.Id, true)"></span>
+                                </li>
+                            }
                         }
 
                         @if (doc.UserId == loggeduser.Id && doc.DocName == "")
                         {
-                            <li class="oi oi-file text-danger text-decoration-none docicon"
-                                style="position: relative; top: 10px; margin-right: 22px"
-                                @onmouseover=" _ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)"
-                                @onclick=" _ => DeleteMess(doc.Id)">
-                            </li>
-                            Empty = false;
+                            if (DateTime.Parse(doc.TimeStamp).AddDays(1) > DateTime.Now)
+                            {
+                                <li class="oi oi-file text-danger text-decoration-none docicon"
+                                    style="position: relative; top: 10px; margin-right: 22px; text-shadow: 0 0 10px plum"
+                                    @onmouseover=" _ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                    @onclick=" _ => DeleteMess(doc.Id)">
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="oi oi-file text-danger text-decoration-none docicon"
+                                    style="position: relative; top: 10px; margin-right: 22px"
+                                    @onmouseover=" _ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                    @onclick=" _ => DeleteMess(doc.Id)">
+                                </li>
+                            }
                         }
                     </ul>
                 }
-                <ul class="nav">
-                    @if (!Empty)
-                    {
-                        <li class="oi oi-aperture text-primary text-decoration-none" style="position: relative; top: 9px"
-                            title="Press for refresh docs and page" @onclick="RefreshPage">
-                        </li>
-                    }
-                </ul>
             </div>
         </div><br />
 
-        <DeleteMess @ref="deleteRef" /> @*Delete-fönster*@
+        <DeleteAll @ref="deleteallRef" /> @*Delete-fönster*@
+        <DeleteMess @ref="deletemessRef" /> @*Delete-fönster*@
         <DocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
         <DocumentUser @ref="docuserRef" /> @*Filmottagarefönster*@
 
@@ -76,6 +91,18 @@
         }
         else
         {
+            <EditForm Context="searchlmslexnet" Model="@modules" OnSubmit="OnInitializedAsync" @onmouseover="DeleteRefresh">
+                <span class="nav m-lg-auto input-group">
+                    <InputText class="form-control" @bind-Value="searchString" placeholder="Module name" />
+                    <span class="nav m-lg-auto input-group-append">
+                        <button type="submit" class="btn m-lg-auto btn-outline-dark">Search</button>
+                    </span>
+                    <span class="nav m-lg-auto input-group-append">
+                        <button type="button" @onclick="GetCurrentModule" class="btn m-lg-auto btn-outline-dark">Current</button>
+                    </span>
+                </span>
+            </EditForm><br />
+
             @foreach (var data in modules)
             {
                 if (data.IsActive)
@@ -90,7 +117,7 @@
                         classModTopic = "modulebox";
                         classActTopic = "activitybox";
                     }
-                    <section class="@classModTopic">
+                    <section class="@classModTopic" @onmouseover="DeleteRefresh">
                         <div style="display: flex; width: 100%">
                             <div style="width: 75%; text-align: left">
                                 <b>Module @data.Id: <em style="cursor: pointer" @onclick=" _ => InfoTitle(data.Description)">@data.Name</em></b>
@@ -168,7 +195,7 @@
                                                                     }
                                                                     else
                                                                     {
-                                                                        <a @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                                                        <a @onmouseover="_ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
                                                                         title="@doc.Description by @doc.Author @doc.TimeStamp">By @doc.Author</a>
                                                                     }
                                                                     Empty = false;
@@ -180,8 +207,8 @@
                                                 <td>
                                                     @if (!Empty)
                                                     {
-                                                        <span class="oi oi-aperture text-primary text-decoration-none" style="position: relative; top: 2px"
-                                                        title="Press for refresh docs and page" @onclick="RefreshPage"></span>
+                                                        <span class="oi oi-aperture text-primary text-decoration-none"
+                                                        style="position: relative; top: 2px"></span>
                                                     }
                                                 </td>
                                             }
@@ -204,14 +231,29 @@
 
 @code {
 
-    private DeleteMess? deleteRef; // Delete-fönster.
+    private DeleteAll? deleteallRef; // Delete-fönster.
 
-    private async Task DeleteMess(int id) // Delete-fönster.
+    private void DeleteAll() // Delete-fönster.
+    {
+        Auxx.Loggeduser = loggeduser;
+        deleteallRef!.Show();
+    }
+
+    private DeleteMess? deletemessRef; // Delete-fönster.
+
+    private void DeleteMess(int id) // Delete-fönster.
     {
         Auxx.IntId = id;
-        deleteRef!.Show();
+        deletemessRef!.Show();
+    }
 
-        if (Auxx.Flag) await OnInitializedAsync();
+    private async Task DeleteRefresh() // Uppdaterar efter förändring av innehållet.
+    {
+        if (Auxx.Flag)
+        {
+            await OnInitializedAsync();
+            Auxx.Flag = false;
+        }
     }
 
     private DocumentAdd? docsaveRef; // Filsparfönster.
@@ -222,27 +264,16 @@
         Auxx.DocType = doctype;
         Auxx.Name4Type = name;
         await docsaveRef!.Show();
-
-        if (Auxx.Flag)
-        {
-            await OnInitializedAsync();
-            Auxx.Flag = false;
-        }
     }
 
     private DocumentUser? docuserRef; // Filmottagarefönster.
 
-    private async Task DocUserControl(int id) // Filmottagarefönster.
+    private void DocUserControl(int id, bool delete) // Filmottagarefönster.
     {
         Auxx.IntId = id;
-        Auxx.documents = documents;
+        Auxx.Flag = delete;
+        Auxx.Documents = documents;
         docuserRef!.Show();
-
-        if (Auxx.Flag)
-        {
-            await OnInitializedAsync();
-            Auxx.Flag = false;
-        }
     }
 
     private List<CourseDto> courses = new();
@@ -262,6 +293,7 @@
     private string CourseDate = string.Empty;
     private string classModTopic = string.Empty;
     private string classActTopic = string.Empty;
+    private string searchString = string.Empty;
     private int CourseId;
     private bool Empty;
 
@@ -305,7 +337,16 @@
 
                     foreach (var mod in cour.Modules) // Hämtar moduler.
                     {
-                        modules.Add(mod);
+                        // Sökfiltrering med IndexOf: modulnamn.
+                        if (!string.IsNullOrWhiteSpace(searchString))
+                        {
+                            if (mod.Name.ToLower().IndexOf(searchString.ToLower()) != -1) modules.Add(mod);
+                        }
+                        else
+                        {
+                            modules.Add(mod);
+                        }
+                        if (!string.IsNullOrWhiteSpace(searchString) && modules.Count < 1) CourseName = "No module matched the search term...";
 
                         foreach (var act in mod.Activities) // Hämtar aktiviteter.
                         {
@@ -342,14 +383,43 @@
         await xClient.OpenFile(ix, filename);
     }
 
-    private async Task RefreshPage()
-    {
-        await OnInitializedAsync();
-    }
-
     private void ShowInfoControl(string description, string author, string timestamp)
     {
         xnav.SetInfo("xnavinfo", description + " by " + author + " Created: " + timestamp);
         xnav.SetReset('i');
+    }
+
+    private void ShowMessControl(string description, string author, string timestamp)
+    {
+        xnav.SetMess("xnavmess", description + " by " + author + " Created: " + timestamp);
+        xnav.SetReset('m');
+    }
+
+    private void GetCurrentModule() // Hämtar aktuell modul.
+    {
+        var module = new ModuleDto();
+        bool FindMod = false;
+
+        foreach (var mod in modules)
+        {
+            if (mod.StartDate <= DateTime.Now && mod.EndDate >= DateTime.Now)
+            {
+                module = mod;
+                FindMod = true;
+            }
+        }
+
+        if (FindMod)
+        {
+            modules.Clear();
+            modules.Add(module);
+            xnav.SetDone("xnavdone", "Your current module.");
+            xnav.SetReset('d');
+        }
+        else
+        {
+            xnav.SetDone("xnavdone", "There is no current module.");
+            xnav.SetReset('d');
+        }
     }
 }

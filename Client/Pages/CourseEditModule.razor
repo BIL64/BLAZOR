@@ -75,9 +75,8 @@
 
     <DeleteModule @ref="deleteRef" /> @*Delete-fönster*@
 
-        <div class="container"> @*Eventuella dokument som ingår läggs ut här*@
+        <div class="container" @onmouseover="DeleteRefresh"> @*Eventuella dokument som ingår läggs ut här*@
             <div class="d-flex flex-wrap">
-                @{bool Empty = true;}
                 @foreach (var doc in documents)
                 {
                     <ul class="nav">
@@ -88,18 +87,9 @@
                                 <span class="oi oi-file text-primary text-decoration-none docicon"
                                 @onclick=" _ => DocEditControl(doc.Id, 3)"></span>
                             </li>
-                            Empty = false;
                         }
                     </ul>
                 }
-                <ul class="nav">
-                    @if (!Empty)
-                    {
-                        <li class="oi oi-aperture text-primary text-decoration-none" style="position: relative; top: 9px"
-                            title="Mouse over: Refresh docs and page" @onmouseover="RefreshPage">
-                        </li>
-                    }
-                </ul>
             </div>
         </div><br />
 
@@ -125,20 +115,23 @@
         await deleteRef!.Show();
     }
 
-    private DocumentEdit? doceditRef; // Filredigeringsfönster.
-
-    private async Task DocEditControl(int id, byte doctype) // Filredigeringsfönster.
+    private async Task DeleteRefresh() // Uppdaterar efter förändring av innehållet.
     {
-        Auxx.IntId = id;
-        Auxx.DocType = doctype;
-        Auxx.documents = documents;
-        doceditRef!.Show();
-
         if (Auxx.Flag)
         {
             await OnInitializedAsync();
             Auxx.Flag = false;
         }
+    }
+
+    private DocumentEdit? doceditRef; // Filredigeringsfönster.
+
+    private void DocEditControl(int id, byte doctype) // Filredigeringsfönster.
+    {
+        Auxx.IntId = id;
+        Auxx.DocType = doctype;
+        Auxx.Documents = documents;
+        doceditRef!.Show();
     }
 
     private EditContext moduleContext = default!; // Formulärkontexter.
@@ -285,7 +278,7 @@
     {
         xnav.SetDone("xnavdone", "Your module is edited or added.");
         xnav.SetReset('d');
-        await Intermission(3000, false);
+        await Intermission(2000, false);
         Navigation.NavigateTo($"/coursedetail/{CourseID}", true);
     }
 
@@ -297,11 +290,6 @@
     private async Task OpenFileControl(int ix, string filename)
     {
         await xClient.OpenFile(ix, filename);
-    }
-
-    private async Task RefreshPage()
-    {
-        await OnInitializedAsync();
     }
 
     private async Task Intermission(int time, bool hide) // Paus.

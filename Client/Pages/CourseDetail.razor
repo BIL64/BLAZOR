@@ -27,7 +27,7 @@
             </div>
         </nav>
 
-        <div class="container"> @*Eventuella dokument som ingår läggs ut här*@
+        <div class="container" @onmouseover="DeleteRefresh"> @*Eventuella dokument som ingår läggs ut här*@
             <div class="d-flex flex-wrap">
                 @foreach (var doc in documents)
                 {
@@ -39,18 +39,9 @@
                                 <span class="oi oi-file text-primary text-decoration-none docicon"
                                 @onclick=" _ => DocEditControl(doc.Id, 2)"></span>
                             </li>
-                            Empty = false;
                         }
                     </ul>
                 }
-                <ul class="nav">
-                    @if (!Empty)
-                    {
-                        <li class="oi oi-aperture text-primary text-decoration-none" style="position: relative; top: 9px"
-                            title="Mouse over: Refresh docs and page" @onmouseover="RefreshPage">
-                        </li>
-                    }
-                </ul>
             </div>
         </div><br />
 
@@ -80,7 +71,7 @@
                         classActTopic = "activitybox";
                     }
 
-                    <section class="@classModTopic">
+                    <section class="@classModTopic" @onmouseover="DeleteRefresh">
                         <div style="display: flex; width: 100%">
                             <div style="width: 75%; text-align: left">
                                 <b title="@data.Description -Click for edit-">Module @data.Id:
@@ -168,7 +159,7 @@
                                                                     }
                                                                     else
                                                                     {
-                                                                        <a @onclick="_ => ShowMessage(doc.Description, doc.Author, doc.TimeStamp)"
+                                                                        <a @onclick="_ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
                                                                         title="Mess: @doc.Description @doc.TimeStamp">By @doc.Author</a>
                                                                     }
                                                                     Empty = false;
@@ -183,8 +174,8 @@
                                                 <td>
                                                     @if (!Empty)
                                                     {
-                                                        <span class="oi oi-aperture text-primary text-decoration-none" style="position: relative; top: 5px"
-                                                        title="Press for refresh docs and page" @onclick="RefreshPage"></span>
+                                                        <span class="oi oi-aperture text-primary text-decoration-none"
+                                                        style="position: relative; top: 5px"></span>
                                                     }
                                                 </td>
                                             }
@@ -221,7 +212,7 @@
                 }
                 else
                 {
-                    <section class="modulebox" style="color:grey; background-color:lightgrey">
+                    <section class="modulebox" style="color:grey; background-color:lightgrey" @onmouseover="DeleteRefresh">
                         <div style="display: flex; width: 100%">
                             <div style="width: 75%; text-align: left">
                                 <b title="@data.Description -Click for edit-">
@@ -301,23 +292,20 @@
         Auxx.DocType = doctype;
         Auxx.Name4Type = name;
         await docsaveRef!.Show();
-
-        if (Auxx.Flag)
-        {
-            await OnInitializedAsync();
-            Auxx.Flag = false;
-        }
     }
 
     private DocumentEdit? doceditRef; // Filredigeringsfönster.
 
-    private async Task DocEditControl(int id, byte doctype) // Filredigeringsfönster.
+    private void DocEditControl(int id, byte doctype) // Filredigeringsfönster.
     {
         Auxx.IntId = id;
         Auxx.DocType = doctype;
-        Auxx.documents = documents;
+        Auxx.Documents = documents;
         doceditRef!.Show();
+    }
 
+    private async Task DeleteRefresh() // Uppdaterar efter förändring av innehållet.
+    {
         if (Auxx.Flag)
         {
             await OnInitializedAsync();
@@ -631,15 +619,10 @@
         await xClient.OpenFile(ix, filename);
     }
 
-    private void ShowMessage(string description, string author, string timestamp)
+    private void ShowMessControl(string description, string author, string timestamp)
     {
-        xnav.SetInfo("xnavinfo", description + " by " + author + " Created: " + timestamp);
-        xnav.SetReset('i');
-    }
-
-    private async Task RefreshPage()
-    {
-        await OnInitializedAsync();
+        xnav.SetMess("xnavmess", description + " by " + author + " Created: " + timestamp);
+        xnav.SetReset('m');
     }
 
     private async Task Intermission(int time, bool hide) // Paus.

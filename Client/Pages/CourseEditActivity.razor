@@ -15,7 +15,7 @@
 
 <AuthorizeView Roles="Teacher">
     <Authorized>
-    <section class="activityeditbox">@*Hjälptabeller vid inmatning av moduler*@
+    <section class="activityeditbox"> @*Hjälptabeller vid inmatning av moduler*@
         <div style="display: flex; width: 100%">
             <h4 style="width: 75%; text-align: left">COURSE: @course.Name</h4>
             <h5 style="margin-left: auto; margin-right: 0">@StartEndDate(course.StartDate, course.EndDate)</h5>
@@ -110,9 +110,8 @@
         </EditForm>
     </section>
 
-        <div class="container"> @*Eventuella dokument som ingår läggs ut här*@
+        <div class="container" @onmouseover="DeleteRefresh"> @*Eventuella dokument som ingår läggs ut här*@
             <div class="d-flex flex-wrap">
-                @{bool Empty = true;}
                 @foreach (var doc in documents)
                 {
                     <ul class="nav">
@@ -120,32 +119,46 @@
                         {
                             if (doc.DocName != "")
                             {
-                                <li class="doclink" title="File: @doc.Description by @doc.Author @doc.TimeStamp">
-                                    <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)">@doc.DocName</span>
-                                    <span class="oi oi-file text-primary text-decoration-none docicon"
-                                    @onclick=" _ => DocEditControl(doc.Id, 4)"></span>
-                                </li>
+                                if (DateTime.Parse(doc.TimeStamp).AddDays(1) > DateTime.Now)
+                                {
+                                    <li class="doclink" style="box-shadow: 0 0 10px plum"
+                                        title="File: @doc.Description by @doc.Author @doc.TimeStamp">
+                                        <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)">@doc.DocName</span>
+                                        <span class="oi oi-file text-primary text-decoration-none docicon"
+                                        @onclick=" _ => DocEditControl(doc.Id, 4)"></span>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="doclink" title="File: @doc.Description by @doc.Author @doc.TimeStamp">
+                                        <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)">@doc.DocName</span>
+                                        <span class="oi oi-file text-primary text-decoration-none docicon"
+                                        @onclick=" _ => DocEditControl(doc.Id, 4)"></span>
+                                    </li>
+                                }
                             }
                             else
                             {
-                                <li class="oi oi-file text-danger text-decoration-none docicon"
-                                    style="position: relative; top: 10px; margin-right: 22px"
-                                    @onmouseover=" _ => ShowMessage(doc.Description, doc.Author, doc.TimeStamp)"
-                                    @onclick=" _ => DeleteMess(doc.Id)">
-                                </li>
+                                if (DateTime.Parse(doc.TimeStamp).AddDays(1) > DateTime.Now)
+                                {
+                                    <li class="oi oi-file text-danger text-decoration-none docicon"
+                                        style="position: relative; top: 10px; margin-right: 22px; text-shadow: 0 0 10px plum"
+                                        @onmouseover=" _ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                        @onclick=" _ => DeleteMess(doc.Id)">
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="oi oi-file text-danger text-decoration-none docicon"
+                                        style="position: relative; top: 10px; margin-right: 22px"
+                                        @onmouseover=" _ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                        @onclick=" _ => DeleteMess(doc.Id)">
+                                    </li>
+                                }
                             }
-                            Empty = false;
                         }
                     </ul>
                 }
-                <ul class="nav">
-                    @if (!Empty)
-                    {
-                        <li class="oi oi-aperture text-primary text-decoration-none" style="position: relative; top: 9px"
-                            title="Mouse over: Refresh docs and page" @onmouseover="RefreshPage">
-                        </li>
-                    }
-                </ul>
             </div>
         </div><br />
 
@@ -165,28 +178,29 @@
 
     private DeleteMess? deleteRef; // Delete-fönster.
 
-    private async Task DeleteMess(int id) // Delete-fönster.
+    private void DeleteMess(int id) // Delete-fönster.
     {
         Auxx.IntId = id;
         deleteRef!.Show();
-
-        if (Auxx.Flag) await OnInitializedAsync();
     }
 
-    private DocumentEdit? doceditRef; // Filredigeringsfönster.
-
-    private async Task DocEditControl(int id, byte doctype) // Filredigeringsfönster.
+    private async Task DeleteRefresh() // Uppdaterar efter förändring av innehållet.
     {
-        Auxx.IntId = id;
-        Auxx.DocType = doctype;
-        Auxx.documents = documents;
-        doceditRef!.Show();
-
         if (Auxx.Flag)
         {
             await OnInitializedAsync();
             Auxx.Flag = false;
         }
+    }
+
+    private DocumentEdit? doceditRef; // Filredigeringsfönster.
+
+    private void DocEditControl(int id, byte doctype) // Filredigeringsfönster.
+    {
+        Auxx.IntId = id;
+        Auxx.DocType = doctype;
+        Auxx.Documents = documents;
+        doceditRef!.Show();
     }
 
     private EditContext activityContext = default!; // Formulärkontexter.
@@ -316,7 +330,7 @@
     {
         xnav.SetDone("xnavdone", "The activity was NOT edited or created.");
         xnav.SetReset('d');
-        await Intermission(1000, false);
+        await Intermission(500, false);
         Navigation.NavigateTo($"/coursedetail/{CourseID}", true);
     }
 
@@ -408,7 +422,7 @@
     {
         xnav.SetDone("xnavdone", "Your activity is edited or added.");
         xnav.SetReset('d');
-        await Intermission(3000, false);
+        await Intermission(2000, false);
         Navigation.NavigateTo($"/coursedetail/{CourseID}", true);
     }
 
@@ -446,15 +460,16 @@
         await xClient.OpenFile(ix, filename);
     }
 
-    private void ShowMessage(string description, string author, string timestamp)
+    private void ShowInfoControl(string description, string author, string timestamp)
     {
         xnav.SetInfo("xnavinfo", description + " by " + author + " Created: " + timestamp);
         xnav.SetReset('i');
     }
 
-    private async Task RefreshPage()
+    private void ShowMessControl(string description, string author, string timestamp)
     {
-        await OnInitializedAsync();
+        xnav.SetMess("xnavmess", description + " by " + author + " Created: " + timestamp);
+        xnav.SetReset('m');
     }
 
     private async Task Intermission(int time, bool hide) // Paus.

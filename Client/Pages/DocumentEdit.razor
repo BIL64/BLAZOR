@@ -12,35 +12,35 @@
 <AuthorizeView Roles ="Student, Teacher">
     <Authorized>
     <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
-    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-            <strong class="me-auto">@HeaderText</strong>
-            <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
-        </div>
+        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">@HeaderText</strong>
+                <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+            </div>
 
-        <div class="toast-body">
-            <EditForm Model="@document" Context="documenteditlmslexnet" OnValidSubmit="HandleSubmitDocument">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
-                <div class="form-group" style="font-size: 0.9rem; font-weight: bold; cursor: pointer" title="Open file"
-                @onclick=" _ => OpenFileControl(document.NameIx, document.DocName)">@document.DocName</div>
-                <div class="form-group m-3">
-                    <label for="Description">Description</label>
-                    <InputTextArea id="Description" class="form-control" @bind-Value="document.Description" placeholder="Enter description" />
-                </div>
-                <div class="form-group m-3">
-                    <label for="Author">Author (sender)</label>
-                    <InputText id="Author" class="form-control" @bind-Value="document.Author" placeholder="Enter author" />
-                </div>
-                <div class="form-group m-3">
-                    <button type="submit" class="text-white rembtn" style="margin-right: 15px">Edit form</button>
-                    <button type="button" class="text-white remyes" @onclick="DeleteFile" title="Remove this file from the system">Delete file</button>
-                    <button type="button" class="text-white remnot" @onclick="Close">NO</button>
-                </div>
-            </EditForm>
+            <div class="toast-body">
+                <EditForm Model="@document" Context="documenteditlmslexnet" OnValidSubmit="HandleSubmitDocument">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <div class="form-group" style="font-size: 0.9rem; font-weight: bold; cursor: pointer" title="Open file"
+                    @onclick=" _ => OpenFileControl(document.NameIx, document.DocName)">@document.DocName</div>
+                    <div class="form-group m-3">
+                        <label for="Description">Description</label>
+                        <InputTextArea id="Description" class="form-control" @bind-Value="document.Description" placeholder="Enter description" />
+                    </div>
+                    <div class="form-group m-3">
+                        <label for="Author">Author (sender)</label>
+                        <InputText id="Author" class="form-control" @bind-Value="document.Author" placeholder="Enter author" />
+                    </div>
+                    <div class="form-group m-3">
+                        <button type="submit" class="text-white rembtn" style="margin-right: 15px">Edit form</button>
+                        <button type="button" class="text-white remyes" @onclick="DeleteFile" title="Remove this file from the system">Delete file</button>
+                        <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+                    </div>
+                </EditForm>
+            </div>
         </div>
     </div>
-</div>
 
     </Authorized>
     <NotAuthorized>
@@ -69,7 +69,7 @@
         if (Auxx.DocType == 3) HeaderText = "Edit MODULE document file...";
         if (Auxx.DocType == 4) HeaderText = "Edit ACTIVITY document file...";
 
-        foreach (var doc in Auxx.documents)
+        foreach (var doc in Auxx.Documents)
         {
             if (doc.Id == Auxx.IntId)
             {

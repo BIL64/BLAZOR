@@ -15,7 +15,9 @@ public static class Auxx // Statisk klass med variabler som är åtkomliga över
 
     public static string Name4Type { get; set; } = string.Empty; // Namnet på typen.
 
-    public static List<DocumentDto> documents { get; set; } = new List<DocumentDto>();
+    public static AppUserDto Loggeduser { get; set; } = new AppUserDto();
+
+    public static List<DocumentDto> Documents { get; set; } = new List<DocumentDto>();
 
     public static bool PagOn { get; set; } // Paginering - On/Off.
 
