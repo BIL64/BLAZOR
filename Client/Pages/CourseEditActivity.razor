@@ -160,8 +160,15 @@
                     </ul>
                 }
             </div>
-        </div><br />
+        </div>
 
+        <footer style="display: flex; width: 100%">
+            <div style="margin-left: auto; margin-right: 0">
+                <button type="button" class="text-white delbtn" @onclick="DeleteAllDocs" title="Delete all non-mandatory documents and messages">E</button>
+            </div>
+        </footer>
+
+    <DeleteAllDocActivities @ref="deletealldocRef" /> @*Delete-fönster*@
     <DeleteMess @ref="deleteRef" /> @*Delete-fönster*@
     <DocumentEdit @ref="doceditRef" /><br /><br /> @*Filredigeringsfönster*@
 
@@ -176,6 +183,15 @@
     [Parameter]
     public int IId { get; set; }
 
+    private DeleteAllDocActivities? deletealldocRef; // Delete-fönster.
+
+    private void DeleteAllDocs() // Delete-fönster.
+    {
+        Auxx.IntId = IId;
+        Auxx.Documents = documents;
+        deletealldocRef!.Show();
+    }
+
     private DeleteMess? deleteRef; // Delete-fönster.
 
     private void DeleteMess(int id) // Delete-fönster.
@@ -186,11 +202,7 @@
 
     private async Task DeleteRefresh() // Uppdaterar efter förändring av innehållet.
     {
-        if (Auxx.Flag)
-        {
-            await OnInitializedAsync();
-            Auxx.Flag = false;
-        }
+        if (Auxx.Flag) await OnInitializedAsync();
     }
 
     private DocumentEdit? doceditRef; // Filredigeringsfönster.
@@ -229,11 +241,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        xnav.SetReset('a');
+        if (!Auxx.Flag) xnav.SetReset('a');
+        else Auxx.Flag = false;
 
         modulelist.Clear();
         activitylist.Clear();
         activitytypelist.Clear();
+        documents.Clear();
 
         activityContext = new EditContext(activity); // Formulärkontext.
 
@@ -279,7 +293,7 @@
                 {
                     foreach (var acttype in activitytypelist) // Aktivitetstypen som hör till en specifik aktivitet.
                     {
-                        if (acttype.Id == activity.ActivityTypeId) activityType.Name = acttype.Name; // Selektnamn.
+                        if (acttype.Id == activity.ActivityTypeId) activityType.Name = acttype.Name; // Select-namn.
 
                         if (acttype.Id == act.ActivityTypeId)
                         {
@@ -458,12 +472,6 @@
     private async Task OpenFileControl(int ix, string filename)
     {
         await xClient.OpenFile(ix, filename);
-    }
-
-    private void ShowInfoControl(string description, string author, string timestamp)
-    {
-        xnav.SetInfo("xnavinfo", description + " by " + author + " Created: " + timestamp);
-        xnav.SetReset('i');
     }
 
     private void ShowMessControl(string description, string author, string timestamp)

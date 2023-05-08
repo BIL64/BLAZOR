@@ -66,20 +66,21 @@
     public string? HeaderText { get; set; }
 
     private int NameIndex;
-    private bool Upload = false;
+    private bool Upload;
+    private bool IsMan; // För särskiljning av obligatoriska dokument.
     private string classFile = "form-group m-md-3";
     private string classBtn = "d-none";
-    private string FileName = string.Empty;
+    private string DocFileName = string.Empty;
+
+    MultipartFormDataContent content = new();
+
+    DocumentDto document = new();
 
     List<UploadResult> uploadResults = new();
 
-    private MultipartFormDataContent content = new();
+    List<AppUserDto> users = new();
 
-    private DocumentDto document = new();
-
-    private List<AppUserDto> users = new();
-
-    private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
+    AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
 
     public async Task Show()
     {
@@ -96,6 +97,15 @@
             {
                 if (item.Email == name) loggeduser = item;
             }
+        }
+
+        Upload = false;
+        IsMan = false;
+
+        if (Auxx.DocType > 100) // Ska listningen av dokumenten kunna urskilja obligatoriska filer?
+        {
+            IsMan = true;
+            Auxx.DocType -= 100;
         }
 
         if (Auxx.DocType == 1) HeaderText = "Add USER document file...";
@@ -146,7 +156,7 @@
                     try
                     {
                         files.Add(new() { Name = file.Name });
-                        FileName = file.Name;
+                        DocFileName = file.Name;
 
                         var fileContent = new StreamContent(file.OpenReadStream(maxFileSize));
                         fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
@@ -204,7 +214,7 @@
             var ldoc = new DocumentDto
                 {
                     NameIx = NameIndex,
-                    DocName = FileName,
+                    DocName = DocFileName,
                     Description = document.Description,
                     Author = document.Author,
                     TimeStamp = DateTime.Now.ToString(),
@@ -217,7 +227,13 @@
             if (Auxx.DocType == 1 || Auxx.DocType == 10) ldoc.UserId = Auxx.GuidId;
             if (Auxx.DocType == 2 || Auxx.DocType == 20) ldoc.Id4Course = Auxx.IntId;
             if (Auxx.DocType == 3 || Auxx.DocType == 30) ldoc.ModuleId = Auxx.IntId;
-            if (Auxx.DocType == 4 || Auxx.DocType == 40) ldoc.ActivityId = Auxx.IntId;
+            if (Auxx.DocType == 4 || Auxx.DocType == 40)
+            {
+                if (loggeduser.Id is not null) Auxx.GuidId = loggeduser.Id;
+                ldoc.UserId = Auxx.GuidId;
+                ldoc.ActivityId = Auxx.IntId;
+            }
+            if (IsMan) ldoc.Id4Course = -1; // Kursid sätts till -1 vilket markerar särskiljning.
 
             await xClient.PostAsync<DocumentDto>(ldoc, "api/Document");
             xnav.SetDone("xnavdone", "Your document file was added.");
@@ -252,7 +268,13 @@
             if (Auxx.DocType == 10) ldoc.UserId = Auxx.GuidId;
             if (Auxx.DocType == 20) ldoc.Id4Course = Auxx.IntId;
             if (Auxx.DocType == 30) ldoc.ModuleId = Auxx.IntId;
-            if (Auxx.DocType == 40) ldoc.ActivityId = Auxx.IntId;
+            if (Auxx.DocType == 40)
+            {
+                if (loggeduser.Id is not null) Auxx.GuidId = loggeduser.Id;
+                ldoc.UserId = Auxx.GuidId;
+                ldoc.ActivityId = Auxx.IntId;
+            }
+            if (IsMan) ldoc.Id4Course = -1; // Kursid sätts till -1 vilket markerar särskiljning.
 
             await xClient.PostAsync<DocumentDto>(ldoc, "api/Document");
             xnav.SetDone("xnavdone", "Your message was posted.");

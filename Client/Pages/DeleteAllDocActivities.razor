@@ -1,5 +1,4 @@
-﻿@inject NavigationManager Navigation
-@inject IXDtoClient xClient
+﻿@inject IXDtoClient xClient
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Sukhrob Ilyosbekov - Stack Overflow*@
@@ -12,12 +11,11 @@
 <AuthorizeView Roles ="Student, Teacher">
     <Authorized>
     <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
-        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" style="width: 360px">
             <div class="toast-header">
                 <strong class="me-auto">@HeaderText</strong>
                 <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
             </div>
-
             <div class="toast-body">
                 <button type="button" class="text-white remnot" @onclick="Proceed">YES</button>
                 <button type="button" class="text-white remnot" @onclick="Close">NO</button>
@@ -25,8 +23,8 @@
             <div class="@classProceed">
                 <EditForm Model="@xClient" Context="deletealllmslexnet" OnSubmit="HandleSubmitDeleteAll">
                     <div class="form-group m-3">
-                        <label for="Email">Enter your email address</label>
-                        <InputText id="Email" class="form-control" @bind-Value="Email" title="Users email" />
+                        <label for="Date">Enter today's date (yyyy-mm-dd)</label>
+                        <InputText id="Date" class="form-control" @bind-Value="Tdate" title="Today's date" />
                     </div>
                     <div class="form-group m-3">
                         <button type="submit" class="text-white remyes" title="Remove all documents and messages from the system">DELETE NOW</button>
@@ -54,13 +52,13 @@
     public string? HeaderText { get; set; }
 
     public string classProceed = "d-none";
-    public string Email = string.Empty;
+    public string Tdate = string.Empty;
 
     public void Show()
     {
         xnav.SetReset('a');
 
-        HeaderText = "Eliminate all your docs and mess...";
+        HeaderText = "Remove all non-mandatory docs and mess....";
         classProceed = "d-none";
         IsVisible = true;
         StateHasChanged();
@@ -82,7 +80,7 @@
     {
         bool FindDoc = false;
 
-        if (Auxx.Loggeduser.Email == Email)
+        if (DateTime.Now.ToString().Substring(0, 10) == Tdate)
         {
             var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
 
@@ -90,7 +88,7 @@
             {
                 foreach (var doc in document)
                 {
-                    if (doc.UserId == Auxx.Loggeduser.Id)
+                    if (doc.ActivityId == Auxx.IntId && doc.Id4Course == 0)
                     {
                         await xClient.RemAsync(doc.Id, "api/Document");
                         await xClient.DeleteFile(doc.NameIx.ToString() + doc.DocName);
@@ -104,10 +102,9 @@
                 HeaderText = string.Empty;
                 IsVisible = false;
                 StateHasChanged();
-                xnav.SetDone("xnavdone", "All your documents and messages were deleted.");
+                xnav.SetDone("xnavdone", "All non-mandatory documents and messages were deleted.");
                 xnav.SetReset('d');
-                await Intermission(4000);
-                Navigation.NavigateTo("studentcourse", true);
+                Auxx.Flag = true;
             }
             else
             {
@@ -118,14 +115,8 @@
         }
         else
         {
-            xnav.SetError("xnaverror", "The email address was incorrect.");
+            xnav.SetError("xnaverror", "The date was incorrect.");
             xnav.SetReset('e');
         }
-    }
-
-    private async Task Intermission(int time) // Paus.
-    {
-        base.StateHasChanged();
-        await Task.Delay(time);
     }
 }

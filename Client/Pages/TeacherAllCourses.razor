@@ -12,14 +12,20 @@
 
 <AuthorizeView Roles="Teacher">
     <Authorized>
-        <h4>@TeacherName</h4>
+        <nav style="display: flex; width: 100%">
+            <div style="width: 75%; text-align: left"><h4>@TeacherName</h4></div>
+            <div style="margin-left: auto; margin-right: 0">
+                <button type="button" class="text-white delbtn" @onclick="AddDeleteAvatar" title="Add or delete avatar">A</button>
+                <button type="button" class="text-white delbtn" @onclick="DeleteAllDocs" title="Delete all documents and messages">E</button>
+            </div>
+        </nav>
 
         <div class="container" @onmouseover="DeleteRefresh"> @*Eventuella dokument som ingår läggs ut här*@
             <div class="d-flex flex-wrap">
                 @foreach (var doc in documents)
                 {
                     <ul class="nav">
-                        @if (doc.UserId == loggeduser.Id)
+                        @if (doc.UserId == loggeduser.Id && doc.Id4Course != -2 && doc.ActivityId == 0)
                         {
                             if (doc.DocName != "")
                             {
@@ -65,6 +71,8 @@
             </div>
         </div><br />
 
+        <DocumentAvatar @ref="addavatarRef" /> @*Avatar-fönster*@
+        <DeleteAllDocUser @ref="deletealldocRef" /> @*Delete-fönster*@
         <DeleteMess @ref="deleteRef" /> @*Delete-fönster*@
         <DocumentUser @ref="docuserRef" /> @*Filmottagarefönster*@
 
@@ -136,18 +144,20 @@
                                 @if (data.Total_D == 1) SP = "document"; else SP = "documents";
                                 <span style="margin-left: 2%; color:darkblue" class="dropuse">
                                     <span><span>@data.Total_D</span><span>&nbsp;@SP</span></span>
-                                    <span style="font-size: 0.78rem; padding: 3px; cursor: default" class="dropuse-content">
+                                    <span style="font-size: 0.78rem; padding: 3px; cursor: pointer" class="dropuse-content">
                                         @foreach (var item in documents) // Snabbtitt och som här gäller alla ev dokument i en kurs.
                                         {
                                             if (item.Id4Course == data.Id)
                                             {
                                                 if (item.DocName != "")
                                                 {
-                                                    <div>@item.DocName</div>
+                                                    <div @onclick=" _ => OpenFileControl(item.NameIx, item.DocName)"
+                                                    title="@item.Description, @item.Author, @item.TimeStamp">@item.DocName</div>
                                                 }
                                                 else
                                                 {
-                                                    <div style="color:rebeccapurple">From @item.Author</div>
+                                                    <div @onclick=" _ => ShowMessControl(item.Description, item.Author, item.TimeStamp)"
+                                                    style="color:rebeccapurple">From @item.Author</div>
                                                 }
                                             }
 
@@ -155,7 +165,8 @@
                                             {
                                                 if (mod.CourseId == data.Id && item.ModuleId == mod.Id)
                                                 {
-                                                    <div>@item.DocName</div>
+                                                    <div @onclick=" _ => OpenFileControl(item.NameIx, item.DocName)"
+                                                    title="@item.Description, @item.Author, @item.TimeStamp">@item.DocName</div>
                                                 }
 
                                                 foreach (var act in activities)
@@ -164,11 +175,13 @@
                                                     {
                                                         if (item.DocName != "")
                                                         {
-                                                            <div>@item.DocName</div>
+                                                            <div @onclick=" _ => OpenFileControl(item.NameIx, item.DocName)"
+                                                            title="@item.Description, @item.Author, @item.TimeStamp">@item.DocName</div>
                                                         }
                                                         else
                                                         {
-                                                            <div style="color:rebeccapurple">From @item.Author</div>
+                                                            <div @onclick=" _ => ShowMessControl(item.Description, item.Author, item.TimeStamp)"
+                                                            style="color:rebeccapurple">From @item.Author</div>
                                                         }
                                                     }
                                                 }
@@ -211,6 +224,23 @@
 
 @code {
 
+    private DocumentAvatar? addavatarRef; // Avatar-fönster.
+
+    private void AddDeleteAvatar() // Avatar-fönster.
+    {
+        Auxx.Name4Type = loggeduser.FirstName + ' ' + loggeduser.LastName;
+        Auxx.Loggeduser = loggeduser;
+        addavatarRef!.Show();
+    }
+
+    private DeleteAllDocUser? deletealldocRef; // Delete-fönster.
+
+    private void DeleteAllDocs() // Delete-fönster.
+    {
+        Auxx.Loggeduser = loggeduser;
+        deletealldocRef!.Show();
+    }
+
     private DeleteMess? deleteRef; // Delete-fönster.
 
     private void DeleteMess(int id) // Delete-fönster.
@@ -223,8 +253,8 @@
     {
         if (Auxx.Flag)
         {
-            await OnInitializedAsync();
             Auxx.Flag = false;
+            await OnInitializedAsync();
         }
     }
 
@@ -261,6 +291,12 @@
     {
         xnav.SetReset('a');
 
+        courses.Clear(); // Sökfunktionen kräver att listorna rensas.
+        modules.Clear();
+        activities.Clear();
+        documents.Clear();
+        users.Clear();
+
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         var user = authstate.User;
         var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
@@ -275,8 +311,6 @@
         if (activity is not null) activities = activity.ToList();
         if (document is not null) documents = document.ToList();
         if (appuser is not null) users = appuser.ToList();
-
-        courses.Clear(); // Sökfunktionen kräver att listan rensas.
 
         if (course is not null)
         {
@@ -324,6 +358,16 @@
             foreach (var item in appuser) // Hämtar den som för tillfället är inloggad.
             {
                 if (item.Email == name) loggeduser = item;
+            }
+        }
+
+        xnav.SetLogAvatar("d-none", "");
+
+        foreach (var doc in documents) // Letar efter en avatar.
+        {
+            if (doc.UserId == loggeduser.Id && doc.Id4Course == -2)
+            {
+                xnav.SetLogAvatar("avatarlog", xClient.GetFilepath() + doc.NameIx + doc.DocName);
             }
         }
 

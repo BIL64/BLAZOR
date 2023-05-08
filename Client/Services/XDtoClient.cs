@@ -77,6 +77,11 @@ namespace LexiconLMSBlazor.Client.Services
         {
             return (await _httpClient.DeleteAsync($"Filesave/{filename}")).IsSuccessStatusCode;
         }
+
+        public string GetFilepath() // Returnerar sökvägen till dokumentmappen.
+        {
+            return $"{_httpClient.BaseAddress}Documents/";
+        }
     }
 
     // Dimitri Björlingh:

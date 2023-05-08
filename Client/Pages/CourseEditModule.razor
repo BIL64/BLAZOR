@@ -73,7 +73,7 @@
         </EditForm>
     </section>
 
-    <DeleteModule @ref="deleteRef" /> @*Delete-fönster*@
+    <DeleteModule @ref="deletemodRef" /> @*Delete-fönster*@
 
         <div class="container" @onmouseover="DeleteRefresh"> @*Eventuella dokument som ingår läggs ut här*@
             <div class="d-flex flex-wrap">
@@ -82,17 +82,29 @@
                     <ul class="nav">
                         @if (doc.ModuleId == IId)
                         {
-                            <li class="doclink" title="File: @doc.Description by @doc.Author @doc.TimeStamp">
-                                <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)">@doc.DocName</span>
-                                <span class="oi oi-file text-primary text-decoration-none docicon"
-                                @onclick=" _ => DocEditControl(doc.Id, 3)"></span>
-                            </li>
+                            if (doc.DocName != "")
+                            {
+                                <li class="doclink" title="File: @doc.Description by @doc.Author @doc.TimeStamp">
+                                    <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)">@doc.DocName</span>
+                                    <span class="oi oi-file text-primary text-decoration-none docicon"
+                                    @onclick=" _ => DocEditControl(doc.Id, 3)"></span>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="oi oi-file text-danger text-decoration-none docicon"
+                                    style="position: relative; top: 10px; margin-right: 22px"
+                                    @onmouseover=" _ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                    @onclick=" _ => DeleteMess(doc.Id)">
+                                </li>
+                            }
                         }
                     </ul>
                 }
             </div>
         </div><br />
 
+    <DeleteMess @ref="deleteRef" /> @*Delete-fönster*@
     <DocumentEdit @ref="doceditRef" /><br /><br /> @*Filredigeringsfönster*@
 
     </Authorized>
@@ -106,21 +118,29 @@
     [Parameter]
     public int IId { get; set; }
 
-    private DeleteModule? deleteRef; // Delete-fönster.
+    private DeleteMess? deleteRef; // Delete-fönster.
 
-    private async Task DeleteModule() // Delete-fönster.
+    private void DeleteMess(int id) // Delete-fönster.
+    {
+        Auxx.IntId = id;
+        deleteRef!.Show();
+    }
+
+    private DeleteModule? deletemodRef; // Delete-fönster.
+
+    private void DeleteModule() // Delete-fönster.
     {
         Auxx.CourseId = CourseID;
         Auxx.IntId = ModuleID;
-        await deleteRef!.Show();
+        deletemodRef!.Show();
     }
 
     private async Task DeleteRefresh() // Uppdaterar efter förändring av innehållet.
     {
         if (Auxx.Flag)
         {
-            await OnInitializedAsync();
             Auxx.Flag = false;
+            await OnInitializedAsync();
         }
     }
 
@@ -152,6 +172,7 @@
         xnav.SetReset('a');
 
         modulelist.Clear();
+        documents.Clear();
 
         moduleContext = new EditContext(module); // Formulärkontext.
 
@@ -205,7 +226,7 @@
         xnav.SetDone("xnavdone", "The module was NOT edited or created.");
         xnav.SetReset('d');
         base.StateHasChanged();
-        await Task.Delay(1000);
+        await Task.Delay(500);
         Navigation.NavigateTo($"/coursedetail/{CourseID}", true);
     }
 
@@ -290,6 +311,12 @@
     private async Task OpenFileControl(int ix, string filename)
     {
         await xClient.OpenFile(ix, filename);
+    }
+
+    private void ShowMessControl(string description, string author, string timestamp)
+    {
+        xnav.SetMess("xnavmess", description + " by " + author + " Created: " + timestamp);
+        xnav.SetReset('m');
     }
 
     private async Task Intermission(int time, bool hide) // Paus.

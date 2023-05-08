@@ -1,7 +1,7 @@
 ﻿@page "/studentcourse"
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
-@inject NavigationManager Navigation
 @inject IAppUserDtoClient appuserClient
+@inject NavigationManager Navigation
 @inject IXDtoClient xClient
 @inject XNavMenu xnav
 @attribute [Authorize]
@@ -18,7 +18,8 @@
             </div>
             <div style="margin-left: auto; margin-right: auto"><h5>@CourseDate</h5></div>
             <div style="margin-left: auto; margin-right: 0">
-                <button type="button" class="text-white delbtn" @onclick="DeleteAll" title="Delete all documents and messages">E</button>
+                <button type="button" class="text-white delbtn" @onclick="AddDeleteAvatar" title="Add or delete avatar">A</button>
+                <button type="button" class="text-white delbtn" @onclick="DeleteAllDocs" title="Delete all documents and messages">E</button>
             </div>
         </nav><br />
 
@@ -36,7 +37,7 @@
                             </li>
                         }
 
-                        @if (doc.UserId == loggeduser.Id && doc.DocName != "")
+                        @if (doc.UserId == loggeduser.Id && doc.DocName != "" && doc.Id4Course != -2 && doc.ActivityId == 0)
                         {
                             if (DateTime.Parse(doc.TimeStamp).AddDays(1) > DateTime.Now)
                             {
@@ -56,7 +57,7 @@
                             }
                         }
 
-                        @if (doc.UserId == loggeduser.Id && doc.DocName == "")
+                        @if (doc.UserId == loggeduser.Id && doc.DocName == "" && doc.ActivityId == 0)
                         {
                             if (DateTime.Parse(doc.TimeStamp).AddDays(1) > DateTime.Now)
                             {
@@ -80,7 +81,8 @@
             </div>
         </div><br />
 
-        <DeleteAll @ref="deleteallRef" /> @*Delete-fönster*@
+        <DocumentAvatar @ref="addavatarRef" /> @*Avatar-fönster*@
+        <DeleteAllDocUser @ref="deletealldocRef" /> @*Delete-fönster*@
         <DeleteMess @ref="deletemessRef" /> @*Delete-fönster*@
         <DocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
         <DocumentUser @ref="docuserRef" /> @*Filmottagarefönster*@
@@ -132,10 +134,18 @@
                                     {
                                         if (doc.ModuleId == data.Id)
                                         {
-                                            // Öppnar filen samt visar dokumentets formulärdata.
-                                            <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
-                                            title="@doc.Description by @doc.Author @doc.TimeStamp"
-                                            @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)">@doc.DocName</a>
+                                            if (doc.DocName != "")
+                                            {
+                                                // Öppnar filen samt visar dokumentets formulärdata.
+                                                <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
+                                                title="@doc.Description by @doc.Author @doc.TimeStamp"
+                                                @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)">@doc.DocName</a>
+                                            }
+                                            else
+                                            {
+                                                <a @onmouseover="_ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                                title="@doc.Description by @doc.Author @doc.TimeStamp">By @doc.Author</a>
+                                            }
                                         }
                                     }
                                 </div>
@@ -184,7 +194,8 @@
                                                         <div class="dropdoc-content">
                                                             @foreach (var doc in documents)
                                                             {
-                                                                if (doc.ActivityId == act.Id)
+                                                                if ((doc.ActivityId == act.Id && doc.Id4Course < 0) ||
+                                                                (doc.ActivityId == act.Id && doc.UserId == loggeduser.Id))
                                                                 {
                                                                     if (doc.DocName != "")
                                                                     {
@@ -231,12 +242,21 @@
 
 @code {
 
-    private DeleteAll? deleteallRef; // Delete-fönster.
+    private DocumentAvatar? addavatarRef; // Avatar-fönster.
 
-    private void DeleteAll() // Delete-fönster.
+    private void AddDeleteAvatar() // Avatar-fönster.
+    {
+        Auxx.Name4Type = loggeduser.FirstName + ' ' + loggeduser.LastName;
+        Auxx.Loggeduser = loggeduser;
+        addavatarRef!.Show();
+    }
+
+    private DeleteAllDocUser? deletealldocRef; // Delete-fönster.
+
+    private void DeleteAllDocs() // Delete-fönster.
     {
         Auxx.Loggeduser = loggeduser;
-        deleteallRef!.Show();
+        deletealldocRef!.Show();
     }
 
     private DeleteMess? deletemessRef; // Delete-fönster.
@@ -251,8 +271,8 @@
     {
         if (Auxx.Flag)
         {
-            await OnInitializedAsync();
             Auxx.Flag = false;
+            await OnInitializedAsync();
         }
     }
 
@@ -305,6 +325,7 @@
         modules.Clear();
         activities.Clear();
         activityTypes.Clear();
+        documents.Clear();
         Empty = true;
 
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
@@ -319,11 +340,24 @@
 
         if (document is not null) documents = document.ToList();
 
-        if (course is not null && appuser is not null)
+        if (course is not null)
         {
-            foreach (var item in appuser) // Hämtar den som för tillfället är inloggad.
+            if (appuser is not null)
             {
-                if (item.Email == name) loggeduser = item;
+                foreach (var item in appuser) // Hämtar den som för tillfället är inloggad.
+                {
+                    if (item.Email == name) loggeduser = item;
+                }
+            }
+
+            xnav.SetLogAvatar("d-none", "");
+
+            foreach (var doc in documents) // Letar efter en avatar.
+            {
+                if (doc.UserId == loggeduser.Id && doc.Id4Course == -2)
+                {
+                    xnav.SetLogAvatar("avatarlog", xClient.GetFilepath() + doc.NameIx + doc.DocName);
+                }
             }
 
             foreach (var cour in course)
@@ -342,10 +376,8 @@
                         {
                             if (mod.Name.ToLower().IndexOf(searchString.ToLower()) != -1) modules.Add(mod);
                         }
-                        else
-                        {
-                            modules.Add(mod);
-                        }
+                        else modules.Add(mod);
+
                         if (!string.IsNullOrWhiteSpace(searchString) && modules.Count < 1) CourseName = "No module matched the search term...";
 
                         foreach (var act in mod.Activities) // Hämtar aktiviteter.

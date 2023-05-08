@@ -1,22 +1,54 @@
 ﻿@page "/"
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject IAppUserDtoClient appuserClient
 @inject IXDtoClient xClient
 @inject XNavMenu xnav
 
 <PageTitle>Index</PageTitle>
 
-<nav style="color: white; background-color:darkturquoise; border-radius: 5px">
-    <h1 style="padding-left: 1%">Hello!</h1>
-    <span style="padding-left: 1%">Welcome to </span><span style="font-weight: bold; background-color: red">Lexicon</span> LMS
+<nav style="font-size: 1.1rem; padding-top: 50px; border-radius: 5px; color: white; background-color:darkturquoise">
+    <span style="padding-left: 1%">Welcome to </span>
+    <span style="font-weight: bold; background-color: red">Lexicon</span> LMS
 </nav>
 
 <footer class="text-lg-end text-info ">
-    &copy Lexicon Grupp 3 - Mars 2023
+    &copy Grupp 3 Variant II by Björn Lindqvist - Mars 2023
 </footer>
 
 @code {
 
-    protected override void OnInitialized()
+    private List<DocumentDto> documents = new();
+
+    private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
+
+    protected override async Task OnInitializedAsync()
     {
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
+
+        var appuser = await appuserClient.GetAsync();
+        var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+        if (document is not null) documents = document.ToList();
+
+        if (appuser is not null)
+        {
+            foreach (var item in appuser) // Hämtar den som för tillfället är inloggad.
+            {
+                if (item.Email == name) loggeduser = item;
+            }
+        }
+
+        xnav.SetLogAvatar("d-none", "");
+
+        foreach (var doc in documents) // Letar efter en avatar.
+        {
+            if (doc.UserId == loggeduser.Id && doc.Id4Course == -2)
+            {
+                xnav.SetLogAvatar("avatarlog", xClient.GetFilepath() + doc.NameIx + doc.DocName);
+            }
+        }
+
         xnav.SetReset('a');
     }
 }

@@ -16,6 +16,14 @@
 
     public string ErrorMess { get; private set; } = string.Empty;
 
+    public string classAvatarMess { get; private set; } = "d-none"; // Class for avatar.
+
+    public string PathImgMess { get; set; } = string.Empty; // Path to avatar.
+
+    public string classAvatarLog { get; private set; } = "d-none"; // Class for log avatar.
+
+    public string PathImgLog { get; set; } = string.Empty; // Path to log avatar.
+
     public string? classReg { get; set; } // show or hide.
 
     public string? classRegStatus { get; set; } // regon or regoff.
@@ -77,6 +85,7 @@
                     classMessMess = "d-none";
                     classDoneMess = "d-none";
                     classErrorMess = "d-none";
+                    classAvatarMess = "d-none";
                     MessMess = string.Empty;
                     DoneMess = string.Empty;
                     ErrorMess = string.Empty;
@@ -89,6 +98,7 @@
                     classInfoMess = "d-none";
                     classDoneMess = "d-none";
                     classErrorMess = "d-none";
+                    classAvatarMess = "d-none";
                     InfoMess = string.Empty;
                     DoneMess = string.Empty;
                     ErrorMess = string.Empty;
@@ -101,6 +111,7 @@
                     classInfoMess = "d-none";
                     classMessMess = "d-none";
                     classErrorMess = "d-none";
+                    classAvatarMess = "d-none";
                     InfoMess = string.Empty;
                     MessMess = string.Empty;
                     ErrorMess = string.Empty;
@@ -113,6 +124,20 @@
                     classInfoMess = "d-none";
                     classMessMess = "d-none";
                     classDoneMess = "d-none";
+                    classAvatarMess = "d-none";
+                    InfoMess = string.Empty;
+                    MessMess = string.Empty;
+                    DoneMess = string.Empty;
+                    NotifyStateChanged();
+                    break;
+                }
+            case 'v':
+            case 'V':
+                {
+                    classInfoMess = "d-none";
+                    classMessMess = "d-none";
+                    classDoneMess = "d-none";
+                    classErrorMess = "d-none";
                     InfoMess = string.Empty;
                     MessMess = string.Empty;
                     DoneMess = string.Empty;
@@ -125,6 +150,7 @@
                     classMessMess = "d-none";
                     classDoneMess = "d-none";
                     classErrorMess = "d-none";
+                    classAvatarMess = "d-none";
                     InfoMess = string.Empty;
                     MessMess = string.Empty;
                     DoneMess = string.Empty;
@@ -135,5 +161,20 @@
         }
     
     }
+
+    public void SetLogAvatar(string classx, string path)
+    {
+        classAvatarLog = classx;
+        PathImgLog = path;
+        NotifyStateChanged();
+    }
+
+    public void SetMessAvatar(string classx, string path)
+    {
+        classAvatarMess = classx;
+        PathImgMess = path;
+        NotifyStateChanged();
+    }
+
     private void NotifyStateChanged() => OnChange?.Invoke();
 }

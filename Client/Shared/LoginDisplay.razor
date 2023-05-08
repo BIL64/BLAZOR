@@ -6,6 +6,7 @@
     <Authorized>
         <span class="@xnav.classRegStatus">@xnav.RegText</span>
         <a href="authentication/profile">Hello, @context.User.Identity?.Name!</a>
+        <img src="@xnav.PathImgLog" class="@xnav.classAvatarLog" />
         <button class="nav-link btn btn-link" @onclick="BeginLogOut">Log out</button>
     </Authorized>
     <NotAuthorized>

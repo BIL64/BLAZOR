@@ -1,0 +1,281 @@
+﻿@using System.Net.Http.Headers
+@using System.Text.Json
+@inject ILogger<StudentCourse> Logger
+@inject IXDtoClient xClient
+@inject XNavMenu xnav
+@attribute [Authorize]
+@*Av Sukhrob Ilyosbekov - Stack Overflow*@
+@*Både studenter och lärare har åtkomst hit*@
+
+@{
+    var showClass = IsVisible ? "d-block" : "d-none";
+}
+
+<AuthorizeView Roles ="Student, Teacher">
+    <Authorized>
+    <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
+        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">@HeaderText</strong>
+                <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+            </div>
+
+            <div class="toast-body">
+                <div style="font-size: 0.8rem; color:darkblue"><em>For @Auxx.Name4Type...</em></div>
+                <div style="font-size: 0.8rem">
+                    Avatar file types are .png or .jpeg.<br />
+                    It should be square and its file size no larger than 100kb.<br />
+                    Optimal size (WxH) is 225 x 225 pixels.
+                </div><br />
+                <div>
+                    <InputFile class="form-control text-white" style="background-color:blueviolet"
+                    accept="image/x-png, image/jpeg" OnChange="@OnInputFileChange" />
+                </div><br />
+                <div>
+                    <button type="button" class="text-white rembtn" style="margin-right: 15px" @onclick="SaveAvatar">Save avatar</button>
+                    <button type="button" class="text-white remyes" style="margin-right: 15px" @onclick=" _ => DeleteAvatar(true)">Delete avatar</button>
+                    <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    [Parameter]
+    public string? HeaderText { get; set; }
+
+    private int NameIndex;
+    private bool Upload;
+    private bool IsAvatar;
+    private int IntId;
+    private string GuidId = string.Empty;
+    private string DocFileName = string.Empty;
+
+    MultipartFormDataContent content = new();
+
+    List<UploadResult> uploadResults = new();
+
+    List<DocumentDto> documents = new();
+
+    public void Show()
+    {
+        xnav.SetReset('a');
+
+        if (Auxx.Loggeduser.Id is not null) GuidId = Auxx.Loggeduser.Id;
+
+        Upload = false;
+
+        HeaderText = "Add or delete avatar...";
+        uploadResults = new();
+        content = new();
+        NameIndex = 0;
+        IsAvatar = false;
+        IsVisible = true;
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        HeaderText = string.Empty;
+        IsVisible = false;
+        StateHasChanged();
+    }
+
+    private async Task OnInputFileChange(InputFileChangeEventArgs e) // Sparar en eller flera filer på servern.
+    {
+        List<File> files = new();
+        int maxAllowedFiles = 1; // Max 1 fil!
+        long maxFileSize = 1024 * 98; // Max 100kb.
+
+        var alldoc = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+        if (alldoc is not null) documents = alldoc.ToList(); // Hämtar alla dokument.
+
+        foreach (var doc in documents) // Finns det redan en avatar?
+        {
+            if (doc.UserId == Auxx.Loggeduser.Id && doc.Id4Course == -2)
+            {
+                IntId = doc.Id;
+                IsAvatar = true;
+            }
+        }
+
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            var response = new ExistDto();
+
+            do // Ökar filnamsindexet tills filnamnet är unikt.
+            {
+                NameIndex++;
+                response = await xClient.ExistFile<ExistDto>(NameIndex + file.Name, "Filesave");
+            } while (response is not null && response.IsFile);
+
+            if (response is not null)
+            {
+                if (uploadResults.SingleOrDefault(f => f.FileName == file.Name) is null)
+                {
+                    try
+                    {
+                        files.Add(new() { Name = file.Name });
+                        DocFileName = file.Name;
+
+                        var fileContent = new StreamContent(file.OpenReadStream(maxFileSize));
+                        fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+
+                        content.Add(content: fileContent, name: "\"files\"", fileName: NameIndex + file.Name);
+                        Upload = true;
+
+                        xnav.SetDone("xnavdone", "Selected file Ok.");
+                        xnav.SetReset('d');
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogInformation("{file.Name} not selected (Err: 6): {ex.Message}", file.Name, ex.Message);
+
+                        uploadResults.Add(
+                            new()
+                                {
+                                    FileName = file.Name,
+                                    ErrorCode = 6,
+                                    Uploaded = false
+                                });
+
+                        Upload = false;
+                        xnav.SetError("xnaverror", $"{file.Name} not selected (Err: 6): {ex.Message}");
+                        xnav.SetReset('e');
+                    }
+                }
+            }
+            else
+            {
+                Logger.LogInformation("{file.Name} error on upload (Err: 3).", file.Name);
+                uploadResults.Add(
+                    new()
+                        {
+                            FileName = file.Name,
+                            ErrorCode = 3,
+                            Uploaded = false
+                        });
+
+                Upload = false;
+                xnav.SetError("xnaverror", "Failed to set a unique avatar name.");
+                xnav.SetReset('e');
+            }
+        }
+    }
+
+    private async Task SaveAvatar()
+    {
+        Logger.LogInformation("HandleSubmit called");
+
+        if (Upload)
+        {
+            await UploadFile();
+
+            if (IsAvatar)
+            {
+                var ldoc = new DocumentDto // Put dokument.
+                    {
+                        Id = IntId,
+                        NameIx = NameIndex,
+                        DocName = DocFileName,
+                        Description = "Avatar",
+                        Author = Auxx.Loggeduser.FirstName + ' ' + Auxx.Loggeduser.LastName,
+                        TimeStamp = DateTime.Now.ToString(),
+                        UserId = GuidId,
+                        Id4Course = -2, // -2 innebär en avatar.
+                        ModuleId = 0,
+                        ActivityId = 0
+                    };
+
+                await xClient.PutAsync<DocumentDto>(IntId, ldoc, "api/Document");
+            }
+            else
+            {
+                var ldoc = new DocumentDto // Post dokument.
+                    {
+                        NameIx = NameIndex,
+                        DocName = DocFileName,
+                        Description = "Avatar",
+                        Author = Auxx.Loggeduser.FirstName + ' ' + Auxx.Loggeduser.LastName,
+                        TimeStamp = DateTime.Now.ToString(),
+                        UserId = GuidId,
+                        Id4Course = -2, // -2 innebär en avatar.
+                        ModuleId = 0,
+                        ActivityId = 0
+                    };
+
+                await xClient.PostAsync<DocumentDto>(ldoc, "api/Document");
+            }
+            xnav.SetDone("xnavdone", "Your avatar was added.");
+            xnav.SetReset('d');
+            Auxx.Flag = true;
+            Close();
+        }
+        else
+        {
+            xnav.SetError("xnaverror", "The file was not approved or was never selected.");
+            xnav.SetReset('e');
+        }
+    }
+
+    private async Task DeleteAvatar(bool navmess)
+    {
+        var alldoc = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+        if (alldoc is not null) documents = alldoc.ToList(); // Hämtar alla dokument.
+
+        foreach (var doc in documents)
+        {
+            if (doc.UserId == Auxx.Loggeduser.Id && doc.Id4Course == -2)
+            {
+                await xClient.DeleteFile(doc.NameIx + doc.DocName);
+                if (navmess) await xClient.RemAsync(doc.Id, "api/Document");
+            }
+        }
+
+        if (navmess)
+        {
+            xnav.SetDone("xnavdone", "Your avatar was deleted.");
+            xnav.SetReset('d');
+            Auxx.Flag = true;
+            Close();
+        }
+    }
+
+    private async Task UploadFile()
+    {
+        if (IsAvatar) await DeleteAvatar(false); // Tar bort den gamla avatarfilen.
+
+        var response = await xClient.PostFile(content); // Postoperationen!
+
+        if (response.IsSuccessStatusCode)
+        {
+            var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                };
+
+            using var responseStream = await response.Content.ReadAsStreamAsync();
+
+            var newUploadResults = await JsonSerializer
+                .DeserializeAsync<IList<UploadResult>>(responseStream, options);
+
+            if (newUploadResults is not null)
+            {
+                uploadResults = uploadResults.Concat(newUploadResults).ToList();
+            }
+        }
+    }
+}

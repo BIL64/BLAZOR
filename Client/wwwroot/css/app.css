@@ -180,6 +180,32 @@ i {
     color: red;
 }
 
+.xnavavatar {
+    display: flex;
+    padding: 5px;
+}
+
+.avatarmess {
+    max-width: 225px;
+    max-height: 225px;
+    margin-left: auto;
+    margin-right: auto;
+    border: none;
+}
+
+.avatarlog {
+    width: 46px;
+    height: 46px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 23px;
+}
+
+.avatar {
+    cursor: default;
+    text-shadow: 0 0 15px darkorange;
+}
+
 .coursebox {
     display: block;
     width: 100%;
@@ -299,6 +325,7 @@ i {
 }
 
 .docicon {
+    cursor: pointer;
     margin-left: 10px;
     position: relative;
     top: 2px;

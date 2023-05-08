@@ -58,13 +58,18 @@ else
                 <th>Course</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody @onmouseover="DeleteRefresh">
             @foreach (var data in students)
             {
                 if (PagProceed()) // Paginering.
                 {
-                    <tr style="color: darkblue" @onmouseover="DeleteRefresh">
-                        <td>@data.FirstName @data.LastName</td>
+                    <tr style="color: darkblue">
+                        @{classAvatar = "";}
+                        @foreach (var doc in documents)
+                        {
+                            if (doc.UserId == data.Id && doc.Id4Course == -2) classAvatar = "avatar";
+                        }
+                        <td class="@classAvatar" @onmouseover=" _ => ShowAvatar(data.Id)">@data.FirstName @data.LastName</td>
                         <td>@data.Email</td>
                         <td>@data.PhoneNumber</td>
                         <td>
@@ -93,7 +98,7 @@ else
                                     <div class="dropdoc-content">
                                         @foreach (var doc in documents)
                                         {
-                                            if (doc.UserId == data.Id)
+                                            if (doc.UserId == data.Id && doc.Id4Course != -2 && doc.ActivityId == 0)
                                             {
                                                 if (doc.DocName != "")
                                                 {
@@ -234,8 +239,8 @@ else
     {
         if (Auxx.Flag)
         {
-            await OnInitializedAsync();
             Auxx.Flag = false;
+            await OnInitializedAsync();
         }
     }
 
@@ -269,6 +274,7 @@ else
 
     private string DocClass = "d-none";
     private string CourseClass = "d-none";
+    private string classAvatar = "";
 
     private string Emptydbcolor = "headeroff";
 
@@ -291,11 +297,12 @@ else
             Auxx.Flag = false;
         }
 
-        var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
-        if (document is not null) documents = document.ToList(); // Hämtar alla dokument.
-
         students.Clear(); // Sökfunktionen kräver att listorna rensas.
         courses.Clear();
+        documents.Clear();
+
+        var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+        if (document is not null) documents = document.ToList(); // Hämtar alla dokument.
 
         if (searchType == 1) // Sökning med namn.
         {
@@ -467,6 +474,27 @@ else
     {
         xnav.SetMess("xnavmess", description + " by " + author + " Created: " + timestamp);
         xnav.SetReset('m');
+    }
+
+    private void ShowAvatar(string? id)
+    {
+        bool FindAvatar = false;
+
+        @foreach (var doc in documents)
+        {
+            if (doc.UserId == id && doc.Id4Course == -2)
+            {
+                xnav.SetMessAvatar("xnavavatar", xClient.GetFilepath() + doc.NameIx + doc.DocName);
+                xnav.SetReset('v');
+                FindAvatar = true;
+            }
+        }
+
+        if (!FindAvatar)
+        {
+            xnav.SetMessAvatar("d-none", "");
+            xnav.SetReset('v');
+        }
     }
 
     private async Task Intermission(int time, bool hide) // Paus.

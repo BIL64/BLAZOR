@@ -6,6 +6,7 @@
         Task<T?> ExistFile<T>(string filename, string route);
         Task<T?> GetAsync<T>(int id, string route);
         Task<T?> GetAsync<T>(string route);
+        string GetFilepath();
         Task<T> GetStorage<T>(string name);
         Task OpenFile(int ix, string filename);
         Task<T?> PostAsync<T>(T dto, string route);

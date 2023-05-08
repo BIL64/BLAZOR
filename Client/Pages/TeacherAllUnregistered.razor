@@ -111,9 +111,10 @@ else
     {
         xnav.SetReset('a');
 
+        visitors.Clear(); // Sökfunktionen kräver att listan rensas.
+
         var appuser = await appuserClient.GetAsync();
 
-        visitors.Clear(); // Sökfunktionen kräver att listan rensas.
         Emptydb = "List of unregistered";
 
         if (appuser is not null)

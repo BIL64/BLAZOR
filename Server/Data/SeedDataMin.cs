@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
 {
-    public class SeedDataUser
+    public class SeedDataMin
     {
         private static RoleManager<IdentityRole> roleManager = default!;
         private static UserManager<ApplicationUser> userManager = default!;
@@ -40,14 +40,14 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
 
             var activityTypes = GenerateActivityTypes(); //OK
 
-            var courses = GenerateCourses(10); //OK
+            var courses = GenerateCourses(2); //OK
 
             var rnd = new Random();
 
             //To have only one Course/Student
             foreach (var course in courses)
             {
-                var students = GenerateStudents(rnd.Next(15, 25)); //returns random integers >= 15 and < 25
+                var students = GenerateStudents(rnd.Next(2, 3)); //returns random integers >= 2 and < 3
                 await AddStudentsAsync(students, "Student", studentPassword);
                 course.Users = students;
             }
@@ -69,11 +69,11 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
         {
             var list = new List<ActivityType>
             {
-                new ActivityType{ Name = "Assignments"},
-                new ActivityType{ Name = "E-learning sessions"},
-                new ActivityType{ Name = "Training sessions"},
-                new ActivityType{ Name = "Lectures"},
-                new ActivityType{ Name = "Other"},
+                new ActivityType{ Name = "Uppgifter" },
+                new ActivityType{ Name = "E-studier" },
+                new ActivityType{ Name = "Träningspass" },
+                new ActivityType{ Name = "Lektioner" },
+                new ActivityType{ Name = "Övrigt" },
             };
             return list;
         }
@@ -99,8 +99,8 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
             {
                 var temp = new Activity
                 {
-                    Name = faker.Company.CatchPhrase(),
-                    Description = faker.Hacker.Verb(),
+                    Name = "Exempelaktivitet",
+                    Description = "Ingen beskrivning än...",
                     StartDate = faker.Date.Past(),
                     EndDate = faker.Date.Recent(),
                     ActivityTypeId = faker.Random.Number(1, 5)
@@ -120,16 +120,16 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
             {
                 var modules = new List<Module>();
 
-                int rak = rnd.Next(1, 8);
+                int rak = rnd.Next(1, 2);
                 for (int j = 0; j < rak; j++)
                 {
                     modules.Add(new Module
                     {
-                        Name = faker.Company.CatchPhrase(),
-                        Description = faker.Hacker.Verb(),
+                        Name = "Exempelmodul",
+                        Description = "Ingen beskrivning än...",
                         StartDate = faker.Date.Past(),
                         EndDate = faker.Date.Recent(),
-                        Activities = GenerateActivities(4) //Generate Activities 4 Ok
+                        Activities = GenerateActivities(2) //Generate Activities 2 Ok
                     });
 
                 }
