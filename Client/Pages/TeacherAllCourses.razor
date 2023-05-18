@@ -165,8 +165,16 @@
                                             {
                                                 if (mod.CourseId == data.Id && item.ModuleId == mod.Id)
                                                 {
-                                                    <div @onclick=" _ => OpenFileControl(item.NameIx, item.DocName)"
-                                                    title="@item.Description, @item.Author, @item.TimeStamp">@item.DocName</div>
+                                                    if (item.DocName != "")
+                                                    {
+                                                        <div @onclick=" _ => OpenFileControl(item.NameIx, item.DocName)"
+                                                        title="@item.Description, @item.Author, @item.TimeStamp">@item.DocName</div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div @onclick=" _ => ShowMessControl(item.Description, item.Author, item.TimeStamp)"
+                                                        style="color:rebeccapurple">From @item.Author</div>
+                                                    }
                                                 }
 
                                                 foreach (var act in activities)

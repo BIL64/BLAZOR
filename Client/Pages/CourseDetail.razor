@@ -47,6 +47,8 @@
 
         <DocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
         <DocumentEdit @ref="doceditRef" /> @*Filredigeringsfönster*@
+        <FastModuleDate @ref="fastmodRef" /> @*Datumredigeringsfönster*@
+        <FastActivityDate @ref="fastactRef" /> @*Datumredigeringsfönster*@
 
         <h5>@TestMess1</h5>
         <h5>@TestMess2</h5>
@@ -89,7 +91,10 @@
                                 <b title="@data.Description -Click for edit-">Module @data.Id:
                                 <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
                             </div>
-                            <div style="margin-left: auto; margin-right: 0"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
+                            <div style="margin-left: auto; margin-right: 0"><b style="cursor: pointer" @onclick=" _ => ModuleDate(data.Id)"
+                            title="Click to edit date">@StartEndDate(data.StartDate, data.EndDate)
+                                </b>
+                            </div>
                         </div>
                         <div style="display: flex; width: 100%">
                             <div style="width: 75%; text-align: left; margin-top: 20px">
@@ -159,7 +164,8 @@
                                                         }
                                                     }
                                                 </td>
-                                                <td>@StartEndDate(act.StartDate, act.EndDate)</td>
+                                                <td><span style="cursor: pointer" @onclick=" _ => ActivityDate(act.Id)" title="Click to edit date">
+                                                @StartEndDate(act.StartDate, act.EndDate)</span></td>
                                                 <td>
                                                     <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(act.Id, 140, act.Name)"
                                                     title="Add a document to this activity">+ DOC</button>
@@ -322,6 +328,22 @@
         Auxx.DocType = doctype;
         Auxx.Documents = documents;
         doceditRef!.Show();
+    }
+
+    private FastModuleDate? fastmodRef; // Datumredigeringsfönster.
+
+    private async Task ModuleDate(int id) // Datumredigeringsfönster
+    {
+        Auxx.IntId = id;
+        await fastmodRef!.Show();
+    }
+
+    private FastActivityDate? fastactRef; // Datumredigeringsfönster.
+
+    private async Task ActivityDate(int id) // Datumredigeringsfönster
+    {
+        Auxx.IntId = id;
+        await fastactRef!.Show();
     }
 
     private async Task DeleteRefresh() // Uppdaterar efter förändring av innehållet.

@@ -1,0 +1,124 @@
+﻿@inject IXDtoClient xClient
+@inject XNavMenu xnav
+@attribute [Authorize]
+@*Av Sukhrob Ilyosbekov - Stack Overflow*@
+@*Endast lärare har åtkomst hit*@
+
+@{
+    var showClass = IsVisible ? "d-block" : "d-none";
+}
+
+<AuthorizeView Roles="Teacher">
+    <Authorized>
+        <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
+            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">@HeaderText</strong>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+                </div>
+
+                <div class="toast-body">
+                    <EditForm Model="@xClient" Context="fastdatelmslexnet" OnSubmit="HandleSubmitDates">
+                        <div class="form-group row">
+                            <span class="col-6">
+                                <label for="Startdate">Set start date</label>
+                                <InputDate id="Startdate" class="form-control" @bind-Value="Sdate" />
+                            </span>
+                            <span class="col-6">
+                                <label for="Enddate">Set end date</label>
+                                <InputDate id="Enddate" class="form-control" @bind-Value="Edate" />
+                            </span>
+                        </div>
+                        <div class="form-group m-3">
+                            <button type="submit" class="text-white rembtn" style="margin-right: 15px">Save dates</button>
+                            <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+
+    </Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    [Parameter]
+    public string? HeaderText { get; set; }
+
+    private List<ModuleDto> modules = new();
+
+    private DateTime Sdate;
+
+    private DateTime Edate;
+
+    public async Task Show()
+    {
+        xnav.SetReset('a');
+
+        var module = await xClient.GetAsync<IEnumerable<ModuleDto>>("api/Module");
+        if (module is not null) modules = module.ToList();
+
+        foreach (var mod in modules)
+        {
+            if (mod.Id == Auxx.IntId)
+            {
+                Sdate = mod.StartDate;
+                Edate = mod.EndDate;
+            }
+        }
+
+        HeaderText = "Edit dates for this module...";
+        IsVisible = true;
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        HeaderText = string.Empty;
+        IsVisible = false;
+        StateHasChanged();
+    }
+
+    private async Task HandleSubmitDates()
+    {
+        var lmod = new ModuleDto();
+        lmod.StartDate = Sdate;
+        lmod.EndDate = Edate;
+
+        foreach (var mod in modules)
+        {
+            if (mod.Id == Auxx.IntId)
+            {
+                lmod.Id = mod.Id;
+                lmod.Name = mod.Name;
+                lmod.Description = mod.Description;
+                lmod.IsActive = mod.IsActive;
+                lmod.CourseId = mod.CourseId;
+            }
+        }
+
+        try
+        {
+            await xClient.PutAsync<ModuleDto>(Auxx.IntId, lmod, "api/Module");
+            xnav.SetDone("xnavdone", "The dates were saved.");
+            xnav.SetReset('d');
+        }
+        catch
+        {
+            xnav.SetError("xnaverror", "An error occurred while saving to module.");
+            xnav.SetReset('e');
+        }
+        Auxx.Flag = true;
+        Close(); // Ingen omnavigering eftersom det nollställer alla statiska variabler.
+    }
+}
