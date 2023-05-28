@@ -30,6 +30,17 @@
                         {
                             <span style="position: relative; top: -3px"> Pagination OFF</span>
                         }
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <InputCheckbox id="autoswitch" class="control-label checkbox" type="checkbox" @bind-Value="PagAuto" />
+                        <label class="control-label toggle" for="autoswitch"></label>
+                        @if (PagAuto)
+                        {
+                            <span style="position: relative; top: -3px"> Auto ON</span>
+                        }
+                        else
+                        {
+                            <span style="position: relative; top: -3px"> Auto OFF</span>
+                        }
                     </div>
                     <div class="form-group row">
                         <span class="col-6">
@@ -69,6 +80,8 @@
 
     private bool PagOn;
 
+    private bool PagAuto;
+
     private int PagRows;
 
     private int PagRed;
@@ -78,6 +91,7 @@
         xnav.SetReset('a');
 
         PagOn = Auxx.PagOn;
+        PagAuto = Auxx.PagAuto;
         PagRows = Auxx.PagRows;
         PagRed = Auxx.PagRed;
         HeaderText = "Pagination settings...";
@@ -97,10 +111,12 @@
         try
         {
             Auxx.PagOn = PagOn;
+            Auxx.PagAuto = PagAuto;
             Auxx.PagRows = PagRows;
             Auxx.PagRed = PagRed;
             StateHasChanged();
             await xClient.SetStorage<string>($"Pag{Auxx.PagId}On", PagOn.ToString());
+            await xClient.SetStorage<string>($"Pag{Auxx.PagId}Auto", PagAuto.ToString());
             await xClient.SetStorage<string>($"Pag{Auxx.PagId}Rows", PagRows.ToString());
             await xClient.SetStorage<string>($"Pag{Auxx.PagId}Red", PagRed.ToString());
         }

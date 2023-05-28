@@ -21,6 +21,8 @@ public static class Auxx // Statisk klass med variabler som är åtkomliga över
 
     public static bool PagOn { get; set; } // Paginering - On/Off.
 
+    public static bool PagAuto { get; set; } // Paginering - Auto On/Off.
+
     public static byte PagId { get; set; } // Paginering - Identitetsnr.
 
     public static int PagCount { get; set; } // Paginering - Antal forloopar.

@@ -45,84 +45,124 @@ else
         <tbody>
             @foreach (var data in students)
             {
-                if (data.UserRole == 2)
+                if (PagProceed()) // Paginering.
                 {
-                    <tr style="color: darkred">
-                        @{classAvatar = "";}
-                        @foreach (var doc in documents)
-                        {
-                            if (doc.UserId == data.Id && doc.Id4Course == -2) classAvatar = "avatar";
-                        }
-                        <td class="@classAvatar" @onmouseover=" _ => ShowAvatar(data.Id)">@data.FirstName @data.LastName (teacher)</td>
-                        <td>@data.Email</td>
-                        <td>@data.PhoneNumber</td>
-                        <td>
-                            @foreach (var item in courses) // Hämtar kursen som motsvarar dess id.
+                    if (data.UserRole == 2)
+                    {
+                        <tr style="color: darkred">
+                            @{classAvatar = "";}
+                            @foreach (var doc in documents)
                             {
-                                if (item.Id == data.CourseId)
+                                if (doc.UserId == data.Id && doc.Id4Course == -2) classAvatar = "avatar";
+                            }
+                            <td class="@classAvatar" @onmouseover=" _ => ShowAvatar(data.Id)">@data.FirstName @data.LastName (teacher)</td>
+                            <td>@data.Email</td>
+                            <td>@data.PhoneNumber</td>
+                            <td>
+                                @foreach (var item in courses) // Hämtar kursen som motsvarar dess id.
                                 {
-                                    IsCourse = true;
-                                    <span>@item.Name</span>
+                                    if (item.Id == data.CourseId)
+                                    {
+                                        IsCourse = true;
+                                        <span>@item.Name</span>
+                                    }
                                 }
-                            }
-                            @if (!IsCourse)
-                            {
-                                <span>No course yet...</span>
-                            }
-                            @{IsCourse = false;}
-                        </td>
-                        <td class="noline">
-                            @if (data.Id is not null)
-                            {
-                                <button type="button" class="text-white coursebtn" @onclick=" _ => DocSaveControl(data.Id, 10, data.FirstName + ' ' + data.LastName)"
-                                title="Add document to student">+Doc</button> // CSS!
-                            }
-                        </td>
-                    </tr>
-                }
+                                @if (!IsCourse)
+                                {
+                                    <span>No course yet...</span>
+                                }
+                                @{IsCourse = false;}
+                            </td>
+                            <td class="noline">
+                                @if (data.Id is not null)
+                                {
+                                    <button type="button" class="text-white coursebtn" @onclick=" _ => DocSaveControl(data.Id, 10, data.FirstName + ' ' + data.LastName)"
+                                    title="Add document to student">+Doc</button> // CSS!
+                                }
+                            </td>
+                        </tr>
+                    }
 
-                if (data.UserRole == 1)
-                {
-                    <tr style="color: darkblue">
-                        @{classAvatar = "";}
-                        @foreach (var doc in documents)
-                        {
-                            if (doc.UserId == data.Id && doc.Id4Course == -2) classAvatar = "avatar";
-                        }
-                        <td class="@classAvatar" @onmouseover=" _ => ShowAvatar(data.Id)">@data.FirstName @data.LastName</td>
-                        <td>@data.Email</td>
-                        <td>@data.PhoneNumber</td>
-                        <td>
-                            @foreach (var item in courses) // Hämtar kursen som motsvarar dess id.
+                    if (data.UserRole == 1)
+                    {
+                        <tr style="color: darkblue">
+                            @{classAvatar = "";}
+                            @foreach (var doc in documents)
                             {
-                                if (item.Id == data.CourseId)
+                                if (doc.UserId == data.Id && doc.Id4Course == -2) classAvatar = "avatar";
+                            }
+                            <td class="@classAvatar" @onmouseover=" _ => ShowAvatar(data.Id)">@data.FirstName @data.LastName</td>
+                            <td>@data.Email</td>
+                            <td>@data.PhoneNumber</td>
+                            <td>
+                                @foreach (var item in courses) // Hämtar kursen som motsvarar dess id.
                                 {
-                                    IsCourse = true;
-                                    <span>@item.Name</span>
+                                    if (item.Id == data.CourseId)
+                                    {
+                                        IsCourse = true;
+                                        <span>@item.Name</span>
+                                    }
                                 }
-                            }
-                            @if (!IsCourse)
-                            {
-                                <span>No course yet...</span>
-                            }
-                            @{IsCourse = false;}
-                        </td>
-                        <td class="noline">
-                            @if (data.Id is not null)
-                            {
-                                <button type="button" class="text-white coursebtn" @onclick=" _ => DocSaveControl(data.Id, 10, data.FirstName + ' ' + data.LastName)"
-                                title="Add document to student">+Doc</button> // CSS!
-                            }
-                        </td>
-                    </tr>
+                                @if (!IsCourse)
+                                {
+                                    <span>No course yet...</span>
+                                }
+                                @{IsCourse = false;}
+                            </td>
+                            <td class="noline">
+                                @if (data.Id is not null)
+                                {
+                                    <button type="button" class="text-white coursebtn" @onclick=" _ => DocSaveControl(data.Id, 10, data.FirstName + ' ' + data.LastName)"
+                                    title="Add document to student">+Doc</button> // CSS!
+                                }
+                            </td>
+                        </tr>
+                    }
                 }
+                Auxx.PagCount++;
             }
         </tbody>
     </table>
 
-    <footer class="d-flex"> @*Antal hittade*@
-        <div class="pagfind">&lsaquo;@students.Count&rsaquo;</div>
-    </footer>
+    if (Auxx.PagOn) // PAGINERING.
+    {
+        var Pnum = new List<int>(); Auxx.PagCount = 0; // Skapar en lista för att kunna välja en sida.
+        for (int i = 1; i <= (int)Math.Ceiling((decimal)this.students.Count / Auxx.PagRows); i++) Pnum.Add(i); // Antal sidor beräknas.
+
+        if ((Auxx.PagOn && !Auxx.PagAuto) || (Auxx.PagOn && Auxx.PagAuto && @students.Count > Auxx.PagRows)) // Villkor som styrs av den automatiska pagineringen.
+        {
+            <section class="@Auxx.classPag"> @*Grafiken för paginering*@
+                <div style="margin-left: auto; margin-right: auto">
+                    <span><button class="oi oi-caret-left btn btn-dark px-2 mx-2" @onclick=" _ => PagBtnSet(Auxx.PagPage - 1, 0)"></button></span> @*<<Sidoknapp*@
+                    @foreach (var n in Pnum) // Radar upp sidnummerknappar och markerar numret man klickar på.
+                    {
+                        if (n == Auxx.PagPage) // Markering av sidnummer.
+                        {
+                            <span><button type="button" class="pagbtnact" @onclick=" _ => PagBtnSet(n, 0)">@n</button></span>
+                        }
+                        else
+                        if (n % Auxx.PagRed == 0) // Övriga sidor med eller utan reduktion.
+                        {
+                            <span><button type="button" class="pagbtn" @onclick=" _ => PagBtnSet(n, 0)">@n</button></span>
+                        }
+                        if (Auxx.PagRed > 1) // Mellanslag vid reduktion.
+                        {
+                            <span>&nbsp;</span>
+                        }
+                    }
+                    <span><button class="oi oi-caret-right btn btn-dark px-2 mx-2" @onclick=" _ => PagBtnSet(Auxx.PagPage + 1, Pnum.Count)"></button></span> @*>>Sidoknapp*@
+                    <span class="pagfind">&lsaquo;@students.Count&rsaquo;</span> @*Antal hittade*@
+                </div>
+            </section>
+        }
+        else
+        {
+            <aside class="@Auxx.classPag"> @*Antal hittade*@
+                <div class="pagfind">&lsaquo;@students.Count&rsaquo;</div>
+            </aside>
+        }
+        Auxx.classPag = "d-flex"; // Förhindrar att sidoknapparna syns vid reloading.
+    }
 }
 </Authorized>
     <NotAuthorized>
@@ -140,6 +180,19 @@ else
         Auxx.DocType = doctype;
         Auxx.Name4Type = name;
         await docsaveRef!.Show();
+    }
+
+    private void LoadPag()  // Pagineringsinställningar.
+    {
+        // Alla variabler till pagineringen är statiska.
+        // Pagineringen är här alltid påslagen och med autofunktion för 10 rader.
+        Auxx.PagOn = true;
+        Auxx.PagAuto = true;
+        Auxx.PagCount = 0;
+        Auxx.PagRows = 10; // Noll ger "division by zero"
+        Auxx.PagRed = 1; // Noll ger "division by zero"
+        Auxx.PagPage = 1;
+        Auxx.classPag = "d-flex";
     }
 
     private List<AppUserDto> students = new();
@@ -160,6 +213,13 @@ else
     {
         xnav.SetReset('a');
         Emptydb = "List of students";
+
+        if (Auxx.PagRows == 0 || Auxx.PagRed == 0 || students.Count < 1) LoadPag(); // Paginering.
+        else
+        {
+            if (!Auxx.Flag) Auxx.classPag = "d-none"; // Förhindrar att knapparna synliggörs.
+            Auxx.Flag = false;
+        }
 
         students.Clear(); // Sökfunktionen kräver att listorna rensas.
         courses.Clear();
@@ -213,6 +273,29 @@ else
     private void SortName() // Sorterar studenter efter deras namn.
     {
         students = students.OrderBy(o => o.FirstName).ToList();
+    }
+
+    private bool PagProceed() // Paginering.
+    {
+        bool Proceed = false;
+
+        // Om man söker ett objekt på en sida med ett högt nummer.
+        if (Auxx.PagPage > (int)Math.Ceiling((decimal)this.students.Count / Auxx.PagRows)) Auxx.PagPage = 1;
+
+        if ((Auxx.PagCount >= Auxx.PagRows * (Auxx.PagPage - 1) && Auxx.PagCount < Auxx.PagRows * Auxx.PagPage) || !Auxx.PagOn) Proceed = true;
+
+        return Proceed;
+    }
+
+    private async Task PagBtnSet(int page, int pnum) // Paginering.
+    {
+        if (page < 1) page = 1; // Förhindrar 0-sidor och sidor högre än förekommande.
+        if (page > pnum && pnum != 0) page = pnum;
+
+        Auxx.PagPage = page;
+        Auxx.classPag = "d-none";
+
+        await OnInitializedAsync();
     }
 
     private void ShowAvatar(string? id)

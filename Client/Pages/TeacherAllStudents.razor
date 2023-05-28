@@ -140,32 +140,42 @@ else
 
     if (Auxx.PagOn) // PAGINERING.
     {
-        <section class="@Auxx.classPag">
-            <div style="margin-left: auto; margin-right: auto">
-                @{var Pnum = new List<int>(); Auxx.PagCount = 0;} @*Skapar en lista för att kunna välja en sida*@
-                @for (int i = 1; i <= (int)Math.Ceiling((decimal)this.students.Count / Auxx.PagRows); i++) Pnum.Add(i); @*Antal sidor beräknas*@
-                <span><button class="oi oi-caret-left btn btn-dark px-2 mx-2" @onclick=" _ => PagBtnSet(Auxx.PagPage - 1, 0)"></button></span> @*<<Sidoknapp*@
-                @foreach (var n in Pnum) // Radar upp sidnummerknappar och markerar numret man klickar på.
-                {
-                    if (n == Auxx.PagPage) // Markering av sidnummer.
+        var Pnum = new List<int>(); Auxx.PagCount = 0; // Skapar en lista för att kunna välja en sida.
+        for (int i = 1; i <= (int)Math.Ceiling((decimal)this.students.Count / Auxx.PagRows); i++) Pnum.Add(i); // Antal sidor beräknas.
+
+        if ((Auxx.PagOn && !Auxx.PagAuto) || (Auxx.PagOn && Auxx.PagAuto && @students.Count > Auxx.PagRows)) // Villkor som styrs av den automatiska pagineringen.
+        {
+            <section class="@Auxx.classPag"> @*Grafiken för paginering*@
+                <div style="margin-left: auto; margin-right: auto">
+                    <span><button class="oi oi-caret-left btn btn-dark px-2 mx-2" @onclick=" _ => PagBtnSet(Auxx.PagPage - 1, 0)"></button></span> @*<<Sidoknapp*@
+                    @foreach (var n in Pnum) // Radar upp sidnummerknappar och markerar numret man klickar på.
                     {
-                        <span><button type="button" class="pagbtnact" @onclick=" _ => PagBtnSet(n, 0)">@n</button></span>
+                        if (n == Auxx.PagPage) // Markering av sidnummer.
+                        {
+                            <span><button type="button" class="pagbtnact" @onclick=" _ => PagBtnSet(n, 0)">@n</button></span>
+                        }
+                        else
+                        if (n % Auxx.PagRed == 0) // Övriga sidor med eller utan reduktion.
+                        {
+                            <span><button type="button" class="pagbtn" @onclick=" _ => PagBtnSet(n, 0)">@n</button></span>
+                        }
+                        if (Auxx.PagRed > 1) // Mellanslag vid reduktion.
+                        {
+                            <span>&nbsp;</span>
+                        }
                     }
-                    else
-                    if (n % Auxx.PagRed == 0) // Övriga sidor med eller utan reduktion.
-                    {
-                        <span><button type="button" class="pagbtn" @onclick=" _ => PagBtnSet(n, 0)">@n</button></span>
-                    }
-                    if (Auxx.PagRed > 1) // Mellanslag vid reduktion.
-                    {
-                        <span>&nbsp;</span>
-                    }
-                }
-                <span><button class="oi oi-caret-right btn btn-dark px-2 mx-2" @onclick=" _ => PagBtnSet(Auxx.PagPage + 1, Pnum.Count)"></button> @*>>Sidoknapp*@
-                <span class="pagfind">&lsaquo;@students.Count&rsaquo;</span></span>  @*Antal hittade*@
-                @{Auxx.classPag = "d-flex";} @*Förhindrar att sidoknapparna syns vid reloading*@
-            </div>
-        </section>
+                    <span><button class="oi oi-caret-right btn btn-dark px-2 mx-2" @onclick=" _ => PagBtnSet(Auxx.PagPage + 1, Pnum.Count)"></button></span> @*>>Sidoknapp*@
+                    <span class="pagfind">&lsaquo;@students.Count&rsaquo;</span> @*Antal hittade*@
+                </div>
+            </section>
+        }
+        else
+        {
+            <aside class="@Auxx.classPag"> @*Antal hittade*@
+                <div class="pagfind">&lsaquo;@students.Count&rsaquo;</div>
+            </aside>
+        }
+        Auxx.classPag = "d-flex"; // Förhindrar att sidoknapparna syns vid reloading.
     }
     else
     {
@@ -202,6 +212,7 @@ else
         try // Alla variabler till pagineringen är statiska.
         {
             Auxx.PagOn = bool.Parse(await xClient.GetStorage<string>("Pag1On")); // <-- samma identitetsvärde!
+            Auxx.PagAuto = bool.Parse(await xClient.GetStorage<string>("Pag1Auto")); // <-- samma identitetsvärde!
             Auxx.PagRows = int.Parse(await xClient.GetStorage<string>("Pag1Rows")); // <-- samma identitetsvärde!
             Auxx.PagRed = int.Parse(await xClient.GetStorage<string>("Pag1Red")); // <-- samma identitetsvärde!
             Auxx.PagCount = 0;
@@ -215,6 +226,7 @@ else
             base.StateHasChanged();
             await Task.Delay(3000);
             Auxx.PagOn = false;
+            Auxx.PagAuto = true;
             Auxx.PagCount = 0;
             Auxx.PagRows = 10; // Noll ger "division by zero"
             Auxx.PagRed = 1; // Noll ger "division by zero"
@@ -290,7 +302,7 @@ else
         xnav.SetReset('a');
         Emptydb = "List of students";
 
-        if (Auxx.PagRows == 0 || Auxx.PagRed == 0) await LoadPag(); // Paginering.
+        if (Auxx.PagRows == 0 || Auxx.PagRed == 0 || students.Count < 1) await LoadPag(); // Paginering.
         else
         {
             if (!Auxx.Flag) Auxx.classPag = "d-none"; // Förhindrar att knapparna synliggörs.
