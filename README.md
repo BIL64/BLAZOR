@@ -14,7 +14,7 @@ färdigställandet av projektet, eller att det skulle leda till akut tidsbrist o
 projektet efter eget huvud, så att vi fick två versioner eller varianter och som vi kunde visa upp. På redovisningsdagen visades alltså både
 gruppens lösning och min lösning, vilket togs emot med blandade reaktioner.
 
-Detta är alltså variant två och som jag anser är ett fungerande LMS. Vi beslöt att bygga efter en Blazor Webassembly App med ett API och med
+Detta är alltså variant två och som jag anser är ett fungerande LMS. Vi beslöt att bygga efter en Blazor WebAssembly App med ett API och med
 en "ASP.NET Core Hosted". Därtill med autentisering i form av "Individual Accounts". Av vad jag kan förstå täcker min lösning in hela kravspecen.
 Det enda som saknas är väl ett diskussionsforum, men det stod det ingenting om i beskrivningen. Man kan nog anta att en presumtiv kund kommer
 att kräva ett diskussionsforum...
