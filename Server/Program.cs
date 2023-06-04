@@ -54,7 +54,7 @@ namespace LexiconLMSBlazor.Server
 
                 try
                 {
-                    await SeedDataUser.InitAsync(db, serviceProvider); // Här väljer man typ av seed.
+                    await SeedDataMin.InitAsync(db, serviceProvider); // Här väljer man typ av seed.
                 }
                 catch (Exception e)
                 {

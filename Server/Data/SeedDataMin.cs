@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Module = LexiconLMSBlazor.Server.Models.Module;
 using Activity = LexiconLMSBlazor.Server.Models.Activity;
 using System.Linq.Expressions;
+using Bogus.DataSets;
 
 namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
 {
@@ -167,14 +168,16 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
                     LastName = lName,
                     Email = email,
                     UserName = email,
+                    EmailConfirmed = true,
                     PhoneNumber = phoneNumber,
-                    EmailConfirmed = true
+                    PhoneNumberConfirmed = true
                 };
 
                 students.Add(student);
             }
             return students;
         }
+
         private static async Task AddToRolesAsync(ApplicationUser teacher, string[] roleNames)
         {
             foreach (var role in roleNames)
@@ -187,15 +190,22 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
 
         private static async Task<ApplicationUser> AddTeacherAsync(string teacherEmail, string teacherPW)
         {
+            var faker = new Faker("sv");
+
             var findTeacherByEmail = await userManager.FindByEmailAsync(teacherEmail);
             if (findTeacherByEmail != null) return null!;
 
+            var phoneNumber = faker.Phone.PhoneNumberFormat();
+
             var teacher = new ApplicationUser
             {
-                UserName = teacherEmail,
-                Email = teacherEmail,
                 FirstName = "Jane",
                 LastName = "Doe",
+                UserName = teacherEmail,
+                Email = teacherEmail,
+                EmailConfirmed = true,
+                PhoneNumber = phoneNumber,
+                PhoneNumberConfirmed = true
             };
 
             var result = await userManager.CreateAsync(teacher, teacherPW);

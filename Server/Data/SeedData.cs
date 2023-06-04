@@ -114,7 +114,6 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel
                     StartDate = faker.Date.Past(),
                     EndDate = faker.Date.Recent(),
                     Modules = modules,
-
                 };
 
                 courses.Add(temp);
