@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel (ombyggd av Björn Lindqvist)
 {
-    public class SeedDataMin
+    public class SeedDataMax
     {
         private static RoleManager<IdentityRole> roleManager = default!;
         private static UserManager<ApplicationUser> userManager = default!;
@@ -39,11 +39,11 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel (ombyggd av Björn
             db.AddRange(GenerateActivityTypes()); // Laddar tabellen med aktivitetstyper av fördefinerade typer.
             await db.SaveChangesAsync();
 
-            var courses = GenerateCourses(2); // Laddar tabellen med kurser plus tillhörande moduler och aktiviteter enligt boguspricipen.
+            var courses = GenerateCourses(10); // Laddar tabellen med kurser plus tillhörande moduler och aktiviteter enligt boguspricipen.
             db.AddRange(courses);
             await db.SaveChangesAsync();
 
-            await GenerateUsers(courses, 2, 4, Title_user, Password_user); // Kopplar ett slumptal stycken användare till kurserna enligt bogusprincipen.
+            await GenerateUsers(courses, 15, 25, Title_user, Password_user); // Kopplar ett slumptal stycken användare till kurserna enligt bogusprincipen.
             await db.SaveChangesAsync();
 
             await GenerateAdmin(Fname_admin, Lname_admin, Phone_admin, Title_admin, Email_admin, Password_admin); // Skapar en fördefinerad administratör.
@@ -52,11 +52,13 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel (ombyggd av Björn
 
         private static List<ActivityType> GenerateActivityTypes()
         {
-            var list = new List<ActivityType> // <-- antalet aktivitetstyper = 3.
+            var list = new List<ActivityType> // <-- antalet aktivitetstyper = 5.
             {
                 new ActivityType{ Name = "Assignments"},
                 new ActivityType{ Name = "E-learning sessions"},
+                new ActivityType{ Name = "Training sessions"},
                 new ActivityType{ Name = "Lectures"},
+                new ActivityType{ Name = "Other"},
             };
             return list;
         }
@@ -74,7 +76,7 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel (ombyggd av Björn
                     Description = faker.Hacker.Phrase(),
                     StartDate = faker.Date.Past(),
                     EndDate = faker.Date.Recent(),
-                    ActivityTypeId = faker.Random.Number(1, 3) // <-- antalet aktivitetstyper = 3.
+                    ActivityTypeId = faker.Random.Number(1, 5) // <-- antalet aktivitetstyper = 5.
                 };
 
                 activities.Add(activity);
@@ -92,7 +94,7 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel (ombyggd av Björn
             {
                 var modules = new List<Module>();
 
-                int nrOfmod = 2; // 2 moduler.
+                int nrOfmod = rnd.Next(3, 7); // Slumptal av moduler.
                 for (int j = 0; j < nrOfmod; j++)
                 {
                     modules.Add(new Module
@@ -101,7 +103,7 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel (ombyggd av Björn
                         Description = faker.Hacker.Phrase(),
                         StartDate = faker.Date.Past(),
                         EndDate = faker.Date.Recent(),
-                        Activities = GenerateActivities(1) // 1 aktivitet.
+                        Activities = GenerateActivities(rnd.Next(2, 6)) // Slumptal av aktiviteter.
                     });
 
                 }
