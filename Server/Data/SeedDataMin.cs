@@ -27,7 +27,7 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel (ombyggd av Björn
             string Fname_admin = "John";
             string Lname_admin = "Doe";
             string Email_admin = $"{Fname_admin}@{Lname_admin}.se";
-            string Phone_admin = "0708-112233";
+            string Phone_admin = "0708-11223";
 
             await roleManager.CreateAsync(new IdentityRole { Name = Title_user }); // Skapar en roll-titel för användare.
 
