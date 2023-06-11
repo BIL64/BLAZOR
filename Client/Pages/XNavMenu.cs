@@ -1,5 +1,7 @@
 ﻿public class XNavMenu // Klass som kan kommunicera med navmenyn.
 {
+    public bool JohnDoe { get; private set; } = true;
+
     public string classInfoMess { get; private set; } = "d-none";
 
     public string InfoMess { get; private set; } = string.Empty;
@@ -31,6 +33,12 @@
     public string? RegText { get; set; } // REG ON or REG OFF.
 
     public event Action? OnChange;
+
+    public void SetJohnDoe(bool jd)
+    {
+        JohnDoe = jd;
+        NotifyStateChanged();
+    }
 
     public void SetInfo(string classx, string info)
     {

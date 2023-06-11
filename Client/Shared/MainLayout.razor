@@ -1,4 +1,6 @@
 ﻿@inherits LayoutComponentBase
+@inject IAppUserDtoClient appuserClient
+@inject XNavMenu xnav
 
 <div class="page">
     <div class="sidebar">
@@ -14,5 +16,44 @@
         <article class="content px-4">
             @Body
         </article>
+
+        @if (xnav.JohnDoe) // Hjälp vid uppstart när man har populerat Min eller Max.
+        {
+            // Om det bara finns en enda lärare och med namnet John Doe så visas denna info om lösenord.
+            <footer class="mt-4 p-4">
+                @foreach (var item in johndoe)
+                {
+                    if (johndoe.Count < 2 && item.FirstName == "John" && item.LastName == "Doe")
+                    {
+                        <div style="color: gray">Email for the teacher John Doe:</div>
+                        <div>John@Doe.se</div>
+                        <div style="color: gray">John Doe's password:</div>
+                        <div>PassTeacher@Word00!</div><br />
+                        <div style="color: gray">Password for seeded students:</div>
+                        <div>PassStudent@Word00!</div>
+                    }
+                }
+            </footer>
+        }
     </main>
 </div>
+
+@code {
+
+    private List<AppUserDto> johndoe = new(); // De med lärarrollen.
+
+    protected override async Task OnInitializedAsync()
+    {
+        var appuser = await appuserClient.GetAsync();
+
+        if (appuser is not null)
+        {
+            foreach (var item in appuser)
+            {
+                if (item.UserRole == 2) johndoe.Add(item); // Hämtar endast användare med lärarrollen.
+            }
+        }
+
+        xnav.OnChange += StateHasChanged;
+    }
+}
