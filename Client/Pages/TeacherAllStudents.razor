@@ -146,7 +146,7 @@ else
         if ((Auxx.PagOn && !Auxx.PagAuto) || (Auxx.PagOn && Auxx.PagAuto && @students.Count > Auxx.PagRows)) // Villkor som styrs av den automatiska pagineringen.
         {
             <section class="@Auxx.classPag"> @*Grafiken för paginering*@
-                <div style="margin-left: auto; margin-right: auto">
+                <div style="margin: 0 auto 0 auto">
                     <span><button class="oi oi-caret-left btn btn-dark px-2 mx-2" @onclick=" _ => PagBtnSet(Auxx.PagPage - 1, 0)"></button></span> @*<<Sidoknapp*@
                     @foreach (var n in Pnum) // Radar upp sidnummerknappar och markerar numret man klickar på.
                     {

@@ -16,9 +16,9 @@
 <AuthorizeView Roles="Teacher">
     <Authorized>
     <section class="activityeditbox"> @*Hjälptabeller vid inmatning av moduler*@
-        <div style="display: flex; width: 100%">
-            <h4 style="width: 75%; text-align: left">COURSE: @course.Name</h4>
-            <h5 style="margin-left: auto; margin-right: 0">@StartEndDate(course.StartDate, course.EndDate)</h5>
+        <div style="display: flex">
+            <h4 style="width: 75%">COURSE: @course.Name</h4>
+            <h5 style="margin: 0 0 0 auto">@StartEndDate(course.StartDate, course.EndDate)</h5>
         </div>
         <h6>Modules...</h6>
         <table class="table">
@@ -67,9 +67,9 @@
         <h5>@TestMess1</h5>
         <h5>@TestMess2</h5>
     <section class="activityeditbox">
-        <nav style="display: flex; width: 100%">
-            <div style="width: 50%; text-align: left"><h5>Edit, add or delete activity:</h5></div>
-            <div style="margin-left: auto; margin-right: 0">
+        <nav style="display: flex">
+            <div style="width: 50%"><h5>Edit, add or delete activity:</h5></div>
+            <div style="margin: 0 0 0 auto">
                 <button type="button" class="btn btn-danger btn-sm" @onclick="DeleteControll"
                 title="Remove this activity and all its documents from the system">Delete immediately!</button>
             </div>
@@ -162,8 +162,8 @@
             </div>
         </div>
 
-        <footer style="display: flex; width: 100%">
-            <div style="margin-left: auto; margin-right: 0">
+        <footer style="display: flex">
+            <div style="margin: 0 0 0 auto">
                 <button type="button" class="text-white delbtn" @onclick="DeleteAllDocs" title="Delete all non-mandatory documents and messages">E</button>
             </div>
         </footer>

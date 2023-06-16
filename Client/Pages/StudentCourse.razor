@@ -12,14 +12,14 @@
 
 <AuthorizeView Roles="Student, Teacher">
     <Authorized>
-        <nav style="display: flex; width: 100%">
-            <div style="width: 75%; text-align: left"><h3>@loggeduser.FirstName, this is your course:
+        <nav style="display: flex">
+            <div style="width: 75%"><h3>@loggeduser.FirstName, this is your course:
                 <em style="cursor: pointer" @onclick=" _ => InfoTitle(CourseDescription)">@CourseName</em></h3>
             </div>
-            <div style="margin-left: auto; margin-right: auto"><h5>@CourseDate</h5></div>
-            <div style="margin-left: auto; margin-right: 0">
-                <button type="button" class="text-white delbtn" @onclick="AddDeleteAvatar" title="Add or delete avatar">A</button>
-                <button type="button" class="text-white delbtn" @onclick="DeleteAllDocs" title="Delete all documents and messages">E</button>
+            <div style="margin: 0 auto 0 auto"><h5>@CourseDate</h5></div>
+            <div style="margin: 0 0 0 auto">
+                <button type="button" class="mb-1 text-white delbtn" @onclick="AddDeleteAvatar" title="Add or delete avatar">A</button>
+                <button type="button" class="mb-1 text-white delbtn" @onclick="DeleteAllDocs" title="Delete all documents and messages">E</button>
             </div>
         </nav><br />
 
@@ -120,13 +120,13 @@
                         classActTopic = "activitybox";
                     }
                     <section class="@classModTopic" @onmouseover="DeleteRefresh">
-                        <div style="display: flex; width: 100%">
-                            <div style="width: 75%; text-align: left">
+                        <div style="display: flex">
+                            <div style="width: 85%">
                                 <b>Module @data.Id: <em style="cursor: pointer" @onclick=" _ => InfoTitle(data.Description)">@data.Name</em></b>
                             </div>
-                            <div style="margin-left: auto; margin-right: 0"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
+                            <div style="margin: 0 0 0 auto"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
                         </div>
-                        <div style="display: flex; width: 100%; margin-top: 10px">
+                        <div style="display: flex; margin-top: 10px">
                             <div class="dropdoc">
                                 <button type="button" class="docviewbtn">DOCs</button>
                                 <div class="dropdoc-content">

@@ -20,8 +20,8 @@
 
     <section class="@classCourse">
         <div style="display: flex; width: 80%">
-            <div style="width: 50%; text-align: left"><h5>Add course:</h5></div>
-            <div style="margin-left: auto; margin-right: 0"><h6>@stepCourse</h6></div>
+            <div style="width: 50%"><h5>Add course:</h5></div>
+            <div style="margin: 0 0 0 auto"><h6>@stepCourse</h6></div>
         </div>
         <EditForm EditContext="courseContext" Context="courselmslexnet" OnValidSubmit="HandleSubmitCourse">
             <DataAnnotationsValidator />
@@ -89,8 +89,8 @@
 
         <section class="@classModule">
             <div style="display: flex; width: 80%">
-                <div style="width: 50%; text-align: left"><h5>Add module:</h5></div>
-                <div style="margin-left: auto; margin-right: 0"><h6>@stepModule</h6></div>
+                <div style="width: 50%"><h5>Add module:</h5></div>
+                <div style="margin: 0 0 0 auto"><h6>@stepModule</h6></div>
             </div>
             <EditForm EditContext="moduleContext" Context="modulelmslexnet" OnValidSubmit="HandleSubmitModule">
                 <DataAnnotationsValidator />
@@ -139,8 +139,8 @@
 
             <section class="@classActivi">
                 <div style="display: flex; width: 80%">
-                    <div style="width: 50%; text-align: left"><h5>Add activity:</h5></div>
-                    <div style="margin-left: auto; margin-right: 0"><h6>@stepActivi</h6></div>
+                    <div style="width: 50%"><h5>Add activity:</h5></div>
+                    <div style="margin: 0 0 0 auto"><h6>@stepActivi</h6></div>
                 </div>
                 <EditForm EditContext="activityContext" Context="activitylmslexnet" OnValidSubmit="HandleSubmitActivity">
                     <DataAnnotationsValidator />
@@ -181,9 +181,9 @@
             </section>
 
             <section class="@classTable"> @*Hjälptabeller vid inmatning av moduler och aktiviteter*@ 
-                <div style="display: flex; width: 100%">
-                    <h4 style="width: 75%; text-align: left">COURSE: @course.Name</h4>
-                    <h5 style="margin-left: auto; margin-right: 0">@StartEndDate(course.StartDate, course.EndDate)</h5>
+                <div style="display: flex">
+                    <h4 style="width: 75%">COURSE: @course.Name</h4>
+                    <h5 style="margin: 0 0 0 auto">@StartEndDate(course.StartDate, course.EndDate)</h5>
                 </div>
                 <h6>Modules...</h6>
                 <table class="table">

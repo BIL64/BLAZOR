@@ -108,8 +108,7 @@ a, .btn-link {
 
 .regon {
     font-size: 0.73rem;
-    margin-left: 0;
-    margin-right: auto;
+    margin: 0 auto 0 0;
     padding: 0 5px 0 5px;
     border: 1px red solid;
     color: red;
@@ -117,8 +116,7 @@ a, .btn-link {
 
 .regoff {
     font-size: 0.73rem;
-    margin-left: 0;
-    margin-right: auto;
+    margin: 0 auto 0 0;
     padding: 0 5px 0 5px;
     border: 1px blue solid;
     color: blue;
@@ -134,8 +132,7 @@ i {
     font-size: 0.8rem;
     width: 95%;
     padding: 2px;
-    margin-top: 10%;
-    margin-left: 2%;
+    margin: 10% 0 0 2%;
     border-radius: 5px;
     background-color:deepskyblue ;
 }
@@ -188,17 +185,16 @@ i {
 .avatarmess {
     max-width: 225px;
     max-height: 225px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto 0 auto;
     border: none;
 }
 
 .avatarlog {
-    width: 46px;
-    height: 46px;
+    width: 40px;
+    height: 40px;
     margin-left: 10px;
     border: none;
-    border-radius: 23px;
+    border-radius: 20px;
 }
 
 .avatar {
@@ -238,9 +234,7 @@ i {
     display: block;
     width: 100%;
     padding: 10px;
-    border-left: 5px outset;
-    border-top: 5px outset;
-    border-right: 5px outset;
+    border: 5px outset 5px outset 0 5px outset;
     border-color: aquamarine;
     border-radius: 5px 5px 0 0;
     background-color: sandybrown;
@@ -270,9 +264,7 @@ i {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
-    border-left: 5px outset;
-    border-bottom: 5px outset;
-    border-right: 5px outset;
+    border: 0 5px outset 5px outset 5px outset;
     border-color: aquamarine;
     border-radius: 0 0 5px 5px;
     background-color: lightblue;
@@ -289,9 +281,8 @@ i {
 
 .docplusbtn {
     font-size: 0.8rem;
-    padding-right: 10px;
-    padding-left: 10px;
-    padding-top: 2px;
+    padding: 2px 10px 0 10px;
+    margin: 1px 0 1px 0;
     color: white;
     background-color: blueviolet;
     border: 2px cyan solid;
@@ -304,10 +295,8 @@ i {
 
 .docviewbtn {
     font-size: 0.8rem;
-    padding-right: 10px;
-    padding-left: 10px;
-    padding-top: 2px;
-    margin-right: 10px;
+    padding: 2px 10px 0 10px;
+    margin: 1px 10px 1px 0;
     color: white;
     background-color: grey;
     border: 2px cyan solid;
@@ -354,8 +343,7 @@ i {
     }
 
 .coursebtn {
-    margin-right: 20px;
-    margin-bottom: 5px;
+    margin: 0 20px 5px 0;
     padding: 3px;
     border-radius: 5px;
     background-color: lightslategray;
@@ -383,8 +371,7 @@ i {
     font-size: 0.7rem;
     min-width: 24px;
     height: 28px;
-    padding-left: 3px;
-    padding-right: 3px;
+    padding: 0 3px 0 3px;
     margin-left: -1px;
     border-radius: 5px;
     border: 1px black solid;
@@ -400,8 +387,7 @@ i {
     font-size: 0.7rem;
     min-width: 24px;
     height: 28px;
-    padding-left: 3px;
-    padding-right: 3px;
+    padding: 0 3px 0 3px;
     margin-left: -1px;
     border-radius: 5px;
     color: white;
@@ -416,8 +402,7 @@ i {
 
 .pagfind {
     font-size: 0.9rem;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto 0 auto;
     position: relative;
     top: 2px;
 }
@@ -547,7 +532,6 @@ i {
     width: 40px;
     height: 18px;
     background-color: yellow;
-    border-radius: 5px;
     border-radius: 12px;
     border: 2px solid gray;
 }

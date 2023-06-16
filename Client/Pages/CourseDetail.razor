@@ -10,19 +10,20 @@
 
 <AuthorizeView Roles="Teacher">
     <Authorized>
-        <nav style="display: flex; width: 100%">
-            <div style="width: 75%; text-align: left"><h3>Administration of course @CourseId: @NoModules
+        <nav style="display: flex">
+            <div style="width: 75%"><h3>Administration of course @CourseId: @NoModules
                     <i style="cursor: pointer" @onclick=" _ => EditCourse(CourseId)" title="@CourseDescription -Click for edit-">@CourseName</i>
                 </h3>
             </div>
-            <div style="margin-left: auto; margin-right: auto"><h5>@CourseDate</h5></div>
-            <div style="margin-left: auto; margin-right: 0">
-                <button type="button" class="text-white delbtn" @onclick="DateCheck" title="Perform Date Check for this course">DC</button>
-                <button type="button" class="text-white delbtn" @onclick="StudentPage" title="Shortcut to student page">S</button>
+            <div style="margin: 0 auto 0 auto"><h5>@CourseDate</h5></div>
+            <div style="margin: 0 0 0 auto">
+                <button type="button" class="mb-1 text-white delbtn" @onclick="DateCheck" title="Perform Date Check for this course">DC</button>
+                <button type="button" class="mb-1 text-white delbtn" @onclick="StudentPage" title="Shortcut to student page">S</button>
             </div>
         </nav> 
-        <nav style="display: flex; width: 100%">
-            <div style="margin-left: auto; margin-right: 0; margin-top: 20px;"><button type="button" class="docplusbtn"
+        <nav style="display: flex">
+            <div style="margin: 20px 0 0 auto">
+                <button type="button" class="docplusbtn"
                 @onclick=" _ => DocSaveControl(IId, 2, CourseName)" title="Add a document to this course">+ DOC</button>
             </div>
         </nav>
@@ -86,18 +87,18 @@
                     }
 
                     <section class="@classModTopic" @onmouseover="DeleteRefresh">
-                        <div style="display: flex; width: 100%">
-                            <div style="width: 75%; text-align: left">
+                        <div style="display: flex">
+                            <div style="width: 85%">
                                 <b title="@data.Description -Click for edit-">Module @data.Id:
                                 <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
                             </div>
-                            <div style="margin-left: auto; margin-right: 0"><b style="cursor: pointer" @onclick=" _ => ModuleDate(data.Id)"
+                            <div style="margin: 0 0 0 auto"><b style="cursor: pointer" @onclick=" _ => ModuleDate(data.Id)"
                             title="Click to edit date">@StartEndDate(data.StartDate, data.EndDate)
                                 </b>
                             </div>
                         </div>
-                        <div style="display: flex; width: 100%">
-                            <div style="width: 75%; text-align: left; margin-top: 20px">
+                        <div style="display: flex">
+                            <div style="width: 75%; margin-top: 20px">
                                 <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(data.Id, 30, data.Name)" title="Add a document to this module">+ DOC</button>
                                 <div class="dropdoc">
                                     <button type="button" class="docviewbtn">DOCs</button>
@@ -123,7 +124,7 @@
                                 </div>
 
                             </div>
-                            <div style="margin-left: auto; margin-right: 0">
+                            <div style="margin: 0 0 0 auto">
                                 <NavLink style="cursor: pointer" class="oi oi-arrow-circle-bottom text-primary mt-2 text-decoration-none"
                                 @onclick=" _ => DisableModule(data.Id)" title="Disable this module"></NavLink>
                             </div>
@@ -239,8 +240,8 @@
                 else
                 {
                     <section class="modulebox" style="color:grey; background-color:lightgrey" @onmouseover="DeleteRefresh">
-                        <div style="display: flex; width: 100%">
-                            <div style="width: 75%; text-align: left">
+                        <div style="display: flex">
+                            <div style="width: 85%">
                                 <b title="@data.Description -Click for edit-">
                                     Module @data.Id:
                                     <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i>
@@ -248,9 +249,9 @@
                             </div>
                             <div style="margin-left: auto; margin-right: 0"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
                         </div>
-                        <div style="display: flex; width: 100%">
+                        <div style="display: flex">
                             <div style="font-weight: bold; color:red; margin-left: auto; margin-right: auto">DISABLE</div>
-                            <div style="margin-left: auto; margin-right: 0">
+                            <div style="margin: 0 0 0 auto">
                                 <NavLink style="cursor: pointer" class="oi oi-arrow-circle-top text-primary mt-2 text-decoration-none"
                                 @onclick=" _ => ActivateModule(data.Id)" title="Activate this module"></NavLink>
                             </div>
