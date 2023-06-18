@@ -234,8 +234,11 @@ i {
     display: block;
     width: 100%;
     padding: 10px;
-    border: 5px outset 5px outset 0 5px outset;
-    border-color: aquamarine;
+    border-top: 5px outset aquamarine;
+    border-right: 5px outset aquamarine;
+    border-bottom: none;
+    border-left: 5px outset aquamarine;
+    border-color: aquamarine aquamarine;
     border-radius: 5px 5px 0 0;
     background-color: sandybrown;
 }
@@ -264,8 +267,10 @@ i {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
-    border: 0 5px outset 5px outset 5px outset;
-    border-color: aquamarine;
+    border-top: none;
+    border-right: 5px outset aquamarine;
+    border-bottom: 5px outset aquamarine;
+    border-left: 5px outset aquamarine;
     border-radius: 0 0 5px 5px;
     background-color: lightblue;
 }
