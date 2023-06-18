@@ -562,46 +562,65 @@
         return dto;
     }
 
-    private void DateCheck()
+    private async Task DateCheck()
     {
+        string LimCheck = string.Empty;
         string EndCheck = string.Empty;
         string CourseCheck = string.Empty;
         string ModuleCheck = string.Empty;
         string ActivityCheck = string.Empty;
-        int[] datearray = new int[1000000];
+        int[] datearray = new int[50000000];
         string dates = string.Empty;
+        int InInt = 0;
         int Count = 1;
 
-        for (int i = 0; i < 1000000; i++) // Nollställer arrayen.
+        xnav.SetDone("xnavdone", "Perform calculation...");
+        xnav.SetReset('d');
+        await Intermission(1, false);
+
+        for (int i = 0; i < 50000000; i++) // Nollställer arrayen.
         {
             datearray[i] = 0;
         }
 
         // Lägger in siffror på olika platser i arrayen. En plats som dessförinnan var ett datum.
+        // Undersöker även om PlacingInArray returnerar 0, i så fall har beräkningskapaciteten överskridits!
         foreach (var cour in courses)
         {
             if (cour.Id == IId) // Hämtar kursen.
             {
                 // Kollar om kursens startdatum är större än slutdatumet.
                 if (cour.StartDate > cour.EndDate) CourseCheck = "Course date mismatch (start date is greater than end date). ";
-                datearray[PlacingInArray(cour.StartDate)] = Count;
-                datearray[PlacingInArray(cour.EndDate)] = Count;
+                InInt = PlacingInArray(cour.StartDate, Count, '+');
+                if (InInt < 1) LimCheck = "Cannot calculate.";
+                datearray[InInt] = Count;
+                InInt = PlacingInArray(cour.EndDate, Count, '-');
+                if (InInt < 1) LimCheck = "Cannot calculate.";
+                datearray[InInt] = Count;
                 Count++;
 
                 foreach (var mod in cour.Modules) // Hämtar kursens moduler.
                 {
                     // Kollar om modulens startdatum är större än slutdatumet.
                     if (mod.StartDate > mod.EndDate) ModuleCheck = "Module date mismatch (start date is greater than end date). ";
-                    datearray[PlacingInArray(mod.StartDate)] = Count;
-                    datearray[PlacingInArray(mod.EndDate)] = Count;
+                    InInt = PlacingInArray(mod.StartDate, Count, '+');
+                    if (InInt < 1) LimCheck = "Cannot calculate.";
+                    datearray[InInt] = Count;
+                    InInt = PlacingInArray(mod.EndDate, Count, '-');
+                    if (InInt < 1) LimCheck = "Cannot calculate.";
+                    datearray[InInt] = Count;
                     Count++;
 
                     foreach (var act in mod.Activities) // Hämtar kursens aktiviteter.
                     {
                         // Kollar om aktivitetens startdatum är större än slutdatumet.
                         if (act.StartDate > act.EndDate) ActivityCheck = "Activity date mismatch (start date is greater than end date).";
-                        datearray[PlacingInArray(act.StartDate)] = Count;
-                        datearray[PlacingInArray(act.EndDate)] = Count;
+                        InInt = PlacingInArray(act.StartDate, Count, '+');
+                        if (InInt < 1) LimCheck = "Cannot calculate.";
+                        datearray[InInt] = Count;
+                        InInt = PlacingInArray(act.EndDate, Count, '-');
+                        if (InInt < 1) LimCheck = "Cannot calculate.";
+                        datearray[InInt] = Count;
                         Count++;
                     }
                 }
@@ -613,10 +632,11 @@
             if (arr > 0) dates += arr.ToString();
         }
 
-        for (int i = 1; i < Count; i++) // Kollar om både start- och slutdatumet för en post blivit överskrivet av någon annan post.
-        {
-            if (dates.IndexOf(i.ToString()) == -1) EndCheck = "Date mismatch (entangled dates)";
-        }
+        //// Endast aktuellt om datumnumren kan anta identiska värden.
+        //for (int i = 1; i < Count; i++) // Kollar om både start- och slutdatumet för en post blivit överskrivet av någon annan post.
+        //{
+        //    if (dates.IndexOf(i.ToString()) == -1) EndCheck = "Date mismatch (entangled dates)";
+        //}
 
         for (int i = dates.Length; i > 0; i--) // Tar successivt bort nummerpar.
         {
@@ -625,32 +645,55 @@
 
         if (dates.Length > 0) EndCheck = "Date mismatch (entangled dates)"; // Inga siffror kvar, ingen osymmetri!
 
-        if (CourseCheck == "" && ModuleCheck == "" && ActivityCheck == "" && EndCheck == "")
+        if (LimCheck == "" && CourseCheck == "" && ModuleCheck == "" && ActivityCheck == "" && EndCheck == "")
         {
             xnav.SetDone("xnavdone", "No date errors could be found.");
             xnav.SetReset('d');
         }
         else
         {
-            if (EndCheck != "")
+            if (LimCheck != "" || CourseCheck != "" || ModuleCheck != "" || ActivityCheck != "")
             {
-                xnav.SetError("xnaverror", EndCheck);
-                xnav.SetReset('e');
+                if (LimCheck != "")
+                {
+                    xnav.SetError("xnaverror", LimCheck);
+                    xnav.SetReset('e');
+                }
+                else
+                {
+                    xnav.SetError("xnaverror", CourseCheck + ModuleCheck + ActivityCheck);
+                    xnav.SetReset('e');
+                }
             }
             else
             {
-                xnav.SetError("xnaverror", CourseCheck + ModuleCheck + ActivityCheck);
+                xnav.SetError("xnaverror", EndCheck);
                 xnav.SetReset('e');
             }
         }
     }
 
-    private int PlacingInArray(DateTime date) // Omvandlar ett datum till ett nummer (ex. 2023-01-01 --> 230101).
+    // Omvandlar ett datum till ett nummer (ex. 2023-01-01 --> 230101 + 500 = 230101500).
+    // Subnumber: 2023-01-01 --> 220000 + 000 - count --> 219999999.
+    // 230101500 - 219999999 = retur 10101501.
+    private int PlacingInArray(DateTime date, int count, char pm)
     {
+        int subnumber = 0; // Subtraktionsnummer = (ex. 2023-01-01 --> 220000000)
+
+        // Om datumet är längre än 4 år eller om antalet moduler och aktiviteter är större än 499.
+        if ((int.Parse(date.ToString().Substring(0, 4)) > int.Parse(DateTime.Now.ToString().Substring(0, 4)) + 3) ||
+        count > 499) return 0;
+
+        // Startdatum ska adderas med Count medan slutdatum ska subtraheras med Count. 
+        if (pm == '+') subnumber = int.Parse(DateTime.Now.ToString().Substring(2, 2) + "0000000") - 10000000 - count;
+        else subnumber = int.Parse(DateTime.Now.ToString().Substring(2, 2) + "0000000") - 10000000 + count;
+
+        // Indatumet omvandlas till en sträng plus 500 (max 500 moduler och aktiviteter) och blir sedan ett nummer.
         int number = int.Parse(date.ToString().Substring(2, 2) +
         date.ToString().Substring(5, 2) +
-        date.ToString().Substring(8, 2));
-        return number;
+        date.ToString().Substring(8, 2) + "500");
+
+        return number - subnumber;
     }
 
     private void StudentPage()

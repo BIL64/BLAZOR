@@ -362,7 +362,7 @@
         var lmod = GetNewModObject(module);
 
         await Intermission(100, true);
-        if (DateModuleControl())
+        if (await DateModuleControl())
         {
             classActivi = "activityeditbox";
             classTable = "activityeditbox";
@@ -383,7 +383,7 @@
         lact.ActivityTypeName = activityType.Name;
 
         await Intermission(100, true);
-        if (DateActivityControl())
+        if (await DateActivityControl())
         {
             activitylist.Add(lact);
 
@@ -481,7 +481,7 @@
         lact.ActivityTypeName = activityType.Name;
 
         await Intermission(100, true);
-        if (DateActivityControl() || saveActButNot)
+        if (await DateActivityControl() || saveActButNot)
         {
             if (saveActButNot) xnav.SetReset('a');
             else activitylist.Add(lact);
@@ -512,7 +512,7 @@
         lact.ActivityTypeName = activityType.Name;
 
         await Intermission(100, true);
-        if (DateActivityControl())
+        if (await DateActivityControl())
         {
             repeatActivity = true;
             activitylist.Add(lact);
@@ -639,37 +639,56 @@
         return ModuleID;
     }
 
-    private bool DateModuleControl() // Kontroll av datum för moduler.
+    private async Task<bool> DateModuleControl() // Kontroll av datum för moduler.
     {
         bool case1 = false;
         bool case2 = false;
+        bool case3 = false;
         int Count = 1;
 
         if (module.StartDate > module.EndDate) case1 = true; // Felaktigt start/slutdatum.
 
         if (!case1 && DateControl)
         {
-            int[] datearray = new int[1000000];
+            int[] datearray = new int[50000000];
             string dates = "";
+            int InInt = 0;
 
-            for (int i = 0; i < 1000000; i++) // Nollställer arrayen.
+            xnav.SetDone("xnavdone", "Perform a date check...");
+            xnav.SetReset('d');
+            await Intermission(1, false);
+
+            for (int i = 0; i < 50000000; i++) // Nollställer arrayen.
             {
                 datearray[i] = 0;
             }
 
             // Lägger in siffror på olika platser i arrayen. En plats som dessförinnan var ett datum.
-            datearray[PlacingInArray(course.StartDate)] = Count;
-            datearray[PlacingInArray(course.EndDate)] = Count;
+            // Undersöker även om PlacingInArray returnerar 0, i så fall har beräkningskapaciteten överskridits!
+            InInt = PlacingInArray(course.StartDate, Count, '+');
+            if (InInt < 1) case3 = true;
+            datearray[InInt] = Count;
+            InInt = PlacingInArray(course.EndDate, Count, '-');
+            if (InInt < 1) case3 = true;
+            datearray[InInt] = Count;
             Count++;
 
             foreach (var mod in modulelist)
             {
-                datearray[PlacingInArray(mod.StartDate)] = Count;
-                datearray[PlacingInArray(mod.EndDate)] = Count;
+                InInt = PlacingInArray(mod.StartDate, Count, '+');
+                if (InInt < 1) case3 = true;
+                datearray[InInt] = Count;
+                InInt = PlacingInArray(mod.EndDate, Count, '-');
+                if (InInt < 1) case3 = true;
+                datearray[InInt] = Count;
                 Count++;
             }
-            datearray[PlacingInArray(module.StartDate)] = Count;
-            datearray[PlacingInArray(module.EndDate)] = Count;
+            InInt = PlacingInArray(module.StartDate, Count, '+');
+            if (InInt < 1) case3 = true;
+            datearray[InInt] = Count;
+            InInt = PlacingInArray(module.EndDate, Count, '-');
+            if (InInt < 1) case3 = true;
+            datearray[InInt] = Count;
             Count++;
 
             foreach (var arr in datearray) // Lägger in siffror i rad i en sträng.
@@ -677,10 +696,11 @@
                 if (arr > 0) dates += arr.ToString();
             }
 
-            for (int i = 1; i < Count; i++) // Kollar om både start- och slutdatumet för en post blivit överskrivet av någon annan post.
-            {
-                if (dates.IndexOf(i.ToString()) == -1) case2 = true;
-            }
+            //// Endast aktuellt om datumnumren kan anta identiska värden.
+            //for (int i = 1; i < Count; i++) // Kollar om både start- och slutdatumet för en post blivit överskrivet av någon annan post.
+            //{
+            //    if (dates.IndexOf(i.ToString()) == -1) case2 = true;
+            //}
 
             for (int i = dates.Length; i > 0; i--) // Tar successivt bort nummerpar.
             {
@@ -690,40 +710,59 @@
             if (dates.Length > 0) case2 = true; // Inga siffror kvar, ingen osymmetri!
         }
 
-        return CaseFalure(case1, case2);
+        return CaseFalure(case1, case2, case3);
     }
 
-    private bool DateActivityControl() // Kontroll av datum för aktiviteter.
+    private async Task<bool> DateActivityControl() // Kontroll av datum för aktiviteter.
     {
         bool case1 = false;
         bool case2 = false;
+        bool case3 = false;
         int Count = 1;
 
         if (activity.StartDate > activity.EndDate) case1 = true; // Felaktigt start/slutdatum.
 
         if (!case1 && DateControl)
         {
-            int[] datearray = new int[1000000];
+            int[] datearray = new int[50000000];
             string dates = "";
+            int InInt = 0;
 
-            for (int i = 0; i < 1000000; i++) // Nollställer arrayen.
+            xnav.SetDone("xnavdone", "Perform a date check...");
+            xnav.SetReset('d');
+            await Intermission(1, false);
+
+            for (int i = 0; i < 50000000; i++) // Nollställer arrayen.
             {
                 datearray[i] = 0;
             }
 
             // Lägger in siffror på olika platser i arrayen. En plats som dessförinnan var ett datum.
-            datearray[PlacingInArray(module.StartDate)] = Count;
-            datearray[PlacingInArray(module.EndDate)] = Count;
+            // Undersöker även om PlacingInArray returnerar 0, i så fall har beräkningskapaciteten överskridits!
+            InInt = PlacingInArray(module.StartDate, Count, '+');
+            if (InInt < 1) case3 = true;
+            datearray[InInt] = Count;
+            InInt = PlacingInArray(module.EndDate, Count, '-');
+            if (InInt < 1) case3 = true;
+            datearray[InInt] = Count;
             Count++;
 
             foreach (var act in activitylist)
             {
-                datearray[PlacingInArray(act.StartDate)] = Count;
-                datearray[PlacingInArray(act.EndDate)] = Count;
+                InInt = PlacingInArray(act.StartDate, Count, '+');
+                if (InInt < 1) case3 = true;
+                datearray[InInt] = Count;
+                InInt = PlacingInArray(act.EndDate, Count, '-');
+                if (InInt < 1) case3 = true;
+                datearray[InInt] = Count;
                 Count++;
             }
-            datearray[PlacingInArray(activity.StartDate)] = Count;
-            datearray[PlacingInArray(activity.EndDate)] = Count;
+            InInt = PlacingInArray(activity.StartDate, Count, '+');
+            if (InInt < 1) case3 = true;
+            datearray[InInt] = Count;
+            InInt = PlacingInArray(activity.EndDate, Count, '-');
+            if (InInt < 1) case3 = true;
+            datearray[InInt] = Count;
             Count++;
 
             foreach (var arr in datearray) // Lägger in siffror i rad i en sträng.
@@ -731,10 +770,11 @@
                 if (arr > 0) dates += arr.ToString();
             }
 
-            for (int i = 1; i < Count; i++) // Kollar om både start- och slutdatumet för en post blivit överskrivet av någon annan post.
-            {
-                if (dates.IndexOf(i.ToString()) == -1) case2 = true;
-            }
+            //// Endast aktuellt om datumnumren kan anta identiska värden.
+            //for (int i = 1; i < Count; i++) // Kollar om både start- och slutdatumet för en post blivit överskrivet av någon annan post.
+            //{
+            //    if (dates.IndexOf(i.ToString()) == -1) case2 = true;
+            //}
 
             for (int i = dates.Length; i > 0; i--) // Tar successivt bort nummerpar.
             {
@@ -744,34 +784,47 @@
             if (dates.Length > 0) case2 = true; // Inga siffror kvar, ingen osymmetri!
         }
 
-        return CaseFalure(case1, case2);
+        return CaseFalure(case1, case2, case3);
     }
 
-    private bool CaseFalure(bool c1, bool c2) // Returnerar resultat och felmeddelanden.
+    private bool CaseFalure(bool c1, bool c2, bool c3) // Returnerar resultat och felmeddelanden.
     {
         bool result = true;
 
-        if (c1 || c2)
+        if (c1 || c2 || c3)
         {
             xnav.SetError("xnaverror", "Date mismatch (start date is greater than end date).");
             if (c2) xnav.SetError("xnaverror", "Date mismatch (entangled dates).");
+            if (c3) xnav.SetError("xnaverror", "Cannot calculate.");
             xnav.SetReset('e');
+            result = false;
         }
-        if (!c1 && !c2)
-        {
-            xnav.SetReset('a');
-        }
-        if (c1 || c2) result = false;
+        else xnav.SetReset('a');
 
         return result;
     }
 
-    private int PlacingInArray(DateTime date) // Omvandlar ett datum till ett nummer (ex. 2023-01-01 --> 230101).
+    // Omvandlar ett datum till ett nummer (ex. 2023-01-01 --> 230101 + 500 = 230101500).
+    // Subnumber: 2023-01-01 --> 220000 + 000 - count --> 219999999.
+    // 230101500 - 219999999 = retur 10101501.
+    private int PlacingInArray(DateTime date, int count, char pm)
     {
+        int subnumber = 0; // Subtraktionsnummer = (ex. 2023-01-01 --> 220000000)
+
+        // Om datumet är längre än 4 år eller om antalet moduler och aktiviteter är större än 499.
+        if ((int.Parse(date.ToString().Substring(0, 4)) > int.Parse(DateTime.Now.ToString().Substring(0, 4)) + 3) ||
+        count > 499) return 0;
+
+        // Startdatum ska adderas med Count medan slutdatum ska subtraheras med Count.
+        if (pm == '+') subnumber = int.Parse(DateTime.Now.ToString().Substring(2, 2) + "0000000") - 10000000 - count;
+        else subnumber = int.Parse(DateTime.Now.ToString().Substring(2, 2) + "0000000") - 10000000 + count;
+
+        // Indatumet omvandlas till en sträng plus 500 (max 500 moduler och aktiviteter) och blir sedan ett nummer.
         int number = int.Parse(date.ToString().Substring(2, 2) +
         date.ToString().Substring(5, 2) +
-        date.ToString().Substring(8, 2));
-        return number;
+        date.ToString().Substring(8, 2) + "500");
+
+        return number - subnumber;
     }
 
     private async Task Intermission(int time, bool hide) // Paus.
