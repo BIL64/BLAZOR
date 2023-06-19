@@ -598,6 +598,8 @@
                 {
                     // Kollar om modulens startdatum är större än slutdatumet.
                     if (mod.StartDate > mod.EndDate) ModuleCheck = "Module date mismatch (start date is greater than end date). ";
+                    if (mod.StartDate < cour.StartDate && mod.EndDate < cour.StartDate ||
+                    mod.StartDate > cour.EndDate && mod.EndDate > cour.EndDate) ModuleCheck = "Module date mismatch (date is outside the course date). ";
                     InInt = PlacingInArray(mod.StartDate, Count, '+');
                     if (InInt < 1) LimCheck = "Cannot calculate.";
                     datearray[InInt] = Count;
@@ -610,6 +612,8 @@
                     {
                         // Kollar om aktivitetens startdatum är större än slutdatumet.
                         if (act.StartDate > act.EndDate) ActivityCheck = "Activity date mismatch (start date is greater than end date).";
+                        if (act.StartDate < mod.StartDate && act.EndDate < mod.StartDate ||
+                        act.StartDate > mod.EndDate && act.EndDate > mod.EndDate) ActivityCheck = "Activity date mismatch (date is outside the module date).";
                         InInt = PlacingInArray(act.StartDate, Count, '+');
                         if (InInt < 1) LimCheck = "Cannot calculate.";
                         datearray[InInt] = Count;

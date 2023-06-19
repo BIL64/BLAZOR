@@ -463,7 +463,7 @@
         else
         {
             await Intermission(100, true);
-            xnav.SetError("xnaverror", "Module date mismatch (start date is greater than end date).");
+            xnav.SetError("xnaverror", "Course date mismatch (start date is greater than end date).");
             if (course.Name == "")
                 xnav.SetError("xnaverror", "The Name field is required.");
             if (course.Description == "")
@@ -644,11 +644,15 @@
         bool case1 = false;
         bool case2 = false;
         bool case3 = false;
+        bool case4 = false;
         int Count = 1;
 
         if (module.StartDate > module.EndDate) case1 = true; // Felaktigt start/slutdatum.
 
-        if (!case1 && DateControl)
+        if (module.StartDate < course.StartDate && module.EndDate < course.StartDate ||
+        module.StartDate > course.EndDate && module.EndDate > course.EndDate) case2 = true; // Datum ligger utanför kursdatum.
+
+        if (!case1 && !case2 && DateControl)
         {
             int[] datearray = new int[100000000];
             string dates = "";
@@ -661,28 +665,28 @@
             // Lägger in siffror på olika platser i arrayen. En plats som dessförinnan var ett datum.
             // Undersöker även om PlacingInArray returnerar 0, vilket indikerar beräkningsfel.
             InInt = PlacingInArray(course.StartDate, Count, '+');
-            if (InInt < 1) case3 = true;
+            if (InInt < 1) case4 = true;
             datearray[InInt] = Count;
             InInt = PlacingInArray(course.EndDate, Count, '-');
-            if (InInt < 1) case3 = true;
+            if (InInt < 1) case4 = true;
             datearray[InInt] = Count;
             Count++;
 
             foreach (var mod in modulelist)
             {
                 InInt = PlacingInArray(mod.StartDate, Count, '+');
-                if (InInt < 1) case3 = true;
+                if (InInt < 1) case4 = true;
                 datearray[InInt] = Count;
                 InInt = PlacingInArray(mod.EndDate, Count, '-');
-                if (InInt < 1) case3 = true;
+                if (InInt < 1) case4 = true;
                 datearray[InInt] = Count;
                 Count++;
             }
             InInt = PlacingInArray(module.StartDate, Count, '+');
-            if (InInt < 1) case3 = true;
+            if (InInt < 1) case4 = true;
             datearray[InInt] = Count;
             InInt = PlacingInArray(module.EndDate, Count, '-');
-            if (InInt < 1) case3 = true;
+            if (InInt < 1) case4 = true;
             datearray[InInt] = Count;
             Count++;
 
@@ -694,7 +698,7 @@
             //// Endast aktuellt om datumnumren kan anta identiska värden.
             //for (int i = 1; i < Count; i++) // Kollar om både start- och slutdatumet för en post blivit överskrivet av någon annan post.
             //{
-            //    if (dates.IndexOf(i.ToString()) == -1) case2 = true;
+            //    if (dates.IndexOf(i.ToString()) == -1) case3 = true;
             //}
 
             for (int i = dates.Length; i > 0; i--) // Tar successivt bort nummerpar.
@@ -702,10 +706,10 @@
                 if (dates.IndexOf(i.ToString() + i.ToString()) != -1) dates = dates.Replace(i.ToString() + i.ToString(), "");
             }
 
-            if (dates.Length > 0) case2 = true; // Inga siffror kvar, ingen osymmetri!
+            if (dates.Length > 0) case3 = true; // Inga siffror kvar, ingen osymmetri!
         }
 
-        return CaseFalure(case1, case2, case3);
+        return CaseFalure(case1, case2, case3, case4);
     }
 
     private async Task<bool> DateActivityControl() // Kontroll av datum för aktiviteter.
@@ -713,11 +717,15 @@
         bool case1 = false;
         bool case2 = false;
         bool case3 = false;
+        bool case4 = false;
         int Count = 1;
 
         if (activity.StartDate > activity.EndDate) case1 = true; // Felaktigt start/slutdatum.
 
-        if (!case1 && DateControl)
+        if (activity.StartDate < module.StartDate && activity.EndDate < module.StartDate ||
+        activity.StartDate > module.EndDate && activity.EndDate > module.EndDate) case2 = true; // Datum ligger utanför moduldatum.
+
+        if (!case1 && !case2 && DateControl)
         {
             int[] datearray = new int[100000000];
             string dates = "";
@@ -730,28 +738,28 @@
             // Lägger in siffror på olika platser i arrayen. En plats som dessförinnan var ett datum.
             // Undersöker även om PlacingInArray returnerar 0, vilket indikerar beräkningsfel.
             InInt = PlacingInArray(module.StartDate, Count, '+');
-            if (InInt < 1) case3 = true;
+            if (InInt < 1) case4 = true;
             datearray[InInt] = Count;
             InInt = PlacingInArray(module.EndDate, Count, '-');
-            if (InInt < 1) case3 = true;
+            if (InInt < 1) case4 = true;
             datearray[InInt] = Count;
             Count++;
 
             foreach (var act in activitylist)
             {
                 InInt = PlacingInArray(act.StartDate, Count, '+');
-                if (InInt < 1) case3 = true;
+                if (InInt < 1) case4 = true;
                 datearray[InInt] = Count;
                 InInt = PlacingInArray(act.EndDate, Count, '-');
-                if (InInt < 1) case3 = true;
+                if (InInt < 1) case4 = true;
                 datearray[InInt] = Count;
                 Count++;
             }
             InInt = PlacingInArray(activity.StartDate, Count, '+');
-            if (InInt < 1) case3 = true;
+            if (InInt < 1) case4 = true;
             datearray[InInt] = Count;
             InInt = PlacingInArray(activity.EndDate, Count, '-');
-            if (InInt < 1) case3 = true;
+            if (InInt < 1) case4 = true;
             datearray[InInt] = Count;
             Count++;
 
@@ -763,7 +771,7 @@
             //// Endast aktuellt om datumnumren kan anta identiska värden.
             //for (int i = 1; i < Count; i++) // Kollar om både start- och slutdatumet för en post blivit överskrivet av någon annan post.
             //{
-            //    if (dates.IndexOf(i.ToString()) == -1) case2 = true;
+            //    if (dates.IndexOf(i.ToString()) == -1) case3 = true;
             //}
 
             for (int i = dates.Length; i > 0; i--) // Tar successivt bort nummerpar.
@@ -771,21 +779,22 @@
                 if (dates.IndexOf(i.ToString() + i.ToString()) != -1) dates = dates.Replace(i.ToString() + i.ToString(), "");
             }
 
-            if (dates.Length > 0) case2 = true; // Inga siffror kvar, ingen osymmetri!
+            if (dates.Length > 0) case3 = true; // Inga siffror kvar, ingen osymmetri!
         }
 
-        return CaseFalure(case1, case2, case3);
+        return CaseFalure(case1, case2, case3, case4);
     }
 
-    private bool CaseFalure(bool c1, bool c2, bool c3) // Returnerar resultat och felmeddelanden.
+    private bool CaseFalure(bool c1, bool c2, bool c3, bool c4) // Returnerar resultat och felmeddelanden.
     {
         bool result = true;
 
-        if (c1 || c2 || c3)
+        if (c1 || c2 || c3 || c4)
         {
             xnav.SetError("xnaverror", "Date mismatch (start date is greater than end date).");
-            if (c2) xnav.SetError("xnaverror", "Date mismatch (entangled dates).");
-            if (c3) xnav.SetError("xnaverror", "Cannot calculate.");
+            if (c2) xnav.SetError("xnaverror", "Date mismatch (date is outside the course or the module date).");
+            if (c3) xnav.SetError("xnaverror", "Date mismatch (entangled dates).");
+            if (c4) xnav.SetError("xnaverror", "Cannot calculate.");
             xnav.SetReset('e');
             result = false;
         }
