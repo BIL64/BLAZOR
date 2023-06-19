@@ -650,7 +650,7 @@
 
         if (!case1 && DateControl)
         {
-            int[] datearray = new int[5000000];
+            int[] datearray = new int[100000000];
             string dates = "";
             int InInt = 0;
 
@@ -658,13 +658,8 @@
             xnav.SetReset('d');
             await Intermission(1, false);
 
-            for (int i = 0; i < 5000000; i++) // Nollställer arrayen.
-            {
-                datearray[i] = 0;
-            }
-
             // Lägger in siffror på olika platser i arrayen. En plats som dessförinnan var ett datum.
-            // Undersöker även om PlacingInArray returnerar 0, i så fall har beräkningskapaciteten överskridits!
+            // Undersöker även om PlacingInArray returnerar 0, vilket indikerar beräkningsfel.
             InInt = PlacingInArray(course.StartDate, Count, '+');
             if (InInt < 1) case3 = true;
             datearray[InInt] = Count;
@@ -724,7 +719,7 @@
 
         if (!case1 && DateControl)
         {
-            int[] datearray = new int[5000000];
+            int[] datearray = new int[100000000];
             string dates = "";
             int InInt = 0;
 
@@ -732,13 +727,8 @@
             xnav.SetReset('d');
             await Intermission(1, false);
 
-            for (int i = 0; i < 5000000; i++) // Nollställer arrayen.
-            {
-                datearray[i] = 0;
-            }
-
             // Lägger in siffror på olika platser i arrayen. En plats som dessförinnan var ett datum.
-            // Undersöker även om PlacingInArray returnerar 0, i så fall har beräkningskapaciteten överskridits!
+            // Undersöker även om PlacingInArray returnerar 0, vilket indikerar beräkningsfel.
             InInt = PlacingInArray(module.StartDate, Count, '+');
             if (InInt < 1) case3 = true;
             datearray[InInt] = Count;
@@ -805,37 +795,26 @@
     }
 
     // Omvandlar ett datum till ett heltal och adderar 500 för att kunna skapa unika datumnummer.
-    // Ex 1: 2023-01-01 --> 230101 --> 23 ++ 032 (1 x 31 + 1) ++ 500 = 23032500.
-    // Ex 2: 2023-06-20 --> 230620 --> 23 ++ 206 (6 x 31 + 20) ++ 500 = 23206500.
-    // Ex 3: 2023-12-31 --> 231231 --> 23 ++ 403 (12 x 31 + 31) ++ 500 = 23403500.
-
-    // Subnumber 1: 2023-01-01 --> 22 ++ 000000 - count(1) --> 21999999.
-    // Subnumber 2: 2023-06-20 --> 22 ++ 000000 + count(1) --> 22000001.
-    // Subnumber 2: 2023-12-31 --> 22 ++ 000000 - count(1) --> 21999999.
-
-    // 23032500 - 21999999 = retur 1032501.
-    // 23206500 - 22000001 = retur 1206499.
-    // 23403500 - 21999999 = retur 1403501.
+    // Ex 1: 2023-01-01 --> 230101 --> 23 ++ 032 (1 x 31 + 1) ++ 500 + count(1) = 23032501.
+    // Ex 2: 2023-06-20 --> 230620 --> 23 ++ 206 (6 x 31 + 20) ++ 500 - count(1) = 23206499.
+    // Ex 3: 2023-12-31 --> 231231 --> 23 ++ 403 (12 x 31 + 31) ++ 500 + count(1) = 23403501.
 
     private int PlacingInArray(DateTime date, int count, char pm)
     {
-        int subnumber = 0; // Subtraktionsnummer = (ex. 2023-01-01 --> 220000000)
+        int number = 0;
 
         // Addition av månad gånger 31 plus dagen. Därtill addition med 1000.
         int m_d = 1000 + int.Parse(date.ToString().Substring(5, 2)) * 31 + int.Parse(date.ToString().Substring(8, 2));
 
-        // Om datumet är längre än 4 år eller om antalet moduler och aktiviteter är större än 499.
-        if ((int.Parse(date.ToString().Substring(0, 4)) > int.Parse(DateTime.Now.ToString().Substring(0, 4)) + 3) ||
-        count > 499) return 0;
+        // Om antalet moduler och aktiviteter är större än 499.
+        if (count > 499) return 0;
 
-        // Startdatum ska adderas med Count medan slutdatum ska subtraheras med Count.
-        if (pm == '+') subnumber = int.Parse(DateTime.Now.ToString().Substring(2, 2) + "000000") - 1000000 - count;
-        else subnumber = int.Parse(DateTime.Now.ToString().Substring(2, 2) + "000000") - 1000000 + count;
+        // Indatumet omvandlas till en sträng, plus m_d och plus 500 (max 500 moduler och aktiviteter).
+        // Parsar detta till ett tal för att slutligen addera eller subtrahera count.
+        if (pm == '+') number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3) + "500") + count;
+        else number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3) + "500") - count;
 
-        // Indatumet omvandlas till en sträng plus m_d plus 500 (max 500 moduler och aktiviteter) och blir sedan ett nummer.
-        int number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3) + "500");
-
-        return number - subnumber;
+        return number;
     }
 
     private async Task Intermission(int time, bool hide) // Paus.
