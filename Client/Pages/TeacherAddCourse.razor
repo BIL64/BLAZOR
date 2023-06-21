@@ -116,11 +116,11 @@
                         <label class="control-label toggle" for="switch" title="To avoid entangled dates"></label>
                     @if (DateControl)
                     {
-                        <span style="position: relative; top: -3px"> Date controll ON</span>
+                        <span style="position: relative; top: -3px"> Complex date controll ON</span>
                     }
                     else
                     {
-                        <span style="position: relative; top: -3px"> Date control OFF</span>
+                        <span style="position: relative; top: -3px"> Complex date control OFF</span>
                     }
                 </div>
                 <div class="form-group m-3">
@@ -645,6 +645,7 @@
         bool case2 = false;
         bool case3 = false;
         bool case4 = false;
+        bool case5 = false;
         int Count = 1;
 
         if (module.StartDate > module.EndDate) case1 = true; // Felaktigt start/slutdatum.
@@ -652,7 +653,11 @@
         if (module.StartDate < course.StartDate && module.EndDate < course.StartDate ||
         module.StartDate > course.EndDate && module.EndDate > course.EndDate) case2 = true; // Datum ligger utanför kursdatum.
 
-        if (!case1 && !case2 && DateControl)
+        // Kollar om både start- och slutdatumet är lika (om så är fallet fungerar inte datumchecken).
+        if (PlacingInArray(course.StartDate, 1, '=') == PlacingInArray(course.EndDate, 1, '=')) case5 = true;
+        if (PlacingInArray(module.StartDate, 1, '=') == PlacingInArray(module.EndDate, 1, '=')) case5 = true;
+
+        if (!case1 && !case2 && !case5 && DateControl)
         {
             int[] datearray = new int[100000000];
             string dates = "";
@@ -709,7 +714,7 @@
             if (dates.Length > 0) case3 = true; // Inga siffror kvar, ingen osymmetri!
         }
 
-        return CaseFalure(case1, case2, case3, case4);
+        return await CaseFalure(case1, case2, case3, case4, case5);
     }
 
     private async Task<bool> DateActivityControl() // Kontroll av datum för aktiviteter.
@@ -718,6 +723,7 @@
         bool case2 = false;
         bool case3 = false;
         bool case4 = false;
+        bool case5 = false;
         int Count = 1;
 
         if (activity.StartDate > activity.EndDate) case1 = true; // Felaktigt start/slutdatum.
@@ -725,7 +731,10 @@
         if (activity.StartDate < module.StartDate && activity.EndDate < module.StartDate ||
         activity.StartDate > module.EndDate && activity.EndDate > module.EndDate) case2 = true; // Datum ligger utanför moduldatum.
 
-        if (!case1 && !case2 && DateControl)
+        // Kollar om både start- och slutdatumet är lika (om så är fallet fungerar inte datumchecken).
+        if (PlacingInArray(activity.StartDate, 1, '=') == PlacingInArray(activity.EndDate, 1, '=')) case5 = true;
+
+        if (!case1 && !case2 && !case5 && DateControl)
         {
             int[] datearray = new int[100000000];
             string dates = "";
@@ -782,23 +791,39 @@
             if (dates.Length > 0) case3 = true; // Inga siffror kvar, ingen osymmetri!
         }
 
-        return CaseFalure(case1, case2, case3, case4);
+        return await CaseFalure(case1, case2, case3, case4, case5);
     }
 
-    private bool CaseFalure(bool c1, bool c2, bool c3, bool c4) // Returnerar resultat och felmeddelanden.
+    private async Task<bool> CaseFalure(bool c1, bool c2, bool c3, bool c4, bool c5) // Returnerar resultat och felmeddelanden.
     {
         bool result = true;
 
-        if (c1 || c2 || c3 || c4)
+        if ((c1 && !c5) || c2 || c3 || c4)
         {
             xnav.SetError("xnaverror", "Date mismatch (start date is greater than end date).");
             if (c2) xnav.SetError("xnaverror", "Date mismatch (date is outside the course or the module date).");
             if (c3) xnav.SetError("xnaverror", "Date mismatch (entangled dates).");
-            if (c4) xnav.SetError("xnaverror", "Cannot calculate.");
+            if (c4) xnav.SetError("xnaverror", "Cannot calculate (overloading).");
             xnav.SetReset('e');
             result = false;
         }
         else xnav.SetReset('a');
+
+        if (c5 && !c2)
+        {
+            xnav.SetDone("xnavdone", "Date check is OFF because start date is equal to end date.");
+            xnav.SetReset('d');
+            await Intermission(2000, false);
+            result = true;
+        }
+
+        if (!c1 && !c2 && !c3 && !c4 && !c5)
+        {
+            xnav.SetDone("xnavdone", "Ok.");
+            xnav.SetReset('d');
+            await Intermission(500, false);
+            xnav.SetReset('a');
+        }
 
         return result;
     }
@@ -821,7 +846,10 @@
         // Indatumet omvandlas till en sträng, plus m_d och plus 500 (max 500 moduler och aktiviteter).
         // Parsar detta till ett tal för att slutligen addera eller subtrahera count.
         if (pm == '+') number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3) + "500") + count;
-        else number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3) + "500") - count;
+        if (pm == '-') number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3) + "500") - count;
+
+        // För kontroll om samma datum ges på både start- och slutdatum.
+        if (pm == '=') number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3));
 
         return number;
     }
