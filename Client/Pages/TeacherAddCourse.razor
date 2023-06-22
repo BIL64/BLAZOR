@@ -298,6 +298,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        xnav.SetJohnDoe(false);
         xnav.SetReset('a');
 
         courseContext = new EditContext(course); // Formulärkontext.
@@ -592,7 +593,7 @@
                 Description = mod.Description,
                 StartDate = mod.StartDate,
                 EndDate = mod.EndDate,
-                IsActive = mod.IsActive,
+                Select = mod.Select,
                 CourseId = CourseID
             };
         return dto;

@@ -225,22 +225,105 @@ i {
     display: block;
     width: 100%;
     padding: 10px;
+    margin-top: 10px;
     border: none;
-    border-radius: 5px 5px 0 0;
+    border-radius: 7px 7px 0 0;
     background-color: sandybrown;
+}
+
+.module3T_box {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-top: 2px solid black;
+    border-right: 2px solid black;
+    border-bottom: none;
+    border-left: 2px solid black;
+    border-radius: 10px 10px 0 0;
+    background-color: beige;
+}
+
+.module3S_main {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0 30px 0;
+    border-top: 2px solid black;
+    border-right: 2px solid black;
+    border-bottom: 2px solid black;
+    border-left: 2px solid black;
+    border-radius: 13px;
+    background-color: beige;
+}
+
+.module3S_box {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border-radius: 7px 7px 0 0;
+}
+
+.module4T_box {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 7px 7px 0 0;
+    background-color: #444;
 }
 
 .moduleboxtopic {
     display: block;
     width: 100%;
     padding: 10px;
+    margin-top: 10px;
     border-top: 5px outset aquamarine;
     border-right: 5px outset aquamarine;
     border-bottom: none;
     border-left: 5px outset aquamarine;
-    border-color: aquamarine aquamarine;
-    border-radius: 5px 5px 0 0;
+    border-radius: 10px 10px 0 0;
     background-color: sandybrown;
+}
+
+.module3T_boxtopic {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-top: 5px outset aquamarine;
+    border-right: 5px outset aquamarine;
+    border-bottom: none;
+    border-left: 5px outset aquamarine;
+    border-radius: 10px 10px 0 0;
+    background-color: beige;
+}
+
+.module3S_maintopic {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0 30px 0;
+    border-top: 5px outset aquamarine;
+    border-right: 5px outset aquamarine;
+    border-bottom: 5px outset aquamarine;
+    border-left: 5px outset aquamarine;
+    border-radius: 13px;
+    background-color: beige;
+}
+
+.module4T_boxtopic {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-top: 5px outset aquamarine;
+    border-right: 5px outset aquamarine;
+    border-bottom: none;
+    border-left: 5px outset aquamarine;
+    border-radius: 10px 10px 0 0;
+    background-color: #444;
 }
 
 .moduleeditbox {
@@ -256,9 +339,42 @@ i {
     display: block;
     width: 100%;
     padding: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     border: none;
-    border-radius: 0 0 5px 5px;
+    border-radius: 0 0 7px 7px;
+    background-color: lightblue;
+}
+
+.activity3T_box {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 30px;
+    border-top: none;
+    border-right: 2px solid black;
+    border-bottom: 2px solid black;
+    border-left: 2px solid black;
+    border-radius: 0 0 10px 10px;
+    background-color: lightblue;
+}
+
+.activity3S_box {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 30px;
+    border: none;
+    border-radius: 7px;
+    background-color: lightblue;
+}
+
+.activity4S_box {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0 30px 0;
+    border: none;
+    border-radius: 5px 5px 5px 5px;
     background-color: lightblue;
 }
 
@@ -266,12 +382,12 @@ i {
     display: block;
     width: 100%;
     padding: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     border-top: none;
     border-right: 5px outset aquamarine;
     border-bottom: 5px outset aquamarine;
     border-left: 5px outset aquamarine;
-    border-radius: 0 0 5px 5px;
+    border-radius: 0 0 10px 10px;
     background-color: lightblue;
 }
 

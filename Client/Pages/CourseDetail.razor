@@ -73,60 +73,126 @@
 
             @foreach (var data in modules)
             {
-                if (data.IsActive)
+                if (data.Select != 0)
                 {
                     if (data.StartDate < DateTime.Now && data.EndDate > DateTime.Now)
                     {
-                        classModTopic = "moduleboxtopic";
-                        classActTopic = "activityboxtopic";
+                        if (data.Select < 3)
+                        {
+                            classModTopic = "moduleboxtopic";
+                            classActTopic = "activityboxtopic";
+                        }
+
+                        if (data.Select == 3)
+                        {
+                            classModTopic = "module3T_boxtopic";
+                            classActTopic = "activityboxtopic";
+                        }
+
+                        if (data.Select == 4)
+                        {
+                            classModTopic = "module4T_boxtopic";
+                            classActTopic = "activityboxtopic";
+                        }
                     }
                     else
                     {
-                        classModTopic = "modulebox";
-                        classActTopic = "activitybox";
+                        if (data.Select < 3)
+                        {
+                            classModTopic = "modulebox";
+                            classActTopic = "activitybox";
+                        }
+
+                        if (data.Select == 3)
+                        {
+                            classModTopic = "module3T_box";
+                            classActTopic = "activity3T_box";
+                        }
+
+                        if (data.Select == 4)
+                        {
+                            classModTopic = "module4T_box";
+                            classActTopic = "activitybox";
+                        }
                     }
 
                     <section class="@classModTopic" @onmouseover="DeleteRefresh">
                         <div style="display: flex">
                             <div style="width: 85%">
-                                <b title="@data.Description -Click for edit-">Module @data.Id:
-                                <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
+                                @if (data.Select < 2)
+                                {
+                                    <b title="@data.Description -Click for edit-">Module @data.Id:
+                                    <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
+                                }
+                                else
+                                {
+                                    if (data.Select == 3)
+                                    {
+                                        <b title="Click for edit. Type #H# for hide or #E# for empty a field">
+                                        <i style="cursor: pointer; margin-left: 10px" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
+                                    }
+                                    else
+                                    {
+                                        <b title="@data.Description -Click for edit-">Module
+                                        <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
+                                    }
+                                }
                             </div>
                             <div style="margin: 0 0 0 auto"><b style="cursor: pointer" @onclick=" _ => ModuleDate(data.Id)"
-                            title="Click to edit date">@StartEndDate(data.StartDate, data.EndDate)
-                                </b>
+                                title="Click to edit date">@StartEndDate(data.StartDate, data.EndDate)</b>
                             </div>
                         </div>
                         <div style="display: flex">
-                            <div style="width: 75%; margin-top: 20px">
-                                <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(data.Id, 30, data.Name)" title="Add a document to this module">+ DOC</button>
-                                <div class="dropdoc">
-                                    <button type="button" class="docviewbtn">DOCs</button>
-                                    <div class="dropdoc-content">
-                                        @foreach (var doc in documents)
-                                        {
-                                            if (doc.ModuleId == data.Id)
+
+                            @if (data.Select != 3 && data.Select != 4)
+                            {
+                                <div style="width: 75%; margin-top: 20px">
+                                    <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(data.Id, 30, data.Name)" title="Add a document to this module">+ DOC</button>
+                                    <div class="dropdoc">
+                                        <button type="button" class="docviewbtn">DOCs</button>
+                                        <div class="dropdoc-content">
+                                            @foreach (var doc in documents)
                                             {
-                                                if (doc.DocName != "")
+                                                if (doc.ModuleId == data.Id)
                                                 {
-                                                    // Öppnar filen samt visar dokumentets formulärdata.
-                                                    <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
-                                                    title="File: @doc.Description by @doc.Author @doc.TimeStamp">@doc.DocName</a>
-                                                }
-                                                else
-                                                {
-                                                    <a @onclick="_ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
-                                                    title="Mess: @doc.Description @doc.TimeStamp">By @doc.Author</a>
+                                                    if (doc.DocName != "")
+                                                    {
+                                                        // Öppnar filen samt visar dokumentets formulärdata.
+                                                        <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
+                                                        title="File: @doc.Description by @doc.Author @doc.TimeStamp">@doc.DocName</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a @onclick="_ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                                        title="Mess: @doc.Description @doc.TimeStamp">By @doc.Author</a>
+                                                    }
                                                 }
                                             }
-                                        }
+                                        </div>
                                     </div>
                                 </div>
+                            }
+                            else
+                            {
+                                if (data.Select == 3)
+                                {
+                                    <div style="font-size: 0.8rem; text-indent: 10px; color:darkslategrey" title="Type #H# for hide or #E# for empty a field">
+                                    <em>@data.Description</em></div>
+                                }
+                            }
 
-                            </div>
                             <div style="margin: 0 0 0 auto">
-                                <NavLink style="cursor: pointer" class="oi oi-arrow-circle-bottom text-primary mt-2 text-decoration-none"
-                                @onclick=" _ => DisableModule(data.Id)" title="Disable this module"></NavLink>
+                                <NavLink style="cursor: pointer; margin-right: 2px" class="oi oi-menu text-primary text-decoration-none"
+                                @onclick=" _ => SelectModuleType(data.Id, 4)" title="Only activities"></NavLink>
+
+                                <NavLink style="cursor: pointer; margin-right: 2px" class="oi oi-folder text-primary text-decoration-none"
+                                @onclick=" _ => SelectModuleType(data.Id, 3)" title="Simple text"></NavLink>
+
+                                <NavLink style="cursor: pointer; margin-right: 2px" class="oi oi-document text-primary text-decoration-none"
+                                @onclick=" _ => SelectModuleType(data.Id, 1)" title="Extend with identity number"></NavLink>
+
+                                <NavLink style="cursor: pointer" class="oi oi-arrow-circle-bottom mt-2 text-primary text-decoration-none"
+                                @onclick=" _ => ActivateOrDisable(data.Id, 0)" title="Disable module and exclude identity nr"></NavLink>
                             </div>
                         </div>
                     </section>
@@ -135,13 +201,35 @@
 
                         <table class="table" style="color: #555"> @*Grå text*@
                             <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Aktivity</th>
-                                    <th>Type</th>
-                                    <th>Date</th>
-                                    <th>Items</th>
-                                </tr>
+                                @if (data.Select == 1)
+                                {
+                                    <tr>
+                                        <th>Nr</th>
+                                        <th>Aktivity</th>
+                                        <th>Type</th>
+                                        <th>Date</th>
+                                        <th>Items</th>
+                                    </tr>
+                                }
+
+                                @if (data.Select == 2 || data.Select == 3)
+                                {
+                                    <tr>
+                                        <th>Aktivity</th>
+                                        <th>Type</th>
+                                        <th>Date</th>
+                                        <th>Items</th>
+                                    </tr>
+                                }
+
+                                @if (data.Select == 4)
+                                {
+                                    <tr>
+                                        <th>Aktivity</th>
+                                        <th>Description</th>
+                                        <th>Items</th>
+                                    </tr>
+                                }
                             </thead>
                             <tbody>
                                 @foreach (var act in activities)
@@ -151,22 +239,36 @@
                                         <tr>
                                             @if (act.ModuleId == data.Id)
                                             {
-                                                <td>@act.Id</td>
+                                                if (data.Select < 2)
+                                                {
+                                                    <td>@act.Id</td>
+                                                }
                                                 <td>
                                                     <i style="cursor: pointer" title="@act.Description -Click for edit-"
                                                         @onclick=" _ => EditActivity(act.Id)">@act.Name</i>
                                                 </td>
-                                                <td>
-                                                    @foreach (var actype in activityTypes)
-                                                    {
-                                                        if (actype.Id == act.ActivityTypeId)
+                                                if (data.Select != 4)
+                                                {
+                                                    <td>
+                                                        @foreach (var actype in activityTypes)
                                                         {
-                                                            @actype.Name
+                                                            if (actype.Id == act.ActivityTypeId)
+                                                            {
+                                                                @actype.Name
+                                                            }
                                                         }
-                                                    }
-                                                </td>
-                                                <td><span style="cursor: pointer" @onclick=" _ => ActivityDate(act.Id)" title="Click to edit date">
-                                                @StartEndDate(act.StartDate, act.EndDate)</span></td>
+                                                    </td>
+                                                    <td>
+                                                        <span style="cursor: pointer" @onclick=" _ => ActivityDate(act.Id)" title="Click to edit date">
+                                                        @StartEndDate(act.StartDate, act.EndDate)</span>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td>
+                                                        @act.Description
+                                                    </td>
+                                                }
                                                 <td>
                                                     <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(act.Id, 140, act.Name)"
                                                     title="Add a document to this activity">+ DOC</button>
@@ -196,7 +298,7 @@
                                                     </div>
                                                     
                                                     <NavLink style="cursor: pointer" class="oi oi-arrow-circle-bottom text-primary mt-2 text-decoration-none"
-                                                    @onclick=" _ => DisableActivity(act.Id)" title="Disable this activity"></NavLink>
+                                                    @onclick=" _ => ActivateOrDisable(act.Id, 1)" title="Disable this activity"></NavLink>
                                                 </td>
                                                 <td>
                                                     @if (!Empty)
@@ -213,7 +315,6 @@
                                         <tr style="color:#AAA; background-color:#EEE">
                                             @if (act.ModuleId == data.Id)
                                             {
-                                                <td>@act.Id</td>
                                                 <td>
                                                     <i style="cursor: pointer" title="@act.Description -Click for edit-"
                                                     @onclick=" _ => EditActivity(act.Id)">@act.Name</i>
@@ -225,7 +326,7 @@
                                                 <td>
                                                     <div style="margin-left: auto; margin-right: 0">
                                                     <NavLink style="cursor: pointer" class="oi oi-arrow-circle-top text-primary mt-2 text-decoration-none"
-                                                    @onclick=" _ => ActivateActivity(act.Id)" title="Activate this activity"></NavLink>
+                                                    @onclick=" _ => ActivateOrDisable(act.Id, 3)" title="Activate this activity"></NavLink>
                                                     </div>
                                                 </td>
                                             }
@@ -237,15 +338,14 @@
 
                     </article>
                 }
-                else
+
+                if (data.Select == 0)
                 {
                     <section class="modulebox" style="color:grey; background-color:lightgrey" @onmouseover="DeleteRefresh">
                         <div style="display: flex">
                             <div style="width: 85%">
-                                <b title="@data.Description -Click for edit-">
-                                    Module @data.Id:
-                                    <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i>
-                                </b>
+                                <b title="@data.Description -Click for edit-">Module:
+                                <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
                             </div>
                             <div style="margin-left: auto; margin-right: 0"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
                         </div>
@@ -253,7 +353,7 @@
                             <div style="font-weight: bold; color:red; margin-left: auto; margin-right: auto">DISABLE</div>
                             <div style="margin: 0 0 0 auto">
                                 <NavLink style="cursor: pointer" class="oi oi-arrow-circle-top text-primary mt-2 text-decoration-none"
-                                @onclick=" _ => ActivateModule(data.Id)" title="Activate this module"></NavLink>
+                                @onclick=" _ => ActivateOrDisable(data.Id, 2)" title="Activate this module"></NavLink>
                             </div>
                         </div>
                     </section>
@@ -263,7 +363,6 @@
                         <table class="table" style="color:#AAA"> @*Grå text*@
                             <thead>
                                 <tr>
-                                    <th>No</th>
                                     <th>Aktivity</th>
                                     <th>Type</th>
                                     <th>Date</th>
@@ -276,7 +375,6 @@
                                     <tr>
                                         @if (act.ModuleId == data.Id)
                                         {
-                                            <td>@act.Id</td>
                                             <td><i style="cursor: pointer" title="@act.Description -Click for edit-"
                                                 @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
                                             <td>
@@ -381,6 +479,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        xnav.SetJohnDoe(false);
         xnav.SetReset('a');
 
         courses.Clear(); // Direkt feedback kräver att listorna rensas.
@@ -451,7 +550,7 @@
         return $"{start.ToString().Substring(0, 10)} | {end.ToString().Substring(0, 10)}";
     }
 
-    private async Task DisableModule(int id) // Växlar till inaktiv modul.
+    private async Task SelectModuleType(int id, byte select) // Växlar till vald modultyp.
     {
         var module = await xClient.GetAsync<IEnumerable<ModuleDto>>("api/Module");
 
@@ -461,7 +560,7 @@
             {
                 if (mod.Id == id)
                 {
-                    var lmod = GetNewModObject(mod, false);
+                    var lmod = GetNewModObject(mod, select);
                     await xClient.PutAsync<ModuleDto>(id, lmod, "api/Module");
                     var element = modules.FirstOrDefault(e => e.Id == id);
                     if (element is not null) element = lmod;
@@ -471,67 +570,56 @@
         await OnInitializedAsync();
     }
 
-    private async Task DisableActivity(int id) // Växlar till inaktiv aktivitet.
-    {
-        var activity = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
-
-        if (activity is not null)
-        {
-            foreach (var act in activity)
-            {
-                if (act.Id == id)
-                {
-                    var lact = GetNewActObject(act, false);
-                    await xClient.PutAsync<ActivityDto>(id, lact, "api/Activity");
-                    var element = activities.FirstOrDefault(e => e.Id == id);
-                    if (element is not null) element = lact;
-                }
-            }
-        }
-        await OnInitializedAsync();
-    }
-
-    private async Task ActivateModule(int id) // Växlar till aktiv modul.
+    private async Task ActivateOrDisable(int id, byte value) // Sköter inaktivering och aktivering.
     {
         var module = await xClient.GetAsync<IEnumerable<ModuleDto>>("api/Module");
-
-        if (module is not null)
-        {
-            foreach (var mod in module)
-            {
-                if (mod.Id == id)
-                {
-                    var lmod = GetNewModObject(mod, true);
-                    await xClient.PutAsync<ModuleDto>(id, lmod, "api/Module");
-                    var element = modules.FirstOrDefault(e => e.Id == id);
-                    if (element is not null) element = lmod;
-                }
-            }
-        }
-        await OnInitializedAsync();
-    }
-
-    private async Task ActivateActivity(int id) // Växlar till aktiv aktivitet.
-    {
         var activity = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
 
-        if (activity is not null)
+        if (value == 0 || value == 2)
         {
-            foreach (var act in activity)
+            if (module is not null)
             {
-                if (act.Id == id)
+                foreach (var mod in module)
                 {
-                    var lact = GetNewActObject(act, true);
-                    await xClient.PutAsync<ActivityDto>(id, lact, "api/Activity");
-                    var element = activities.FirstOrDefault(e => e.Id == id);
-                    if (element is not null) element = lact;
+                    if (mod.Id == id)
+                    {
+                        var lmod = GetNewModObject(mod, value);
+                        await xClient.PutAsync<ModuleDto>(id, lmod, "api/Module");
+                        var element = modules.FirstOrDefault(e => e.Id == id);
+                        if (element is not null) element = lmod;
+                    }
+                }
+            }
+        }
+
+        if (value == 1 || value == 3)
+        {
+            if (activity is not null)
+            {
+                foreach (var act in activity)
+                {
+                    if (act.Id == id && value == 1)
+                    {
+                        var lact = GetNewActObject(act, false);
+                        await xClient.PutAsync<ActivityDto>(id, lact, "api/Activity");
+                        var element = activities.FirstOrDefault(e => e.Id == id);
+                        if (element is not null) element = lact;
+                    }
+
+                    if (act.Id == id && value == 3)
+                    {
+                        var lact = GetNewActObject(act, true);
+                        await xClient.PutAsync<ActivityDto>(id, lact, "api/Activity");
+                        var element = activities.FirstOrDefault(e => e.Id == id);
+                        if (element is not null) element = lact;
+                    }
                 }
             }
         }
         await OnInitializedAsync();
     }
 
-    private ModuleDto GetNewModObject(ModuleDto mod, bool isactive) // Nytt modulobjekt.
+    private ModuleDto GetNewModObject(ModuleDto mod, byte select) // Nytt modulobjekt.
     {
         var dto = new ModuleDto
             {
@@ -540,7 +628,7 @@
                 Description = mod.Description,
                 StartDate = mod.StartDate,
                 EndDate = mod.EndDate,
-                IsActive = isactive,
+                Select = select,
                 CourseId = mod.CourseId
             };
         return dto;

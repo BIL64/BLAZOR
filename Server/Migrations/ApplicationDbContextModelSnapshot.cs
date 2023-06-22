@@ -386,12 +386,12 @@ namespace LexiconLMSBlazor.Server.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte>("Select")
+                        .HasColumnType("tinyint");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");

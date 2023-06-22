@@ -107,22 +107,45 @@
 
             @foreach (var data in modules)
             {
-                if (data.IsActive)
+                if (data.Select == 1 || data.Select == 2 || data.Select == 4)
                 {
                     if (data.StartDate < DateTime.Now && data.EndDate > DateTime.Now)
                     {
-                        classModTopic = "moduleboxtopic";
-                        classActTopic = "activityboxtopic";
+                        if (data.Select != 4)
+                        {
+                            classModTopic = "moduleboxtopic";
+                            classActTopic = "activityboxtopic";
+                        }
+                        else
+                        {
+                            classModTopic = "d-none";
+                            classActTopic = "activity4S_box";
+                        }
                     }
                     else
                     {
-                        classModTopic = "modulebox";
-                        classActTopic = "activitybox";
+                        if (data.Select != 4)
+                        {
+                            classModTopic = "modulebox";
+                            classActTopic = "activitybox";
+                        }
+                        else
+                        {
+                            classModTopic = "d-none";
+                            classActTopic = "activity4S_box";
+                        }
                     }
                     <section class="@classModTopic" @onmouseover="DeleteRefresh">
                         <div style="display: flex">
                             <div style="width: 85%">
-                                <b>Module @data.Id: <em style="cursor: pointer" @onclick=" _ => InfoTitle(data.Description)">@data.Name</em></b>
+                                @if (data.Select == 1)
+                                {
+                                    <b>Module @data.Id: <em style="cursor: pointer" @onclick=" _ => InfoTitle(data.Description)">@data.Name</em></b>
+                                }
+                                else
+                                {
+                                    <b>Module <em style="cursor: pointer" @onclick=" _ => InfoTitle(data.Description)">@data.Name</em></b>
+                                }
                             </div>
                             <div style="margin: 0 0 0 auto"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
                         </div>
@@ -157,13 +180,35 @@
 
                         <table class="table" style="color: #555">@*Grå text*@
                             <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Aktivity</th>
-                                    <th>Type</th>
-                                    <th>Date</th>
-                                    <th>Items</th>
-                                </tr>
+                                @if (data.Select == 1)
+                                {
+                                    <tr>
+                                        <th>Nr</th>
+                                        <th>Aktivity</th>
+                                        <th>Type</th>
+                                        <th>Date</th>
+                                        <th>Items</th>
+                                    </tr>
+                                }
+
+                                @if (data.Select == 2)
+                                {
+                                    <tr>
+                                        <th>Aktivity</th>
+                                        <th>Type</th>
+                                        <th>Date</th>
+                                        <th>Items</th>
+                                    </tr>
+                                }
+
+                                @if (data.Select == 4)
+                                {
+                                    <tr>
+                                        <th>Aktivity</th>
+                                        <th>Description</th>
+                                        <th>Items</th>
+                                    </tr>
+                                }
                             </thead>
                             <tbody>
                                 @foreach (var act in activities)
@@ -173,18 +218,37 @@
                                         <tr>
                                             @if (act.ModuleId == data.Id)
                                             {
-                                                <td>@act.Id</td>
-                                                <td><em style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</em></td>
-                                                <td>
-                                                    @foreach (var actype in activityTypes)
-                                                    {
-                                                        if (actype.Id == act.ActivityTypeId)
+                                                if (data.Select == 1)
+                                                {
+                                                    <td>@act.Id</td>
+                                                }
+
+                                                if (data.Select > 2)
+                                                {
+                                                    <td><b style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</b></td>
+                                                }
+                                                else
+                                                {
+                                                    <td><em style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</em></td>
+                                                }
+
+                                                if (data.Select != 4)
+                                                {
+                                                    <td>
+                                                        @foreach (var actype in activityTypes)
                                                         {
-                                                            @actype.Name
+                                                            if (actype.Id == act.ActivityTypeId)
+                                                            {
+                                                                @actype.Name
+                                                            }
                                                         }
-                                                    }
-                                                </td>
-                                                <td>@StartEndDate(act.StartDate, act.EndDate)</td>
+                                                    </td>
+                                                    <td>@StartEndDate(act.StartDate, act.EndDate)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td>@act.Description</td>
+                                                }
                                                 <td>
                                                     @{Empty = true;}
                                                     <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(act.Id, 40, act.Name)"
@@ -230,6 +294,118 @@
                         </table>
 
                     </article>
+                }
+
+                if (data.Select == 3)
+                {
+                    if (data.StartDate < DateTime.Now && data.EndDate > DateTime.Now) classMainTopic = "module3S_maintopic";
+                    else classMainTopic = "module3S_main";
+
+                    <main class="@classMainTopic">
+                        <section class="module3S_box" @onmouseover="DeleteRefresh">
+                            @if (data.Name != "#H#" && data.Name != "#E#")
+                            {
+                                <div style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 1.2rem">
+                                <b style="cursor: pointer" @onclick=" _ => InfoTitle(data.Description)">@data.Name</b></div>
+                            }
+
+                            @if (data.Name == "#E#")
+                            {
+                                <div>&nbsp;</div>
+                            }
+
+                            @if (data.Description != "#H#" && data.Description != "#E#")
+                            {
+                                <div style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 0.8rem; margin: 5px 0 10px 0">
+                                <b><em>@data.Description</em></b></div>
+                            }
+
+                            @if (data.Description == "#E#")
+                            {
+                                <div>&nbsp;</div>
+                            }
+                        </section>
+
+                        <article class="activity3S_box">
+
+                            <table class="table" style="color: #555">@*Grå text*@
+                                <thead>
+                                    <tr>
+                                        <th>Aktivity</th>
+                                        <th>Type</th>
+                                        <th>Date</th>
+                                        <th>Items</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var act in activities)
+                                    {
+                                        if (act.IsActive)
+                                        {
+                                            <tr>
+                                                @if (act.ModuleId == data.Id)
+                                                {
+                                                    if (data.Select == 1)
+                                                    {
+                                                        <td>@act.Id</td>
+                                                    }
+                                                    <td><b style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</b></td>
+                                                    <td>
+                                                        @foreach (var actype in activityTypes)
+                                                        {
+                                                            if (actype.Id == act.ActivityTypeId)
+                                                            {
+                                                                @actype.Name
+                                                            }
+                                                        }
+                                                    </td>
+                                                    <td>@StartEndDate(act.StartDate, act.EndDate)</td>
+                                                    <td>
+                                                        @{Empty = true;}
+                                                        <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(act.Id, 40, act.Name)"
+                                                        title="Add a document or a message to this activity">+ DOC</button>
+                                                        <div class="dropdoc">
+                                                            <button type="button" class="docviewbtn">DOCs</button>
+                                                            <div class="dropdoc-content">
+                                                                @foreach (var doc in documents)
+                                                                {
+                                                                    if ((doc.ActivityId == act.Id && doc.Id4Course < 0) ||
+                                                                    (doc.ActivityId == act.Id && doc.UserId == loggeduser.Id))
+                                                                    {
+                                                                        if (doc.DocName != "")
+                                                                        {
+                                                                            // Öppnar filen samt visar dokumentets formulärdata.
+                                                                            <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
+                                                                            title="@doc.Description by @doc.Author @doc.TimeStamp"
+                                                                            @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)">@doc.DocName</a>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <a @onmouseover="_ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                                                            title="@doc.Description by @doc.Author @doc.TimeStamp">By @doc.Author</a>
+                                                                        }
+                                                                        Empty = false;
+                                                                    }
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        @if (!Empty)
+                                                        {
+                                                            <span class="oi oi-aperture text-primary text-decoration-none"
+                                                            style="position: relative; top: 2px"></span>
+                                                        }
+                                                    </td>
+                                                }
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+
+                        </article>
+                    </main>
                 }
             }
         }
@@ -313,6 +489,7 @@
     private string CourseDate = string.Empty;
     private string classModTopic = string.Empty;
     private string classActTopic = string.Empty;
+    private string classMainTopic = string.Empty;
     private string searchString = string.Empty;
     private int CourseId;
     private bool Empty;

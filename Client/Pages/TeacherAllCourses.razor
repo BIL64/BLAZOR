@@ -203,7 +203,7 @@
                                 @if (data.Total_M > 0)
                                 {
                                     <div style="margin-left: auto; margin-right: 0">
-                                        <NavLink style="cursor: pointer" class="oi oi-circle-x text-danger text-decoration-none"
+                                        <NavLink style="cursor: pointer" class="oi oi-x text-danger text-decoration-none"
                                         @onclick=" _ => DeleteControl(data.Id)" Title="Delete course"></NavLink>
                                     </div>
                                 }
@@ -297,6 +297,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        xnav.SetJohnDoe(false);
         xnav.SetReset('a');
 
         courses.Clear(); // Sökfunktionen kräver att listorna rensas.
@@ -462,7 +463,7 @@
                 Description = "Not yet a description",
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now,
-                IsActive = true,
+                Select = 2,
                 CourseId = id
             };
 

@@ -16,7 +16,7 @@ namespace LexiconLMSBlazor.Shared.Dtos
 
         public DateTime EndDate { get; set; } = DateTime.Now;
 
-        public bool IsActive { get; set; } = true;
+        public byte Select { get; set; } = 2;
 
         public int CourseId { get; set; }
 

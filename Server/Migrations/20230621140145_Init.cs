@@ -209,7 +209,7 @@ namespace LexiconLMSBlazor.Server.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    Select = table.Column<byte>(type: "tinyint", nullable: false),
                     CourseId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>

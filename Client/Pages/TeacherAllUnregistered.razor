@@ -109,6 +109,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        xnav.SetJohnDoe(false);
         xnav.SetReset('a');
 
         visitors.Clear(); // Sökfunktionen kräver att listan rensas.

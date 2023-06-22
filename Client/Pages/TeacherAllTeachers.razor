@@ -287,6 +287,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        xnav.SetJohnDoe(false);
         xnav.SetReset('a');
 
         if (Auxx.PagRows == 0 || Auxx.PagRed == 0 || teachers.Count < 1) await LoadPag(); // Paginering.

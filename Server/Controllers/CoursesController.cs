@@ -43,7 +43,7 @@ namespace LexiconLMSBlazor.Server.Controllers
                         Description= m.Description,
                         StartDate = m.StartDate,
                         EndDate = m.EndDate,
-                        IsActive = m.IsActive,
+                        Select = m.Select,
                         CourseId = (int)m.CourseId!,
                         Activities = m.Activities.Select(a => new ActivityDto
                         {
