@@ -303,7 +303,7 @@
 
                     <main class="@classMainTopic">
                         <section class="module3S_box" @onmouseover="DeleteRefresh">
-                            @if (data.Name != "#H#" && data.Name != "#E#")
+                            @if (data.Name != "#E#" && data.Name != "#H#")
                             {
                                 <div style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 1.2rem">
                                 <b style="cursor: pointer" @onclick=" _ => InfoTitle(data.Description)">@data.Name</b></div>
@@ -314,7 +314,7 @@
                                 <div>&nbsp;</div>
                             }
 
-                            @if (data.Description != "#H#" && data.Description != "#E#")
+                            @if (data.Description != "#E#" && data.Description != "#H#")
                             {
                                 <div style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 0.8rem; margin: 5px 0 10px 0">
                                 <b><em>@data.Description</em></b></div>
