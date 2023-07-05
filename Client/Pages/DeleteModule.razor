@@ -2,28 +2,24 @@
 @inject IXDtoClient xClient
 @inject XNavMenu xnav
 @attribute [Authorize]
-@*Av Sukhrob Ilyosbekov - Stack Overflow*@
+@*Av Björn Lindqvist*@
 @*Endast lärare har åtkomst hit*@
-
-@{
-    var showClass = IsVisible ? "d-block" : "d-none";
-}
 
 <AuthorizeView Roles ="Teacher">
     <Authorized>
-    <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
-        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <strong class="me-auto">@HeaderText</strong>
-                <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
-            </div>
+        <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
+            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">@HeaderText</strong>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+                </div>
 
-            <div class="toast-body">
-                <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove this module and all its activities from the system">DELETE NOW</button>
-                <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+                <div class="toast-body">
+                    <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove this module and all its activities from the system">DELETE NOW</button>
+                    <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+                </div>
             </div>
         </div>
-    </div>
 
     </Authorized>
     <NotAuthorized>
@@ -33,28 +29,22 @@
 
 @code {
 
-    [Parameter]
-    public bool IsVisible { get; set; }
-
-    [Parameter]
-    public EventCallback<bool> IsVisibleChanged { get; set; }
-
-    [Parameter]
-    public string? HeaderText { get; set; }
+    public string HeaderText = string.Empty;
+    private string showClass = "d-none";
 
     public void Show()
     {
         xnav.SetReset('a');
 
         HeaderText = "Remove this module...";
-        IsVisible = true;
+        showClass = "d-block";
         StateHasChanged();
     }
 
     private void Close()
     {
         HeaderText = string.Empty;
-        IsVisible = false;
+        showClass = "d-none";
         StateHasChanged();
     }
 

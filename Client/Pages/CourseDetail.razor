@@ -421,12 +421,12 @@
 
     private DocumentEdit? doceditRef; // Filredigeringsfönster.
 
-    private void DocEditControl(int id, byte doctype) // Filredigeringsfönster.
+    private async Task DocEditControl(int id, byte doctype) // Filredigeringsfönster.
     {
         Auxx.IntId = id;
         Auxx.DocType = doctype;
         Auxx.Documents = documents;
-        doceditRef!.Show();
+        await doceditRef!.Show();
     }
 
     private FastModuleDate? fastmodRef; // Datumredigeringsfönster.

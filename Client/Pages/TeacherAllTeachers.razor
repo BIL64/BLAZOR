@@ -192,10 +192,10 @@ else
 
     private DeleteTeacher? deleteRef; // Delete-fönster.
 
-    private void PagControl() // Pagineringsfönster.
+    private async Task PagControl() // Pagineringsfönster.
     {
         Auxx.PagId = 2; // <-- samma identitetsvärde!
-        paginationRef!.Show();
+        await paginationRef!.Show();
     }
 
     private async Task LoadPag()  // Pagineringsinställningar.
@@ -226,10 +226,10 @@ else
         }
     }
 
-    private void DeleteMess(int id) // Delete-fönster.
+    private async Task DeleteMess(int id) // Delete-fönster.
     {
         Auxx.IntId = id;
-        messRef!.Show();
+        await messRef!.Show();
     }
 
     private async Task DeleteUser(string id) // Delete-fönster.
@@ -259,12 +259,12 @@ else
 
     private DocumentEdit? doceditRef; // Filredigeringsfönster.
 
-    private void DocEditControl(int id, byte doctype) // Filredigeringsfönster.
+    private async Task DocEditControl(int id, byte doctype) // Filredigeringsfönster.
     {
         Auxx.IntId = id;
         Auxx.DocType = doctype;
         Auxx.Documents = documents;
-        doceditRef!.Show();
+        await doceditRef!.Show();
     }
 
     private List<AppUserDto> teachers = new();

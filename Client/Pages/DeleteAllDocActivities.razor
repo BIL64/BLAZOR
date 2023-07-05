@@ -1,38 +1,34 @@
 ﻿@inject IXDtoClient xClient
 @inject XNavMenu xnav
 @attribute [Authorize]
-@*Av Sukhrob Ilyosbekov - Stack Overflow*@
+@*Av Björn Lindqvist*@
 @*Både studenter och lärare har åtkomst hit*@
-
-@{
-    var showClass = IsVisible ? "d-block" : "d-none";
-}
 
 <AuthorizeView Roles ="Student, Teacher">
     <Authorized>
-    <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
-        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" style="width: 360px">
-            <div class="toast-header">
-                <strong class="me-auto">@HeaderText</strong>
-                <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
-            </div>
-            <div class="toast-body">
-                <button type="button" class="text-white remnot" @onclick="Proceed">YES</button>
-                <button type="button" class="text-white remnot" @onclick="Close">NO</button>
-            </div>
-            <div class="@classProceed">
-                <EditForm Model="@xClient" Context="deletealllmslexnet" OnSubmit="HandleSubmitDeleteAll">
-                    <div class="form-group m-3">
-                        <label for="Date">Enter today's date (yyyy-mm-dd)</label>
-                        <InputText id="Date" class="form-control" @bind-Value="Tdate" title="Today's date" />
-                    </div>
-                    <div class="form-group m-3">
-                        <button type="submit" class="text-white remyes" title="Remove all documents and messages from the system">DELETE NOW</button>
-                    </div>
-                </EditForm>
+        <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
+            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" style="width: 360px">
+                <div class="toast-header">
+                    <strong class="me-auto">@HeaderText</strong>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+                </div>
+                <div class="toast-body">
+                    <button type="button" class="text-white remnot" @onclick="Proceed">YES</button>
+                    <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+                </div>
+                <div class="@classProceed">
+                    <EditForm Model="@xClient" Context="deletealllmslexnet" OnSubmit="HandleSubmitDeleteAll">
+                        <div class="form-group m-3">
+                            <label for="Date">Enter today's date (yyyy-mm-dd)</label>
+                            <InputText id="Date" class="form-control" @bind-Value="Tdate" title="Today's date" />
+                        </div>
+                        <div class="form-group m-3">
+                            <button type="submit" class="text-white remyes" title="Remove all documents and messages from the system">DELETE NOW</button>
+                        </div>
+                    </EditForm>
+                </div>
             </div>
         </div>
-    </div>
 
     </Authorized>
     <NotAuthorized>
@@ -42,14 +38,8 @@
 
 @code {
 
-    [Parameter]
-    public bool IsVisible { get; set; }
-
-    [Parameter]
-    public EventCallback<bool> IsVisibleChanged { get; set; }
-
-    [Parameter]
-    public string? HeaderText { get; set; }
+    public string HeaderText = string.Empty;
+    private string showClass = "d-none";
 
     public string classProceed = "d-none";
     public string Tdate = string.Empty;
@@ -60,7 +50,7 @@
 
         HeaderText = "Remove all non-mandatory docs and mess....";
         classProceed = "d-none";
-        IsVisible = true;
+        showClass = "d-block";
         StateHasChanged();
     }
 
@@ -72,7 +62,7 @@
     private void Close()
     {
         HeaderText = string.Empty;
-        IsVisible = false;
+        showClass = "d-none";
         StateHasChanged();
     }
 
@@ -100,7 +90,7 @@
             if (FindDoc)
             {
                 HeaderText = string.Empty;
-                IsVisible = false;
+                showClass = "d-none";
                 StateHasChanged();
                 xnav.SetDone("xnavdone", "All non-mandatory documents and messages were deleted.");
                 xnav.SetReset('d');

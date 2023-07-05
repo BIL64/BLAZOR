@@ -8,6 +8,7 @@
         Task<T?> GetAsync<T>(string route);
         string GetFilepath();
         Task<T> GetStorage<T>(string name);
+        Task<WindowDimension> GetWindow();
         Task OpenFile(int ix, string filename);
         Task<T?> PostAsync<T>(T dto, string route);
         Task<HttpResponseMessage> PostFile(MultipartFormDataContent content);

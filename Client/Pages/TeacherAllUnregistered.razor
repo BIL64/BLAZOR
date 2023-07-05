@@ -96,9 +96,9 @@ else
         }
     }
 
-    private void DeleteAllVisitors() // Delete-fönster.
+    private async Task DeleteAllVisitors() // Delete-fönster.
     {
-        deleteAll!.Show();
+        await deleteAll!.Show();
     }
 
     private List<AppUserDto> visitors = new();

@@ -1,17 +1,14 @@
 ﻿@inject IXDtoClient xClient
 @inject XNavMenu xnav
 @attribute [Authorize]
-@*Av Sukhrob Ilyosbekov - Stack Overflow*@
+@*Av Björn Lindqvist*@
 @*Endast lärare har åtkomst hit*@
-
-@{
-    var showClass = IsVisible ? "d-block" : "d-none";
-}
 
 <AuthorizeView Roles="Teacher">
     <Authorized>
-        <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
-            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-container p-3 @showClass" @onmouseup="MouseUp" @onmousedown="MouseDown" @onmousemove="MouseMove" @onmouseout="MouseOut"
+             style="position: fixed; top: auto; bottom: @(Pos_V)px; margin-left: @(Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
+            <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="toast-header">
                     <strong class="me-auto">@HeaderText</strong>
                     <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
@@ -46,14 +43,16 @@
 
 @code {
 
-    [Parameter]
-    public bool IsVisible { get; set; }
+    public string HeaderText = string.Empty;
+    private string showClass = "d-none";
 
-    [Parameter]
-    public EventCallback<bool> IsVisibleChanged { get; set; }
-
-    [Parameter]
-    public string? HeaderText { get; set; }
+    private int Win_Width;
+    private int Win_Height;
+    private int Diff_X;
+    private int Diff_Y;
+    private int Pos_H;
+    private int Pos_V;
+    private bool IsDown = false;
 
     private List<ActivityDto> activities = new();
 
@@ -64,6 +63,10 @@
     public async Task Show()
     {
         xnav.SetReset('a');
+
+        await GetWindowSize(); // Hämtar aktuell skärmstorlek.
+        Pos_H = (int)Math.Round(Win_Width * 0.08); // 08%
+        Pos_V = (int)Math.Round(Win_Height * 0.5); // 50%
 
         var activity = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
         if (activity is not null) activities = activity.ToList();
@@ -78,14 +81,14 @@
         }
 
         HeaderText = "Edit dates for this activity...";
-        IsVisible = true;
+        showClass = "d-block";
         StateHasChanged();
     }
 
     private void Close()
     {
         HeaderText = string.Empty;
-        IsVisible = false;
+        showClass = "d-none";
         StateHasChanged();
     }
 
@@ -122,5 +125,45 @@
         }
         Auxx.Flag = true;
         Close(); // Ingen omnavigering eftersom det nollställer alla statiska variabler.
+    }
+
+    private async Task GetWindowSize() // Hämtar skärmstorlek.
+    {
+        var dim = await xClient.GetWindow();
+        Win_Width = dim.Width;
+        Win_Height = dim.Height;
+    }
+
+    private void MouseUp(MouseEventArgs e) // Moveable Toaster.
+    {
+        IsDown = false; // När man släpper musknappen.
+    }
+
+    private void MouseDown(MouseEventArgs e) // Moveable Toaster.
+    {
+        if (!IsDown) // Skillnaden mellan muspekarens position och css-värdet av objektet.
+        {
+            Diff_X = (int)e.ClientX - Pos_H;
+            Diff_Y = Win_Height - (Pos_V + (int)e.ClientY);
+            IsDown = true;
+        }
+    }
+
+    private void MouseMove(MouseEventArgs e) // Moveable Toaster.
+    {
+        if (IsDown) // Flyttar objektet synkront i musens riktning.
+        {
+            if ((int)e.ClientX - Diff_X > 0) Pos_H = (int)e.ClientX - Diff_X; else Pos_H = 0;
+            if (Win_Height - ((int)e.ClientY + Diff_Y) > 0) Pos_V = Win_Height - ((int)e.ClientY + Diff_Y); else Pos_V = 0;
+        }
+    }
+
+    private void MouseOut(MouseEventArgs e) // Förhindrar att muspekaren släpper objektet vid hastiga musrörelser.
+    {
+        if (IsDown) // Flyttar objektet synkront i musens riktning.
+        {
+            if ((int)e.ClientX - Diff_X > 0) Pos_H = (int)e.ClientX - Diff_X; else Pos_H = 0;
+            if (Win_Height - ((int)e.ClientY + Diff_Y) > 0) Pos_V = Win_Height - ((int)e.ClientY + Diff_Y); else Pos_V = 0;
+        }
     }
 }

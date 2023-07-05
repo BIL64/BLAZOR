@@ -82,9 +82,21 @@ namespace LexiconLMSBlazor.Client.Services
         {
             return $"{_httpClient.BaseAddress}Documents/";
         }
+
+        public async Task<WindowDimension> GetWindow() // Returnerar skärmstorlek med hjälp av ett javascript och en klass.
+        {
+            var dimension = await _js.InvokeAsync<WindowDimension>("getWindowDimensions");
+            return dimension;
+        }
     }
 
-    // Dimitri Björlingh:
+    public class WindowDimension
+    {
+        public int Width { get; set; }
+        public int Height { get; set; }
+    }
+
+    // Dimitris Björlingh:
     //var res = await GetAsync2<ModuleDto>("api/modules/1");
     //var res2 = await GetAsync2<IEnumerable<ModuleDto>>("api/modules");
     //
