@@ -20,7 +20,7 @@
             </div>
         </nav>
 
-        <div class="container" @onmouseover="DeleteRefresh"> @*Eventuella dokument som ingår läggs ut här*@
+        <div class="container" @onmouseover="RefreshThisPage"> @*Eventuella dokument som ingår läggs ut här*@
             <div class="d-flex flex-wrap">
                 @foreach (var doc in documents)
                 {
@@ -76,7 +76,7 @@
         <DeleteMess @ref="deleteRef" /> @*Delete-fönster*@
         <DocumentUser @ref="docuserRef" /> @*Filmottagarefönster*@
 
-        <EditForm Context="searchlmslexnet" Model="@courses" OnSubmit="OnInitializedAsync" @onmouseover="DeleteRefresh">
+        <EditForm Context="searchlmslexnet" Model="@courses" OnSubmit="OnInitializedAsync" @onmouseover="RefreshThisPage">
             <span class="nav m-lg-auto input-group">
                 <InputText class="form-control" @bind-Value="searchString" placeholder="Course name" />
                 <span class="nav m-lg-auto input-group-append">
@@ -99,7 +99,7 @@
             {
                 foreach (var data in courses)
                 {
-                    <section class="coursebox" @onmouseover="DeleteRefresh">
+                    <section class="coursebox" @onmouseover="RefreshThisPage">
                         <div style="display: flex">
                             <div style="width: 75%">
                                 @data.Id.&nbsp; <em style="cursor: pointer" title="@data.Description -Click for edit-"
@@ -210,7 +210,7 @@
                                 else
                                 {
                                     <div style="margin-left: auto">
-                                        <NavLink style="cursor: pointer" class="oi oi-circle-x text-danger text-decoration-none"
+                                        <NavLink style="cursor: pointer" class="oi oi-x text-danger text-decoration-none"
                                         @onclick=" _ => DeleteControl(data.Id)" Title="Delete course"></NavLink>
                                     </div>
                                     <div style="margin-left: auto; margin-right: 0">
@@ -232,13 +232,12 @@
 
 @code {
 
-    private DocumentAvatar? addavatarRef; // Avatar-fönster.
+    private DeleteMess? deleteRef; // Delete-fönster.
 
-    private async Task AddDeleteAvatar() // Avatar-fönster.
+    private async Task DeleteMess(int id) // Delete-fönster.
     {
-        Auxx.Name4Type = loggeduser.FirstName + ' ' + loggeduser.LastName;
-        Auxx.Loggeduser = loggeduser;
-        await addavatarRef!.Show();
+        Auxx.IntId = id;
+        await deleteRef!.Show();
     }
 
     private DeleteAllDocUser? deletealldocRef; // Delete-fönster.
@@ -249,23 +248,6 @@
         await deletealldocRef!.Show();
     }
 
-    private DeleteMess? deleteRef; // Delete-fönster.
-
-    private async Task DeleteMess(int id) // Delete-fönster.
-    {
-        Auxx.IntId = id;
-        await deleteRef!.Show();
-    }
-
-    private async Task DeleteRefresh() // Uppdaterar efter förändring av innehållet.
-    {
-        if (Auxx.Flag)
-        {
-            Auxx.Flag = false;
-            await OnInitializedAsync();
-        }
-    }
-
     private DocumentUser? docuserRef; // Filmottagarefönster.
 
     private async Task DocUserControl(int id, bool delete) // Filmottagarefönster.
@@ -274,6 +256,15 @@
         Auxx.Flag = delete;
         Auxx.Documents = documents;
         await docuserRef!.Show();
+    }
+
+    private DocumentAvatar? addavatarRef; // Avatar-fönster.
+
+    private async Task AddDeleteAvatar() // Avatar-fönster.
+    {
+        Auxx.Name4Type = loggeduser.FirstName + ' ' + loggeduser.LastName;
+        Auxx.Loggeduser = loggeduser;
+        await addavatarRef!.Show();
     }
 
     private List<CourseDto> courses = new();
@@ -294,6 +285,15 @@
     private string textBtn = "First first";
     private bool DeleteFlag;
     private bool RepeatTable;
+
+    private async Task RefreshThisPage() // Uppdaterar efter förändring av innehållet.
+    {
+        if (Auxx.Flag)
+        {
+            Auxx.Flag = false;
+            await OnInitializedAsync();
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {

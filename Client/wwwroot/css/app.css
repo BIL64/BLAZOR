@@ -313,19 +313,6 @@ i {
     background-color: beige;
 }
 
-.module4T_boxtopic {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    border-top: 5px outset aquamarine;
-    border-right: 5px outset aquamarine;
-    border-bottom: none;
-    border-left: 5px outset aquamarine;
-    border-radius: 10px 10px 0 0;
-    background-color: #444;
-}
-
 .moduleeditbox {
     display: block;
     padding: 10px;

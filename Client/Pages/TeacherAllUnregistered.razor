@@ -82,8 +82,6 @@ else
 
     private DeleteUnregistered? deleteRef; // Delete-fönster.
 
-    private DeleteAllVisitors? deleteAll; // Delete-fönster.
-
     private async Task DeleteUser(string id) // Delete-fönster.
     {
         Auxx.GuidId = id;
@@ -95,6 +93,8 @@ else
             Auxx.Flag = false;
         }
     }
+
+    private DeleteAllVisitors? deleteAll; // Delete-fönster.
 
     private async Task DeleteAllVisitors() // Delete-fönster.
     {
@@ -146,7 +146,7 @@ else
     private async Task GetRegistered(string id) // Registrerar den oregistrerade.
     {
         await Intermission(500, true);
-        xnav.SetDone("xnavdone", "This visitor was registered.");
+        xnav.SetDone("xnavdone", "This visitor was registered. Press “Search” for refreshing.");
         xnav.SetReset('d');
         await appuserClient.PreAsync(id, 1);
     }

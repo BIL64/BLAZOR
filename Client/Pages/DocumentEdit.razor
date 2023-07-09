@@ -47,7 +47,7 @@
 
 @code {
 
-    public string HeaderText = string.Empty;
+    private string HeaderText = string.Empty;
     private string showClass = "d-none";
 
     private int Win_Width;
@@ -146,7 +146,7 @@
         Win_Height = dim.Height;
     }
 
-    private void MouseUp(MouseEventArgs e) // Moveable Toaster.
+    private void MouseUp() // Moveable Toaster.
     {
         IsDown = false; // När man släpper musknappen.
     }
@@ -163,7 +163,7 @@
 
     private void MouseMove(MouseEventArgs e) // Moveable Toaster.
     {
-        if (IsDown) // Flyttar objektet synkront i musens riktning.
+        if (IsDown) // Flyttar objektet asynkront i musens riktning.
         {
             if ((int)e.ClientX - Diff_X > 0) Pos_H = (int)e.ClientX - Diff_X; else Pos_H = 0;
             if (Win_Height - ((int)e.ClientY + Diff_Y) > 0) Pos_V = Win_Height - ((int)e.ClientY + Diff_Y); else Pos_V = 0;
@@ -172,7 +172,7 @@
 
     private void MouseOut(MouseEventArgs e) // Förhindrar att muspekaren släpper objektet vid hastiga musrörelser.
     {
-        if (IsDown) // Flyttar objektet synkront i musens riktning.
+        if (IsDown) // Flyttar objektet asynkront i musens riktning.
         {
             if ((int)e.ClientX - Diff_X > 0) Pos_H = (int)e.ClientX - Diff_X; else Pos_H = 0;
             if (Win_Height - ((int)e.ClientY + Diff_Y) > 0) Pos_V = Win_Height - ((int)e.ClientY + Diff_Y); else Pos_V = 0;

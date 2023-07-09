@@ -1,4 +1,6 @@
 ﻿@page "/coursedetail/{IId:int}"
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject IAppUserDtoClient appuserClient
 @inject NavigationManager Navigation
 @inject IXDtoClient xClient
 @inject XNavMenu xnav
@@ -28,7 +30,7 @@
             </div>
         </nav>
 
-        <div class="container" @onmouseover="DeleteRefresh"> @*Eventuella dokument som ingår läggs ut här*@
+        <div class="container" @onmouseover="RefreshThisPage"> @*Eventuella dokument som ingår läggs ut här*@
             <div class="d-flex flex-wrap">
                 @foreach (var doc in documents)
                 {
@@ -53,13 +55,14 @@
 
         <h5>@TestMess1</h5>
         <h5>@TestMess2</h5>
+
         @if (modules == null)
         {
             <p><em>Loading...</em></p>
         }
         else
         {
-            <EditForm Context="searchlmslexnet" Model="@modules" OnSubmit="OnInitializedAsync" @onmouseover="DeleteRefresh">
+            <EditForm Context="searchlmslexnet" Model="@modules" OnSubmit="OnInitializedAsync" @onmouseover="RefreshThisPage">
                 <span class="nav m-lg-auto input-group">
                     <InputText class="form-control" @bind-Value="searchString" placeholder="Module name" />
                     <span class="nav m-lg-auto input-group-append">
@@ -91,8 +94,8 @@
 
                         if (data.Select == 4)
                         {
-                            classModTopic = "module4T_boxtopic";
-                            classActTopic = "activityboxtopic";
+                            classModTopic = "module4T_box";
+                            classActTopic = "activitybox";
                         }
                     }
                     else
@@ -116,7 +119,7 @@
                         }
                     }
 
-                    <section class="@classModTopic" @onmouseover="DeleteRefresh">
+                    <section class="@classModTopic" @onmouseover="RefreshThisPage">
                         <div style="display: flex">
                             <div style="width: 85%">
                                 @if (data.Select < 2)
@@ -197,7 +200,7 @@
                         </div>
                     </section>
 
-                    <article class="@classActTopic">
+                    <article class="@classActTopic" @onmouseover="RefreshThisPage">
 
                         <table class="table" style="color: #555"> @*Grå text*@
                             <thead>
@@ -335,13 +338,12 @@
                                 }
                             </tbody>
                         </table>
-
                     </article>
                 }
 
                 if (data.Select == 0)
                 {
-                    <section class="modulebox" style="color:grey; background-color:lightgrey" @onmouseover="DeleteRefresh">
+                    <section class="modulebox" style="color:grey; background-color:lightgrey">
                         <div style="display: flex">
                             <div style="width: 85%">
                                 <b title="@data.Description -Click for edit-">Module:
@@ -445,15 +447,6 @@
         await fastactRef!.Show();
     }
 
-    private async Task DeleteRefresh() // Uppdaterar efter förändring av innehållet.
-    {
-        if (Auxx.Flag)
-        {
-            Auxx.Flag = false;
-            await OnInitializedAsync();
-        }
-    }
-
     private List<CourseDto> courses = new();
 
     private List<ModuleDto> modules = new();
@@ -463,6 +456,8 @@
     private List<ActivityTypeDto> activityTypes = new();
 
     private List<DocumentDto> documents = new();
+
+    private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
 
     private string CourseName = string.Empty;
     private string NoModules = string.Empty;
@@ -477,6 +472,15 @@
     private string TestMess1 = string.Empty; // Test.
     private string TestMess2 = string.Empty; // Test.
 
+    private async Task RefreshThisPage() // Uppdaterar efter förändring av innehållet.
+    {
+        if (Auxx.Flag)
+        {
+            Auxx.Flag = false;
+            await OnInitializedAsync();
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         xnav.SetJohnDoe(false);
@@ -489,9 +493,14 @@
         documents.Clear();
         Empty = true;
 
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
+
         var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
         var activityType = await xClient.GetAsync<IEnumerable<ActivityTypeDto>>("api/Acttype");
         var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+        var appuser = await appuserClient.GetAsync();
 
         if (document is not null) documents = document.ToList(); // Hämtar alla dokument.
 
@@ -542,6 +551,24 @@
         if (activityType is not null) // Hämtar aktivitetstyper.
         {
             activityTypes = activityType.ToList();
+        }
+
+        if (appuser is not null && name is not null)
+        {
+            foreach (var item in appuser) // Hämtar den som för tillfället är inloggad.
+            {
+                if (item.Email == name) loggeduser = item;
+            }
+        }
+
+        xnav.SetLogAvatar("d-none", "");
+
+        foreach (var doc in documents) // Letar efter en avatar.
+        {
+            if (doc.UserId == loggeduser.Id && doc.Id4Course == -2)
+            {
+                xnav.SetLogAvatar("avatarlog", xClient.GetFilepath() + doc.NameIx + doc.DocName);
+            }
         }
     }
 

@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Pages\mhc4bdce.yty~" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BlazorInputFileExtended" Version="2.4.19" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.3" PrivateAssets="all" />

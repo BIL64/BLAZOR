@@ -3,6 +3,7 @@
 
 @page "/courseeditcourse/{IId:int}"
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject IAppUserDtoClient appuserClient
 @inject NavigationManager Navigation
 @inject ILogger<TeacherAddCourse> Logger
 @inject IXDtoClient xClient
@@ -58,13 +59,25 @@
 
     private CourseDto course = new();
 
+    private List<DocumentDto> documents = new();
+
+    private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
+
     protected override async Task OnInitializedAsync()
     {
         xnav.SetReset('a');
 
         courseContext = new EditContext(course); // Formulärkontext.
 
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
+        var appuser = await appuserClient.GetAsync();
+
         var allcourse = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
+
+        var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+        if (document is not null) documents = document.ToList(); // Hämtar alla dokument.
 
         if (allcourse is not null)
         {
@@ -78,6 +91,24 @@
                     course.StartDate = cour.StartDate;
                     course.EndDate = cour.EndDate;
                 }
+            }
+        }
+
+        if (appuser is not null && name is not null)
+        {
+            foreach (var item in appuser) // Hämtar den som för tillfället är inloggad.
+            {
+                if (item.Email == name) loggeduser = item;
+            }
+        }
+
+        xnav.SetLogAvatar("d-none", "");
+
+        foreach (var doc in documents) // Letar efter en avatar.
+        {
+            if (doc.UserId == loggeduser.Id && doc.Id4Course == -2)
+            {
+                xnav.SetLogAvatar("avatarlog", xClient.GetFilepath() + doc.NameIx + doc.DocName);
             }
         }
     }

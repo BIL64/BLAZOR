@@ -20,7 +20,7 @@
 }
 else
 {
-    <EditForm Context="searchlmslexnet" Model="@teachers" OnSubmit="OnInitializedAsync">
+    <EditForm Context="searchlmslexnet" Model="@teachers" OnSubmit="OnInitializedAsync" @onmouseover="RefreshThisPage">
         <span class="nav m-lg-auto input-group">
             <InputText class="form-control" @bind-Value="searchString" placeholder="First or last name" />
             <span class="nav m-lg-auto input-group-append">
@@ -40,7 +40,7 @@ else
     <DocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
     <DocumentEdit @ref="doceditRef" /> @*Filredigeringsfönster*@
 
-    <table class="table">
+    <table class="table" @onmouseover="RefreshThisPage">
         <thead>
             <tr>
                 <th>Teacher</th>
@@ -49,7 +49,7 @@ else
                 <th>Course</th>
             </tr>
         </thead>
-        <tbody @onmouseover="DeleteRefresh">
+        <tbody>
             @foreach (var data in teachers)
             {
                 if (PagProceed()) // Paginering.
@@ -186,11 +186,43 @@ else
 
 @code {
 
-    private Pagination? paginationRef; // Pagineringsfönster.
+    private DeleteTeacher? deleteRef; // Delete-fönster.
 
+    private async Task DeleteUser(string id) // Delete-fönster.
+    {
+        Auxx.GuidId = id;
+        await deleteRef!.Show();
+    }
+    
     private DeleteMess? messRef; // Delete-fönster.
 
-    private DeleteTeacher? deleteRef; // Delete-fönster.
+    private async Task DeleteMess(int id) // Delete-fönster.
+    {
+        Auxx.IntId = id;
+        await messRef!.Show();
+    }
+
+    private DocumentAdd? docsaveRef; // Filsparfönster.
+
+    private async Task DocSaveControl(string id, byte doctype, string name) // Filsparfönster.
+    {
+        Auxx.GuidId = id;
+        Auxx.DocType = doctype;
+        Auxx.Name4Type = name;
+        await docsaveRef!.Show();
+    }
+
+    private DocumentEdit? doceditRef; // Filredigeringsfönster.
+
+    private async Task DocEditControl(int id, byte doctype) // Filredigeringsfönster.
+    {
+        Auxx.IntId = id;
+        Auxx.DocType = doctype;
+        Auxx.Documents = documents;
+        await doceditRef!.Show();
+    }
+
+    private Pagination? paginationRef; // Pagineringsfönster.
 
     private async Task PagControl() // Pagineringsfönster.
     {
@@ -226,47 +258,6 @@ else
         }
     }
 
-    private async Task DeleteMess(int id) // Delete-fönster.
-    {
-        Auxx.IntId = id;
-        await messRef!.Show();
-    }
-
-    private async Task DeleteUser(string id) // Delete-fönster.
-    {
-        Auxx.GuidId = id;
-        await deleteRef!.Show();
-    }
-
-    private async Task DeleteRefresh() // Uppdaterar efter förändring av innehållet.
-    {
-        if (Auxx.Flag)
-        {
-            Auxx.Flag = false;
-            await OnInitializedAsync();
-        }
-    }
-
-    private DocumentAdd? docsaveRef; // Filsparfönster.
-
-    private async Task DocSaveControl(string id, byte doctype, string name) // Filsparfönster.
-    {
-        Auxx.GuidId = id;
-        Auxx.DocType = doctype;
-        Auxx.Name4Type = name;
-        await docsaveRef!.Show();
-    }
-
-    private DocumentEdit? doceditRef; // Filredigeringsfönster.
-
-    private async Task DocEditControl(int id, byte doctype) // Filredigeringsfönster.
-    {
-        Auxx.IntId = id;
-        Auxx.DocType = doctype;
-        Auxx.Documents = documents;
-        await doceditRef!.Show();
-    }
-
     private List<AppUserDto> teachers = new();
 
     private List<CourseDto> courses = new();
@@ -284,6 +275,15 @@ else
     private bool IsCourse;
 
     private string searchString = string.Empty;
+
+    private async Task RefreshThisPage() // Uppdaterar efter förändring av innehållet.
+    {
+        if (Auxx.Flag)
+        {
+            Auxx.Flag = false;
+            await OnInitializedAsync();
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {

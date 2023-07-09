@@ -3,6 +3,7 @@
 
 @page "/courseeditactivity/{IId:int}"
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject IAppUserDtoClient appuserClient
 @inject NavigationManager Navigation
 @inject ILogger<TeacherAddCourse> Logger
 @inject IXDtoClient xClient
@@ -74,7 +75,7 @@
                 title="Remove this activity and all its documents from the system">Delete immediately!</button>
             </div>
         </nav>
-        <EditForm EditContext="activityContext" Context="activitylmslexnet" OnValidSubmit="HandleSubmitActivity">
+        <EditForm EditContext="activityContext" Context="activitylmslexnet" OnValidSubmit="HandleSubmitActivity" @onmouseover="RefreshThisPage">
             <DataAnnotationsValidator />
             <ValidationSummary />
             <div class="form-group m-3">
@@ -110,7 +111,7 @@
         </EditForm>
     </section>
 
-        <div class="container" @onmouseover="DeleteRefresh"> @*Eventuella dokument som ingår läggs ut här*@
+        <div class="container" @onmouseover="RefreshThisPage"> @*Eventuella dokument som ingår läggs ut här*@
             <div class="d-flex flex-wrap">
                 @foreach (var doc in documents)
                 {
@@ -183,15 +184,6 @@
     [Parameter]
     public int IId { get; set; }
 
-    private DeleteAllDocActivities? deletealldocRef; // Delete-fönster.
-
-    private void DeleteAllDocs() // Delete-fönster.
-    {
-        Auxx.IntId = IId;
-        Auxx.Documents = documents;
-        deletealldocRef!.Show();
-    }
-
     private DeleteMess? deleteRef; // Delete-fönster.
 
     private async Task DeleteMess(int id) // Delete-fönster.
@@ -200,9 +192,13 @@
         await deleteRef!.Show();
     }
 
-    private async Task DeleteRefresh() // Uppdaterar efter förändring av innehållet.
+    private DeleteAllDocActivities? deletealldocRef; // Delete-fönster.
+
+    private void DeleteAllDocs() // Delete-fönster.
     {
-        if (Auxx.Flag) await OnInitializedAsync();
+        Auxx.IntId = IId;
+        Auxx.Documents = documents;
+        deletealldocRef!.Show();
     }
 
     private DocumentEdit? doceditRef; // Filredigeringsfönster.
@@ -233,11 +229,18 @@
 
     private List<DocumentDto> documents = new();
 
+    private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
+
     private string DefaultType = string.Empty;
     private string TestMess1 = string.Empty; // Test.
     private string TestMess2 = string.Empty; // Test.
 
     private int CourseID; // Kursens id.
+
+    private async Task RefreshThisPage() // Uppdaterar efter förändring av innehållet.
+    {
+        if (Auxx.Flag) await OnInitializedAsync();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -250,6 +253,11 @@
         documents.Clear();
 
         activityContext = new EditContext(activity); // Formulärkontext.
+
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
+        var appuser = await appuserClient.GetAsync();
 
         var allact = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
 
@@ -336,6 +344,24 @@
                     course.StartDate = cour.StartDate;
                     course.EndDate = cour.EndDate;
                 }
+            }
+        }
+
+        if (appuser is not null && name is not null)
+        {
+            foreach (var item in appuser) // Hämtar den som för tillfället är inloggad.
+            {
+                if (item.Email == name) loggeduser = item;
+            }
+        }
+
+        xnav.SetLogAvatar("d-none", "");
+
+        foreach (var doc in documents) // Letar efter en avatar.
+        {
+            if (doc.UserId == loggeduser.Id && doc.Id4Course == -2)
+            {
+                xnav.SetLogAvatar("avatarlog", xClient.GetFilepath() + doc.NameIx + doc.DocName);
             }
         }
     }

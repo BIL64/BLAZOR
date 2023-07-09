@@ -3,6 +3,7 @@
 
 @page "/courseeditmodule/{IId:int}"
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject IAppUserDtoClient appuserClient
 @inject NavigationManager Navigation
 @inject ILogger<TeacherAddCourse> Logger
 @inject IXDtoClient xClient
@@ -44,7 +45,7 @@
 
     <section class="moduleeditbox">
         <h5>Edit or add module:</h5>
-        <EditForm EditContext="moduleContext" Context="modulelmslexnet" OnValidSubmit="HandleSubmitModule">
+        <EditForm EditContext="moduleContext" Context="modulelmslexnet" OnValidSubmit="HandleSubmitModule" @onmouseover="RefreshThisPage">
             <DataAnnotationsValidator />
             <ValidationSummary />
             <div class="form-group m-3">
@@ -75,7 +76,7 @@
 
     <DeleteModule @ref="deletemodRef" /> @*Delete-fönster*@
 
-        <div class="container" @onmouseover="DeleteRefresh"> @*Eventuella dokument som ingår läggs ut här*@
+        <div class="container" @onmouseover="RefreshThisPage"> @*Eventuella dokument som ingår läggs ut här*@
             <div class="d-flex flex-wrap">
                 @foreach (var doc in documents)
                 {
@@ -135,15 +136,6 @@
         deletemodRef!.Show();
     }
 
-    private async Task DeleteRefresh() // Uppdaterar efter förändring av innehållet.
-    {
-        if (Auxx.Flag)
-        {
-            Auxx.Flag = false;
-            await OnInitializedAsync();
-        }
-    }
-
     private DocumentEdit? doceditRef; // Filredigeringsfönster.
 
     private async Task DocEditControl(int id, byte doctype) // Filredigeringsfönster.
@@ -164,8 +156,19 @@
 
     private List<DocumentDto> documents = new();
 
+    private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
+
     private int ModuleID; // Modulens Id.
     private int CourseID; // Kursens id.
+
+    private async Task RefreshThisPage() // Uppdaterar efter förändring av innehållet.
+    {
+        if (Auxx.Flag)
+        {
+            Auxx.Flag = false;
+            await OnInitializedAsync();
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -175,6 +178,11 @@
         documents.Clear();
 
         moduleContext = new EditContext(module); // Formulärkontext.
+
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
+        var appuser = await appuserClient.GetAsync();
 
         var allmod = await xClient.GetAsync<IEnumerable<ModuleDto>>("api/Module");
 
@@ -217,6 +225,24 @@
                         modulelist.Add(mod);
                     }
                 }
+            }
+        }
+
+        if (appuser is not null && name is not null)
+        {
+            foreach (var item in appuser) // Hämtar den som för tillfället är inloggad.
+            {
+                if (item.Email == name) loggeduser = item;
+            }
+        }
+
+        xnav.SetLogAvatar("d-none", "");
+
+        foreach (var doc in documents) // Letar efter en avatar.
+        {
+            if (doc.UserId == loggeduser.Id && doc.Id4Course == -2)
+            {
+                xnav.SetLogAvatar("avatarlog", xClient.GetFilepath() + doc.NameIx + doc.DocName);
             }
         }
     }
