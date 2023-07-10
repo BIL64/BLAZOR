@@ -172,10 +172,6 @@
 
     private void MouseOut(MouseEventArgs e) // Förhindrar att muspekaren släpper objektet vid hastiga musrörelser.
     {
-        if (IsDown) // Flyttar objektet asynkront i musens riktning.
-        {
-            if ((int)e.ClientX - Diff_X > 0) Pos_H = (int)e.ClientX - Diff_X; else Pos_H = 0;
-            if (Win_Height - ((int)e.ClientY + Diff_Y) > 0) Pos_V = Win_Height - ((int)e.ClientY + Diff_Y); else Pos_V = 0;
-        }
+        MouseMove(e); // Samma algoritm såsom MouseMove gäller även här.
     }
 }
