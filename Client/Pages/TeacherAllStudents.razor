@@ -20,7 +20,7 @@
 }
 else
 {
-    <EditForm Context="searchlmslexnet" Model="@students" OnSubmit="OnInitializedAsync" @onmouseover="RefreshThisPage">
+    <EditForm Context="searchlmslexnet" Model="@students" OnSubmit="OnInitializedAsync">
         <span class="nav m-lg-auto input-group">
             <InputText class="form-control" @bind-Value="searchString" placeholder="First name, last name or course" />
             <span class="nav m-lg-auto input-group-append">
@@ -49,13 +49,16 @@ else
     <DocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
     <DocumentEdit @ref="doceditRef" /> @*Filredigeringsfönster*@
 
-    <table class="table" @onmouseover="RefreshThisPage">
+    <table class="table">
         <thead>
             <tr>
-                <th>Student</th>
-                <th>Email</th>
-                <th>Phone number</th>
-                <th>Course</th>
+                @if (Auxx.classPag == "d-flex") // Eliminerar visuella störningar.
+                {
+                    <th>Student</th>
+                    <th>Email</th>
+                    <th>Phone number</th>
+                    <th>Course</th>
+                }
             </tr>
         </thead>
         <tbody>
@@ -201,6 +204,7 @@ else
     {
         Auxx.GuidId = id;
         await deleteRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private DeleteMess? messRef; // Delete-fönster.
@@ -209,6 +213,7 @@ else
     {
         Auxx.IntId = id;
         await messRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private DocumentAdd? docsaveRef; // Filsparfönster.
@@ -219,6 +224,7 @@ else
         Auxx.DocType = doctype;
         Auxx.Name4Type = name;
         await docsaveRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private DocumentEdit? doceditRef; // Filredigeringsfönster.
@@ -229,6 +235,7 @@ else
         Auxx.DocType = doctype;
         Auxx.Documents = documents;
         await doceditRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private Pagination? paginationRef; // Pagineringsfönster.
@@ -237,6 +244,7 @@ else
     {
         Auxx.PagId = 1; // <-- samma identitetsvärde!
         await paginationRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private async Task LoadPag()  // Pagineringsinställningar.
@@ -288,13 +296,11 @@ else
     private string searchString = string.Empty;
     private byte searchType = 1;
 
-    private async Task RefreshThisPage() // Uppdaterar efter förändring av innehållet.
+    private async Task RefreshAfterThis() // Uppdaterar efter förändring av innehåll.
     {
-        if (Auxx.Flag)
-        {
-            Auxx.Flag = false;
-            await OnInitializedAsync();
-        }
+        while (!Auxx.Flag) await Intermission(1000, false);
+        await Intermission(1000, false);
+        await OnInitializedAsync();
     }
 
     protected override async Task OnInitializedAsync()

@@ -20,7 +20,7 @@
             </div>
         </nav>
 
-        <div class="container" @onmouseover="RefreshThisPage"> @*Eventuella dokument som ingår läggs ut här*@
+        <div class="container"> @*Eventuella dokument som ingår läggs ut här*@
             <div class="d-flex flex-wrap">
                 @foreach (var doc in documents)
                 {
@@ -76,7 +76,7 @@
         <DeleteMess @ref="deleteRef" /> @*Delete-fönster*@
         <DocumentUser @ref="docuserRef" /> @*Filmottagarefönster*@
 
-        <EditForm Context="searchlmslexnet" Model="@courses" OnSubmit="OnInitializedAsync" @onmouseover="RefreshThisPage">
+        <EditForm Context="searchlmslexnet" Model="@courses" OnSubmit="OnInitializedAsync">
             <span class="nav m-lg-auto input-group">
                 <InputText class="form-control" @bind-Value="searchString" placeholder="Course name" />
                 <span class="nav m-lg-auto input-group-append">
@@ -99,7 +99,7 @@
             {
                 foreach (var data in courses)
                 {
-                    <section class="coursebox" @onmouseover="RefreshThisPage">
+                    <section class="coursebox">
                         <div style="display: flex">
                             <div style="width: 75%">
                                 @data.Id.&nbsp; <em style="cursor: pointer" title="@data.Description -Click for edit-"
@@ -238,6 +238,7 @@
     {
         Auxx.IntId = id;
         await deleteRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private DeleteAllDocUser? deletealldocRef; // Delete-fönster.
@@ -246,6 +247,7 @@
     {
         Auxx.Loggeduser = loggeduser;
         await deletealldocRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private DocumentUser? docuserRef; // Filmottagarefönster.
@@ -256,6 +258,7 @@
         Auxx.Flag = delete;
         Auxx.Documents = documents;
         await docuserRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private DocumentAvatar? addavatarRef; // Avatar-fönster.
@@ -265,6 +268,7 @@
         Auxx.Name4Type = loggeduser.FirstName + ' ' + loggeduser.LastName;
         Auxx.Loggeduser = loggeduser;
         await addavatarRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private List<CourseDto> courses = new();
@@ -286,13 +290,12 @@
     private bool DeleteFlag;
     private bool RepeatTable;
 
-    private async Task RefreshThisPage() // Uppdaterar efter förändring av innehållet.
+    private async Task RefreshAfterThis() // Uppdaterar efter förändring av innehåll.
     {
-        if (Auxx.Flag)
-        {
-            Auxx.Flag = false;
-            await OnInitializedAsync();
-        }
+        while (!Auxx.Flag) await Intermission(1000, false);
+        Auxx.Flag = false;
+        await Intermission(1000, false);
+        await OnInitializedAsync();
     }
 
     protected override async Task OnInitializedAsync()
@@ -485,7 +488,7 @@
                     Description = "Not yet a description",
                     StartDate = DateTime.Now,
                     EndDate = DateTime.Now,
-                    IsActive = true,
+                    Select = 1,
                     ActivityTypeId = 1,
                     ModuleId = ModuleID
                 };

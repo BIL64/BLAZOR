@@ -30,7 +30,7 @@
             </div>
         </nav>
 
-        <div class="container" @onmouseover="RefreshThisPage"> @*Eventuella dokument som ingår läggs ut här*@
+        <div class="container"> @*Eventuella dokument som ingår läggs ut här*@
             <div class="d-flex flex-wrap">
                 @foreach (var doc in documents)
                 {
@@ -62,7 +62,7 @@
         }
         else
         {
-            <EditForm Context="searchlmslexnet" Model="@modules" OnSubmit="OnInitializedAsync" @onmouseover="RefreshThisPage">
+            <EditForm Context="searchlmslexnet" Model="@modules" OnSubmit="OnInitializedAsync">
                 <span class="nav m-lg-auto input-group">
                     <InputText class="form-control" @bind-Value="searchString" placeholder="Module name" />
                     <span class="nav m-lg-auto input-group-append">
@@ -80,7 +80,7 @@
                 {
                     if (data.StartDate < DateTime.Now && data.EndDate > DateTime.Now)
                     {
-                        if (data.Select < 3)
+                        if (data.Select == 1 || data.Select == 10 || data.Select == 2 || data.Select == 20)
                         {
                             classModTopic = "moduleboxtopic";
                             classActTopic = "activityboxtopic";
@@ -100,7 +100,7 @@
                     }
                     else
                     {
-                        if (data.Select < 3)
+                        if (data.Select == 1 || data.Select == 10 || data.Select == 2 || data.Select == 20)
                         {
                             classModTopic = "modulebox";
                             classActTopic = "activitybox";
@@ -119,10 +119,10 @@
                         }
                     }
 
-                    <section class="@classModTopic" @onmouseover="RefreshThisPage">
+                    <section class="@classModTopic">
                         <div style="display: flex">
                             <div style="width: 85%">
-                                @if (data.Select < 2)
+                                @if (data.Select == 1 || data.Select == 10)
                                 {
                                     <b title="@data.Description -Click for edit-">Module @data.Id:
                                     <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
@@ -147,6 +147,7 @@
                         </div>
                         <div style="display: flex">
 
+                            @{Empty = true;}
                             @if (data.Select != 3 && data.Select != 4)
                             {
                                 <div style="width: 75%; margin-top: 20px">
@@ -169,10 +170,25 @@
                                                         <a @onclick="_ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
                                                         title="Mess: @doc.Description @doc.TimeStamp">By @doc.Author</a>
                                                     }
+                                                    Empty = false;
                                                 }
                                             }
                                         </div>
                                     </div>
+                                
+                                    @if (!Empty)
+                                    {
+                                        if (data.Select > 8)
+                                        {
+                                            <NavLink style="cursor: pointer" class="oi oi-x mx-2 text-danger text-decoration-none"
+                                            @onclick=" _ => ShowOrHide(data.Id, (byte) (data.Select / 10))" title="Show document"></NavLink>
+                                        }
+                                        else
+                                        {
+                                            <NavLink style="cursor: pointer" class="oi oi-aperture mx-2 text-primary text-decoration-none"
+                                            @onclick=" _ => ShowOrHide(data.Id, (byte) (data.Select * 10))" title="Hide document"></NavLink>
+                                        }
+                                    }
                                 </div>
                             }
                             else
@@ -200,11 +216,11 @@
                         </div>
                     </section>
 
-                    <article class="@classActTopic" @onmouseover="RefreshThisPage">
+                    <article class="@classActTopic">
 
                         <table class="table" style="color: #555"> @*Grå text*@
                             <thead>
-                                @if (data.Select == 1)
+                                @if (data.Select == 1 || data.Select == 10)
                                 {
                                     <tr>
                                         <th>Nr</th>
@@ -215,7 +231,7 @@
                                     </tr>
                                 }
 
-                                @if (data.Select == 2 || data.Select == 3)
+                                @if (data.Select == 2 || data.Select == 20 || data.Select == 3)
                                 {
                                     <tr>
                                         <th>Aktivity</th>
@@ -237,12 +253,12 @@
                             <tbody>
                                 @foreach (var act in activities)
                                 {
-                                    if (act.IsActive)
+                                    if (act.Select > 0)
                                     {
                                         <tr>
                                             @if (act.ModuleId == data.Id)
                                             {
-                                                if (data.Select < 2)
+                                                if (data.Select == 1 || data.Select == 10)
                                                 {
                                                     <td>@act.Id</td>
                                                 }
@@ -306,8 +322,16 @@
                                                 <td>
                                                     @if (!Empty)
                                                     {
-                                                        <span class="oi oi-aperture text-primary text-decoration-none"
-                                                        style="position: relative; top: 5px"></span>
+                                                        if (act.Select > 5)
+                                                        {
+                                                            <NavLink style="cursor: pointer" class="oi oi-x text-danger mt-2 text-decoration-none"
+                                                            @onclick=" _ => ShowOrHide(act.Id, 101)" title="Show document"></NavLink>
+                                                        }
+                                                        else
+                                                        {
+                                                            <NavLink style="cursor: pointer" class="oi oi-aperture text-primary mt-2 text-decoration-none"
+                                                            @onclick=" _ => ShowOrHide(act.Id, 110)" title="Hide document"></NavLink>
+                                                        }
                                                     }
                                                 </td>
                                             }
@@ -419,6 +443,7 @@
         Auxx.DocType = doctype;
         Auxx.Name4Type = name;
         await docsaveRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private DocumentEdit? doceditRef; // Filredigeringsfönster.
@@ -429,6 +454,7 @@
         Auxx.DocType = doctype;
         Auxx.Documents = documents;
         await doceditRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private FastModuleDate? fastmodRef; // Datumredigeringsfönster.
@@ -437,6 +463,7 @@
     {
         Auxx.IntId = id;
         await fastmodRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private FastActivityDate? fastactRef; // Datumredigeringsfönster.
@@ -445,6 +472,7 @@
     {
         Auxx.IntId = id;
         await fastactRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private List<CourseDto> courses = new();
@@ -472,13 +500,12 @@
     private string TestMess1 = string.Empty; // Test.
     private string TestMess2 = string.Empty; // Test.
 
-    private async Task RefreshThisPage() // Uppdaterar efter förändring av innehållet.
+    private async Task RefreshAfterThis() // Uppdaterar efter förändring av innehåll.
     {
-        if (Auxx.Flag)
-        {
-            Auxx.Flag = false;
-            await OnInitializedAsync();
-        }
+        while (!Auxx.Flag) await Intermission(1000, false);
+        Auxx.Flag = false;
+        await Intermission(1000, false);
+        await OnInitializedAsync();
     }
 
     protected override async Task OnInitializedAsync()
@@ -627,7 +654,7 @@
                 {
                     if (act.Id == id && value == 1)
                     {
-                        var lact = GetNewActObject(act, false);
+                        var lact = GetNewActObject(act, 0);
                         await xClient.PutAsync<ActivityDto>(id, lact, "api/Activity");
                         var element = activities.FirstOrDefault(e => e.Id == id);
                         if (element is not null) element = lact;
@@ -635,11 +662,49 @@
 
                     if (act.Id == id && value == 3)
                     {
-                        var lact = GetNewActObject(act, true);
+                        var lact = GetNewActObject(act, 1);
                         await xClient.PutAsync<ActivityDto>(id, lact, "api/Activity");
                         var element = activities.FirstOrDefault(e => e.Id == id);
                         if (element is not null) element = lact;
                     }
+                }
+            }
+        }
+        await OnInitializedAsync();
+    }
+
+    private async Task ShowOrHide(int id, byte value) // Visa eller dölja dokument?
+    {
+        var module = await xClient.GetAsync<IEnumerable<ModuleDto>>("api/Module");
+        var activity = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
+
+        if (value < 50)
+        {
+            if (module is not null)
+            {
+                foreach (var mod in module)
+                {
+                    if (mod.Id == id)
+                    {
+                        var lmod = GetNewModObject(mod, value);
+                        await xClient.PutAsync<ModuleDto>(id, lmod, "api/Module");
+                        var element = modules.FirstOrDefault(e => e.Id == id);
+                        if (element is not null) element = lmod;
+                    }
+                }
+            }
+        }
+
+        if (value > 50)
+        {
+            if (activity is not null)
+            {
+                foreach (var act in activity)
+                {
+                    var lact = GetNewActObject(act, (byte) (value - 100));
+                    await xClient.PutAsync<ActivityDto>(id, lact, "api/Activity");
+                    var element = activities.FirstOrDefault(e => e.Id == id);
+                    if (element is not null) element = lact;
                 }
             }
         }
@@ -661,7 +726,7 @@
         return dto;
     }
 
-    private ActivityDto GetNewActObject(ActivityDto act, bool isactive) // Nytt aktivitetsobject.
+    private ActivityDto GetNewActObject(ActivityDto act, byte select) // Nytt aktivitetsobject.
     {
         var dto = new ActivityDto
             {
@@ -670,7 +735,7 @@
                 Description = act.Description,
                 StartDate = act.StartDate,
                 EndDate = act.EndDate,
-                IsActive = isactive,
+                Select = select,
                 ActivityTypeId = act.ActivityTypeId,
                 ModuleId = act.ModuleId
             };

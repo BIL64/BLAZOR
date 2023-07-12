@@ -18,7 +18,7 @@ namespace LexiconLMSBlazor.Server.Models
         [Required]
         public DateTime EndDate { get; set; }
 
-        public bool IsActive { get; set; } = true;
+        public byte Select { get; set; } = 1;
 
         // Foreign Key
         public int? ModuleId { get; set; }

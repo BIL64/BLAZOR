@@ -6,10 +6,10 @@
 
 <AuthorizeView Roles="Teacher">
     <Authorized>
-        <div class="toast-container p-3 @showClass" @onmouseup="MouseUp" @onmousedown="MouseDown" @onmousemove="MouseMove" @onmouseout="MouseOut"
+        <div class="toast-container p-3 @showClass"
              style="position: fixed; top: auto; bottom: @(Pos_V)px; margin-left: @(Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
             <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header">
+                <div class="toast-header" @onmouseup="MouseUp" @onmousedown="MouseDown" @onmousemove="MouseMove" @onmouseout="MouseOut">
                     <strong class="me-auto">@HeaderText</strong>
                     <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
                 </div>
@@ -105,7 +105,7 @@
                 lact.Id = act.Id;
                 lact.Name = act.Name;
                 lact.Description = act.Description;
-                lact.IsActive = act.IsActive;
+                lact.Select = act.Select;
                 lact.ModuleId = act.ModuleId;
                 lact.ActivityTypeId = act.ActivityTypeId;
                 lact.ActivityTypeName = act.ActivityTypeName;

@@ -52,7 +52,7 @@ namespace LexiconLMSBlazor.Server.Controllers
                             Description = a.Description,
                             StartDate = a.StartDate,
                             EndDate = a.EndDate,
-                            IsActive = a.IsActive,
+                            Select = a.Select,
                             ModuleId = (int)a.ModuleId!,
                             ActivityTypeId = (int)a.ActivityTypeId!
                          })

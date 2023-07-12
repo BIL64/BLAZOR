@@ -75,7 +75,7 @@
                 title="Remove this activity and all its documents from the system">Delete immediately!</button>
             </div>
         </nav>
-        <EditForm EditContext="activityContext" Context="activitylmslexnet" OnValidSubmit="HandleSubmitActivity" @onmouseover="RefreshThisPage">
+        <EditForm EditContext="activityContext" Context="activitylmslexnet" OnValidSubmit="HandleSubmitActivity">
             <DataAnnotationsValidator />
             <ValidationSummary />
             <div class="form-group m-3">
@@ -111,7 +111,7 @@
         </EditForm>
     </section>
 
-        <div class="container" @onmouseover="RefreshThisPage"> @*Eventuella dokument som ingår läggs ut här*@
+        <div class="container"> @*Eventuella dokument som ingår läggs ut här*@
             <div class="d-flex flex-wrap">
                 @foreach (var doc in documents)
                 {
@@ -190,15 +190,17 @@
     {
         Auxx.IntId = id;
         await deleteRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private DeleteAllDocActivities? deletealldocRef; // Delete-fönster.
 
-    private void DeleteAllDocs() // Delete-fönster.
+    private async Task DeleteAllDocs() // Delete-fönster.
     {
         Auxx.IntId = IId;
         Auxx.Documents = documents;
         deletealldocRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private DocumentEdit? doceditRef; // Filredigeringsfönster.
@@ -209,6 +211,7 @@
         Auxx.DocType = doctype;
         Auxx.Documents = documents;
         await doceditRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private EditContext activityContext = default!; // Formulärkontexter.
@@ -237,9 +240,11 @@
 
     private int CourseID; // Kursens id.
 
-    private async Task RefreshThisPage() // Uppdaterar efter förändring av innehållet.
+    private async Task RefreshAfterThis() // Uppdaterar efter förändring av innehåll.
     {
-        if (Auxx.Flag) await OnInitializedAsync();
+        while (!Auxx.Flag) await Intermission(1000, false);
+        await Intermission(1000, false);
+        await OnInitializedAsync();
     }
 
     protected override async Task OnInitializedAsync()
@@ -275,7 +280,7 @@
                     activity.Description = act.Description;
                     activity.StartDate = act.StartDate;
                     activity.EndDate = act.EndDate;
-                    activity.IsActive = act.IsActive;
+                    activity.Select = act.Select;
                     activity.ModuleId = act.ModuleId;
                     activity.ActivityTypeId = act.ActivityTypeId;
                 }
@@ -401,7 +406,7 @@
                     StartDate = activity.StartDate,
                     EndDate = activity.EndDate,
                     ModuleId = activity.ModuleId,
-                    IsActive = activity.IsActive,
+                    Select = activity.Select,
                     ActivityTypeId = ActTypeId,
                     ActivityTypeName = activityType.Name
                 };
@@ -434,7 +439,7 @@
                 StartDate = activity.StartDate,
                 EndDate = activity.EndDate,
                 ModuleId = activity.ModuleId,
-                IsActive = activity.IsActive,
+                Select = activity.Select,
                 ActivityTypeId = ActTypeId,
                 ActivityTypeName = activityType.Name
             };

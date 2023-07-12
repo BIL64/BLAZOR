@@ -23,7 +23,7 @@
             </div>
         </nav><br />
 
-        <div class="container" @onmouseover="RefreshThisPage"> @*Eventuella dokument som ingår läggs ut här*@
+        <div class="container"> @*Eventuella dokument som ingår läggs ut här*@
             <div class="d-flex flex-wrap">
                 @foreach (var doc in documents)
                 {
@@ -93,7 +93,7 @@
         }
         else
         {
-            <EditForm Context="searchlmslexnet" Model="@modules" OnSubmit="OnInitializedAsync" @onmouseover="RefreshThisPage">
+            <EditForm Context="searchlmslexnet" Model="@modules" OnSubmit="OnInitializedAsync">
                 <span class="nav m-lg-auto input-group">
                     <InputText class="form-control" @bind-Value="searchString" placeholder="Module name" />
                     <span class="nav m-lg-auto input-group-append">
@@ -107,7 +107,7 @@
 
             @foreach (var data in modules)
             {
-                if (data.Select == 1 || data.Select == 2 || data.Select == 4)
+            if (data.Select == 1 || data.Select == 10 || data.Select == 2 || data.Select == 20 || data.Select == 4)
                 {
                     if (data.StartDate < DateTime.Now && data.EndDate > DateTime.Now)
                     {
@@ -135,7 +135,8 @@
                             classActTopic = "activity4S_box";
                         }
                     }
-                    <section class="@classModTopic" @onmouseover="RefreshThisPage">
+
+                    <section class="@classModTopic">
                         <div style="display: flex">
                             <div style="width: 85%">
                                 @if (data.Select == 1)
@@ -155,7 +156,7 @@
                                 <div class="dropdoc-content">
                                     @foreach (var doc in documents)
                                     {
-                                        if (doc.ModuleId == data.Id)
+                                        if (doc.ModuleId == data.Id && data.Select < 8)
                                         {
                                             if (doc.DocName != "")
                                             {
@@ -176,11 +177,11 @@
                         </div>
                     </section>
 
-                    <article class="@classActTopic" @onmouseover="RefreshThisPage">
+                    <article class="@classActTopic">
 
-                        <table class="table" style="color: #555">@*Grå text*@
+                        <table class="table" style="color: #555"> @*Grå text*@
                             <thead>
-                                @if (data.Select == 1)
+                                @if (data.Select == 1 || data.Select == 10)
                                 {
                                     <tr>
                                         <th>Nr</th>
@@ -191,7 +192,7 @@
                                     </tr>
                                 }
 
-                                @if (data.Select == 2)
+                                @if (data.Select == 2 || data.Select == 20)
                                 {
                                     <tr>
                                         <th>Aktivity</th>
@@ -213,17 +214,17 @@
                             <tbody>
                                 @foreach (var act in activities)
                                 {
-                                    if (act.IsActive)
+                                    if (act.Select > 0)
                                     {
                                         <tr>
                                             @if (act.ModuleId == data.Id)
                                             {
-                                                if (data.Select == 1)
+                                                if (data.Select == 1 || data.Select == 10)
                                                 {
                                                     <td>@act.Id</td>
                                                 }
 
-                                                if (data.Select > 2)
+                                                if (data.Select == 3 || data.Select == 4)
                                                 {
                                                     <td><b style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</b></td>
                                                 }
@@ -258,8 +259,8 @@
                                                         <div class="dropdoc-content">
                                                             @foreach (var doc in documents)
                                                             {
-                                                                if ((doc.ActivityId == act.Id && doc.Id4Course < 0) ||
-                                                                (doc.ActivityId == act.Id && doc.UserId == loggeduser.Id))
+                                                                if (act.Select < 5 && ((doc.ActivityId == act.Id && doc.Id4Course < 0) ||
+                                                                (doc.ActivityId == act.Id && doc.UserId == loggeduser.Id)))
                                                                 {
                                                                     if (doc.DocName != "")
                                                                     {
@@ -282,8 +283,7 @@
                                                 <td>
                                                     @if (!Empty)
                                                     {
-                                                        <span class="oi oi-aperture text-primary text-decoration-none"
-                                                        style="position: relative; top: 2px"></span>
+                                                        <span class="oi oi-aperture text-primary mt-1 text-decoration-none"></span>
                                                     }
                                                 </td>
                                             }
@@ -302,7 +302,7 @@
                     else classMainTopic = "module3S_main";
 
                     <main class="@classMainTopic">
-                        <section class="module3S_box" @onmouseover="RefreshThisPage">
+                        <section class="module3S_box">
                             @if (data.Name != "#E#" && data.Name != "#H#")
                             {
                                 <div style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 1.2rem"><b>@data.Name</b></div>
@@ -325,7 +325,7 @@
                             }
                         </section>
 
-                        <article class="activity3S_box" @onmouseover="RefreshThisPage">
+                        <article class="activity3S_box">
 
                             <table class="table" style="color: #555"> @*Grå text*@
                                 <thead>
@@ -339,7 +339,7 @@
                                 <tbody>
                                     @foreach (var act in activities)
                                     {
-                                        if (act.IsActive)
+                                        if (act.Select > 0)
                                         {
                                             <tr>
                                                 @if (act.ModuleId == data.Id)
@@ -368,8 +368,8 @@
                                                             <div class="dropdoc-content">
                                                                 @foreach (var doc in documents)
                                                                 {
-                                                                    if ((doc.ActivityId == act.Id && doc.Id4Course < 0) ||
-                                                                    (doc.ActivityId == act.Id && doc.UserId == loggeduser.Id))
+                                                                    if (act.Select < 5 && ((doc.ActivityId == act.Id && doc.Id4Course < 0) ||
+                                                                    (doc.ActivityId == act.Id && doc.UserId == loggeduser.Id)))
                                                                     {
                                                                         if (doc.DocName != "")
                                                                         {
@@ -392,8 +392,7 @@
                                                     <td>
                                                         @if (!Empty)
                                                         {
-                                                            <span class="oi oi-aperture text-primary text-decoration-none"
-                                                            style="position: relative; top: 2px"></span>
+                                                            <span class="oi oi-aperture text-primary mt-1 text-decoration-none"></span>
                                                         }
                                                     </td>
                                                 }
@@ -423,6 +422,7 @@
     {
         Auxx.IntId = id;
         await deletemessRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private DeleteAllDocUser? deletealldocRef; // Delete-fönster.
@@ -431,6 +431,7 @@
     {
         Auxx.Loggeduser = loggeduser;
         await deletealldocRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private DocumentAdd? docsaveRef; // Filsparfönster.
@@ -441,6 +442,7 @@
         Auxx.DocType = doctype;
         Auxx.Name4Type = name;
         await docsaveRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private DocumentUser? docuserRef; // Filmottagarefönster.
@@ -451,6 +453,7 @@
         Auxx.Flag = delete;
         Auxx.Documents = documents;
         await docuserRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private DocumentAvatar? addavatarRef; // Avatar-fönster.
@@ -460,6 +463,7 @@
         Auxx.Name4Type = loggeduser.FirstName + ' ' + loggeduser.LastName;
         Auxx.Loggeduser = loggeduser;
         await addavatarRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private List<CourseDto> courses = new();
@@ -484,13 +488,12 @@
     private int CourseId;
     private bool Empty;
 
-    private async Task RefreshThisPage() // Uppdaterar efter förändring av innehållet.
+    private async Task RefreshAfterThis() // Uppdaterar efter förändring av innehåll.
     {
-        if (Auxx.Flag)
-        {
-            Auxx.Flag = false;
-            await OnInitializedAsync();
-        }
+        while (!Auxx.Flag) await Intermission(1000, false);
+        Auxx.Flag = false;
+        await Intermission(1000, false);
+        await OnInitializedAsync();
     }
 
     protected override async Task OnInitializedAsync()
@@ -629,5 +632,15 @@
             xnav.SetDone("xnavdone", "There is no current module.");
             xnav.SetReset('d');
         }
+    }
+
+    private async Task Intermission(int time, bool hide) // Paus.
+    {
+        if (hide)
+        {
+            xnav.SetReset('a');
+        }
+        base.StateHasChanged();
+        await Task.Delay(time);
     }
 }

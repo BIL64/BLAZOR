@@ -45,7 +45,7 @@
 
     <section class="moduleeditbox">
         <h5>Edit or add module:</h5>
-        <EditForm EditContext="moduleContext" Context="modulelmslexnet" OnValidSubmit="HandleSubmitModule" @onmouseover="RefreshThisPage">
+        <EditForm EditContext="moduleContext" Context="modulelmslexnet" OnValidSubmit="HandleSubmitModule">
             <DataAnnotationsValidator />
             <ValidationSummary />
             <div class="form-group m-3">
@@ -76,7 +76,7 @@
 
     <DeleteModule @ref="deletemodRef" /> @*Delete-fönster*@
 
-        <div class="container" @onmouseover="RefreshThisPage"> @*Eventuella dokument som ingår läggs ut här*@
+        <div class="container"> @*Eventuella dokument som ingår läggs ut här*@
             <div class="d-flex flex-wrap">
                 @foreach (var doc in documents)
                 {
@@ -125,15 +125,17 @@
     {
         Auxx.IntId = id;
         await deleteRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private DeleteModule? deletemodRef; // Delete-fönster.
 
-    private void DeleteModule() // Delete-fönster.
+    private async Task DeleteModule() // Delete-fönster.
     {
         Auxx.CourseId = CourseID;
         Auxx.IntId = ModuleID;
         deletemodRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private DocumentEdit? doceditRef; // Filredigeringsfönster.
@@ -144,6 +146,7 @@
         Auxx.DocType = doctype;
         Auxx.Documents = documents;
         await doceditRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private EditContext moduleContext = default!; // Formulärkontexter.
@@ -161,13 +164,12 @@
     private int ModuleID; // Modulens Id.
     private int CourseID; // Kursens id.
 
-    private async Task RefreshThisPage() // Uppdaterar efter förändring av innehållet.
+    private async Task RefreshAfterThis() // Uppdaterar efter förändring av innehåll.
     {
-        if (Auxx.Flag)
-        {
-            Auxx.Flag = false;
-            await OnInitializedAsync();
-        }
+        while (!Auxx.Flag) await Intermission(1000, false);
+        Auxx.Flag = false;
+        await Intermission(1000, false);
+        await OnInitializedAsync();
     }
 
     protected override async Task OnInitializedAsync()
@@ -311,7 +313,7 @@
                 Description = "Not yet a description",
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now,
-                IsActive = true,
+                Select = 1,
                 ActivityTypeId = 1,
                 ModuleId = ModuleID
             };

@@ -36,10 +36,13 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Student</th>
-                <th>Email</th>
-                <th>Phone number</th>
-                <th>Course</th>
+                @if (Auxx.classPag == "d-flex") // Eliminerar visuella störningar.
+                {
+                    <th>Student</th>
+                    <th>Email</th>
+                    <th>Phone number</th>
+                    <th>Course</th>
+                }
             </tr>
         </thead>
         <tbody>

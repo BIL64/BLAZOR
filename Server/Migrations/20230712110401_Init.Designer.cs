@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LexiconLMSBlazor.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230621140145_Init")]
+    [Migration("20230712110401_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -184,15 +184,15 @@ namespace LexiconLMSBlazor.Server.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
                     b.Property<int?>("ModuleId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte>("Select")
+                        .HasColumnType("tinyint");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
