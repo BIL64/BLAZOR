@@ -150,6 +150,7 @@
                             </div>
                             <div style="margin: 0 0 0 auto"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
                         </div>
+                        @{Empty = true;}
                         <div style="display: flex; margin-top: 10px">
                             <div class="dropdoc">
                                 <button type="button" class="docviewbtn">DOCs</button>
@@ -170,10 +171,15 @@
                                                 <a @onmouseover="_ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
                                                 title="@doc.Description by @doc.Author @doc.TimeStamp">By @doc.Author</a>
                                             }
+                                            Empty = false;
                                         }
                                     }
                                 </div>
                             </div>
+                            @if (!Empty)
+                            {
+                                <span class="oi oi-aperture text-primary mt-1 text-decoration-none"></span>
+                            }
                         </div>
                     </section>
 
