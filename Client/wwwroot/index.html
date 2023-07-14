@@ -36,14 +36,17 @@
             anchorElement.click();
             anchorElement.remove();
         }
-    </script>
-    <script>
+
         window.getWindowDimensions = function () {
             return {
                 width: window.innerWidth,
                 height: window.innerHeight
             };
-        };
+        }
+
+        window.swapDocClass = (id, name) => {
+            document.getElementById(id).className = name;
+        }
     </script>
 </body>
 

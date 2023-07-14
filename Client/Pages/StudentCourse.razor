@@ -150,10 +150,10 @@
                             </div>
                             <div style="margin: 0 0 0 auto"><b>@StartEndDate(data.StartDate, data.EndDate)</b></div>
                         </div>
-                        @{Empty = true;}
+
                         <div style="display: flex; margin-top: 10px">
                             <div class="dropdoc">
-                                <button type="button" class="docviewbtn">DOCs</button>
+                                <button type="button" id="M@(data.Id)" class="docviewbtn">DOCs</button>
                                 <div class="dropdoc-content">
                                     @foreach (var doc in documents)
                                     {
@@ -171,15 +171,10 @@
                                                 <a @onmouseover="_ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
                                                 title="@doc.Description by @doc.Author @doc.TimeStamp">By @doc.Author</a>
                                             }
-                                            Empty = false;
                                         }
                                     }
                                 </div>
                             </div>
-                            @if (!Empty)
-                            {
-                                <span class="oi oi-aperture text-primary mt-1 text-decoration-none"></span>
-                            }
                         </div>
                     </section>
 
@@ -261,7 +256,7 @@
                                                     <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(act.Id, 40, act.Name)"
                                                     title="Add a document or a message to this activity">+ DOC</button>
                                                     <div class="dropdoc">
-                                                        <button type="button" class="docviewbtn">DOCs</button>
+                                                        <button type="button" id="A@(act.Id)" class="docviewbtn">DOCs</button>
                                                         <div class="dropdoc-content">
                                                             @foreach (var doc in documents)
                                                             {
@@ -280,7 +275,8 @@
                                                                         <a @onmouseover="_ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
                                                                         title="@doc.Description by @doc.Author @doc.TimeStamp">By @doc.Author</a>
                                                                     }
-                                                                    Empty = false;
+
+                                                                    if (doc.ActivityId == act.Id && doc.UserId == loggeduser.Id) Empty = false;
                                                                 }
                                                             }
                                                         </div>
@@ -370,7 +366,7 @@
                                                         <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(act.Id, 40, act.Name)"
                                                         title="Add a document or a message to this activity">+ DOC</button>
                                                         <div class="dropdoc">
-                                                            <button type="button" class="docviewbtn">DOCs</button>
+                                                            <button type="button" id="A@(act.Id)" class="docviewbtn">DOCs</button>
                                                             <div class="dropdoc-content">
                                                                 @foreach (var doc in documents)
                                                                 {
@@ -389,7 +385,8 @@
                                                                             <a @onmouseover="_ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
                                                                             title="@doc.Description by @doc.Author @doc.TimeStamp">By @doc.Author</a>
                                                                         }
-                                                                        Empty = false;
+
+                                                                        if (doc.ActivityId == act.Id && doc.UserId == loggeduser.Id) Empty = false;
                                                                     }
                                                                 }
                                                             </div>
@@ -511,7 +508,6 @@
         activities.Clear();
         activityTypes.Clear();
         documents.Clear();
-        Empty = true;
 
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         var user = authstate.User;
@@ -581,6 +577,30 @@
         if (activityType is not null) // Hämtar aktivitetstyper.
         {
             activityTypes = activityType.ToList();
+        }
+    }
+
+    protected override async void OnAfterRender(bool firstRender) // Byter klass på knapp om dokument hittas.
+    {
+        foreach (var mod in modules)
+        {
+            foreach (var doc in documents)
+            {
+                if (mod.Id == doc.ModuleId && (mod.Select == 1 || mod.Select == 2))
+                    await xClient.ChangeClass("M" + mod.Id, "docviewbtn-docs");
+            }
+
+            foreach (var act in activities)
+            {
+                if (act.ModuleId == mod.Id)
+                {
+                    foreach (var doc in documents)
+                    {
+                        if (act.Id == doc.ActivityId && act.Select == 1 && mod.Select != 0)
+                            await xClient.ChangeClass("A" + act.Id, "docviewbtn-docs");
+                    }
+                }
+            }
         }
     }
 

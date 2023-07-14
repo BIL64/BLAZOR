@@ -88,6 +88,11 @@ namespace LexiconLMSBlazor.Client.Services
             var dimension = await _js.InvokeAsync<WindowDimension>("getWindowDimensions");
             return dimension;
         }
+
+        public async Task ChangeClass(string id, string name) // Byter klass på dokumentknapp.
+        {
+            await _js.InvokeVoidAsync("swapDocClass", id, name);
+        }
     }
 
     public class WindowDimension

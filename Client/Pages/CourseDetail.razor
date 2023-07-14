@@ -153,7 +153,7 @@
                                 <div style="width: 75%; margin-top: 20px">
                                     <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(data.Id, 30, data.Name)" title="Add a document to this module">+ DOC</button>
                                     <div class="dropdoc">
-                                        <button type="button" class="docviewbtn">DOCs</button>
+                                        <button  type="button" id="M@(data.Id)" class="docviewbtn">DOCs</button>
                                         <div class="dropdoc-content">
                                             @foreach (var doc in documents)
                                             {
@@ -292,7 +292,7 @@
                                                     <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(act.Id, 140, act.Name)"
                                                     title="Add a document to this activity">+ DOC</button>
                                                     <div class="dropdoc">
-                                                        <button type="button" class="docviewbtn">DOCs</button>
+                                                        <button type="button" id="A@(act.Id)" class="docviewbtn">DOCs</button>
                                                         <div class="dropdoc-content">
                                                             @{Empty = true;}
                                                             @foreach (var doc in documents)
@@ -518,7 +518,6 @@
         activities.Clear();
         activityTypes.Clear();
         documents.Clear();
-        Empty = true;
 
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         var user = authstate.User;
@@ -595,6 +594,30 @@
             if (doc.UserId == loggeduser.Id && doc.Id4Course == -2)
             {
                 xnav.SetLogAvatar("avatarlog", xClient.GetFilepath() + doc.NameIx + doc.DocName);
+            }
+        }
+    }
+
+    protected override async void OnAfterRender(bool firstRender) // Byter klass på knapp om dokument hittas.
+    {
+        foreach (var mod in modules)
+        {
+            foreach (var doc in documents)
+            {
+                if (mod.Id == doc.ModuleId && (mod.Select == 1 || mod.Select == 10 || mod.Select == 2 || mod.Select == 20))
+                    await xClient.ChangeClass("M" + mod.Id, "docviewbtn-docs");
+            }
+
+            foreach (var act in activities)
+            {
+                if (act.ModuleId == mod.Id)
+                {
+                    foreach (var doc in documents)
+                    {
+                        if (act.Id == doc.ActivityId && act.Select != 0 && mod.Select != 0)
+                            await xClient.ChangeClass("A" + act.Id, "docviewbtn-docs");
+                    }
+                }
             }
         }
     }
