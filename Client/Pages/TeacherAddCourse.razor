@@ -183,7 +183,7 @@
             <section class="@classTable"> @*Hjälptabeller vid inmatning av moduler och aktiviteter*@ 
                 <div style="display: flex">
                     <h4 style="width: 75%">COURSE: @course.Name</h4>
-                    <h5 style="margin: 0 0 0 auto">@StartEndDate(course.StartDate, course.EndDate)</h5>
+                    <h5 style="margin: 0 0 0 auto">@XNavMenu.StartEndDate(course.StartDate, course.EndDate)</h5>
                 </div>
                 <h6>Modules...</h6>
                 <table class="table">
@@ -201,7 +201,7 @@
                         <tr>
                             <td>@mod.Name</td>
                             <td>@mod.Description</td>
-                            <td>@StartEndDate(mod.StartDate, mod.EndDate)</td>
+                            <td>@XNavMenu.StartEndDate(mod.StartDate, mod.EndDate)</td>
                         </tr>
                     }
                 </table>
@@ -224,7 +224,7 @@
                             <td>@act.Name</td>
                             <td>@act.ActivityTypeName</td>
                             <td>@act.Description</td>
-                            <td>@StartEndDate(act.StartDate, act.EndDate)</td>
+                            <td>@XNavMenu.StartEndDate(act.StartDate, act.EndDate)</td>
                         </tr>
                     }
                 </table>
@@ -351,7 +351,7 @@
         if (items is not null) activitytypelist = items.ToList();
 
         classActtyp = "d-none";
-        await Intermission(100, true);
+        await xnav.Intermission(100, true);
         classActtyp = "activityeditbox";
         repeatActivityType = true;
     }
@@ -362,7 +362,7 @@
 
         var lmod = GetNewModObject(module);
 
-        await Intermission(100, true);
+        await xnav.Intermission(100, true);
         if (await DateModuleControl())
         {
             classActivi = "activityeditbox";
@@ -383,7 +383,7 @@
 
         lact.ActivityTypeName = activityType.Name;
 
-        await Intermission(100, true);
+        await xnav.Intermission(100, true);
         if (await DateActivityControl())
         {
             activitylist.Add(lact);
@@ -429,7 +429,7 @@
         if (items is not null) activitytypelist = items.ToList();
 
         classActtyp = "d-none";
-        await Intermission(100, true);
+        await xnav.Intermission(100, true);
         classActtyp = "activityeditbox";
         repeatActivityType = true;
     }
@@ -438,7 +438,7 @@
     {
         xnav.SetDone("xnavdone", "Finish add or edit activity types.");
         xnav.SetReset('d');
-        await Intermission(2000, false);
+        await xnav.Intermission(2000, false);
         Navigation.NavigateTo("/teacheraddcourse", true);
     }
 
@@ -446,7 +446,7 @@
     {
         xnav.SetDone("xnavdone", "Your course is created.");
         xnav.SetReset('d');
-        await Intermission(3000, false);
+        await xnav.Intermission(3000, false);
         Navigation.NavigateTo("/teacherallcourses", true);
     }
 
@@ -463,7 +463,7 @@
         }
         else
         {
-            await Intermission(100, true);
+            await xnav.Intermission(100, true);
             xnav.SetError("xnaverror", "Course date mismatch (start date is greater than end date).");
             if (course.Name == "")
                 xnav.SetError("xnaverror", "The Name field is required.");
@@ -481,7 +481,7 @@
 
         lact.ActivityTypeName = activityType.Name;
 
-        await Intermission(100, true);
+        await xnav.Intermission(100, true);
         if (await DateActivityControl() || saveActButNot)
         {
             if (saveActButNot) xnav.SetReset('a');
@@ -512,28 +512,23 @@
 
         lact.ActivityTypeName = activityType.Name;
 
-        await Intermission(100, true);
+        await xnav.Intermission(100, true);
         if (await DateActivityControl())
         {
             repeatActivity = true;
             activitylist.Add(lact);
             classActivi = "d-none";
-            await Intermission(100, false);
+            await xnav.Intermission(100, false);
             classActSubNotBtn = "btn btn-primary btn-sm";
             classActivi = "activityeditbox";
         }
-    }
-
-    private string StartEndDate(DateTime start, DateTime end) // Returnerar datumsträng.
-    {
-        return $"{start.ToString().Substring(0, 10)} | {end.ToString().Substring(0, 10)}";
     }
 
     private async Task RegretRefresh()
     {
         xnav.SetDone("xnavdone", "The course was NOT edited or created.");
         xnav.SetReset('d');
-        await Intermission(2000, false);
+        await xnav.Intermission(2000, false);
         Navigation.NavigateTo("/teacheraddcourse", true);
     }
 
@@ -541,7 +536,7 @@
     {
         xnav.SetDone("xnavdone", "Your course is created.");
         xnav.SetReset('d');
-        await Intermission(3000, false);
+        await xnav.Intermission(3000, false);
         Navigation.NavigateTo("/teacherallcourses", true);
     }
 
@@ -666,7 +661,7 @@
 
             xnav.SetDone("xnavdone", "Perform a date check...");
             xnav.SetReset('d');
-            await Intermission(1, false);
+            await xnav.Intermission(1, false);
 
             // Lägger in siffror på olika platser i arrayen. En plats som dessförinnan var ett datum.
             // Undersöker även om PlacingInArray returnerar 0, vilket indikerar beräkningsfel.
@@ -743,7 +738,7 @@
 
             xnav.SetDone("xnavdone", "Perform a date check...");
             xnav.SetReset('d');
-            await Intermission(1, false);
+            await xnav.Intermission(1, false);
 
             // Lägger in siffror på olika platser i arrayen. En plats som dessförinnan var ett datum.
             // Undersöker även om PlacingInArray returnerar 0, vilket indikerar beräkningsfel.
@@ -814,7 +809,7 @@
         {
             xnav.SetDone("xnavdone", "Date check is OFF because start date is equal to end date.");
             xnav.SetReset('d');
-            await Intermission(2000, false);
+            await xnav.Intermission(2000, false);
             result = true;
         }
 
@@ -822,7 +817,7 @@
         {
             xnav.SetDone("xnavdone", "Ok.");
             xnav.SetReset('d');
-            await Intermission(500, false);
+            await xnav.Intermission(500, false);
             xnav.SetReset('a');
         }
 
@@ -853,15 +848,5 @@
         if (pm == '=') number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3));
 
         return number;
-    }
-
-    private async Task Intermission(int time, bool hide) // Paus.
-    {
-        if (hide)
-        {
-            xnav.SetReset('a');
-        }
-        base.StateHasChanged();
-        await Task.Delay(time);
     }
 }

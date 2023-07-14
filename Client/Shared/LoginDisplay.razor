@@ -4,13 +4,13 @@
 
 <AuthorizeView>
     <Authorized>
-        <span class="@xnav.classRegStatus">@xnav.RegText</span>
+        <span class="@xnav.ClassRegStatus">@xnav.RegText</span>
         <a href="authentication/profile">Hello, @context.User.Identity?.Name!</a>
-        <img src="@xnav.PathImgLog" class="@xnav.classAvatarLog" />
+        <img src="@xnav.PathImgLog" class="@xnav.ClassAvatarLog" />
         <button class="nav-link btn btn-link" @onclick="BeginLogOut">Log out</button>
     </Authorized>
     <NotAuthorized>
-        <span class="@xnav.classReg"><a href="authentication/register">Register</a></span>
+        <span class="@xnav.ClassReg"><a href="authentication/register">Register</a></span>
         <a href="authentication/login">Log in</a>
     </NotAuthorized>
 </AuthorizeView>
@@ -28,22 +28,22 @@
         {
             var regist = await xClient.GetAsync<RegisterDto>(1, "api/Register");
 
-            if (regist is not null) xnav.classReg = regist.RegClass;
-            else xnav.classReg = "d-block";
+            if (regist is not null) xnav.ClassReg = regist.RegClass;
+            else xnav.ClassReg = "d-block";
         }
         catch
         {
-            xnav.classReg = "d-block";
+            xnav.ClassReg = "d-block";
         }
 
-        if (xnav.classReg == "d-block")
+        if (xnav.ClassReg == "d-block")
         {
-            xnav.classRegStatus = "regon";
+            xnav.ClassRegStatus = "regon";
             xnav.RegText = "REG ON";
         }
         else
         {
-            xnav.classRegStatus = "regoff";
+            xnav.ClassRegStatus = "regoff";
             xnav.RegText = "REG OFF";
         }
 

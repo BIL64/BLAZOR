@@ -10,9 +10,10 @@
 <AuthorizeView Roles ="Student, Teacher">
     <Authorized>
         <div class="toast-container p-3 @showClass"
-             style="position: fixed; top: auto; bottom: @(Pos_V)px; margin-left: @(Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
+             style="position: fixed; top: auto; bottom: @(xnav.Pos_V)px; margin-left: @(xnav.Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
             <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header" @onmouseup="MouseUp" @onmousedown="MouseDown" @onmousemove="MouseMove" @onmouseout="MouseOut">
+                <div class="toast-header" @onmouseup=" _ => xnav.Mouse(0, 'U', _)" @onmousedown=" _ => xnav.Mouse(Win_Height, 'D', _)"
+                     @onmousemove=" _ => xnav.Mouse(Win_Height, 'M', _)" @onmouseout=" _ => xnav.Mouse(Win_Height, 'M', _)">
                     <strong class="me-auto">@HeaderText</strong>
                     <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
                 </div>
@@ -48,13 +49,7 @@
     private string HeaderText = string.Empty;
     private string showClass = "d-none";
 
-    private int Win_Width;
     private int Win_Height;
-    private int Diff_X;
-    private int Diff_Y;
-    private int Pos_H;
-    private int Pos_V;
-    private bool IsDown = false;
 
     private int NameIndex;
     private bool Upload;
@@ -73,9 +68,10 @@
     {
         xnav.SetReset('a');
 
-        await GetWindowSize(); // Hämtar aktuell skärmstorlek.
-        Pos_H = (int)Math.Round(Win_Width * 0.08); // 08%
-        Pos_V = (int)Math.Round(Win_Height * 0.5); // 50%
+        var dim = await xClient.GetWindow(); // Hämtar aktuell skärmstorlek.
+        Win_Height = dim.Height;
+        xnav.Pos_H = (int)Math.Round(dim.Width * 0.08); // 08%
+        xnav.Pos_V = (int)Math.Round(Win_Height * 0.5); // 50%
 
         if (Auxx.Loggeduser.Id is not null) GuidId = Auxx.Loggeduser.Id;
 
@@ -280,41 +276,5 @@
                 uploadResults = uploadResults.Concat(newUploadResults).ToList();
             }
         }
-    }
-
-    private async Task GetWindowSize() // Hämtar skärmstorlek.
-    {
-        var dim = await xClient.GetWindow();
-        Win_Width = dim.Width;
-        Win_Height = dim.Height;
-    }
-
-    private void MouseUp() // Moveable Toaster.
-    {
-        IsDown = false; // När man släpper musknappen.
-    }
-
-    private void MouseDown(MouseEventArgs e) // Moveable Toaster.
-    {
-        if (!IsDown) // Skillnaden mellan muspekarens position och css-värdet av objektet.
-        {
-            Diff_X = (int)e.ClientX - Pos_H;
-            Diff_Y = Win_Height - (Pos_V + (int)e.ClientY);
-            IsDown = true;
-        }
-    }
-
-    private void MouseMove(MouseEventArgs e) // Moveable Toaster.
-    {
-        if (IsDown) // Flyttar objektet asynkront i musens riktning.
-        {
-            if ((int)e.ClientX - Diff_X > 0) Pos_H = (int)e.ClientX - Diff_X; else Pos_H = 0;
-            if (Win_Height - ((int)e.ClientY + Diff_Y) > 0) Pos_V = Win_Height - ((int)e.ClientY + Diff_Y); else Pos_V = 0;
-        }
-    }
-
-    private void MouseOut(MouseEventArgs e) // Förhindrar att muspekaren släpper objektet vid hastiga musrörelser.
-    {
-        MouseMove(e); // Samma algoritm såsom MouseMove gäller även här.
     }
 }

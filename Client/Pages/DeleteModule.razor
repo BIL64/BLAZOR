@@ -52,8 +52,7 @@
     {
         xnav.SetDone("xnavdone", "This module and all its documents and activities were deleted.");
         xnav.SetReset('d');
-        StateHasChanged();
-        await Task.Delay(3000);
+        await xnav.Intermission(3000, false);
 
         // Dokument som hör till modulens aktiviteter.
         var document1 = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");

@@ -19,7 +19,7 @@
     <section class="activityeditbox"> @*Hjälptabeller vid inmatning av moduler*@
         <div style="display: flex">
             <h4 style="width: 75%">COURSE: @course.Name</h4>
-            <h5 style="margin: 0 0 0 auto">@StartEndDate(course.StartDate, course.EndDate)</h5>
+            <h5 style="margin: 0 0 0 auto">@XNavMenu.StartEndDate(course.StartDate, course.EndDate)</h5>
         </div>
         <h6>Modules...</h6>
         <table class="table">
@@ -37,7 +37,7 @@
                 <tr>
                     <td>@mod.Name</td>
                     <td>@mod.Description</td>
-                    <td>@StartEndDate(mod.StartDate, mod.EndDate)</td>
+                    <td>@XNavMenu.StartEndDate(mod.StartDate, mod.EndDate)</td>
                 </tr>
             }
         </table>
@@ -166,9 +166,9 @@
 
     private async Task RefreshAfterThis() // Uppdaterar efter förändring av innehåll.
     {
-        while (!Auxx.Flag) await Intermission(1000, false);
+        while (!Auxx.Flag) await xnav.Intermission(1000, false);
         Auxx.Flag = false;
-        await Intermission(1000, false);
+        await xnav.Intermission(1000, false);
         await OnInitializedAsync();
     }
 
@@ -253,8 +253,7 @@
     {
         xnav.SetDone("xnavdone", "The module was NOT edited or created.");
         xnav.SetReset('d');
-        base.StateHasChanged();
-        await Task.Delay(500);
+        await xnav.Intermission(500, false);
         Navigation.NavigateTo($"/coursedetail/{CourseID}", true);
     }
 
@@ -264,7 +263,7 @@
 
         if (module.StartDate > module.EndDate)
         {
-            await Intermission(100, true);
+            await xnav.Intermission(100, true);
             xnav.SetError("xnaverror", "Date mismatch (start date is greater than end date).");
             xnav.SetReset('e');
         }
@@ -289,7 +288,7 @@
 
         if (module.StartDate > module.EndDate)
         {
-            await Intermission(100, true);
+            await xnav.Intermission(100, true);
             xnav.SetError("xnaverror", "Date mismatch (start date is greater than end date).");
             xnav.SetReset('e');
         }
@@ -327,13 +326,8 @@
     {
         xnav.SetDone("xnavdone", "Your module is edited or added.");
         xnav.SetReset('d');
-        await Intermission(2000, false);
+        await xnav.Intermission(2000, false);
         Navigation.NavigateTo($"/coursedetail/{CourseID}", true);
-    }
-
-    private string StartEndDate(DateTime start, DateTime end) // Returnerar datumsträng.
-    {
-        return $"{start.ToString().Substring(0, 10)} | {end.ToString().Substring(0, 10)}";
     }
 
     private async Task OpenFileControl(int ix, string filename)
@@ -345,16 +339,6 @@
     {
         xnav.SetMess("xnavmess", description + " by " + author + " Created: " + timestamp);
         xnav.SetReset('m');
-    }
-
-    private async Task Intermission(int time, bool hide) // Paus.
-    {
-        if (hide)
-        {
-            xnav.SetReset('a');
-        }
-        base.StateHasChanged();
-        await Task.Delay(time);
     }
 }
 
