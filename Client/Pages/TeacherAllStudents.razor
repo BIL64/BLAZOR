@@ -3,6 +3,7 @@
 @inject NavigationManager Navigation
 @inject IAppUserDtoClient appuserClient
 @inject IXDtoClient xClient
+@inject XPagination xpag
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Björn Lindqvist*@
@@ -52,7 +53,7 @@ else
     <table class="table">
         <thead>
             <tr>
-                @if (Auxx.classPag == "d-flex") // Eliminerar visuella störningar.
+                @if (xpag.ClassPag == "d-flex") // Eliminerar visuella störningar.
                 {
                     <th>Student</th>
                     <th>Email</th>
@@ -64,7 +65,7 @@ else
         <tbody>
             @foreach (var data in students)
             {
-                if (PagProceed()) // Paginering.
+                if (xpag.PagProceed(students)) // Paginering.
                 {
                     <tr style="color: darkblue">
                         @{classAvatar = "";}
@@ -136,49 +137,49 @@ else
                         </td>
                     </tr>
                 }
-                Auxx.PagCount++;
+                xpag.PagCount++;
             }
         </tbody>
     </table>
 
-    if (Auxx.PagOn) // PAGINERING.
+    if (xpag.PagOn) // PAGINERING.
     {
-        var Pnum = new List<int>(); Auxx.PagCount = 0; // Skapar en lista för att kunna välja en sida.
-        for (int i = 1; i <= (int)Math.Ceiling((decimal)this.students.Count / Auxx.PagRows); i++) Pnum.Add(i); // Antal sidor beräknas.
+        var Pnum = new List<int>(); xpag.PagCount = 0; // Skapar en lista för att kunna välja en sida.
+        for (int i = 1; i <= (int)Math.Ceiling((decimal)this.students.Count / xpag.PagRows); i++) Pnum.Add(i); // Antal sidor beräknas.
 
-        if ((Auxx.PagOn && !Auxx.PagAuto) || (Auxx.PagOn && Auxx.PagAuto && @students.Count > Auxx.PagRows)) // Villkor som styrs av den automatiska pagineringen.
+        if ((xpag.PagOn && !xpag.PagAuto) || (xpag.PagOn && xpag.PagAuto && @students.Count > xpag.PagRows)) // Villkor som styrs av den automatiska pagineringen.
         {
-            <section class="@Auxx.classPag"> @*Grafiken för paginering*@
+            <section class="@xpag.ClassPag"> @*Grafiken för paginering*@
                 <div style="margin: 0 auto 0 auto">
-                    <span><button class="oi oi-caret-left btn btn-dark px-2 mx-2" @onclick=" _ => PagBtnSet(Auxx.PagPage - 1, 0)"></button></span> @*<<Sidoknapp*@
+                    <span><button class="oi oi-caret-left btn btn-dark px-2 mx-2" @onclick=" _ => PagSet(xpag.PagPage - 1, 0)"></button></span> @*<<Sidoknapp*@
                     @foreach (var n in Pnum) // Radar upp sidnummerknappar och markerar numret man klickar på.
                     {
-                        if (n == Auxx.PagPage) // Markering av sidnummer.
+                        if (n == xpag.PagPage) // Markering av sidnummer.
                         {
-                            <span><button type="button" class="pagbtnact" @onclick=" _ => PagBtnSet(n, 0)">@n</button></span>
+                            <span><button type="button" class="pagbtnact" @onclick=" _ => PagSet(n, 0)">@n</button></span>
                         }
                         else
-                        if (n % Auxx.PagRed == 0) // Övriga sidor med eller utan reduktion.
+                        if (n % xpag.PagRed == 0) // Övriga sidor med eller utan reduktion.
                         {
-                            <span><button type="button" class="pagbtn" @onclick=" _ => PagBtnSet(n, 0)">@n</button></span>
+                            <span><button type="button" class="pagbtn" @onclick=" _ => PagSet(n, 0)">@n</button></span>
                         }
-                        if (Auxx.PagRed > 1) // Mellanslag vid reduktion.
+                        if (xpag.PagRed > 1) // Mellanslag vid reduktion.
                         {
                             <span>&nbsp;</span>
                         }
                     }
-                    <span><button class="oi oi-caret-right btn btn-dark px-2 mx-2" @onclick=" _ => PagBtnSet(Auxx.PagPage + 1, Pnum.Count)"></button></span> @*>>Sidoknapp*@
+                    <span><button class="oi oi-caret-right btn btn-dark px-2 mx-2" @onclick=" _ => PagSet(xpag.PagPage + 1, Pnum.Count)"></button></span> @*>>Sidoknapp*@
                     <span class="pagfind">&lsaquo;@students.Count&rsaquo;</span> @*Antal hittade*@
                 </div>
             </section>
         }
         else
         {
-            <aside class="@Auxx.classPag"> @*Antal hittade*@
+            <aside class="@xpag.ClassPag"> @*Antal hittade*@
                 <div class="pagfind">&lsaquo;@students.Count&rsaquo;</div>
             </aside>
         }
-        Auxx.classPag = "d-flex"; // Förhindrar att sidoknapparna syns vid reloading.
+        xpag.ClassPag = "d-flex"; // Förhindrar att sidoknapparna syns vid reloading.
     }
     else
     {
@@ -242,36 +243,8 @@ else
 
     private async Task PagControl() // Pagineringsfönster.
     {
-        Auxx.PagId = 1; // <-- samma identitetsvärde!
         await paginationRef!.Show();
         await RefreshAfterThis(); // Uppdaterar sidan.
-    }
-
-    private async Task LoadPag()  // Pagineringsinställningar.
-    {
-        try // Alla variabler till pagineringen är statiska.
-        {
-            Auxx.PagOn = bool.Parse(await xClient.GetStorage<string>("Pag1On")); // <-- samma identitetsvärde!
-            Auxx.PagAuto = bool.Parse(await xClient.GetStorage<string>("Pag1Auto")); // <-- samma identitetsvärde!
-            Auxx.PagRows = int.Parse(await xClient.GetStorage<string>("Pag1Rows")); // <-- samma identitetsvärde!
-            Auxx.PagRed = int.Parse(await xClient.GetStorage<string>("Pag1Red")); // <-- samma identitetsvärde!
-            Auxx.PagCount = 0;
-            Auxx.PagPage = 1;
-            Auxx.classPag = "d-flex";
-        }
-        catch
-        {
-            xnav.SetError("xnaverror", "An error occurred while trying to open local storage.");
-            xnav.SetReset('e');
-            await xnav.Intermission(3000, false);
-            Auxx.PagOn = false;
-            Auxx.PagAuto = true;
-            Auxx.PagCount = 0;
-            Auxx.PagRows = 10; // Noll ger "division by zero"
-            Auxx.PagRed = 1; // Noll ger "division by zero"
-            Auxx.PagPage = 1;
-            Auxx.classPag = "d-flex";
-        }
     }
 
     private List<AppUserDto> students = new();
@@ -295,6 +268,12 @@ else
     private string searchString = string.Empty;
     private byte searchType = 1;
 
+    private async Task PagSet(int page, int pnum) // Paginering.
+    {
+        xpag.PagBtnSet(page, pnum);
+        await OnInitializedAsync();
+    }
+
     private async Task RefreshAfterThis() // Uppdaterar efter förändring av innehåll.
     {
         while (!Auxx.Flag) await xnav.Intermission(1000, false);
@@ -308,12 +287,7 @@ else
         xnav.SetReset('a');
         Emptydb = "List of students";
 
-        if (Auxx.PagRows == 0 || Auxx.PagRed == 0 || students.Count < 1) await LoadPag(); // Paginering.
-        else
-        {
-            if (!Auxx.Flag) Auxx.classPag = "d-none"; // Förhindrar att knapparna synliggörs.
-            Auxx.Flag = false;
-        }
+        await xpag.InitPag(1, students); // Pagineringskontroll.
 
         students.Clear(); // Sökfunktionen kräver att listorna rensas.
         courses.Clear();
@@ -465,32 +439,9 @@ else
         await OnInitializedAsync();
     }
 
-    private bool PagProceed() // Paginering.
-    {
-        bool Proceed = false;
-
-        // Om man söker ett objekt på en sida med ett högt nummer.
-        if (Auxx.PagPage > (int)Math.Ceiling((decimal)this.students.Count / Auxx.PagRows)) Auxx.PagPage = 1;
-
-        if ((Auxx.PagCount >= Auxx.PagRows * (Auxx.PagPage - 1) && Auxx.PagCount < Auxx.PagRows * Auxx.PagPage) || !Auxx.PagOn) Proceed = true;
-
-        return Proceed;
-    }
-
-    private async Task PagBtnSet(int page, int pnum) // Paginering.
-    {
-        if (page < 1) page = 1; // Förhindrar 0-sidor och sidor högre än förekommande.
-        if (page > pnum && pnum != 0) page = pnum;
-
-        Auxx.PagPage = page;
-        Auxx.classPag = "d-none";
-
-        await OnInitializedAsync();
-    }
-
     private void ShowMessControl(string description, string author, string timestamp)
     {
-        xnav.SetMess("xnavmess", description + " by " + author + " Created: " + timestamp);
+        xnav.SetMess(description + " by " + author + " Created: " + timestamp);
         xnav.SetReset('m');
     }
 

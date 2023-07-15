@@ -1,5 +1,6 @@
 ﻿@inject IXDtoClient xClient
 @inject XNavMenu xnav
+@inject XPagination xpag
 @attribute [Authorize]
 @*Av Björn Lindqvist*@
 @*Endast lärare har åtkomst hit*@
@@ -89,10 +90,10 @@
         xnav.Pos_H = (int)Math.Round(dim.Width * 0.08); // 08%
         xnav.Pos_V = (int)Math.Round(Win_Height * 0.5); // 50%
 
-        PagOn = Auxx.PagOn;
-        PagAuto = Auxx.PagAuto;
-        PagRows = Auxx.PagRows;
-        PagRed = Auxx.PagRed;
+        PagOn = xpag.PagOn;
+        PagAuto = xpag.PagAuto;
+        PagRows = xpag.PagRows;
+        PagRed = xpag.PagRed;
         HeaderText = "Pagination settings...";
         showClass = "d-block";
         StateHasChanged();
@@ -109,23 +110,21 @@
     {
         try
         {
-            Auxx.PagOn = PagOn;
-            Auxx.PagAuto = PagAuto;
-            Auxx.PagRows = PagRows;
-            Auxx.PagRed = PagRed;
-            StateHasChanged();
-            await xClient.SetStorage<string>($"Pag{Auxx.PagId}On", PagOn.ToString());
-            await xClient.SetStorage<string>($"Pag{Auxx.PagId}Auto", PagAuto.ToString());
-            await xClient.SetStorage<string>($"Pag{Auxx.PagId}Rows", PagRows.ToString());
-            await xClient.SetStorage<string>($"Pag{Auxx.PagId}Red", PagRed.ToString());
+            xpag.PagOn = PagOn;
+            xpag.PagAuto = PagAuto;
+            xpag.PagRows = PagRows;
+            xpag.PagRed = PagRed;
+            await xClient.SetStorage<string>($"Pag{xpag.PagId}On", PagOn.ToString());
+            await xClient.SetStorage<string>($"Pag{xpag.PagId}Auto", PagAuto.ToString());
+            await xClient.SetStorage<string>($"Pag{xpag.PagId}Rows", PagRows.ToString());
+            await xClient.SetStorage<string>($"Pag{xpag.PagId}Red", PagRed.ToString());
+            Auxx.Flag = true;
         }
         catch
         {
-            xnav.SetError("xnaverror", "An error occurred while saving to local storage.");
+            xnav.SetError("An error occurred while saving to local storage.");
             xnav.SetReset('e');
-            StateHasChanged();
-            await xnav.Intermission(3000, false);
         }
-        Close(); // Ingen omnavigering eftersom det nollställer alla statiska variabler.
+        Close(); // En omnavigering här nollställer alla variabler inklusive statiska.
     }
 }

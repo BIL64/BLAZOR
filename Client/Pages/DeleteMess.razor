@@ -56,7 +56,7 @@
 
     private async Task DeleteNow()
     {
-        xnav.SetDone("xnavdone", "This message was deleted.");
+        xnav.SetDone("This message was deleted.");
         xnav.SetReset('d');
 
         await xClient.RemAsync(Auxx.IntId, "api/Document");

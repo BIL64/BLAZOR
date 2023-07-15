@@ -59,7 +59,7 @@
 
     private async Task DeleteNow()
     {
-        xnav.SetDone("xnavdone", "All unregistered visitors were deleted.");
+        xnav.SetDone("All unregistered visitors were deleted.");
         xnav.SetReset('d');
 
         var appuser = await appuserClient.GetAsync();
@@ -89,7 +89,7 @@
         }
         catch
         {
-            xnav.SetError("xnaverror", "The register value in DB is not reachable.");
+            xnav.SetError("The register value in DB is not reachable.");
             xnav.SetReset('e');
             failure = true;
         }
@@ -103,7 +103,7 @@
             };
             await xClient.PutAsync<RegisterDto>(1, lreg, "api/Register");
 
-            xnav.SetDone("xnavdone", "Register for visitors is activated.");
+            xnav.SetDone("Register for visitors is activated.");
             xnav.SetReset('d');
             xnav.SetReg(true);
         }
@@ -117,14 +117,14 @@
                 };
             await xClient.PutAsync<RegisterDto>(1, lreg, "api/Register");
 
-            xnav.SetDone("xnavdone", "Register for visitors is disable.");
+            xnav.SetDone("Register for visitors is disable.");
             xnav.SetReset('d');
             xnav.SetReg(false);
         }
 
         if (!failure && xnav.ClassReg != "d-block" && xnav.ClassReg != "d-none")
         {
-            xnav.SetError("xnaverror", "The register value in DB is corrupted. Id = 1 and RegClass = ”d-block” or RegClass = ”d-none”");
+            xnav.SetError("The register value in DB is corrupted. Id = 1 and RegClass = ”d-block” or RegClass = ”d-none”");
             xnav.SetReset('e');
         }
 

@@ -164,7 +164,7 @@
                         content.Add(content: fileContent, name: "\"files\"", fileName: NameIndex + file.Name);
                         Upload = true;
 
-                        xnav.SetDone("xnavdone", "Selected file Ok.");
+                        xnav.SetDone("Selected file Ok.");
                         xnav.SetReset('d');
                     }
                     catch (Exception ex)
@@ -180,7 +180,7 @@
                                 });
 
                         Upload = false;
-                        xnav.SetError("xnaverror", $"{file.Name} not selected (Err: 6): {ex.Message}");
+                        xnav.SetError($"{file.Name} not selected (Err: 6): {ex.Message}");
                         xnav.SetReset('e');
                     }
                 }
@@ -197,7 +197,7 @@
                         });
 
                 Upload = false;
-                xnav.SetError("xnaverror", "Failed to set a unique filename index.");
+                xnav.SetError("Failed to set a unique filename index.");
                 xnav.SetReset('e');
             }
         }
@@ -236,7 +236,7 @@
             if (IsMan) ldoc.Id4Course = -1; // Kursid sätts till -1 vilket markerar särskiljning.
 
             await xClient.PostAsync<DocumentDto>(ldoc, "api/Document");
-            xnav.SetDone("xnavdone", "Your document file was added.");
+            xnav.SetDone("Your document file was added.");
             xnav.SetReset('d');
             Auxx.Flag = true;
             Close();
@@ -245,7 +245,7 @@
         {
             if (classFile == "form-group m-md-3")
             {
-                xnav.SetError("xnaverror", "The file was not approved or was never selected.");
+                xnav.SetError("The file was not approved or was never selected.");
                 xnav.SetReset('e');
             }
         }
@@ -277,7 +277,7 @@
             if (IsMan) ldoc.Id4Course = -1; // Kursid sätts till -1 vilket markerar särskiljning.
 
             await xClient.PostAsync<DocumentDto>(ldoc, "api/Document");
-            xnav.SetDone("xnavdone", "Your message was posted.");
+            xnav.SetDone("Your message was posted.");
             xnav.SetReset('d');
             Auxx.Flag = true;
             Close();

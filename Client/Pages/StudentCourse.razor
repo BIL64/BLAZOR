@@ -606,7 +606,7 @@
 
     private void InfoTitle(string description)
     {
-        xnav.SetInfo("xnavinfo", description);
+        xnav.SetInfo(description);
         xnav.SetReset('i');
     }
 
@@ -617,13 +617,13 @@
 
     private void ShowInfoControl(string description, string author, string timestamp)
     {
-        xnav.SetInfo("xnavinfo", description + " by " + author + " Created: " + timestamp);
+        xnav.SetInfo(description + " by " + author + " Created: " + timestamp);
         xnav.SetReset('i');
     }
 
     private void ShowMessControl(string description, string author, string timestamp)
     {
-        xnav.SetMess("xnavmess", description + " by " + author + " Created: " + timestamp);
+        xnav.SetMess(description + " by " + author + " Created: " + timestamp);
         xnav.SetReset('m');
     }
 
@@ -645,12 +645,12 @@
         {
             modules.Clear();
             modules.Add(module);
-            xnav.SetDone("xnavdone", "Your current module.");
+            xnav.SetDone("Your current module.");
             xnav.SetReset('d');
         }
         else
         {
-            xnav.SetDone("xnavdone", "There is no current module.");
+            xnav.SetDone("There is no current module.");
             xnav.SetReset('d');
         }
     }

@@ -114,7 +114,7 @@
         };
 
         await xClient.PutAsync<DocumentDto>(document.Id, ldoc, "api/Document");
-        xnav.SetDone("xnavdone", "Your document file was edited.");
+        xnav.SetDone("Your document file was edited.");
         xnav.SetReset('i');
         Auxx.Flag = true;
         Close();
@@ -124,7 +124,7 @@
     {
         await xClient.RemAsync(document.Id, "api/Document");
         await xClient.DeleteFile(document.NameIx.ToString() + document.DocName);
-        xnav.SetDone("xnavdone", "Your document file was deleted.");
+        xnav.SetDone("Your document file was deleted.");
         xnav.SetReset('d');
         Auxx.Flag = true;
         Close();

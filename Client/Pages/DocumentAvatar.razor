@@ -136,7 +136,7 @@
                         content.Add(content: fileContent, name: "\"files\"", fileName: NameIndex + file.Name);
                         Upload = true;
 
-                        xnav.SetDone("xnavdone", "Selected file Ok.");
+                        xnav.SetDone("Selected file Ok.");
                         xnav.SetReset('d');
                     }
                     catch (Exception ex)
@@ -152,7 +152,7 @@
                                 });
 
                         Upload = false;
-                        xnav.SetError("xnaverror", $"{file.Name} not selected (Err: 6): {ex.Message}");
+                        xnav.SetError($"{file.Name} not selected (Err: 6): {ex.Message}");
                         xnav.SetReset('e');
                     }
                 }
@@ -169,7 +169,7 @@
                         });
 
                 Upload = false;
-                xnav.SetError("xnaverror", "Failed to set a unique avatar name.");
+                xnav.SetError("Failed to set a unique avatar name.");
                 xnav.SetReset('e');
             }
         }
@@ -218,14 +218,14 @@
 
                 await xClient.PostAsync<DocumentDto>(ldoc, "api/Document");
             }
-            xnav.SetDone("xnavdone", "Your avatar was added.");
+            xnav.SetDone("Your avatar was added.");
             xnav.SetReset('d');
             Auxx.Flag = true;
             Close();
         }
         else
         {
-            xnav.SetError("xnaverror", "The file was not approved or was never selected.");
+            xnav.SetError("The file was not approved or was never selected.");
             xnav.SetReset('e');
         }
     }
@@ -246,7 +246,7 @@
 
         if (navmess)
         {
-            xnav.SetDone("xnavdone", "Your avatar was deleted.");
+            xnav.SetDone("Your avatar was deleted.");
             xnav.SetReset('d');
             Auxx.Flag = true;
             Close();

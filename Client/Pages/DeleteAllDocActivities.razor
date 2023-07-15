@@ -92,20 +92,20 @@
                 HeaderText = string.Empty;
                 showClass = "d-none";
                 StateHasChanged();
-                xnav.SetDone("xnavdone", "All non-mandatory documents and messages were deleted.");
+                xnav.SetDone("All non-mandatory documents and messages were deleted.");
                 xnav.SetReset('d');
                 Auxx.Flag = true;
             }
             else
             {
-                xnav.SetDone("xnavdone", "No documents or messages could be found.");
+                xnav.SetDone("No documents or messages could be found.");
                 xnav.SetReset('d');
             }
 
         }
         else
         {
-            xnav.SetError("xnaverror", "The date was incorrect.");
+            xnav.SetError("The date was incorrect.");
             xnav.SetReset('e');
         }
     }

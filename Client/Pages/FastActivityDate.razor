@@ -111,15 +111,15 @@
         try
         {
             await xClient.PutAsync<ActivityDto>(Auxx.IntId, lact, "api/Activity");
-            xnav.SetDone("xnavdone", "The dates were saved.");
+            xnav.SetDone("The dates were saved.");
             xnav.SetReset('d');
         }
         catch
         {
-            xnav.SetError("xnaverror", "An error occurred while saving to activity.");
+            xnav.SetError("An error occurred while saving to activity.");
             xnav.SetReset('e');
         }
         Auxx.Flag = true;
-        Close(); // Ingen omnavigering eftersom det nollställer alla statiska variabler.
+        Close(); // En omnavigering här nollställer alla variabler inklusive statiska.
     }
 }

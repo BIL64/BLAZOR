@@ -146,7 +146,7 @@ else
     private async Task GetRegistered(string id) // Registrerar den oregistrerade.
     {
         await xnav.Intermission(500, true);
-        xnav.SetDone("xnavdone", "This visitor was registered. Press “Search” for refreshing.");
+        xnav.SetDone("This visitor was registered. Press “Search” for refreshing.");
         xnav.SetReset('d');
         await appuserClient.PreAsync(id, 1);
     }

@@ -50,7 +50,7 @@
 
     private async Task DeleteNow()
     {
-        xnav.SetDone("xnavdone", "This module and all its documents and activities were deleted.");
+        xnav.SetDone("This module and all its documents and activities were deleted.");
         xnav.SetReset('d');
         await xnav.Intermission(3000, false);
 

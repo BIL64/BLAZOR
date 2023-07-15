@@ -83,14 +83,14 @@
 
         if (!FindDoc)
         {
-            xnav.SetDone("xnavdone", "This student was deleted.");
+            xnav.SetDone("This student was deleted.");
             xnav.SetReset('d');
             await appuserClient.RemAsync(Auxx.GuidId);
             Auxx.Flag = true;
         }
         else
         {
-            xnav.SetError("xnaverror", "All documents or messages belonging to a student must first be deleted before the student can be deleted.");
+            xnav.SetError("All documents or messages belonging to a student must first be deleted before the student can be deleted.");
             xnav.SetReset('e');
         }
         Close();
@@ -98,7 +98,7 @@
 
     private async Task Redirect()
     {
-        xnav.SetDone("xnavdone", "This student was redirected to a teacher.");
+        xnav.SetDone("This student was redirected to a teacher.");
         xnav.SetReset('d');
 
         await appuserClient.PreAsync(Auxx.GuidId, 12);

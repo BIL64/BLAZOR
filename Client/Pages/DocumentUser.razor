@@ -87,7 +87,7 @@
     {
         await xClient.RemAsync(document.Id, "api/Document");
         await xClient.DeleteFile(document.NameIx + document.DocName);
-        xnav.SetDone("xnavdone", "This document file was deleted.");
+        xnav.SetDone("This document file was deleted.");
         xnav.SetReset('d');
         Auxx.Flag = true;
         Close();

@@ -52,30 +52,30 @@ public class XNavMenu // Klass som kan kommunicera med navmenyn.
         NotifyStateChanged();
     }
 
-    public void SetInfo(string classx, string info)
+    public void SetInfo(string info)
     {
-        ClassInfoMess = classx;
+        ClassInfoMess = "xnavinfo";
         InfoMess = info;
         NotifyStateChanged();
     }
 
-    public void SetMess(string classx, string mess)
+    public void SetMess(string mess)
     {
-        ClassMessMess = classx;
+        ClassMessMess = "xnavmess";
         MessMess = mess;
         NotifyStateChanged();
     }
 
-    public void SetDone(string classx, string done)
+    public void SetDone(string done)
     {
-        ClassDoneMess = classx;
+        ClassDoneMess = "xnavdone";
         DoneMess = done;
         NotifyStateChanged();
     }
 
-    public void SetError(string classx, string error)
+    public void SetError(string error)
     {
-        ClassErrorMess = classx;
+        ClassErrorMess = "xnaverror";
         ErrorMess = error;
         NotifyStateChanged();
     }
@@ -199,7 +199,7 @@ public class XNavMenu // Klass som kan kommunicera med navmenyn.
     private void NotifyStateChanged() => OnChange?.Invoke();
 
     // ---------------------------------------------------------------
-    // Här har jag lagt andra funktioner som förekommer mer än en gång:
+    // Här har jag lagt andra funktioner som förekommer mer än en gång
     // ---------------------------------------------------------------
 
     public static string StartEndDate(DateTime start, DateTime end) // Returnerar datumsträng.

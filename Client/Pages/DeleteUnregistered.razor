@@ -62,7 +62,7 @@
 
     private async Task DeleteNow()
     {
-        xnav.SetDone("xnavdone", "This unregistered visitor was deleted.");
+        xnav.SetDone("This unregistered visitor was deleted.");
         xnav.SetReset('d');
 
         await appuserClient.RemAsync(Auxx.GuidId);
@@ -72,7 +72,7 @@
 
     private async Task Redirect()
     {
-        xnav.SetDone("xnavdone", "This unregistered visitors was redirected to a teacher.");
+        xnav.SetDone("This unregistered visitors was redirected to a teacher.");
         xnav.SetReset('d');
 
         await appuserClient.PreAsync(Auxx.GuidId, 12);

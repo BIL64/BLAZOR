@@ -772,7 +772,7 @@
         int InInt = 0;
         int Count = 1;
 
-        xnav.SetDone("xnavdone", "Perform calculation...");
+        xnav.SetDone("Perform calculation...");
         xnav.SetReset('d');
         await xnav.Intermission(1, false);
 
@@ -860,7 +860,7 @@
 
         if (LimCheck == "" && CourseCheck == "" && ModuleCheck == "" && ActivityCheck == "" && EndCheck == "")
         {
-            xnav.SetDone("xnavdone", "No date errors could be found.");
+            xnav.SetDone("No date errors could be found.");
             xnav.SetReset('d');
         }
         else
@@ -869,18 +869,18 @@
             {
                 if (LimCheck != "")
                 {
-                    xnav.SetError("xnaverror", LimCheck);
+                    xnav.SetError(LimCheck);
                     xnav.SetReset('e');
                 }
                 else
                 {
-                    xnav.SetError("xnaverror", CourseCheck + " " + ModuleCheck + " " + ActivityCheck);
+                    xnav.SetError(CourseCheck + " " + ModuleCheck + " " + ActivityCheck);
                     xnav.SetReset('e');
                 }
             }
             else
             {
-                xnav.SetError("xnaverror", EndCheck);
+                xnav.SetError(EndCheck);
                 xnav.SetReset('e');
             }
         }
@@ -939,7 +939,7 @@
 
     private void ShowMessControl(string description, string author, string timestamp)
     {
-        xnav.SetMess("xnavmess", description + " by " + author + " Created: " + timestamp);
+        xnav.SetMess(description + " by " + author + " Created: " + timestamp);
         xnav.SetReset('m');
     }
 
@@ -961,12 +961,12 @@
         {
             modules.Clear();
             modules.Add(module);
-            xnav.SetDone("xnavdone", "Your current module.");
+            xnav.SetDone("Your current module.");
             xnav.SetReset('d');
         }
         else
         {
-            xnav.SetDone("xnavdone", "There is no current module.");
+            xnav.SetDone("There is no current module.");
             xnav.SetReset('d');
         }
     }

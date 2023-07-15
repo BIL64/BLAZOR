@@ -18,20 +18,4 @@ public static class Auxx // Statisk klass med variabler som är åtkomliga över
     public static AppUserDto Loggeduser { get; set; } = new AppUserDto();
 
     public static List<DocumentDto> Documents { get; set; } = new List<DocumentDto>();
-
-    public static bool PagOn { get; set; } // Paginering - On/Off.
-
-    public static bool PagAuto { get; set; } // Paginering - Auto On/Off.
-
-    public static byte PagId { get; set; } // Paginering - Identitetsnr.
-
-    public static int PagCount { get; set; } // Paginering - Antal forloopar.
-
-    public static int PagRows { get; set; } // Paginering - Satta rader.
-
-    public static int PagRed { get; set; } // Paginering - Reduceringstal.
-
-    public static int PagPage { get; set; } // Paginering - Antal sidor.
-
-    public static string classPag { get; set; } = "d-flex"; // Paginering - display:flex.
 }

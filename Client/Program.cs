@@ -29,6 +29,8 @@ namespace LexiconLMSBlazor.Client
 
             builder.Services.AddScoped<XNavMenu>();
 
+            builder.Services.AddScoped<XPagination>();
+
             builder.Services.AddApiAuthorization();
 
             await builder.Build().RunAsync();
