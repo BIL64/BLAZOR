@@ -32,6 +32,7 @@ else
         </span>
     </EditForm>
 
+    <DeleteUnregistered @ref="deleteRef" /> @*Delete-fönster*@
     <DeleteAllVisitors @ref="deleteAll" /> @*Delete-fönster*@
 
     <table class="table">
@@ -69,8 +70,6 @@ else
         </tbody>
     </table>
 }
-
-<DeleteUnregistered @ref="deleteRef" /> @*Delete-fönster*@
 
 </Authorized>
     <NotAuthorized>

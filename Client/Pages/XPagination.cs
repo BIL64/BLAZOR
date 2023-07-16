@@ -53,7 +53,7 @@ public class XPagination : XDtoClient
         PagOn = false;
         PagAuto = true;
         PagCount = 0;
-        PagRows = 10; // Noll ger "division by zero"
+        PagRows = 12; // Noll ger "division by zero"
         PagRed = 1; // Noll ger "division by zero"
         PagPage = 1;
         ClassPag = "d-flex";
@@ -99,7 +99,7 @@ public class XPagination : XDtoClient
         return Proceed;
     }
 
-    public void PagBtnSet(int page, int pnum) // Uppdaterar vald sida och knappsätt.
+    public void PagBtnSet(int page, int pnum) // Uppdaterar vald sida och knappset.
     {
         if (page < 1) page = 1; // Förhindrar 0-sidor och sidor högre än förekommande.
         if (page > pnum && pnum != 0) page = pnum;

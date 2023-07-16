@@ -2,7 +2,7 @@
 {
     public interface IXDtoClient
     {
-        Task ChangeClass(string id, string name);
+        Task ChangeClass(string id, string newclassname);
         Task<bool> DeleteFile(string filename);
         Task<T?> ExistFile<T>(string filename, string route);
         Task<T?> GetAsync<T>(int id, string route);

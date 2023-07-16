@@ -30,25 +30,26 @@ else
                     <option value="2">Course</option>
                 </InputSelect>
             </span>
-            <span class="nav m-lg-auto input-group-append">
+            <span class="nav m-lg-auto input-group-append" style="z-index: 0">
                 <button type="submit" class="btn m-lg-auto btn-outline-dark">Search</button>
             </span>
-            <span class="nav m-lg-auto input-group-append">
+            <span class="nav m-lg-auto input-group-append" style="z-index: 0">
                 <button type="button" @onclick="SortName" class="btn m-lg-auto btn-outline-dark">Sort names</button>
             </span>
-            <span class="nav m-lg-auto input-group-append">
+            <span class="nav m-lg-auto input-group-append" style="z-index: 0">
                 <button type="button" @onclick="SortCourse" class="btn m-lg-auto btn-outline-dark">Sort courses</button>
             </span>
-            <span class="nav m-lg-auto input-group-append">
+            <span class="nav m-lg-auto input-group-append" style="z-index: 0">
                 <button type="button" @onclick="PagControl" class="btn m-lg-auto btn-outline-dark" title="Pagination settings">P</button>
             </span>
         </span>
     </EditForm>
 
-    <Pagination @ref="paginationRef" /> @*Pagineringsfönster*@
     <DeleteMess @ref="messRef" /> @*Delete-fönster*@
+    <DeleteStudent @ref="deleteRef" /> @*Delete-fönster*@
     <DocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
     <DocumentEdit @ref="doceditRef" /> @*Filredigeringsfönster*@
+    <Pagination @ref="paginationRef" /> @*Pagineringsfönster*@
 
     <table class="table">
         <thead>
@@ -172,6 +173,7 @@ else
                     <span class="pagfind">&lsaquo;@students.Count&rsaquo;</span> @*Antal hittade*@
                 </div>
             </section>
+            <br />
         }
         else
         {
@@ -189,8 +191,6 @@ else
     }
 }
 
-    <DeleteStudent @ref="deleteRef" /> @*Delete-fönster*@
-
 </Authorized>
     <NotAuthorized>
         <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
@@ -199,21 +199,21 @@ else
 
 @code {
 
-    private DeleteStudent? deleteRef; // Delete-fönster.
-
-    private async Task DeleteUser(string id) // Delete-fönster.
-    {
-        Auxx.GuidId = id;
-        await deleteRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
-    }
-
     private DeleteMess? messRef; // Delete-fönster.
 
     private async Task DeleteMess(int id) // Delete-fönster.
     {
         Auxx.IntId = id;
         await messRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
+    }
+
+    private DeleteStudent? deleteRef; // Delete-fönster.
+
+    private async Task DeleteUser(string id) // Delete-fönster.
+    {
+        Auxx.GuidId = id;
+        await deleteRef!.Show();
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
@@ -420,6 +420,7 @@ else
         await appuserClient.PreAsync(id, courseId);
         Emptydb = "This student has now been updated...";
         Emptydbcolor = "headeron";
+        StateHasChanged();
         await xnav.Intermission(1000, false);
         Emptydb = "List of students";
         Emptydbcolor = "headeroff";

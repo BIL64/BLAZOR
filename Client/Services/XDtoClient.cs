@@ -89,9 +89,9 @@ namespace LexiconLMSBlazor.Client.Services
             return dimension;
         }
 
-        public async Task ChangeClass(string id, string name) // Byter klass på valt id-märkt objekt.
+        public async Task ChangeClass(string id, string newclassname) // Byter css-klass på ett id-försett objekt.
         {
-            await _js.InvokeVoidAsync("swapDocClass", id, name);
+            await _js.InvokeVoidAsync("swapDocClass", id, newclassname);
         }
     }
 

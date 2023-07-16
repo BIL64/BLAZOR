@@ -23,10 +23,10 @@ else
     <EditForm Context="searchlmslexnet" Model="@students" OnSubmit="OnInitializedAsync">
         <span class="nav m-lg-auto input-group">
             <InputText class="form-control" @bind-Value="searchString" placeholder="First or last name" />
-            <span class="nav m-lg-auto input-group-append">
+            <span class="nav m-lg-auto input-group-append" style="z-index: 0">
                 <button type="submit" class="btn m-lg-auto btn-outline-dark">Search</button>
             </span>
-            <span class="nav m-lg-auto input-group-append">
+            <span class="nav m-lg-auto input-group-append" style="z-index: 0">
                 <button type="button" @onclick="SortName" class="btn m-lg-auto btn-outline-dark">Sort names</button>
             </span>
         </span>
@@ -166,6 +166,12 @@ else
             </aside>
         }
         xpag.ClassPag = "d-flex"; // Förhindrar att sidoknapparna syns vid reloading.
+    }
+    else
+    {
+        <footer class="d-flex"> @*Antal hittade*@
+            <div class="pagfind">&lsaquo;@students.Count&rsaquo;</div>
+        </footer>
     }
 }
 </Authorized>

@@ -65,10 +65,10 @@
             <EditForm Context="searchlmslexnet" Model="@modules" OnSubmit="OnInitializedAsync">
                 <span class="nav m-lg-auto input-group">
                     <InputText class="form-control" @bind-Value="searchString" placeholder="Module name" />
-                    <span class="nav m-lg-auto input-group-append">
+                    <span class="nav m-lg-auto input-group-append" style="z-index: 0">
                         <button type="submit" class="btn m-lg-auto btn-outline-dark">Search</button>
                     </span>
-                    <span class="nav m-lg-auto input-group-append">
+                    <span class="nav m-lg-auto input-group-append" style="z-index: 0">
                         <button type="button" @onclick="GetCurrentModule" class="btn m-lg-auto btn-outline-dark">Current</button>
                     </span>
                 </span>

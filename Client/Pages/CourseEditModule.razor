@@ -74,8 +74,6 @@
         </EditForm>
     </section>
 
-    <DeleteModule @ref="deletemodRef" /> @*Delete-fönster*@
-
         <div class="container"> @*Eventuella dokument som ingår läggs ut här*@
             <div class="d-flex flex-wrap">
                 @foreach (var doc in documents)
@@ -106,6 +104,7 @@
         </div><br />
 
     <DeleteMess @ref="deleteRef" /> @*Delete-fönster*@
+    <DeleteModule @ref="deletemodRef" /> @*Delete-fönster*@
     <DocumentEdit @ref="doceditRef" /><br /><br /> @*Filredigeringsfönster*@
 
     </Authorized>

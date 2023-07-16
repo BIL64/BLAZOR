@@ -2,7 +2,7 @@
 @inject IXDtoClient xClient
 @inject XNavMenu xnav
 @attribute [Authorize]
-@*Av Björn Lindqvist*@
+@*Toast component by Björn Lindqvist*@
 @*Endast lärare har åtkomst hit*@
 
 <AuthorizeView Roles ="Teacher">
@@ -62,7 +62,7 @@
 
     private async Task DeleteNow()
     {
-        xnav.SetDone("This unregistered visitor was deleted.");
+        xnav.SetDone("This unregistered visitor was deleted. Press “Search” for refreshing.");
         xnav.SetReset('d');
 
         await appuserClient.RemAsync(Auxx.GuidId);
@@ -72,7 +72,7 @@
 
     private async Task Redirect()
     {
-        xnav.SetDone("This unregistered visitors was redirected to a teacher.");
+        xnav.SetDone("This unregistered visitors was redirected to a teacher. Press “Search” for refreshing.");
         xnav.SetReset('d');
 
         await appuserClient.PreAsync(Auxx.GuidId, 12);
