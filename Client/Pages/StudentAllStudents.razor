@@ -32,7 +32,7 @@ else
         </span>
     </EditForm>
 
-    <DocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
+    <ToastDocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
 
     <table class="table">
         <thead>
@@ -182,7 +182,7 @@ else
 
 @code {
 
-    private DocumentAdd? docsaveRef; // Filsparfönster.
+    private ToastDocumentAdd? docsaveRef; // Filsparfönster.
 
     private async Task DocSaveControl(string id, byte doctype, string name) // Filsparfönster.
     {

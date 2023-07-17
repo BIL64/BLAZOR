@@ -169,9 +169,9 @@
             </div>
         </footer>
 
-    <DeleteMess @ref="deleteRef" /> @*Delete-fönster*@
-    <DeleteAllDocActivities @ref="deletealldocRef" /> @*Delete-fönster*@
-    <DocumentEdit @ref="doceditRef" /><br /><br /> @*Filredigeringsfönster*@
+    <ToastDeleteMess @ref="deleteRef" /> @*Delete-fönster*@
+    <ToastDeleteAllDocActivities @ref="deletealldocRef" /> @*Delete-fönster*@
+    <ToastDocumentEdit @ref="doceditRef" /><br /><br /> @*Filredigeringsfönster*@
 
     </Authorized>
     <NotAuthorized>
@@ -184,7 +184,7 @@
     [Parameter]
     public int IId { get; set; }
 
-    private DeleteMess? deleteRef; // Delete-fönster.
+    private ToastDeleteMess? deleteRef; // Delete-fönster.
 
     private async Task DeleteMess(int id) // Delete-fönster.
     {
@@ -193,7 +193,7 @@
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
-    private DeleteAllDocActivities? deletealldocRef; // Delete-fönster.
+    private ToastDeleteAllDocActivities? deletealldocRef; // Delete-fönster.
 
     private async Task DeleteAllDocs() // Delete-fönster.
     {
@@ -203,7 +203,7 @@
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
-    private DocumentEdit? doceditRef; // Filredigeringsfönster.
+    private ToastDocumentEdit? doceditRef; // Filredigeringsfönster.
 
     private async Task DocEditControl(int id, byte doctype) // Filredigeringsfönster.
     {

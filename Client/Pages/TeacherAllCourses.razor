@@ -71,10 +71,10 @@
             </div>
         </div><br />
 
-        <DeleteMess @ref="deleteRef" /> @*Delete-fönster*@
-        <DeleteAllDocUser @ref="deletealldocRef" /> @*Delete-fönster*@
-        <DocumentUser @ref="docuserRef" /> @*Filmottagarefönster*@
-        <DocumentAvatar @ref="addavatarRef" /> @*Avatar-fönster*@
+        <ToastDeleteMess @ref="deleteRef" /> @*Delete-fönster*@
+        <ToastDeleteAllDocUser @ref="deletealldocRef" /> @*Delete-fönster*@
+        <ToastDocumentUser @ref="docuserRef" /> @*Filmottagarefönster*@
+        <ToastDocumentAvatar @ref="addavatarRef" /> @*Avatar-fönster*@
 
         <EditForm Context="searchlmslexnet" Model="@courses" OnSubmit="OnInitializedAsync">
             <span class="nav m-lg-auto input-group">
@@ -232,7 +232,7 @@
 
 @code {
 
-    private DeleteMess? deleteRef; // Delete-fönster.
+    private ToastDeleteMess? deleteRef; // Delete-fönster.
 
     private async Task DeleteMess(int id) // Delete-fönster.
     {
@@ -241,7 +241,7 @@
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
-    private DeleteAllDocUser? deletealldocRef; // Delete-fönster.
+    private ToastDeleteAllDocUser? deletealldocRef; // Delete-fönster.
 
     private async Task DeleteAllDocs() // Delete-fönster.
     {
@@ -250,7 +250,7 @@
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
-    private DocumentUser? docuserRef; // Filmottagarefönster.
+    private ToastDocumentUser? docuserRef; // Filmottagarefönster.
 
     private async Task DocUserControl(int id, bool delete) // Filmottagarefönster.
     {
@@ -261,7 +261,7 @@
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
-    private DocumentAvatar? addavatarRef; // Avatar-fönster.
+    private ToastDocumentAvatar? addavatarRef; // Avatar-fönster.
 
     private async Task AddDeleteAvatar() // Avatar-fönster.
     {

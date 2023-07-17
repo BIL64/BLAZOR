@@ -48,10 +48,10 @@
             </div>
         </div><br />
 
-        <DocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
-        <DocumentEdit @ref="doceditRef" /> @*Filredigeringsfönster*@
-        <FastModuleDate @ref="fastmodRef" /> @*Datumredigeringsfönster*@
-        <FastActivityDate @ref="fastactRef" /> @*Datumredigeringsfönster*@
+        <ToastDocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
+        <ToastDocumentEdit @ref="doceditRef" /> @*Filredigeringsfönster*@
+        <ToastFastModuleDate @ref="fastmodRef" /> @*Datumredigeringsfönster*@
+        <ToastFastActivityDate @ref="fastactRef" /> @*Datumredigeringsfönster*@
 
         <h5>@TestMess1</h5>
         <h5>@TestMess2</h5>
@@ -435,7 +435,7 @@
     [Parameter]
     public int IId { get; set; }
 
-    private DocumentAdd? docsaveRef; // Filsparfönster.
+    private ToastDocumentAdd? docsaveRef; // Filsparfönster.
 
     private async Task DocSaveControl(int id, byte doctype, string name) // Filsparfönster.
     {
@@ -446,7 +446,7 @@
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
-    private DocumentEdit? doceditRef; // Filredigeringsfönster.
+    private ToastDocumentEdit? doceditRef; // Filredigeringsfönster.
 
     private async Task DocEditControl(int id, byte doctype) // Filredigeringsfönster.
     {
@@ -457,7 +457,7 @@
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
-    private FastModuleDate? fastmodRef; // Datumredigeringsfönster.
+    private ToastFastModuleDate? fastmodRef; // Datumredigeringsfönster.
 
     private async Task ModuleDate(int id) // Datumredigeringsfönster
     {
@@ -466,7 +466,7 @@
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
-    private FastActivityDate? fastactRef; // Datumredigeringsfönster.
+    private ToastFastActivityDate? fastactRef; // Datumredigeringsfönster.
 
     private async Task ActivityDate(int id) // Datumredigeringsfönster
     {

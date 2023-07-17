@@ -32,8 +32,8 @@ else
         </span>
     </EditForm>
 
-    <DeleteUnregistered @ref="deleteRef" /> @*Delete-fönster*@
-    <DeleteAllVisitors @ref="deleteAll" /> @*Delete-fönster*@
+    <ToastDeleteUnregistered @ref="deleteRef" /> @*Delete-fönster*@
+    <ToastDeleteAllVisitors @ref="deleteAll" /> @*Delete-fönster*@
 
     <table class="table">
         <thead>
@@ -79,7 +79,7 @@ else
 
 @code {
 
-    private DeleteUnregistered? deleteRef; // Delete-fönster.
+    private ToastDeleteUnregistered? deleteRef; // Delete-fönster.
 
     private async Task DeleteUser(string id) // Delete-fönster.
     {
@@ -93,7 +93,7 @@ else
         }
     }
 
-    private DeleteAllVisitors? deleteAll; // Delete-fönster.
+    private ToastDeleteAllVisitors? deleteAll; // Delete-fönster.
 
     private async Task DeleteAllVisitors() // Delete-fönster.
     {

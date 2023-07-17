@@ -81,11 +81,11 @@
             </div>
         </div><br />
 
-        <DeleteMess @ref="deletemessRef" /> @*Delete-fönster*@
-        <DeleteAllDocUser @ref="deletealldocRef" /> @*Delete-fönster*@
-        <DocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
-        <DocumentUser @ref="docuserRef" /> @*Filmottagarefönster*@
-        <DocumentAvatar @ref="addavatarRef" /> @*Avatar-fönster*@
+        <ToastDeleteMess @ref="deletemessRef" /> @*Delete-fönster*@
+        <ToastDeleteAllDocUser @ref="deletealldocRef" /> @*Delete-fönster*@
+        <ToastDocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
+        <ToastDocumentUser @ref="docuserRef" /> @*Filmottagarefönster*@
+        <ToastDocumentAvatar @ref="addavatarRef" /> @*Avatar-fönster*@
 
         @if (modules == null)
         {
@@ -419,7 +419,7 @@
 
 @code {
 
-    private DeleteMess? deletemessRef; // Delete-fönster.
+    private ToastDeleteMess? deletemessRef; // Delete-fönster.
 
     private async Task DeleteMess(int id) // Delete-fönster.
     {
@@ -428,7 +428,7 @@
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
-    private DeleteAllDocUser? deletealldocRef; // Delete-fönster.
+    private ToastDeleteAllDocUser? deletealldocRef; // Delete-fönster.
 
     private async Task DeleteAllDocs() // Delete-fönster.
     {
@@ -437,7 +437,7 @@
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
-    private DocumentAdd? docsaveRef; // Filsparfönster.
+    private ToastDocumentAdd? docsaveRef; // Filsparfönster.
 
     private async Task DocSaveControl(int id, byte doctype, string name) // Filsparfönster.
     {
@@ -448,7 +448,7 @@
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
-    private DocumentUser? docuserRef; // Filmottagarefönster.
+    private ToastDocumentUser? docuserRef; // Filmottagarefönster.
 
     private async Task DocUserControl(int id, bool delete) // Filmottagarefönster.
     {
@@ -459,7 +459,7 @@
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
-    private DocumentAvatar? addavatarRef; // Avatar-fönster.
+    private ToastDocumentAvatar? addavatarRef; // Avatar-fönster.
 
     private async Task AddDeleteAvatar() // Avatar-fönster.
     {

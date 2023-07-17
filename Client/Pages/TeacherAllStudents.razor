@@ -45,11 +45,11 @@ else
         </span>
     </EditForm>
 
-    <DeleteMess @ref="messRef" /> @*Delete-fönster*@
-    <DeleteStudent @ref="deleteRef" /> @*Delete-fönster*@
-    <DocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
-    <DocumentEdit @ref="doceditRef" /> @*Filredigeringsfönster*@
-    <Pagination @ref="paginationRef" /> @*Pagineringsfönster*@
+    <ToastDeleteMess @ref="messRef" /> @*Delete-fönster*@
+    <ToastDeleteStudent @ref="deleteRef" /> @*Delete-fönster*@
+    <ToastDocumentAdd @ref="docsaveRef" /> @*Filsparfönster*@
+    <ToastDocumentEdit @ref="doceditRef" /> @*Filredigeringsfönster*@
+    <ToastPagination @ref="paginationRef" /> @*Pagineringsfönster*@
 
     <table class="table">
         <thead>
@@ -199,7 +199,7 @@ else
 
 @code {
 
-    private DeleteMess? messRef; // Delete-fönster.
+    private ToastDeleteMess? messRef; // Delete-fönster.
 
     private async Task DeleteMess(int id) // Delete-fönster.
     {
@@ -208,7 +208,7 @@ else
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
-    private DeleteStudent? deleteRef; // Delete-fönster.
+    private ToastDeleteStudent? deleteRef; // Delete-fönster.
 
     private async Task DeleteUser(string id) // Delete-fönster.
     {
@@ -217,7 +217,7 @@ else
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
-    private DocumentAdd? docsaveRef; // Filsparfönster.
+    private ToastDocumentAdd? docsaveRef; // Filsparfönster.
 
     private async Task DocSaveControl(string id, byte doctype, string name) // Filsparfönster.
     {
@@ -228,7 +228,7 @@ else
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
-    private DocumentEdit? doceditRef; // Filredigeringsfönster.
+    private ToastDocumentEdit? doceditRef; // Filredigeringsfönster.
 
     private async Task DocEditControl(int id, byte doctype) // Filredigeringsfönster.
     {
@@ -239,7 +239,7 @@ else
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
-    private Pagination? paginationRef; // Pagineringsfönster.
+    private ToastPagination? paginationRef; // Pagineringsfönster.
 
     private async Task PagControl() // Pagineringsfönster.
     {
