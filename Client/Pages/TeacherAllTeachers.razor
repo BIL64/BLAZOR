@@ -196,7 +196,7 @@ else
     {
         Auxx.IntId = id;
         await messRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(true); // Uppdaterar sidan.
     }
 
     private ToastDeleteTeacher? deleteRef; // Delete-fönster.
@@ -205,7 +205,7 @@ else
     {
         Auxx.GuidId = id;
         await deleteRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(true); // Uppdaterar sidan.
     }
 
     private ToastDocumentAdd? docsaveRef; // Filsparfönster.
@@ -216,7 +216,7 @@ else
         Auxx.DocType = doctype;
         Auxx.Name4Type = name;
         await docsaveRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(true); // Uppdaterar sidan.
     }
 
     private ToastDocumentEdit? doceditRef; // Filredigeringsfönster.
@@ -227,7 +227,7 @@ else
         Auxx.DocType = doctype;
         Auxx.Documents = documents;
         await doceditRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(true); // Uppdaterar sidan.
     }
 
     private ToastPagination? paginationRef; // Pagineringsfönster.
@@ -235,7 +235,7 @@ else
     private async Task PagControl() // Pagineringsfönster.
     {
         await paginationRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(false); // Uppdaterar sidan.
     }
 
     private List<AppUserDto> teachers = new();
@@ -262,10 +262,10 @@ else
         await OnInitializedAsync();
     }
 
-    private async Task RefreshAfterThis() // Uppdaterar efter förändring av innehåll.
+    private async Task RefreshAfterThis(bool delay) // Uppdaterar efter förändring av innehåll.
     {
-        while (!Auxx.Flag) await xnav.Intermission(1000, false);
-        await xnav.Intermission(1000, false);
+        while (!Auxx.Flag) await xnav.Intermission(500, false);
+        if (delay) await xnav.Intermission(2000, false);
         await OnInitializedAsync();
     }
 
