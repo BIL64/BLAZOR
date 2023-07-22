@@ -183,7 +183,7 @@
             <section class="@classTable"> @*Hjälptabeller vid inmatning av moduler och aktiviteter*@ 
                 <div style="display: flex">
                     <h4 style="width: 75%">COURSE: @course.Name</h4>
-                    <h5 style="margin: 0 0 0 auto">@XNavMenu.StartEndDate(course.StartDate, course.EndDate)</h5>
+                    <h5 style="margin: 0 0 0 auto">@xnav.StartEndDate(course.StartDate, course.EndDate)</h5>
                 </div>
                 <h6>Modules...</h6>
                 <table class="table">
@@ -201,7 +201,7 @@
                         <tr>
                             <td>@mod.Name</td>
                             <td>@mod.Description</td>
-                            <td>@XNavMenu.StartEndDate(mod.StartDate, mod.EndDate)</td>
+                            <td>@xnav.StartEndDate(mod.StartDate, mod.EndDate)</td>
                         </tr>
                     }
                 </table>
@@ -224,7 +224,7 @@
                             <td>@act.Name</td>
                             <td>@act.ActivityTypeName</td>
                             <td>@act.Description</td>
-                            <td>@XNavMenu.StartEndDate(act.StartDate, act.EndDate)</td>
+                            <td>@xnav.StartEndDate(act.StartDate, act.EndDate)</td>
                         </tr>
                     }
                 </table>
@@ -642,7 +642,6 @@
         bool case2 = false;
         bool case3 = false;
         bool case4 = false;
-        bool case5 = false;
         int Count = 1;
 
         if (module.StartDate > module.EndDate) case1 = true; // Felaktigt start/slutdatum.
@@ -650,11 +649,7 @@
         if (module.StartDate < course.StartDate && module.EndDate < course.StartDate ||
         module.StartDate > course.EndDate && module.EndDate > course.EndDate) case2 = true; // Datum ligger utanför kursdatum.
 
-        // Kollar om både start- och slutdatumet är lika (om så är fallet fungerar inte datumchecken).
-        if (PlacingInArray(course.StartDate, 1, '=') == PlacingInArray(course.EndDate, 1, '=')) case5 = true;
-        if (PlacingInArray(module.StartDate, 1, '=') == PlacingInArray(module.EndDate, 1, '=')) case5 = true;
-
-        if (!case1 && !case2 && !case5 && DateControl)
+        if (!case1 && !case2 && DateControl)
         {
             int[] datearray = new int[100000000];
             string dates = "";
@@ -697,6 +692,8 @@
                 if (arr > 0) dates += arr.ToString();
             }
 
+            Array.Clear(datearray, 0, 100000000);
+
             //// Endast aktuellt om datumnumren kan anta identiska värden.
             //for (int i = 1; i < Count; i++) // Kollar om både start- och slutdatumet för en post blivit överskrivet av någon annan post.
             //{
@@ -711,7 +708,7 @@
             if (dates.Length > 0) case3 = true; // Inga siffror kvar, ingen osymmetri!
         }
 
-        return await CaseFalure(case1, case2, case3, case4, case5);
+        return await CaseFalure(case1, case2, case3, case4);
     }
 
     private async Task<bool> DateActivityControl() // Kontroll av datum för aktiviteter.
@@ -720,7 +717,6 @@
         bool case2 = false;
         bool case3 = false;
         bool case4 = false;
-        bool case5 = false;
         int Count = 1;
 
         if (activity.StartDate > activity.EndDate) case1 = true; // Felaktigt start/slutdatum.
@@ -728,10 +724,7 @@
         if (activity.StartDate < module.StartDate && activity.EndDate < module.StartDate ||
         activity.StartDate > module.EndDate && activity.EndDate > module.EndDate) case2 = true; // Datum ligger utanför moduldatum.
 
-        // Kollar om både start- och slutdatumet är lika (om så är fallet fungerar inte datumchecken).
-        if (PlacingInArray(activity.StartDate, 1, '=') == PlacingInArray(activity.EndDate, 1, '=')) case5 = true;
-
-        if (!case1 && !case2 && !case5 && DateControl)
+        if (!case1 && !case2 && DateControl)
         {
             int[] datearray = new int[100000000];
             string dates = "";
@@ -774,6 +767,8 @@
                 if (arr > 0) dates += arr.ToString();
             }
 
+            Array.Clear(datearray, 0, 100000000);
+
             //// Endast aktuellt om datumnumren kan anta identiska värden.
             //for (int i = 1; i < Count; i++) // Kollar om både start- och slutdatumet för en post blivit överskrivet av någon annan post.
             //{
@@ -788,14 +783,14 @@
             if (dates.Length > 0) case3 = true; // Inga siffror kvar, ingen osymmetri!
         }
 
-        return await CaseFalure(case1, case2, case3, case4, case5);
+        return await CaseFalure(case1, case2, case3, case4);
     }
 
-    private async Task<bool> CaseFalure(bool c1, bool c2, bool c3, bool c4, bool c5) // Returnerar resultat och felmeddelanden.
+    private async Task<bool> CaseFalure(bool c1, bool c2, bool c3, bool c4) // Returnerar resultat och felmeddelanden.
     {
         bool result = true;
 
-        if ((c1 && !c5) || c2 || c3 || c4)
+        if (c1 || c2 || c3 || c4)
         {
             xnav.SetError("Date mismatch (start date is greater than end date).");
             if (c2) xnav.SetError("Date mismatch (date is outside the course or the module date).");
@@ -806,15 +801,7 @@
         }
         else xnav.SetReset('a');
 
-        if (c5 && !c2)
-        {
-            xnav.SetDone("Date check is OFF because start date is equal to end date.");
-            xnav.SetReset('d');
-            await xnav.Intermission(2000, false);
-            result = true;
-        }
-
-        if (!c1 && !c2 && !c3 && !c4 && !c5)
+        if (!c1 && !c2 && !c3 && !c4)
         {
             xnav.SetDone("Ok.");
             xnav.SetReset('d');
@@ -843,10 +830,7 @@
         // Indatumet omvandlas till en sträng, plus m_d och plus 500 (max 500 moduler och aktiviteter).
         // Parsar detta till ett tal för att slutligen addera eller subtrahera count.
         if (pm == '+') number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3) + "500") + count;
-        if (pm == '-') number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3) + "500") - count;
-
-        // För kontroll om samma datum ges på både start- och slutdatum.
-        if (pm == '=') number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3));
+        if (pm == '-') number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3) + "999") - count;
 
         return number;
     }

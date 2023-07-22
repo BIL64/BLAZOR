@@ -148,7 +148,7 @@
                                     <b>Module <em style="cursor: pointer" @onclick=" _ => InfoTitle(data.Description)">@data.Name</em></b>
                                 }
                             </div>
-                            <div style="margin: 0 0 0 auto"><b>@XNavMenu.StartEndDate(data.StartDate, data.EndDate)</b></div>
+                            <div style="margin: 0 0 0 auto"><b>@xnav.StartEndDate(data.StartDate, data.EndDate)</b></div>
                         </div>
 
                         <div style="display: flex; margin-top: 10px">
@@ -245,7 +245,7 @@
                                                             }
                                                         }
                                                     </td>
-                                                    <td>@XNavMenu.StartEndDate(act.StartDate, act.EndDate)</td>
+                                                    <td>@xnav.StartEndDate(act.StartDate, act.EndDate)</td>
                                                 }
                                                 else
                                                 {
@@ -360,7 +360,7 @@
                                                             }
                                                         }
                                                     </td>
-                                                    <td>@XNavMenu.StartEndDate(act.StartDate, act.EndDate)</td>
+                                                    <td>@xnav.StartEndDate(act.StartDate, act.EndDate)</td>
                                                     <td>
                                                         @{Empty = true;}
                                                         <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(act.Id, 40, act.Name)"
@@ -548,7 +548,7 @@
                     CourseName = cour.Name;
                     CourseDescription = cour.Description;
                     CourseId = cour.Id;
-                    CourseDate = XNavMenu.StartEndDate(cour.StartDate, cour.EndDate);
+                    CourseDate = xnav.StartEndDate(cour.StartDate, cour.EndDate);
 
                     foreach (var mod in cour.Modules) // Hämtar moduler.
                     {

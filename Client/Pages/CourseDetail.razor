@@ -142,7 +142,7 @@
                                 }
                             </div>
                             <div style="margin: 0 0 0 auto"><b style="cursor: pointer" @onclick=" _ => ModuleDate(data.Id)"
-                                title="Click to edit date">@XNavMenu.StartEndDate(data.StartDate, data.EndDate)</b>
+                                title="Click to edit date">@xnav.StartEndDate(data.StartDate, data.EndDate)</b>
                             </div>
                         </div>
                         <div style="display: flex">
@@ -279,7 +279,7 @@
                                                     </td>
                                                     <td>
                                                         <span style="cursor: pointer" @onclick=" _ => ActivityDate(act.Id)" title="Click to edit date">
-                                                        @XNavMenu.StartEndDate(act.StartDate, act.EndDate)</span>
+                                                        @xnav.StartEndDate(act.StartDate, act.EndDate)</span>
                                                     </td>
                                                 }
                                                 else
@@ -349,7 +349,7 @@
                                                 <td>
                                                     <div style="font-weight: bold; color:red">DISABLE</div>
                                                 </td>
-                                                <td>@XNavMenu.StartEndDate(act.StartDate, act.EndDate)</td>
+                                                <td>@xnav.StartEndDate(act.StartDate, act.EndDate)</td>
                                                 <td>
                                                     <div style="margin-left: auto; margin-right: 0">
                                                     <NavLink style="cursor: pointer" class="oi oi-arrow-circle-top text-primary mt-2 text-decoration-none"
@@ -373,7 +373,7 @@
                                 <b title="@data.Description -Click for edit-">Module:
                                 <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
                             </div>
-                            <div style="margin-left: auto; margin-right: 0"><b>@XNavMenu.StartEndDate(data.StartDate, data.EndDate)</b></div>
+                            <div style="margin-left: auto; margin-right: 0"><b>@xnav.StartEndDate(data.StartDate, data.EndDate)</b></div>
                         </div>
                         <div style="display: flex">
                             <div style="font-weight: bold; color:red; margin-left: auto; margin-right: auto">DISABLE</div>
@@ -412,7 +412,7 @@
                                                     }
                                                 }
                                             </td>
-                                            <td>@XNavMenu.StartEndDate(act.StartDate, act.EndDate)</td>
+                                            <td>@xnav.StartEndDate(act.StartDate, act.EndDate)</td>
                                         }
                                     </tr>
                                 }
@@ -541,7 +541,7 @@
                     CourseName = cour.Name;
                     CourseDescription = cour.Description;
                     CourseId = cour.Id;
-                    CourseDate = XNavMenu.StartEndDate(cour.StartDate, cour.EndDate);
+                    CourseDate = xnav.StartEndDate(cour.StartDate, cour.EndDate);
 
                     foreach (var mod in cour.Modules) // Hämtar moduler.
                     {
@@ -782,9 +782,6 @@
         {
             if (cour.Id == IId) // Hämtar kursen.
             {
-                // Kollar om både start- och slutdatumet är lika (om så är fallet fungerar inte datumchecken).
-                if (PlacingInArray(cour.StartDate, 1, '=') == PlacingInArray(cour.EndDate, 1, '=')) CourseCheck = "Cannot calculate because course dates are equal.";
-
                 // Kollar om kursens startdatum är större än slutdatumet.
                 if (cour.StartDate > cour.EndDate) CourseCheck = "Course date mismatch (start date is greater than end date).";
 
@@ -798,9 +795,6 @@
 
                 foreach (var mod in cour.Modules) // Hämtar kursens moduler.
                 {
-                    // Kollar om både start- och slutdatumet är lika (om så är fallet fungerar inte datumchecken).
-                    if (PlacingInArray(mod.StartDate, 1, '=') == PlacingInArray(mod.EndDate, 1, '=')) ModuleCheck = "Cannot calculate because module dates are equal.";
-
                     // Kollar om båda datumen ligger utanför datumspannet för kursen.
                     if (mod.StartDate < cour.StartDate && mod.EndDate < cour.StartDate ||
                     mod.StartDate > cour.EndDate && mod.EndDate > cour.EndDate) ModuleCheck = "Module date mismatch (date is outside the course date).";
@@ -818,9 +812,6 @@
 
                     foreach (var act in mod.Activities) // Hämtar kursens aktiviteter.
                     {
-                        // Kollar om både start- och slutdatumet är lika (om så är fallet fungerar inte datumchecken).
-                        if (PlacingInArray(act.StartDate, 1, '=') == PlacingInArray(act.EndDate, 1, '=')) ActivityCheck = "Cannot calculate because activity dates are equal.";
-
                         // Kollar om båda datumen ligger utanför datumspannet för modulen.
                         if (act.StartDate < mod.StartDate && act.EndDate < mod.StartDate ||
                         act.StartDate > mod.EndDate && act.EndDate > mod.EndDate) ActivityCheck = "Activity date mismatch (date is outside the module date).";
@@ -844,6 +835,8 @@
         {
             if (arr > 0) dates += arr.ToString();
         }
+
+        Array.Clear(datearray, 0, 100000000);
 
         //// Endast aktuellt om datumnumren kan anta identiska värden.
         //for (int i = 1; i < Count; i++) // Kollar om både start- och slutdatumet för en post blivit överskrivet av någon annan post.
@@ -904,10 +897,7 @@
         // Indatumet omvandlas till en sträng, plus m_d och plus 500 (max 500 moduler och aktiviteter).
         // Parsar detta till ett tal för att slutligen addera eller subtrahera count.
         if (pm == '+') number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3) + "500") + count;
-        if (pm == '-') number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3) + "500") - count;
-
-        // För kontroll om samma datum ges på både start- och slutdatum.
-        if (pm == '=') number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3));
+        if (pm == '-') number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3) + "999") - count;
 
         return number;
     }
