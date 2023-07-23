@@ -13,7 +13,7 @@
 <AuthorizeView Roles="Teacher">
     <Authorized>
         <nav style="display: flex">
-            <div style="width: 75%"><h3>Administration of course @CourseId: @NoModules
+            <div style="width: 75%"><h3>Administration of this course @CourseId: @NoModules
                     <i style="cursor: pointer" @onclick=" _ => EditCourse(CourseId)" title="@CourseDescription -Click for edit-">@CourseName</i>
                 </h3>
             </div>
@@ -879,10 +879,10 @@
         }
     }
 
-    // Omvandlar ett datum till ett heltal och adderar 500 för att kunna skapa unika datumnummer.
-    // Ex 1: 2023-01-01 --> 230101 --> 23 ++ 032 (1 x 31 + 1) ++ 500 + count(1) = 23032501.
-    // Ex 2: 2023-06-20 --> 230620 --> 23 ++ 206 (6 x 31 + 20) ++ 500 - count(1) = 23206499.
-    // Ex 3: 2023-12-31 --> 231231 --> 23 ++ 403 (12 x 31 + 31) ++ 500 + count(1) = 23403501.
+    // Omvandlar ett datum till ett heltal och adderar 000 eller 999 för att kunna skapa unika datumnummer.
+    // Ex 1: 2023-01-01 --> 230101 --> 23 ++ 032 (1 x 31 + 1) ++ 000 + count(1) = 23032001.
+    // Ex 2: 2023-06-20 --> 230620 --> 23 ++ 206 (6 x 31 + 20) ++ 999 - count(1) = 23206998.
+    // Ex 3: 2023-12-31 --> 231231 --> 23 ++ 403 (12 x 31 + 31) ++ 000 + count(1) = 23403001.
 
     private int PlacingInArray(DateTime date, int count, char pm)
     {
@@ -896,7 +896,7 @@
 
         // Indatumet omvandlas till en sträng, plus m_d och plus 500 (max 500 moduler och aktiviteter).
         // Parsar detta till ett tal för att slutligen addera eller subtrahera count.
-        if (pm == '+') number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3) + "500") + count;
+        if (pm == '+') number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3) + "000") + count;
         if (pm == '-') number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3) + "999") - count;
 
         return number;
