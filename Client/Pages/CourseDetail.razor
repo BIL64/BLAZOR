@@ -52,6 +52,7 @@
         <ToastDocumentEdit @ref="doceditRef" /> @*Filredigeringsfönster*@
         <ToastFastModuleDate @ref="fastmodRef" /> @*Datumredigeringsfönster*@
         <ToastFastActivityDate @ref="fastactRef" /> @*Datumredigeringsfönster*@
+        <ToastCopyModule @ref="copymodRef" /> @*Modulkopiering*@
 
         <h5>@TestMess1</h5>
         <h5>@TestMess2</h5>
@@ -97,6 +98,12 @@
                             classModTopic = "module4T_box";
                             classActTopic = "activitybox";
                         }
+
+                        if (data.Select == 5)
+                        {
+                            classModTopic = "module4T_box";
+                            classActTopic = "activity5T_box";
+                        }
                     }
                     else
                     {
@@ -116,6 +123,12 @@
                         {
                             classModTopic = "module4T_box";
                             classActTopic = "activitybox";
+                        }
+
+                        if (data.Select == 5)
+                        {
+                            classModTopic = "module4T_box";
+                            classActTopic = "activity5T_box";
                         }
                     }
 
@@ -148,7 +161,7 @@
                         <div style="display: flex">
 
                             @{Empty = true;}
-                            @if (data.Select != 3 && data.Select != 4)
+                            @if (data.Select != 3 && data.Select != 4 && data.Select != 5)
                             {
                                 <div style="width: 75%; margin-top: 20px">
                                     <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(data.Id, 30, data.Name)" title="Add a document to this module">+ DOC</button>
@@ -201,11 +214,17 @@
                             }
 
                             <div style="margin: 0 0 0 auto">
+                                <NavLink style="cursor: pointer; margin-right: 2px" class="oi oi-layers text-primary text-decoration-none"
+                                @onclick=" _ => CopyModule(data.Id, data.Name)" title="Copy another modules data to this module"></NavLink>
+
                                 <NavLink style="cursor: pointer; margin-right: 2px" class="oi oi-menu text-primary text-decoration-none"
+                                @onclick=" _ => SelectModuleType(data.Id, 5)" title="Simple text message"></NavLink>
+
+                                <NavLink style="cursor: pointer; margin-right: 2px" class="oi oi-list text-primary text-decoration-none"
                                 @onclick=" _ => SelectModuleType(data.Id, 4)" title="Only activities"></NavLink>
 
                                 <NavLink style="cursor: pointer; margin-right: 2px" class="oi oi-folder text-primary text-decoration-none"
-                                @onclick=" _ => SelectModuleType(data.Id, 3)" title="Simple text"></NavLink>
+                                @onclick=" _ => SelectModuleType(data.Id, 3)" title="Simple text as a heading for a module"></NavLink>
 
                                 <NavLink style="cursor: pointer; margin-right: 2px" class="oi oi-document text-primary text-decoration-none"
                                 @onclick=" _ => SelectModuleType(data.Id, 1)" title="Extend with identity number"></NavLink>
@@ -249,6 +268,13 @@
                                         <th>Items</th>
                                     </tr>
                                 }
+
+                                @if (data.Select == 5)
+                                {
+                                    <tr>
+                                        <th>Text message (the “description” of the aktivity)</th>
+                                    </tr>
+                                }
                             </thead>
                             <tbody>
                                 @foreach (var act in activities)
@@ -262,11 +288,16 @@
                                                 {
                                                     <td>@act.Id</td>
                                                 }
-                                                <td>
-                                                    <i style="cursor: pointer" title="@act.Description -Click for edit-"
+
+                                                if (data.Select != 5)
+                                                {
+                                                    <td>
+                                                        <i style="cursor: pointer" title="@act.Description -Click for edit-"
                                                         @onclick=" _ => EditActivity(act.Id)">@act.Name</i>
-                                                </td>
-                                                if (data.Select != 4)
+                                                    </td>
+                                                }
+
+                                                if (data.Select != 4 && data.Select != 5)
                                                 {
                                                     <td>
                                                         @foreach (var actype in activityTypes)
@@ -284,45 +315,57 @@
                                                 }
                                                 else
                                                 {
-                                                    <td>
-                                                        @act.Description
-                                                    </td>
+                                                    if (data.Select == 5)
+                                                    {
+                                                        <td style="cursor: pointer; color: darkorange" title="The name: @act.Name -Click for edit-"
+                                                        @onclick=" _ => EditActivity(act.Id)">@act.Description</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>@act.Description</td>
+                                                    }
                                                 }
+
                                                 <td>
-                                                    <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(act.Id, 140, act.Name)"
-                                                    title="Add a document to this activity">+ DOC</button>
-                                                    <div class="dropdoc">
-                                                        <button type="button" id="A@(act.Id)" class="docviewbtn">DOCs</button>
-                                                        <div class="dropdoc-content">
-                                                            @{Empty = true;}
-                                                            @foreach (var doc in documents)
-                                                            {
-                                                                if (doc.ActivityId == act.Id)
-                                                                {
-                                                                    if (doc.DocName != "")
-                                                                    {
-                                                                        // Öppnar filen samt visar dokumentets formulärdata.
-                                                                        <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
-                                                                        title="File: @doc.Description by @doc.Author @doc.TimeStamp">@doc.DocName</a>
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        <a @onclick="_ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
-                                                                        title="Mess: @doc.Description @doc.TimeStamp">By @doc.Author</a>
-                                                                    }
-                                                                    Empty = false;
+                                                    @if (data.Select != 5)
+                                                    {
+                                                        <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(act.Id, 140, act.Name)"
+                                                        title="Add a document to this activity">+ DOC</button>
+                                                        <div class="dropdoc">
+                                                            <button type="button" id="A@(act.Id)" class="docviewbtn">DOCs</button>
+                                                            <div class="dropdoc-content">
+                                                                @{
+                                                                    Empty = true;
                                                                 }
-                                                            }
+                                                                @foreach (var doc in documents)
+                                                                {
+                                                                    if (doc.ActivityId == act.Id)
+                                                                    {
+                                                                        if (doc.DocName != "")
+                                                                        {
+                                                                            // Öppnar filen samt visar dokumentets formulärdata.
+                                                                            <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
+                                                                            title="File: @doc.Description by @doc.Author @doc.TimeStamp">@doc.DocName</a>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <a @onclick="_ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                                                            title="Mess: @doc.Description @doc.TimeStamp">By @doc.Author</a>
+                                                                        }
+                                                                        Empty = false;
+                                                                    }
+                                                                }
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    
+                                                    }
+
                                                     <NavLink style="cursor: pointer" class="oi oi-arrow-circle-bottom text-primary mt-2 text-decoration-none"
                                                     @onclick=" _ => ActivateOrDisable(act.Id, 1)" title="Disable this activity"></NavLink>
                                                 </td>
                                                 <td>
-                                                    @if (!Empty)
+                                                    @if (!Empty && data.Select != 5)
                                                     {
-                                                        if (act.Select > 5)
+                                                        if (act.Select > 8)
                                                         {
                                                             <NavLink style="cursor: pointer" class="oi oi-x text-danger mt-2 text-decoration-none"
                                                             @onclick=" _ => ShowOrHide(act.Id, 101)" title="Show document"></NavLink>
@@ -459,7 +502,7 @@
 
     private ToastFastModuleDate? fastmodRef; // Datumredigeringsfönster.
 
-    private async Task ModuleDate(int id) // Datumredigeringsfönster
+    private async Task ModuleDate(int id) // Datumredigeringsfönster.
     {
         Auxx.IntId = id;
         await fastmodRef!.Show();
@@ -468,10 +511,21 @@
 
     private ToastFastActivityDate? fastactRef; // Datumredigeringsfönster.
 
-    private async Task ActivityDate(int id) // Datumredigeringsfönster
+    private async Task ActivityDate(int id) // Datumredigeringsfönster.
     {
         Auxx.IntId = id;
         await fastactRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
+    }
+
+    private ToastCopyModule? copymodRef; // Modulkopiering.
+
+    private async Task CopyModule(int id, string name) // Modulkopiering.
+    {
+        Auxx.IntId = id;
+        Auxx.CourseId = IId;
+        Auxx.Name4Type = name;
+        await copymodRef!.Show();
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
@@ -836,7 +890,7 @@
             if (arr > 0) dates += arr.ToString();
         }
 
-        Array.Clear(datearray, 0, 100000000);
+        Array.Clear(datearray, 0, datearray.Length);
 
         //// Endast aktuellt om datumnumren kan anta identiska värden.
         //for (int i = 1; i < Count; i++) // Kollar om både start- och slutdatumet för en post blivit överskrivet av någon annan post.
@@ -879,7 +933,7 @@
         }
     }
 
-    // Omvandlar ett datum till ett heltal och adderar 000 eller 999 för att kunna skapa unika datumnummer.
+    // Bygger ett heltal av ett datum samt skapar distans mellan dem.
     // Ex 1: 2023-01-01 --> 230101 --> 23 ++ 032 (1 x 31 + 1) ++ 000 + count(1) = 23032001.
     // Ex 2: 2023-06-20 --> 230620 --> 23 ++ 206 (6 x 31 + 20) ++ 999 - count(1) = 23206998.
     // Ex 3: 2023-12-31 --> 231231 --> 23 ++ 403 (12 x 31 + 31) ++ 000 + count(1) = 23403001.
@@ -894,7 +948,7 @@
         // Om antalet moduler och aktiviteter är större än 499.
         if (count > 499) return 0;
 
-        // Indatumet omvandlas till en sträng, plus m_d och plus 500 (max 500 moduler och aktiviteter).
+        // Indatumet omvandlas till en sträng, plus m_d och distansen (max 499 moduler och aktiviteter).
         // Parsar detta till ett tal för att slutligen addera eller subtrahera count.
         if (pm == '+') number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3) + "000") + count;
         if (pm == '-') number = int.Parse(date.ToString().Substring(2, 2) + m_d.ToString().Substring(1, 3) + "999") - count;

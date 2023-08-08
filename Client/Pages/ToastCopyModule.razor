@@ -1,0 +1,232 @@
+﻿@inject IXDtoClient xClient
+@inject XNavMenu xnav
+@attribute [Authorize]
+@*Toast component by Björn Lindqvist*@
+@*Endast lärare har åtkomst hit*@
+
+<AuthorizeView Roles="Teacher">
+    <Authorized>
+        <div class="toast-container p-3 @showClass"
+             style="position: fixed; top: auto; bottom: @(xnav.Pos_V)px; margin-left: @(xnav.Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
+            <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header" @onmouseup=" _ => xnav.Mouse(0, 'U', _)" @onmousedown=" _ => xnav.Mouse(Win_Height, 'D', _)"
+                     @onmousemove=" _ => xnav.Mouse(Win_Height, 'M', _)" @onmouseout=" _ => xnav.Mouse(Win_Height, 'M', _)">
+                    <strong class="me-auto">@HeaderText</strong>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+                </div>
+
+                <div class="toast-body">
+                    <EditForm Model="@xClient" Context="copymodulelmslexnet" OnSubmit="HandleSubmitCopy">
+                        <div style="font-size: 0.8rem; color:darkred">Documents will not be copied and all documents belonging to this module will be deleted.</div>
+                        <div class="form-group m-3">
+                            <InputCheckbox id="ThisCourse" class="form-check-inline" @bind-Value="IsThis" />
+                            <label for="ThisCourse">Only in this course?</label>
+                        </div>
+                        <div class="form-group m-3">
+                            <label for="Modulename">Type the module name</label>
+                            <InputText id="Modulename" class="form-control" @bind-Value="Mname" />
+                        </div>
+                        <div class="form-group m-3">
+                            <button type="submit" class="text-white remyes" style="margin-right: 15px">COPY NOW</button>
+                            <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+
+    </Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private string HeaderText = string.Empty;
+    private string showClass = "d-none";
+    private string Mname = string.Empty;
+    private bool IsSame;
+    private bool IsThis;
+    private bool IsDoc;
+    private bool IsCopy;
+
+    private int Win_Height;
+
+    public async Task Show()
+    {
+        xnav.SetReset('a');
+
+        var dim = await xClient.GetWindow(); // Hämtar aktuell skärmstorlek.
+        Win_Height = dim.Height;
+        xnav.Pos_H = (int)Math.Round(dim.Width * 0.08); // 08%
+        xnav.Pos_V = (int)Math.Round(Win_Height * 0.5); // 50%
+
+        Mname = string.Empty;
+        IsSame = false;
+        IsCopy = false;
+        IsThis = true;
+        HeaderText = "Copy a module into this...";
+        showClass = "d-block";
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        HeaderText = string.Empty;
+        showClass = "d-none";
+        StateHasChanged();
+    }
+
+    private async Task HandleSubmitCopy()
+    {
+        var module = await xClient.GetAsync<IEnumerable<ModuleDto>>("api/Module");
+
+        if (Mname == Auxx.Name4Type) IsSame = true;
+
+        if (module is not null && !IsSame)
+        {
+            foreach (var test in module)
+            {
+                foreach (var mod in module)
+                {
+                    if (IsThis)
+                    {
+                        if (mod.Name == Mname && mod.CourseId == Auxx.CourseId)
+                        {
+                            await Copy(mod);
+                            IsCopy = true;
+                        }
+                    }
+                    else
+                    {
+                        if (mod.Name == Mname)
+                        {
+                            await Copy(mod);
+                            IsCopy = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!IsCopy)
+        {
+            xnav.SetError("No such module was found.");
+            xnav.SetReset('e');
+        }
+
+        if (IsSame)
+        {
+            xnav.SetError("Cannot copy with the same name.");
+            xnav.SetReset('e');
+        }
+
+        Auxx.Flag = true;
+        Close(); // En omnavigering här nollställer alla variabler inklusive statiska.
+    }
+
+    private async Task Copy(ModuleDto cmod)
+    {
+        // Dokument som hör till modulens aktiviteter.
+        var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+        var activity = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
+
+        if (activity is not null && document is not null)
+        {
+            foreach (var act in activity)
+            {
+                if (act.ModuleId == Auxx.IntId) // Dess aktiviteter.
+                {
+                    foreach (var doc in document) // Dess dokument.
+                    {
+                        if (doc.ActivityId == act.Id)
+                        {
+                            await xClient.DeleteFile(doc.NameIx.ToString() + doc.DocName);
+                            await xClient.RemAsync(doc.Id, "api/Document");
+                        }
+                    }
+                }
+            }
+        }
+
+        // Aktiviteter som hör till modulen.
+        if (activity is not null)
+        {
+            foreach (var act in activity)
+            {
+                if (act.ModuleId == Auxx.IntId) // Dess aktiviteter.
+                {
+                    await xClient.RemAsync(act.Id, "api/Activity");
+                }
+            }
+        }
+
+        // Dokument som hör till modulen.
+        if (document is not null)
+        {
+            foreach (var doc in document)
+            {
+                if (doc.ModuleId == Auxx.IntId) // Dess dokument.
+                {
+                    await xClient.DeleteFile(doc.NameIx.ToString() + doc.DocName);
+                    await xClient.RemAsync(doc.Id, "api/Document");
+                }
+            }
+        }
+
+        // Kopiering av modul.
+        var lmod = new ModuleDto();
+
+        lmod.Id = Auxx.IntId;
+        lmod.Name = cmod.Name;
+        lmod.Description = cmod.Description;
+        lmod.StartDate = cmod.StartDate;
+        lmod.EndDate = cmod.EndDate;
+        lmod.Select = cmod.Select;
+        lmod.CourseId = Auxx.CourseId;
+
+        try
+        {
+            await xClient.PutAsync<ModuleDto>(lmod.Id, lmod, "api/Module");
+            xnav.SetDone("The module has been copied.");
+            xnav.SetReset('d');
+        }
+        catch
+        {
+            xnav.SetError("An error occurred while copying the module.");
+            xnav.SetReset('e');
+        }
+
+        // Kopiering av aktiviteter.
+        var lact = new ActivityDto();
+        if (activity is not null)
+        {
+            foreach (var cact in activity)
+            {
+                if (cact.ModuleId == cmod.Id)
+                {
+                    lact.Name = cact.Name;
+                    lact.Description = cact.Description;
+                    lact.StartDate = cact.StartDate;
+                    lact.EndDate = cact.EndDate;
+                    lact.Select = cact.Select;
+                    lact.ModuleId = Auxx.IntId;
+                    lact.ActivityTypeId = cact.ActivityTypeId;
+
+                    try
+                    {
+                        await xClient.PostAsync<ActivityDto>(lact, "api/Activity");
+                        xnav.SetDone("The activity has been copied.");
+                        xnav.SetReset('d');
+                    }
+                    catch
+                    {
+                        xnav.SetError("An error occurred while copying the activity.");
+                        xnav.SetReset('e');
+                    }
+                }
+            }
+        }
+    }
+}

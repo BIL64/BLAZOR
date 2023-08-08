@@ -249,10 +249,7 @@ i {
     width: 100%;
     padding: 10px;
     margin: 10px 0 30px 0;
-    border-top: 2px solid black;
-    border-right: 2px solid black;
-    border-bottom: 2px solid black;
-    border-left: 2px solid black;
+    border: 2px solid black;
     border-radius: 13px;
     background-color: beige;
 }
@@ -305,10 +302,7 @@ i {
     width: 100%;
     padding: 10px;
     margin: 10px 0 30px 0;
-    border-top: 5px outset aquamarine;
-    border-right: 5px outset aquamarine;
-    border-bottom: 5px outset aquamarine;
-    border-left: 5px outset aquamarine;
+    border: 5px outset aquamarine;
     border-radius: 13px;
     background-color: beige;
 }
@@ -345,6 +339,16 @@ i {
     background-color: lightblue;
 }
 
+.activity5T_box {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 30px;
+    border: none;
+    border-radius: 0 0 7px 7px;
+    background-color: beige;
+}
+
 .activity3S_box {
     display: block;
     width: 100%;
@@ -363,6 +367,15 @@ i {
     border: none;
     border-radius: 5px 5px 5px 5px;
     background-color: lightblue;
+}
+
+.activity5S_box {
+    display: block;
+    width: 100%;
+    padding: 15px 15px 0 15px;
+    margin: 10px 0 30px 0;
+    border: 4px solid lightgray;
+    border-radius: 10px 10px 10px 10px;
 }
 
 .activityboxtopic {

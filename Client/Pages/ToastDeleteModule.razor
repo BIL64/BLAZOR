@@ -8,7 +8,7 @@
 <AuthorizeView Roles ="Teacher">
     <Authorized>
         <div class="toast-container p-3 position-relative @showClass" data-bs-autohide="true" data-bs-delay="5000">
-            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" style="width: 250px">
                 <div class="toast-header">
                     <strong class="me-auto">@HeaderText</strong>
                     <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
@@ -55,16 +55,16 @@
         await xnav.Intermission(3000, false);
 
         // Dokument som hör till modulens aktiviteter.
-        var document1 = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
-        var activity1 = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
+        var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+        var activity = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
 
-        if (activity1 is not null && document1 is not null)
+        if (activity is not null && document is not null)
         {
-            foreach (var act in activity1)
+            foreach (var act in activity)
             {
                 if (act.ModuleId == Auxx.IntId) // Dess aktiviteter.
                 {
-                    foreach (var doc in document1) // Dess dokument.
+                    foreach (var doc in document) // Dess dokument.
                     {
                         if (doc.ActivityId == act.Id)
                         {
@@ -77,11 +77,9 @@
         }
 
         // Aktiviteter som hör till modulen.
-        var activity2 = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
-
-        if (activity2 is not null)
+        if (activity is not null)
         {
-            foreach (var act in activity2)
+            foreach (var act in activity)
             {
                 if (act.ModuleId == Auxx.IntId) // Dess aktiviteter.
                 {
@@ -91,11 +89,9 @@
         }
 
         // Dokument som hör till modulen.
-        var document2 = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
-
-        if (document2 is not null)
+        if (document is not null)
         {
-            foreach (var doc in document2)
+            foreach (var doc in document)
             {
                 if (doc.ModuleId == Auxx.IntId) // Dess dokument.
                 {
@@ -105,6 +101,7 @@
             }
         }
 
+        // Modulen raderas.
         await xClient.RemAsync(Auxx.IntId, "api/Module");
         Navigation.NavigateTo($"/coursedetail/{Auxx.CourseId}", true);
         Close();

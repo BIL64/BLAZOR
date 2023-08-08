@@ -107,11 +107,11 @@
 
             @foreach (var data in modules)
             {
-            if (data.Select == 1 || data.Select == 10 || data.Select == 2 || data.Select == 20 || data.Select == 4)
+            if (data.Select == 1 || data.Select == 10 || data.Select == 2 || data.Select == 20 || data.Select == 4 || data.Select == 5)
                 {
                     if (data.StartDate < DateTime.Now && data.EndDate > DateTime.Now)
                     {
-                        if (data.Select != 4)
+                        if (data.Select != 4 && data.Select != 5)
                         {
                             classModTopic = "moduleboxtopic";
                             classActTopic = "activityboxtopic";
@@ -119,12 +119,13 @@
                         else
                         {
                             classModTopic = "d-none";
-                            classActTopic = "activity4S_box";
+                            if (data.Select == 5) classActTopic = "activity5S_box";
+                            else classActTopic = "activity4S_box";
                         }
                     }
                     else
                     {
-                        if (data.Select != 4)
+                        if (data.Select != 4 && data.Select != 5)
                         {
                             classModTopic = "modulebox";
                             classActTopic = "activitybox";
@@ -132,7 +133,8 @@
                         else
                         {
                             classModTopic = "d-none";
-                            classActTopic = "activity4S_box";
+                            if (data.Select == 5) classActTopic = "activity5S_box";
+                            else classActTopic = "activity4S_box";
                         }
                     }
 
@@ -231,10 +233,13 @@
                                                 }
                                                 else
                                                 {
-                                                    <td><em style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</em></td>
+                                                    if (data.Select != 5)
+                                                    {
+                                                        <td><em style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</em></td>
+                                                    }
                                                 }
 
-                                                if (data.Select != 4)
+                                                if (data.Select != 4 && data.Select != 5)
                                                 {
                                                     <td>
                                                         @foreach (var actype in activityTypes)
@@ -249,45 +254,58 @@
                                                 }
                                                 else
                                                 {
-                                                    <td>@act.Description</td>
-                                                }
-                                                <td>
-                                                    @{Empty = true;}
-                                                    <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(act.Id, 40, act.Name)"
-                                                    title="Add a document or a message to this activity">+ DOC</button>
-                                                    <div class="dropdoc">
-                                                        <button type="button" id="A@(act.Id)" class="docviewbtn">DOCs</button>
-                                                        <div class="dropdoc-content">
-                                                            @foreach (var doc in documents)
-                                                            {
-                                                                if (act.Select < 5 && ((doc.ActivityId == act.Id && doc.Id4Course < 0) ||
-                                                                (doc.ActivityId == act.Id && doc.UserId == loggeduser.Id)))
-                                                                {
-                                                                    if (doc.DocName != "")
-                                                                    {
-                                                                        // Öppnar filen samt visar dokumentets formulärdata.
-                                                                        <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
-                                                                        title="@doc.Description by @doc.Author @doc.TimeStamp"
-                                                                        @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)">@doc.DocName</a>
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        <a @onmouseover="_ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
-                                                                        title="@doc.Description by @doc.Author @doc.TimeStamp">By @doc.Author</a>
-                                                                    }
-
-                                                                    if (doc.ActivityId == act.Id && doc.UserId == loggeduser.Id) Empty = false;
-                                                                }
-                                                            }
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    @if (!Empty)
+                                                    if (data.Select == 5)
                                                     {
-                                                        <span class="oi oi-aperture text-primary mt-1 text-decoration-none"></span>
+                                                        <span style="color: darkorange"><b>@act.Description</b></span>
                                                     }
-                                                </td>
+                                                    else
+                                                    {
+                                                        <td>@act.Description</td>
+                                                    }
+                                                }
+
+                                                if (data.Select != 5)
+                                                {
+                                                    <td>
+                                                        @{
+                                                            Empty = true;
+                                                        }
+                                                        <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(act.Id, 40, act.Name)"
+                                                        title="Add a document or a message to this activity">+ DOC</button>
+                                                        <div class="dropdoc">
+                                                            <button type="button" id="A@(act.Id)" class="docviewbtn">DOCs</button>
+                                                            <div class="dropdoc-content">
+                                                                @foreach (var doc in documents)
+                                                                {
+                                                                    if (act.Select < 5 && ((doc.ActivityId == act.Id && doc.Id4Course < 0) ||
+                                                                    (doc.ActivityId == act.Id && doc.UserId == loggeduser.Id)))
+                                                                    {
+                                                                        if (doc.DocName != "")
+                                                                        {
+                                                                            // Öppnar filen samt visar dokumentets formulärdata.
+                                                                            <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
+                                                                            title="@doc.Description by @doc.Author @doc.TimeStamp"
+                                                                            @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)">@doc.DocName</a>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <a @onmouseover="_ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                                                            title="@doc.Description by @doc.Author @doc.TimeStamp">By @doc.Author</a>
+                                                                        }
+
+                                                                        if (doc.ActivityId == act.Id && doc.UserId == loggeduser.Id) Empty = false;
+                                                                    }
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        @if (!Empty)
+                                                        {
+                                                            <span class="oi oi-aperture text-primary mt-1 text-decoration-none"></span>
+                                                        }
+                                                    </td>
+                                                }
                                             }
                                         </tr>
                                     }
