@@ -218,14 +218,14 @@ public class XNavMenu // Klass som kan kommunicera med navmenyn.
         if (!IsDown && act == 'D') // Skillnaden mellan muspekarens position och css-värdet av objektet.
         {
             Diff_X = (int)e.ClientX - Pos_H;
-            Diff_Y = height - (Pos_V + (int)e.ClientY);
+            Diff_Y = (int)e.ClientY - Pos_V;
             IsDown = true;
         }
 
         if (IsDown && act == 'M') // Flyttar objektet asynkront i musens riktning.
         {
             if ((int)e.ClientX - Diff_X > 0) Pos_H = (int)e.ClientX - Diff_X; else Pos_H = 0;
-            if (height - ((int)e.ClientY + Diff_Y) > 0) Pos_V = height - ((int)e.ClientY + Diff_Y); else Pos_V = 0;
+            if ((int)e.ClientY - Diff_Y > 0) Pos_V = (int)e.ClientY - Diff_Y; else Pos_V = 0;
         }
 
         if (act == 'U') IsDown = false; // När man släpper musknappen.

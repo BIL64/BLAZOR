@@ -556,16 +556,15 @@
 
     private async Task RefreshAfterThis() // Uppdaterar efter förändring av innehåll.
     {
-        while (!Auxx.Flag) await xnav.Intermission(1000, false);
-        Auxx.Flag = false;
-        await xnav.Intermission(1000, false);
+        while (!Auxx.Flag) await xnav.Intermission(500, false);
         await OnInitializedAsync();
+        Auxx.Flag = false;
     }
 
     protected override async Task OnInitializedAsync()
     {
         xnav.SetJohnDoe(false);
-        xnav.SetReset('a');
+        if (!Auxx.Flag) xnav.SetReset('a');
 
         courses.Clear(); // Direkt feedback kräver att listorna rensas.
         modules.Clear();

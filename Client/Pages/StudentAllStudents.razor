@@ -190,6 +190,7 @@ else
         Auxx.DocType = doctype;
         Auxx.Name4Type = name;
         await docsaveRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
     private List<AppUserDto> students = new();
@@ -209,6 +210,14 @@ else
     private async Task PagSet(int page, int pnum) // Paginering.
     {
         xpag.PagBtnSet(page, pnum);
+        await OnInitializedAsync();
+    }
+
+    private async Task RefreshAfterThis() // Uppdaterar efter förändring av innehåll.
+    {
+        while (!Auxx.Flag) await xnav.Intermission(1000, false);
+        Auxx.Flag = false;
+        await xnav.Intermission(1000, false);
         await OnInitializedAsync();
     }
 

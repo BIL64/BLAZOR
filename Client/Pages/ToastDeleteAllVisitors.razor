@@ -8,7 +8,7 @@
 <AuthorizeView Roles ="Teacher">
     <Authorized>
         <div class="toast-container p-3 @showClass"
-             style="position: fixed; top: auto; bottom: @(xnav.Pos_V)px; margin-left: @(xnav.Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
+             style="position: fixed; top: auto; top: @(xnav.Pos_V)px; margin-left: @(xnav.Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
             <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="toast-header" @onmouseup=" _ => xnav.Mouse(0, 'U', _)" @onmousedown=" _ => xnav.Mouse(Win_Height, 'D', _)"
                      @onmousemove=" _ => xnav.Mouse(Win_Height, 'M', _)" @onmouseout=" _ => xnav.Mouse(Win_Height, 'M', _)">
@@ -44,7 +44,7 @@
         var dim = await xClient.GetWindow(); // Hämtar aktuell skärmstorlek.
         Win_Height = dim.Height;
         xnav.Pos_H = (int)Math.Round(dim.Width * 0.08); // 08%
-        xnav.Pos_V = (int)Math.Round(Win_Height * 0.5); // 50%
+        xnav.Pos_V = (int)Math.Round(Win_Height * 0.2); // 20%
         HeaderText = "Remove all visitors or set register on/off";
         showClass = "d-block";
         StateHasChanged();
