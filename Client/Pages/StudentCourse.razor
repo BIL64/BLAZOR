@@ -107,7 +107,19 @@
 
             @foreach (var data in modules)
             {
-            if (data.Select == 1 || data.Select == 10 || data.Select == 2 || data.Select == 20 || data.Select == 4 || data.Select == 5)
+                if (IsTextMess)
+                {
+                    foreach (var mess in textmessage)
+                    {
+                        <div class="activity5S_box" style="padding-left: 22px; padding-bottom: 15px; color: darkorange">
+                            <b>@mess</b>
+                        </div>
+                    }
+                    textmessage.Clear();
+                    IsTextMess = false;
+                }
+
+                if (data.Select == 1 || data.Select == 10 || data.Select == 2 || data.Select == 20 || data.Select == 4 || data.Select == 5)
                 {
                     if (data.StartDate < DateTime.Now && data.EndDate > DateTime.Now)
                     {
@@ -309,6 +321,12 @@
                                             }
                                         </tr>
                                     }
+
+                                    if (act.ModuleId == data.Id && act.Name.IndexOf("#T#") != -1)
+                                    {
+                                        textmessage.Add(act.Description);
+                                        IsTextMess = true;
+                                    }
                                 }
                             </tbody>
                         </table>
@@ -419,6 +437,12 @@
                                                 }
                                             </tr>
                                         }
+
+                                        if (act.ModuleId == data.Id && act.Name.IndexOf("#T#") != -1)
+                                        {
+                                            textmessage.Add(act.Description);
+                                            IsTextMess = true;
+                                        }
                                     }
                                 </tbody>
                             </table>
@@ -426,6 +450,18 @@
                         </article>
                     </main>
                 }
+            }
+
+            if (IsTextMess)
+            {
+                foreach (var mess in textmessage)
+                {
+                    <div class="activity5S_box" style="padding-left: 22px; padding-bottom: 15px; color: darkorange">
+                        <b>@mess</b>
+                    </div>
+                }
+                textmessage.Clear();
+                IsTextMess = false;
             }
         }
 
@@ -497,6 +533,8 @@
 
     private List<DocumentDto> documents = new();
 
+    private List<string> textmessage = new();
+
     private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
 
     private string CourseName = string.Empty;
@@ -508,6 +546,7 @@
     private string searchString = string.Empty;
     private int CourseId;
     private bool Empty;
+    private bool IsTextMess;
 
     private async Task RefreshAfterThis() // Uppdaterar efter förändring av innehåll.
     {

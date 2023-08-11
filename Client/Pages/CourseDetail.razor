@@ -272,7 +272,7 @@
                                 @if (data.Select == 5)
                                 {
                                     <tr>
-                                        <th>Text message (the “description” of the aktivity)</th>
+                                        <th>Text message (the <u>description</u> of the aktivity)</th>
                                     </tr>
                                 }
                             </thead>
@@ -405,6 +405,20 @@
                                 }
                             </tbody>
                         </table>
+
+                        @if (data.Select == 5)
+                        {
+                            <div style="font-family:'Courier New'; font-size: 0.8rem; font-style: italic">
+                                <details>
+                                    <summary title="Click for more information...">Info about #T#</summary>
+                                    The same thing can be accomplished by adding the text string #T#
+                                    somewhere in the name of any activity and then disabling the activity
+                                    (if you don't want both to appear). It is the same as here - that it is
+                                    the description of the activity that constitutes the text message. The
+                                    message is displayed after the current module.
+                                </details>
+                            </div>
+                        }
                     </article>
                 }
 
