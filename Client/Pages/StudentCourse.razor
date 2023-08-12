@@ -341,23 +341,23 @@
 
                     <main class="@classMainTopic">
                         <section class="module3S_box">
-                            @if (data.Name != "#E#" && data.Name != "#H#")
+                            @if (data.Name.IndexOf("#E#") == -1 && data.Name.IndexOf("#H#") == -1)
                             {
                                 <div style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 1.2rem"><b>@data.Name</b></div>
                             }
 
-                            @if (data.Name == "#E#")
+                            @if (data.Name.IndexOf("#E#") != -1)
                             {
                                 <div>&nbsp;</div>
                             }
 
-                            @if (data.Description != "#E#" && data.Description != "#H#")
+                            @if (data.Description.IndexOf("#E#") == -1 && data.Description.IndexOf("#H#") == -1)
                             {
                                 <div style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 0.8rem; margin: 5px 0 10px 0">
                                 <b><em>@data.Description</em></b></div>
                             }
 
-                            @if (data.Description == "#E#")
+                            @if (data.Description.IndexOf("#E#") != -1)
                             {
                                 <div>&nbsp;</div>
                             }
@@ -631,6 +631,9 @@
             CourseName = "No course could be find...";
         }
 
+        if (string.IsNullOrWhiteSpace(searchString) && modules.Count > 1) // Sist: sortering av moduler.
+            modules = OrderModules(modules);
+
         if (activityType is not null) // Hämtar aktivitetstyper.
         {
             activityTypes = activityType.ToList();
@@ -659,6 +662,35 @@
                 }
             }
         }
+    }
+
+    private List<ModuleDto> OrderModules(List<ModuleDto> modules) // Sorterar moduler efter Morder.
+    {
+        int i = 0;
+        int number = modules.Count;
+        ModuleDto[] marray = new ModuleDto[number];
+
+        do
+        {
+            // Lägger först in de som har fått ett ordernummer.
+            foreach (var mod in modules)
+            {
+                if (mod.Morder == i + 1) marray[i] = mod;
+            }
+            i++;
+        } while (i < number);
+
+        i = 0;
+
+        // Lägger in resterande utan något ordernummer.
+        foreach (var mod in modules)
+        {
+            // Hoppar över de platser som är upptagna och stoppar dubletter.
+            while (marray[i] is not null && i < number - 1) i++;
+            if (mod.Morder == 0 || mod.Morder >= number) marray[i] = mod;
+        }
+
+        return marray.ToList();
     }
 
     private void InfoTitle(string description)

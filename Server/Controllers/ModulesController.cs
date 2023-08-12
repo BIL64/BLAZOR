@@ -30,6 +30,7 @@ namespace LexiconLMSBlazor.Server.Controllers
                 .Select(d => new ModuleDto
                 {
                     Id = d.Id,
+                    Morder = d.Morder,
                     Name = d.Name,
                     Description = d.Description,
                     StartDate = d.StartDate,

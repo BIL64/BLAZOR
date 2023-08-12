@@ -1,0 +1,140 @@
+﻿@inject IXDtoClient xClient
+@inject XNavMenu xnav
+@attribute [Authorize]
+@*Toast component by Björn Lindqvist*@
+@*Endast lärare har åtkomst hit*@
+
+<AuthorizeView Roles="Teacher">
+    <Authorized>
+        <div class="toast-container p-3 @showClass"
+             style="position: fixed; top: auto; top: @(xnav.Pos_V)px; margin-left: @(xnav.Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
+            <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header" @onmouseup=" _ => xnav.Mouse(0, 'U', _)" @onmousedown=" _ => xnav.Mouse(Win_Height, 'D', _)"
+                     @onmousemove=" _ => xnav.Mouse(Win_Height, 'M', _)" @onmouseout=" _ => xnav.Mouse(Win_Height, 'M', _)">
+                    <strong class="me-auto">@HeaderText</strong>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+                </div>
+
+                <div class="toast-body">
+                    <EditForm Model="@xClient" Context="copymodulelmslexnet" OnSubmit="HandleSubmitCopy">
+                        <div style="font-size: 0.8rem; margin-bottom: 18px; color:darkblue">
+                            If you want to add more modules somewhere in the course or for some other reason
+                            wish to change the position of a module, then you can enter a suitable value here.
+                            For example, 1 becomes the first module. 0 means that the module will retain its
+                            original position.
+                        </div>
+                        <div class="form-group m-3 col-4">
+                            <label for="Modulenr">Enter position</label>
+                            <InputNumber id="Modulenr" class="form-control" @bind-Value="Mpos" min="0"/>
+                        </div>
+                        <div class="form-group m-3">
+                            <button type="submit" class="text-white rembtn" style="margin-right: 15px">Save</button>
+                            <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+
+    </Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private string HeaderText = string.Empty;
+    private string showClass = "d-none";
+    private int Mpos;
+    private int number;
+    private bool IsSame;
+    private bool IsOver;
+
+    private int Win_Height;
+
+    public async Task Show()
+    {
+        xnav.SetReset('a');
+
+        var dim = await xClient.GetWindow(); // Hämtar aktuell skärmstorlek.
+        Win_Height = dim.Height;
+        xnav.Pos_H = (int)Math.Round(dim.Width * 0.08); // 08%
+        xnav.Pos_V = (int)Math.Round(Win_Height * 0.2); // 20%
+
+        Mpos = 0;
+        number = 0;
+        IsSame = false;
+        IsOver = false;
+        HeaderText = "Set new module position...";
+        showClass = "d-block";
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        HeaderText = string.Empty;
+        showClass = "d-none";
+        StateHasChanged();
+    }
+
+    private async Task HandleSubmitCopy()
+    {
+        var module = await xClient.GetAsync<IEnumerable<ModuleDto>>("api/Module");
+
+        if (module is not null)
+        {
+            // Om positionen är mindre än noll.
+            if (Mpos < 0) Mpos = 0;
+
+            foreach (var mod in module)
+            {
+                if (mod.CourseId == Auxx.CourseId)
+                {
+                    if (mod.Morder == Mpos && Mpos != 0) IsSame = true;
+                    number++;
+                }
+            }
+
+            // Om positionen ligger över det maximala värdet.
+            if (number < Mpos) IsOver = true;
+
+            if (!IsSame && !IsOver)
+            {
+                foreach (var mod in module)
+                {
+                    if (mod.Id == Auxx.IntId)
+                    {
+                        var lmod = new ModuleDto();
+
+                        lmod.Id = mod.Id;
+                        lmod.Morder = Mpos;
+                        lmod.Name = mod.Name;
+                        lmod.Description = mod.Description;
+                        lmod.StartDate = mod.StartDate;
+                        lmod.EndDate = mod.EndDate;
+                        lmod.Select = mod.Select;
+                        lmod.CourseId = mod.CourseId;
+
+                        await xClient.PutAsync<ModuleDto>(lmod.Id, lmod, "api/Module");
+                        xnav.SetDone("Change position for a module.");
+                        xnav.SetReset('d');
+                    }
+                }
+            }
+            else
+            {
+                xnav.SetError("A position cannot apply twice.");
+                xnav.SetReset('e');
+                if (IsOver)
+                {
+                    xnav.SetError("The position exceeds the number of modules.");
+                    xnav.SetReset('e');
+                }
+            }
+        }
+
+        Auxx.Flag = true;
+        Close(); // En omnavigering här nollställer alla variabler inklusive statiska.
+    }
+}

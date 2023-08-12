@@ -53,6 +53,7 @@
         <ToastFastModuleDate @ref="fastmodRef" /> @*Datumredigeringsfönster*@
         <ToastFastActivityDate @ref="fastactRef" /> @*Datumredigeringsfönster*@
         <ToastCopyModule @ref="copymodRef" /> @*Modulkopiering*@
+        <ToastOrderModule @ref="ordermodRef" /> @*Modulordning*@
 
         <h5>@TestMess1</h5>
         <h5>@TestMess2</h5>
@@ -153,6 +154,7 @@
                                         <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
                                     }
                                 }
+                                <span class="order" @onclick=" _ => OrderModule(data.Id)" title="Click to set order">@data.Morder</span>
                             </div>
                             <div style="margin: 0 0 0 auto"><b style="cursor: pointer" @onclick=" _ => ModuleDate(data.Id)"
                                 title="Click to edit date">@xnav.StartEndDate(data.StartDate, data.EndDate)</b>
@@ -429,6 +431,7 @@
                             <div style="width: 85%">
                                 <b title="@data.Description -Click for edit-">Module:
                                 <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
+                                <span class="order" @onclick=" _ => OrderModule(data.Id)" title="Click to set order">@data.Morder</span>
                             </div>
                             <div style="margin-left: auto; margin-right: 0"><b>@xnav.StartEndDate(data.StartDate, data.EndDate)</b></div>
                         </div>
@@ -543,6 +546,16 @@
         await RefreshAfterThis(); // Uppdaterar sidan.
     }
 
+    private ToastOrderModule? ordermodRef; // Modulkopiering.
+
+    private async Task OrderModule(int id) // Modulordning.
+    {
+        Auxx.IntId = id;
+        Auxx.CourseId = IId;
+        await ordermodRef!.Show();
+        await RefreshAfterThis(); // Uppdaterar sidan.
+    }
+
     private List<CourseDto> courses = new();
 
     private List<ModuleDto> modules = new();
@@ -641,6 +654,9 @@
         }
         else NoModules = "";
 
+        if (string.IsNullOrWhiteSpace(searchString) && modules.Count > 1) // Sist: sortering av moduler.
+            modules = OrderModules(modules);
+
         if (activityType is not null) // Hämtar aktivitetstyper.
         {
             activityTypes = activityType.ToList();
@@ -687,6 +703,55 @@
                 }
             }
         }
+    }
+
+    private List<ModuleDto> OrderModules(List<ModuleDto> modules) // Sorterar moduler efter Morder.
+    {
+        int i = 0;
+        int over = 0;
+        int number = modules.Count;
+        ModuleDto[] marray = new ModuleDto[number];
+
+        foreach (var mod in modules)
+        {
+            if (mod.Morder > number) over++;
+        }
+
+        if (over > 0)
+        {
+            if (over == 1)
+            {
+                xnav.SetError("There is a module whose order number is greater than the actual number of modules.");
+                xnav.SetReset('e');
+            }
+            else
+            {
+                xnav.SetError("There are several modules whose order number is greater than the actual number of modules.");
+                xnav.SetReset('e');
+            }
+        }
+
+        do
+        {
+            // Lägger först in de som har fått ett ordernummer.
+            foreach (var mod in modules)
+            {
+                if (mod.Morder == i + 1) marray[i] = mod;
+            }
+            i++;
+        } while (i < number);
+
+        i = 0;
+
+        // Lägger in resterande utan något ordernummer.
+        foreach (var mod in modules)
+        {
+            // Hoppar över de platser som är upptagna och stoppar dubletter.
+            while (marray[i] is not null && i < number - 1) i++;
+            if (mod.Morder == 0 || mod.Morder >= number) marray[i] = mod;
+        }
+
+        return marray.ToList();
     }
 
     private async Task SelectModuleType(int id, byte select) // Växlar till vald modultyp.
@@ -801,6 +866,7 @@
         var dto = new ModuleDto
             {
                 Id = mod.Id,
+                Morder = mod.Morder,
                 Name = mod.Name,
                 Description = mod.Description,
                 StartDate = mod.StartDate,

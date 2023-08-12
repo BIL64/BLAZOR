@@ -198,6 +198,7 @@
                 {
                     ModuleID = mod.Id;
                     module.Id = mod.Id;
+                    module.Morder = mod.Morder;
                     module.Name = mod.Name;
                     module.Description = mod.Description;
                     module.StartDate = mod.StartDate;
@@ -277,6 +278,7 @@
     {
         var lmod = new ModuleDto
         {
+            Morder = 0,
             Name = module.Name,
             Description = module.Description,
             StartDate = module.StartDate,

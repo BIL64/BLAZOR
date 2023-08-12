@@ -6,6 +6,8 @@ namespace LexiconLMSBlazor.Shared.Dtos
     {
         public int Id { get; set; }
 
+        public int Morder { get; set; } = 0;
+
         [Required]
         public string Name { get; set; } = string.Empty;
 

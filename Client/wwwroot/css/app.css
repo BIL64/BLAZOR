@@ -401,6 +401,17 @@ i {
     background-color: lightblue;
 }
 
+.order {
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 5px 10px 3px 10px;
+    margin-left: 20%;
+    color: black;
+    background-color: aliceblue;
+    border: 1px black solid;
+    border-radius: 7px;
+}
+
 .docplusbtn {
     font-size: 0.8rem;
     padding: 2px 10px 0 10px;
