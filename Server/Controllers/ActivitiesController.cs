@@ -42,23 +42,23 @@ namespace LexiconLMSBlazor.Server.Controllers
             return await dto.ToListAsync();
         }
 
-        // GET: api/Activities/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Activity>> GetActivity(int id)
-        {
-          if (_context.Activity == null)
-          {
-              return NotFound();
-          }
-            var activity = await _context.Activity.FindAsync(id);
+        //// GET: api/Activities/5
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<Activity>> GetActivity(int id)
+        //{
+        //  if (_context.Activity == null)
+        //  {
+        //      return NotFound();
+        //  }
+        //    var activity = await _context.Activity.FindAsync(id);
 
-            if (activity == null)
-            {
-                return NotFound();
-            }
+        //    if (activity == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return activity;
-        }
+        //    return activity;
+        //}
 
         // PUT: api/Activities/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

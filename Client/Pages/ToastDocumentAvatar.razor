@@ -145,11 +145,11 @@
 
                         uploadResults.Add(
                             new()
-                                {
-                                    FileName = file.Name,
-                                    ErrorCode = 6,
-                                    Uploaded = false
-                                });
+                            {
+                                FileName = file.Name,
+                                ErrorCode = 6,
+                                Uploaded = false
+                            });
 
                         Upload = false;
                         xnav.SetError($"{file.Name} not selected (Err: 6): {ex.Message}");
@@ -162,11 +162,11 @@
                 Logger.LogInformation("{file.Name} error on upload (Err: 3).", file.Name);
                 uploadResults.Add(
                     new()
-                        {
-                            FileName = file.Name,
-                            ErrorCode = 3,
-                            Uploaded = false
-                        });
+                    {
+                        FileName = file.Name,
+                        ErrorCode = 3,
+                        Uploaded = false
+                    });
 
                 Upload = false;
                 xnav.SetError("Failed to set a unique avatar name.");
@@ -186,35 +186,35 @@
             if (IsAvatar)
             {
                 var ldoc = new DocumentDto // Put dokument.
-                    {
-                        Id = IntId,
-                        NameIx = NameIndex,
-                        DocName = DocFileName,
-                        Description = "Avatar",
-                        Author = Auxx.Loggeduser.FirstName + ' ' + Auxx.Loggeduser.LastName,
-                        TimeStamp = DateTime.Now.ToString(),
-                        UserId = GuidId,
-                        Id4Course = -2, // -2 innebär en avatar.
-                        ModuleId = 0,
-                        ActivityId = 0
-                    };
+                {
+                    Id = IntId,
+                    NameIx = NameIndex,
+                    DocName = DocFileName,
+                    Description = "Avatar",
+                    Author = Auxx.Loggeduser.FirstName + ' ' + Auxx.Loggeduser.LastName,
+                    TimeStamp = DateTime.Now.ToString(),
+                    UserId = GuidId,
+                    Id4Course = -2, // -2 innebär en avatar.
+                    ModuleId = 0,
+                    ActivityId = 0
+                };
 
                 await xClient.PutAsync<DocumentDto>(IntId, ldoc, "api/Document");
             }
             else
             {
                 var ldoc = new DocumentDto // Post dokument.
-                    {
-                        NameIx = NameIndex,
-                        DocName = DocFileName,
-                        Description = "Avatar",
-                        Author = Auxx.Loggeduser.FirstName + ' ' + Auxx.Loggeduser.LastName,
-                        TimeStamp = DateTime.Now.ToString(),
-                        UserId = GuidId,
-                        Id4Course = -2, // -2 innebär en avatar.
-                        ModuleId = 0,
-                        ActivityId = 0
-                    };
+                {
+                    NameIx = NameIndex,
+                    DocName = DocFileName,
+                    Description = "Avatar",
+                    Author = Auxx.Loggeduser.FirstName + ' ' + Auxx.Loggeduser.LastName,
+                    TimeStamp = DateTime.Now.ToString(),
+                    UserId = GuidId,
+                    Id4Course = -2, // -2 innebär en avatar.
+                    ModuleId = 0,
+                    ActivityId = 0
+                };
 
                 await xClient.PostAsync<DocumentDto>(ldoc, "api/Document");
             }
@@ -262,9 +262,9 @@
         if (response.IsSuccessStatusCode)
         {
             var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true,
-                };
+            {
+                PropertyNameCaseInsensitive = true,
+            };
 
             using var responseStream = await response.Content.ReadAsStreamAsync();
 

@@ -33,12 +33,14 @@ namespace LexiconLMSBlazor.Server.Controllers
             {
                 foreach (var user in appuser) // LINQ fungerar inte eftersom LINQ inte kan await Task<int>.
                 {
-                    var dto = new AppUserDto(); // Måste ligga inne i foren annars pekar dto på endast en minnesplats.
-                    dto.Id = user.Id;
-                    dto.FirstName = user.FirstName;
-                    dto.LastName = user.LastName;
-                    dto.Email = user.Email;
-                    dto.PhoneNumber = user.PhoneNumber;
+                    var dto = new AppUserDto // Måste ligga inne i foren annars pekar dto på endast en minnesplats.
+                    {
+                        Id = user.Id,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Email = user.Email,
+                        PhoneNumber = user.PhoneNumber
+                    };
                     if (user.CourseId is not null) dto.CourseId = (int)user.CourseId; else dto.CourseId = 0;
                     dto.UserRole = await UserRole(user); // Måste vara await pga Task<int>.
                     dtolist.Add(dto);

@@ -63,23 +63,23 @@ namespace LexiconLMSBlazor.Server.Controllers
             return await dto.ToListAsync();
         }
 
-        // GET: api/Courses/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Course>> GetCourse(int id)
-        {
-          if (_context.Course == null)
-          {
-              return NotFound();
-          }
-            var course = await _context.Course.FindAsync(id);
+        //// GET: api/Courses/5
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<Course>> GetCourse(int id)
+        //{
+        //  if (_context.Course == null)
+        //  {
+        //      return NotFound();
+        //  }
+        //    var course = await _context.Course.FindAsync(id);
 
-            if (course == null)
-            {
-                return NotFound();
-            }
+        //    if (course == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return course;
-        }
+        //    return course;
+        //}
 
         // PUT: api/Courses/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

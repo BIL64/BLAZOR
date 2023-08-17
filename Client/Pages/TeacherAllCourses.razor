@@ -456,41 +456,41 @@
         int ModuleID = 0;
 
         var lmod = new ModuleDto
+        {
+            Morder = 0,
+            Name = "Not yet a name",
+            Description = "Not yet a description",
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now,
+            Select = 2,
+            CourseId = id
+        };
+
+        await xClient.PostAsync<ModuleDto>(lmod, "api/Module");
+
+        var allmod = await xClient.GetAsync<IEnumerable<ModuleDto>>("api/Module");
+
+        if (allmod is not null)
+        {
+            foreach (var mod in allmod)
             {
-                Morder = 0,
-                Name = "Not yet a name",
-                Description = "Not yet a description",
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now,
-                Select = 2,
-                CourseId = id
-            };
-
-            await xClient.PostAsync<ModuleDto>(lmod, "api/Module");
-
-            var allmod = await xClient.GetAsync<IEnumerable<ModuleDto>>("api/Module");
-
-            if (allmod is not null)
-            {
-                foreach (var mod in allmod)
-                {
-                    if (mod.Name == lmod.Name && mod.StartDate == lmod.StartDate && mod.EndDate == lmod.EndDate) ModuleID = mod.Id;
-                }
+                if (mod.Name == lmod.Name && mod.StartDate == lmod.StartDate && mod.EndDate == lmod.EndDate) ModuleID = mod.Id;
             }
+        }
 
-            var lact = new ActivityDto
-                {
-                    Name = "Not yet a name",
-                    Description = "Not yet a description",
-                    StartDate = DateTime.Now,
-                    EndDate = DateTime.Now,
-                    Select = 1,
-                    ActivityTypeId = 1,
-                    ModuleId = ModuleID
-                };
+        var lact = new ActivityDto
+        {
+            Name = "Not yet a name",
+            Description = "Not yet a description",
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now,
+            Select = 1,
+            ActivityTypeId = 1,
+            ModuleId = ModuleID
+        };
 
-            await xClient.PostAsync<ActivityDto>(lact, "api/Activity");
-            await CreateAndRefresh(id);
+        await xClient.PostAsync<ActivityDto>(lact, "api/Activity");
+        await CreateAndRefresh(id);
     }
 
     private async Task CreateAndRefresh(int id)

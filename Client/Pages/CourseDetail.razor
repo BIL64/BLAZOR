@@ -864,32 +864,32 @@
     private ModuleDto GetNewModObject(ModuleDto mod, byte select) // Nytt modulobjekt.
     {
         var dto = new ModuleDto
-            {
-                Id = mod.Id,
-                Morder = mod.Morder,
-                Name = mod.Name,
-                Description = mod.Description,
-                StartDate = mod.StartDate,
-                EndDate = mod.EndDate,
-                Select = select,
-                CourseId = mod.CourseId
-            };
+        {
+            Id = mod.Id,
+            Morder = mod.Morder,
+            Name = mod.Name,
+            Description = mod.Description,
+            StartDate = mod.StartDate,
+            EndDate = mod.EndDate,
+            Select = select,
+            CourseId = mod.CourseId
+        };
         return dto;
     }
 
     private ActivityDto GetNewActObject(ActivityDto act, byte select) // Nytt aktivitetsobject.
     {
         var dto = new ActivityDto
-            {
-                Id = act.Id,
-                Name = act.Name,
-                Description = act.Description,
-                StartDate = act.StartDate,
-                EndDate = act.EndDate,
-                Select = select,
-                ActivityTypeId = act.ActivityTypeId,
-                ModuleId = act.ModuleId
-            };
+        {
+            Id = act.Id,
+            Name = act.Name,
+            Description = act.Description,
+            StartDate = act.StartDate,
+            EndDate = act.EndDate,
+            Select = select,
+            ActivityTypeId = act.ActivityTypeId,
+            ModuleId = act.ModuleId
+        };
         return dto;
     }
 

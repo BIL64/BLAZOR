@@ -215,9 +215,7 @@ else
 
     private async Task RefreshAfterThis() // Uppdaterar efter förändring av innehåll.
     {
-        while (!Auxx.Flag) await xnav.Intermission(1000, false);
-        Auxx.Flag = false;
-        await xnav.Intermission(1000, false);
+        while (!Auxx.Flag) await xnav.Intermission(500, false);
         await OnInitializedAsync();
     }
 

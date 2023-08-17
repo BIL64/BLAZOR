@@ -44,23 +44,23 @@ namespace LexiconLMSBlazor.Server.Controllers
             return await dto.ToListAsync();
         }
 
-        // GET: api/Documents/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Document>> GetDocument(int id)
-        {
-          if (_context.Document == null)
-          {
-              return NotFound();
-          }
-            var document = await _context.Document.FindAsync(id);
+        //// GET: api/Documents/5
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<Document>> GetDocument(int id)
+        //{
+        //  if (_context.Document == null)
+        //  {
+        //      return NotFound();
+        //  }
+        //    var document = await _context.Document.FindAsync(id);
 
-            if (document == null)
-            {
-                return NotFound();
-            }
+        //    if (document == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return document;
-        }
+        //    return document;
+        //}
 
         // PUT: api/Documents/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

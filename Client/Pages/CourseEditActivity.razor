@@ -399,17 +399,17 @@
             }
 
             var lact = new ActivityDto
-                {
-                    Id = activity.Id,
-                    Name = activity.Name,
-                    Description = activity.Description,
-                    StartDate = activity.StartDate,
-                    EndDate = activity.EndDate,
-                    ModuleId = activity.ModuleId,
-                    Select = activity.Select,
-                    ActivityTypeId = ActTypeId,
-                    ActivityTypeName = activityType.Name
-                };
+            {
+                Id = activity.Id,
+                Name = activity.Name,
+                Description = activity.Description,
+                StartDate = activity.StartDate,
+                EndDate = activity.EndDate,
+                ModuleId = activity.ModuleId,
+                Select = activity.Select,
+                ActivityTypeId = ActTypeId,
+                ActivityTypeName = activityType.Name
+            };
 
             lact.ActivityTypeName = activityType.Name; // Om ingen typ valdes.
             if (lact.ActivityTypeName == "")
@@ -433,16 +433,16 @@
         }
 
         var lact = new ActivityDto
-            {
-                Name = activity.Name,
-                Description = activity.Description,
-                StartDate = activity.StartDate,
-                EndDate = activity.EndDate,
-                ModuleId = activity.ModuleId,
-                Select = activity.Select,
-                ActivityTypeId = ActTypeId,
-                ActivityTypeName = activityType.Name
-            };
+        {
+            Name = activity.Name,
+            Description = activity.Description,
+            StartDate = activity.StartDate,
+            EndDate = activity.EndDate,
+            ModuleId = activity.ModuleId,
+            Select = activity.Select,
+            ActivityTypeId = ActTypeId,
+            ActivityTypeName = activityType.Name
+        };
 
         lact.ActivityTypeName = activityType.Name; // Om ingen typ valdes.
         if (lact.ActivityTypeName == "")
