@@ -90,9 +90,11 @@
 
     private async Task HandleSubmitDates()
     {
-        var lact = new ActivityDto();
-        lact.StartDate = Sdate;
-        lact.EndDate = Edate;
+        var lact = new ActivityDto
+        {
+            StartDate = Sdate,
+            EndDate = Edate
+        };
 
         foreach (var act in activities)
         {

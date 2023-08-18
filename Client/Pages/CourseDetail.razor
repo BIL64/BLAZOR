@@ -710,11 +710,17 @@
         int i = 0;
         int over = 0;
         int number = modules.Count;
+        bool IsSameName = false;
         ModuleDto[] marray = new ModuleDto[number];
 
-        foreach (var mod in modules)
+        foreach (var mod1 in modules)
         {
-            if (mod.Morder > number) over++;
+            if (mod1.Morder > number) over++;
+
+            foreach (var mod2 in modules)
+            {
+                if (mod1.Name == mod2.Name && mod1.Id != mod2.Id) IsSameName = true;
+            }
         }
 
         if (over > 0)
@@ -729,6 +735,12 @@
                 xnav.SetError("There are several modules whose order number is greater than the actual number of modules.");
                 xnav.SetReset('e');
             }
+        }
+
+        if (IsSameName)
+        {
+            xnav.SetError("There is one or several modules whose name is equal. To avoid problems with handling data, all modules should have different names.");
+            xnav.SetReset('e');
         }
 
         do

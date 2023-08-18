@@ -105,16 +105,17 @@
                 {
                     if (mod.Id == Auxx.IntId)
                     {
-                        var lmod = new ModuleDto();
-
-                        lmod.Id = mod.Id;
-                        lmod.Morder = Mpos;
-                        lmod.Name = mod.Name;
-                        lmod.Description = mod.Description;
-                        lmod.StartDate = mod.StartDate;
-                        lmod.EndDate = mod.EndDate;
-                        lmod.Select = mod.Select;
-                        lmod.CourseId = mod.CourseId;
+                        var lmod = new ModuleDto
+                        {
+                            Id = mod.Id,
+                            Morder = Mpos,
+                            Name = mod.Name,
+                            Description = mod.Description,
+                            StartDate = mod.StartDate,
+                            EndDate = mod.EndDate,
+                            Select = mod.Select,
+                            CourseId = mod.CourseId
+                        };
 
                         await xClient.PutAsync<ModuleDto>(lmod.Id, lmod, "api/Module");
                         xnav.SetDone("Change position for a module.");

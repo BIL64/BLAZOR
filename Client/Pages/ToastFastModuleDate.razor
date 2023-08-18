@@ -90,9 +90,11 @@
 
     private async Task HandleSubmitDates()
     {
-        var lmod = new ModuleDto();
-        lmod.StartDate = Sdate;
-        lmod.EndDate = Edate;
+        var lmod = new ModuleDto
+        {
+            StartDate = Sdate,
+            EndDate = Edate
+        };
 
         foreach (var mod in modules)
         {
