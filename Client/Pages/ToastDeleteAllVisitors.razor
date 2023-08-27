@@ -1,5 +1,6 @@
 ﻿@inject IAppUserDtoClient appuserClient
 @inject IXDtoClient xClient
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Toast component by Björn Lindqvist*@
@@ -9,7 +10,7 @@
     <Authorized>
         <div class="toast-container p-3 @showClass"
              style="position: fixed; top: auto; top: @(xnav.Pos_V)px; margin-left: @(xnav.Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
-            <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true" style="width: 250px">
                 <div class="toast-header" @onmouseup=" _ => xnav.Mouse(0, 'U', _)" @onmousedown=" _ => xnav.Mouse(Win_Height, 'D', _)"
                      @onmousemove=" _ => xnav.Mouse(Win_Height, 'M', _)" @onmouseout=" _ => xnav.Mouse(Win_Height, 'M', _)">
                     <strong class="me-auto">@HeaderText</strong>
@@ -17,9 +18,8 @@
                 </div>
 
                 <div class="toast-body">
-                    <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove all visitors from the system">DELETE NOW</button>
-                    <button type="button" class="text-white remnot" @onclick="Close">NO</button>
-                    <button type="button" class="text-white rembtn" @onclick="RegOnOff" title="Set register for visitors ON/OFF">REG ON/OFF</button>
+                    <button type="button" class="text-white remyes" @onclick="DeleteNow" title=@xtoa.TxtTitle[5]>@xtoa.TxtButton[2]</button> @* DELETE NOW *@
+                    <button type="button" class="text-white remnot" @onclick="Close">@xtoa.TxtButton[0]</button> @* NO *@
                 </div>
             </div>
         </div>
@@ -45,7 +45,7 @@
         Win_Height = dim.Height;
         xnav.Pos_H = (int)Math.Round(dim.Width * 0.08); // 08%
         xnav.Pos_V = (int)Math.Round(Win_Height * 0.2); // 20%
-        HeaderText = "Remove all visitors or set register on/off";
+        HeaderText = xtoa.TxtHead[4];
         showClass = "d-block";
         StateHasChanged();
     }
@@ -59,14 +59,14 @@
 
     private async Task DeleteNow()
     {
-        xnav.SetDone("All unregistered visitors were deleted.");
+        xnav.SetDone(xtoa.TxtDone[6]);
         xnav.SetReset('d');
 
         var appuser = await appuserClient.GetAsync();
 
         if (appuser is not null)
         {
-            HeaderText = "Working...";
+            HeaderText = xtoa.TxtError[29];
 
             foreach (var item in appuser)
             {
@@ -74,60 +74,6 @@
             }
         }
         HeaderText = string.Empty;
-        Close();
-    }
-
-    private async Task RegOnOff()
-    {
-        bool failure = false;
-
-        try
-        {
-            var regist = await xClient.GetAsync<RegisterDto>(1, "api/Register");
-            if (regist is not null && regist.RegClass == "d-none") xnav.ClassReg = "d-block";
-            if (regist is not null && regist.RegClass == "d-block") xnav.ClassReg = "d-none";
-        }
-        catch
-        {
-            xnav.SetError("The register value in DB is not reachable.");
-            xnav.SetReset('e');
-            failure = true;
-        }
-
-        if (!failure && xnav.ClassReg == "d-block")
-        {
-            var lreg = new RegisterDto
-            {
-                Id = 1,
-                RegClass = "d-block"
-            };
-            await xClient.PutAsync<RegisterDto>(1, lreg, "api/Register");
-
-            xnav.SetDone("Register for visitors is activated.");
-            xnav.SetReset('d');
-            xnav.SetReg(true);
-        }
-
-        if (!failure && xnav.ClassReg == "d-none")
-        {
-            var lreg = new RegisterDto
-                {
-                    Id = 1,
-                    RegClass = "d-none"
-                };
-            await xClient.PutAsync<RegisterDto>(1, lreg, "api/Register");
-
-            xnav.SetDone("Register for visitors is disable.");
-            xnav.SetReset('d');
-            xnav.SetReg(false);
-        }
-
-        if (!failure && xnav.ClassReg != "d-block" && xnav.ClassReg != "d-none")
-        {
-            xnav.SetError("The register value in DB is corrupted. Id = 1 and RegClass = ”d-block” or RegClass = ”d-none”");
-            xnav.SetReset('e');
-        }
-
         Close();
     }
 }

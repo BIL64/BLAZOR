@@ -2,6 +2,9 @@
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject IAppUserDtoClient appuserClient
 @inject IXDtoClient xClient
+@inject XLangStudent xstu
+@inject XLangTeacher xtea
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 
 <PageTitle>Index</PageTitle>
@@ -12,7 +15,7 @@
 </nav>
 
 <section class="text-lg-end text-info">
-    &copy August 2023 Björn Lindqvist - Version 1.10
+    &copy August 2023 Björn Lindqvist - Version 1.11
 </section>
 
 <footer class="mt-4 p-4"> @*Hjälp vid uppstart när man har populerat Min eller Max*@
@@ -49,6 +52,8 @@
         var user = authstate.User;
         var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
 
+        if (user.IsInRole("Student") || user.IsInRole("Teacher")) xnav.ClassSettings = "d-block"; // Visar endast settings för registrerade.
+
         var appuser = await appuserClient.GetAsync();
         var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
         if (document is not null) documents = document.ToList();
@@ -60,6 +65,23 @@
                 if (item.UserRole == 2) johndoe.Add(item); // Hämtar endast användare med lärarrollen.
                 if (item.Email == name) loggeduser = item; // Hämtar den som för tillfället är inloggad.
             }
+        }
+
+        xnav.MainRole = (byte) loggeduser.UserRole; // Tilldelar rollen vilken används i MainLayout.
+
+        // Implementerar språk för både sidor och alla toast.
+        if (loggeduser.UserRole == 1 && xstu.RenderPage != "STILL_HERE")
+        {
+            if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xstu.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xstu.SetLanguage_SV(); xtoa.SetLanguage_SV(); }
+            else { xstu.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+        }
+
+        if (loggeduser.UserRole == 2 && xtea.RenderPage != "STILL_HERE")
+        {
+            if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xtea.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xtea.SetLanguage_SV(); xtoa.SetLanguage_SV(); }
+            else { xtea.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
         }
 
         xnav.SetLogAvatar("d-none", "");

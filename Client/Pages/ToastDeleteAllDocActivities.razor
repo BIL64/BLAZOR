@@ -1,4 +1,5 @@
 ﻿@inject IXDtoClient xClient
+@inject XLangToastEdit xted
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Toast component by Björn Lindqvist*@
@@ -13,17 +14,17 @@
                     <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
                 </div>
                 <div class="toast-body">
-                    <button type="button" class="text-white remnot" @onclick="Proceed">YES</button>
-                    <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+                    <button type="button" class="text-white remnot" @onclick="Proceed">@xted.TxtButton[1]</button> @* YES *@
+                    <button type="button" class="text-white remnot" @onclick="Close">@xted.TxtButton[0]</button> @* NO *@
                 </div>
                 <div class="@classProceed">
                     <EditForm Model="@xClient" Context="deletealllmslexnet" OnSubmit="HandleSubmitDeleteAll">
                         <div class="form-group m-3">
-                            <label for="Date">Enter today's date (yyyy-mm-dd)</label>
-                            <InputText id="Date" class="form-control" @bind-Value="Tdate" title="Today's date" />
+                            <label for="Date">@xted.TxtText[4]</label>
+                            <InputText id="Date" class="form-control" @bind-Value="Tdate" title=@xted.TxtTitle[3] />
                         </div>
                         <div class="form-group m-3">
-                            <button type="submit" class="text-white remyes" title="Remove all documents and messages from the system">DELETE NOW</button>
+                            <button type="submit" class="text-white remyes" title=@xted.TxtTitle[2]>@xted.TxtButton[2]</button> @* DELETE NOW *@
                         </div>
                     </EditForm>
                 </div>
@@ -48,7 +49,7 @@
     {
         xnav.SetReset('a');
 
-        HeaderText = "Remove all non-mandatory docs and mess....";
+        HeaderText = xted.TxtText[3];
         classProceed = "d-none";
         showClass = "d-block";
         StateHasChanged();
@@ -92,20 +93,20 @@
                 HeaderText = string.Empty;
                 showClass = "d-none";
                 StateHasChanged();
-                xnav.SetDone("All non-mandatory documents and messages were deleted.");
+                xnav.SetDone(xted.TxtText[5]);
                 xnav.SetReset('d');
                 Auxx.Flag = true;
             }
             else
             {
-                xnav.SetDone("No documents or messages could be found.");
+                xnav.SetDone(xted.TxtText[6]);
                 xnav.SetReset('d');
             }
 
         }
         else
         {
-            xnav.SetError("The date was incorrect.");
+            xnav.SetError(xted.TxtText[7]);
             xnav.SetReset('e');
         }
     }

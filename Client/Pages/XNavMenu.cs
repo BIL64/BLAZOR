@@ -20,6 +20,12 @@ public class XNavMenu // Klass som kan kommunicera med navmenyn.
 
     public string ErrorMess { get; private set; } = string.Empty;
 
+    public string ClassSettings { get; set; } = "d-none"; // Inställningar på logginbaren.
+
+    public byte MainRole { get; set; } = 1; // Rollen kan bara hämtas från index.
+
+    public bool IsClickSett { get; set; } = false; // Om klick på inställningar.
+
     public string ClassAvatarMess { get; private set; } = "d-none"; // Class for avatar.
 
     public string PathImgMess { get; set; } = string.Empty; // Path to avatar.
@@ -180,6 +186,12 @@ public class XNavMenu // Klass som kan kommunicera med navmenyn.
                 }
         }
     
+    }
+
+    public void SetClickSett(bool click)
+    {
+        IsClickSett = click;
+        NotifyStateChanged();
     }
 
     public void SetLogAvatar(string classx, string path)

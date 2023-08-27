@@ -7,6 +7,9 @@
 @inject NavigationManager Navigation
 @inject ILogger<TeacherAddCourse> Logger
 @inject IXDtoClient xClient
+@inject XLangTeacher xtea
+@inject XLangEdit xedi
+@inject XLangToastEdit xted
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Björn Lindqvist*@
@@ -17,29 +20,29 @@
 <AuthorizeView Roles="Teacher">
     <Authorized>
     <section class="activityeditbox">
-        <h5>Edit course:</h5>
+        <h5>@xedi.TxtText[1]</h5>
         <EditForm EditContext="courseContext" Context="courselmslexnet" OnValidSubmit="HandleSubmitCourse">
             <DataAnnotationsValidator />
             <ValidationSummary />
             <div class="form-group m-3">
-                <label for="Name">Name</label>
+                <label for="Name">@xedi.TxtText[4]</label>
                 <InputText id="Name" class="form-control" @bind-Value="course.Name" placeholder="Enter name" />
             </div>
             <div class="form-group m-3">
-                <label for="Description">Description</label>
+                <label for="Description">@xedi.TxtText[5]</label>
                 <InputTextArea id="Description" class="form-control" @bind-Value="course.Description" placeholder="Enter description" />
             </div>
             <div class="form-group m-3">
-                <label for="Startdate">Start date</label>
+                <label for="Startdate">@xedi.TxtText[6]</label>
                 <InputDate id="Startdate" class="form-control" @bind-Value="course.StartDate" />
             </div>
             <div class="form-group m-3">
-                <label for="Enddate">End date</label>
+                <label for="Enddate">@xedi.TxtText[7]</label>
                 <InputDate id="Enddate" class="form-control" @bind-Value="course.EndDate" />
             </div>
             <div class="form-group m-3">
-                <button type="button" class="btn btn-secondary btn-sm m-1" @onclick="RegretRefresh" title="Avoid edit course">Return</button>
-                <button type="submit" class="btn btn-primary btn-sm m-1" title="Save this edit form">Save</button>
+                <button type="button" class="btn btn-secondary btn-sm m-1" @onclick="RegretRefresh" title=@xedi.TxtTitle[1]>@xedi.TxtButton[0]</button>
+                <button type="submit" class="btn btn-primary btn-sm m-1" title=@xedi.TxtTitle[4]>@xedi.TxtButton[1]</button>
             </div>
         </EditForm>
     </section>
@@ -65,9 +68,20 @@
 
     protected override async Task OnInitializedAsync()
     {
-        xnav.SetReset('a');
-
         courseContext = new EditContext(course); // Formulärkontext.
+
+        if (xedi.RenderPage != "STILL_HERE")
+        {
+            xnav.MainRole = 2;
+            xnav.ClassSettings = "d-block"; // Settings.
+            if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xtea.SetMenu_EN(); xedi.SetLanguage_EN(); xted.SetLanguage_EN(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xtea.SetMenu_EN(); xedi.SetLanguage_SV(); xted.SetLanguage_SV(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "DE") { xtea.SetMenu_DE(); xedi.SetLanguage_DE(); xted.SetLanguage_DE(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") { xtea.SetMenu_FR(); xedi.SetLanguage_FR(); xted.SetLanguage_FR(); }
+            else { xtea.SetMenu_EN(); xedi.SetLanguage_EN(); xted.SetLanguage_EN(); }
+        }
+
+        xnav.SetReset('a');
 
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         var user = authstate.User;
@@ -111,11 +125,14 @@
                 xnav.SetLogAvatar("avatarlog", xClient.GetFilepath() + doc.NameIx + doc.DocName);
             }
         }
+
+        xedi.OnChange += StateHasChanged;
+        xted.OnChange += StateHasChanged;
     }
 
     private async Task RegretRefresh()
     {
-        xnav.SetDone("The course was NOT edited or created.");
+        xnav.SetDone(xedi.TxtText[9]);
         xnav.SetReset('d');
         await xnav.Intermission(1000, false);
         Navigation.NavigateTo($"/teacherallcourses", true);
@@ -128,7 +145,7 @@
         if (course.StartDate > course.EndDate)
         {
             await xnav.Intermission(100, true);
-            xnav.SetError("Date mismatch (start date is greater than end date).");
+            xnav.SetError(xedi.TxtText[16]);
             xnav.SetReset('e');
         }
         else
@@ -149,7 +166,7 @@
 
     private async Task CreateAndRefresh()
     {
-        xnav.SetDone("Your course is edited.");
+        xnav.SetDone(xedi.TxtText[10]);
         xnav.SetReset('d');
         await xnav.Intermission(2000, false);
         Navigation.NavigateTo($"/coursedetail/{IId}", true);

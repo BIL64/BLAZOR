@@ -2,6 +2,8 @@
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject IAppUserDtoClient appuserClient
 @inject IXDtoClient xClient
+@inject XLangStudent xstu
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 @inject XPagination xpag
 @attribute [Authorize]
@@ -39,10 +41,10 @@ else
             <tr>
                 @if (xpag.ClassPag == "d-flex") // Eliminerar visuella störningar.
                 {
-                    <th>Student</th>
-                    <th>Email</th>
-                    <th>Phone number</th>
-                    <th>Course</th>
+                    <th>@xstu.TxtText[8]</th> @* Student *@
+                    <th>@xstu.TxtText[9]</th> @* Email *@
+                    <th>@xstu.TxtText[10]</th> @* Phone number *@
+                    <th>@xstu.TxtText[11]</th> @* Course *@
                 }
             </tr>
         </thead>
@@ -59,7 +61,7 @@ else
                             {
                                 if (doc.UserId == data.Id && doc.Id4Course == -2) classAvatar = "avatar";
                             }
-                            <td class="@classAvatar" @onmouseover=" _ => ShowAvatar(data.Id)">@data.FirstName @data.LastName (teacher)</td>
+                            <td class="@classAvatar" @onmouseover=" _ => ShowAvatar(data.Id)">@data.FirstName @data.LastName @xstu.TxtText[15]</td> @* (teacher) *@
                             <td>@data.Email</td>
                             <td>@data.PhoneNumber</td>
                             <td>
@@ -73,7 +75,7 @@ else
                                 }
                                 @if (!IsCourse)
                                 {
-                                    <span>No course yet...</span>
+                                    <span>@xstu.TxtText[16]</span> @* No course yet... *@
                                 }
                                 @{IsCourse = false;}
                             </td>
@@ -81,7 +83,7 @@ else
                                 @if (data.Id is not null)
                                 {
                                     <button type="button" class="text-white coursebtn" @onclick=" _ => DocSaveControl(data.Id, 10, data.FirstName + ' ' + data.LastName)"
-                                    title="Add document to student">+Doc</button> // CSS!
+                                    title=@xstu.TxtTitle[5]>+Doc</button> // CSS!
                                 }
                             </td>
                         </tr>
@@ -109,7 +111,7 @@ else
                                 }
                                 @if (!IsCourse)
                                 {
-                                    <span>No course yet...</span>
+                                    <span>@xstu.TxtText[16]</span> @* No course yet... *@
                                 }
                                 @{IsCourse = false;}
                             </td>
@@ -117,7 +119,7 @@ else
                                 @if (data.Id is not null)
                                 {
                                     <button type="button" class="text-white coursebtn" @onclick=" _ => DocSaveControl(data.Id, 10, data.FirstName + ' ' + data.LastName)"
-                                    title="Add document to student">+Doc</button> // CSS!
+                                    title=@xstu.TxtTitle[5]>+Doc</button> // CSS!
                                 }
                             </td>
                         </tr>
@@ -190,7 +192,7 @@ else
         Auxx.DocType = doctype;
         Auxx.Name4Type = name;
         await docsaveRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(true); // Uppdaterar sidan.
     }
 
     private List<AppUserDto> students = new();
@@ -201,9 +203,9 @@ else
 
     private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
 
-    private string Emptydb = "List of students";
+    private string Emptydb = string.Empty;
     private string searchString = string.Empty;
-    private string classAvatar = "";
+    private string classAvatar = string.Empty;
 
     private bool IsCourse;
 
@@ -213,22 +215,36 @@ else
         await OnInitializedAsync();
     }
 
-    private async Task RefreshAfterThis() // Uppdaterar efter förändring av innehåll.
+    private async Task RefreshAfterThis(bool delay) // Uppdaterar efter förändring av innehåll.
     {
-        while (!Auxx.Flag) await xnav.Intermission(500, false);
+        while (!Auxx.Flag) await xnav.Intermission(500, false); // Nödvändigt för att kunna uppdatera sidan efteråt.
+        if (delay) await xnav.Intermission(1500, false); // Undviker att ShowAvatar-metoden omgående nollställer errormenyn.
         await OnInitializedAsync();
     }
 
     protected override async Task OnInitializedAsync()
     {
-        xnav.SetReset('a');
-        Emptydb = "List of students";
+        if (xstu.RenderPage != "STILL_HERE")
+        {
+            xnav.MainRole = 1;
+            xnav.ClassSettings = "d-block"; // Settings.
+            if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xstu.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xstu.SetLanguage_SV(); xtoa.SetLanguage_SV(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "DE") { xstu.SetLanguage_DE(); xtoa.SetLanguage_DE(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") { xstu.SetLanguage_FR(); xtoa.SetLanguage_FR(); }
+            else { xstu.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+        }
+
+        if (!Auxx.Flag) xnav.SetReset('a');
 
         await xpag.InitPag(0, students); // Pagineringskontroll.
+        Auxx.Flag = false; // Efter pagineringen så att sifferraden inte döljs.
 
         students.Clear(); // Sökfunktionen kräver att listorna rensas.
         courses.Clear();
         documents.Clear();
+
+        Emptydb = xstu.TxtText[12]; // List of students
 
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         var user = authstate.User;
@@ -259,12 +275,12 @@ else
                     if (item.CourseId == loggeduser.CourseId) students.Add(item);
                 }
             }
-            if (students.Count < 1) Emptydb = "No students !";
-            if(!string.IsNullOrWhiteSpace(searchString) && students.Count < 1) Emptydb = "There is no student or teacher with that name...";
+            if (students.Count < 1) Emptydb = xstu.TxtText[13];
+            if (!string.IsNullOrWhiteSpace(searchString) && students.Count < 1) Emptydb = xstu.TxtText[14];
         }
         else
         {
-            Emptydb = "No students !";
+            Emptydb = @xstu.TxtText[13];
         }
 
         var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
@@ -273,6 +289,9 @@ else
         {
             courses = course.ToList();
         }
+
+        xstu.OnChange += StateHasChanged;
+        xtoa.OnChange += StateHasChanged;
     }
 
     private void SortName() // Sorterar studenter efter deras namn.
@@ -284,20 +303,23 @@ else
     {
         bool FindAvatar = false;
 
-        @foreach (var doc in documents)
+        if (!Auxx.Flag)
         {
-            if (doc.UserId == id && doc.Id4Course == -2)
+            @foreach (var doc in documents)
             {
-                xnav.SetMessAvatar("xnavavatar", xClient.GetFilepath() + doc.NameIx + doc.DocName);
-                xnav.SetReset('v');
-                FindAvatar = true;
+                if (doc.UserId == id && doc.Id4Course == -2)
+                {
+                    xnav.SetMessAvatar("xnavavatar", xClient.GetFilepath() + doc.NameIx + doc.DocName);
+                    xnav.SetReset('v');
+                    FindAvatar = true;
+                }
             }
-        }
 
-        if (!FindAvatar)
-        {
-            xnav.SetMessAvatar("d-none", "");
-            xnav.SetReset('v');
+            if (!FindAvatar)
+            {
+                xnav.SetMessAvatar("d-none", "");
+                xnav.SetReset('v');
+            }
         }
     }
 }

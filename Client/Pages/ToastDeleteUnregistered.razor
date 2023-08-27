@@ -1,5 +1,6 @@
 ﻿@inject IAppUserDtoClient appuserClient
 @inject IXDtoClient xClient
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Toast component by Björn Lindqvist*@
@@ -17,9 +18,9 @@
                 </div>
 
                 <div class="toast-body">
-                    <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove this user from the system">DELETE NOW</button>
-                    <button type="button" class="text-white remnot" @onclick="Close">NO</button>
-                    <button type="button" class="text-white remnot" @onclick="Redirect" title="Make this visitor to a teacher...">To teacher!</button>
+                    <button type="button" class="text-white remyes" @onclick="DeleteNow" title=@xtoa.TxtTitle[8]>@xtoa.TxtButton[2]</button> @* DELETE NOW *@
+                    <button type="button" class="text-white remnot" @onclick="Close">@xtoa.TxtButton[0]</button> @* NO *@
+                    <button type="button" class="text-white remnot" @onclick="Redirect" title=@xtoa.TxtTitle[14]>@xtoa.TxtButton[10]</button> @* To teacher *@
                 </div>
             </div>
         </div>
@@ -48,7 +49,7 @@
 
         showClass = "d-none";
         await xnav.Intermission(200, false);
-        HeaderText = "Remove this user...";
+        HeaderText = xtoa.TxtHead[7];
         showClass = "d-block";
         StateHasChanged();
     }
@@ -62,7 +63,7 @@
 
     private async Task DeleteNow()
     {
-        xnav.SetDone("This unregistered visitor was deleted. Press “Search” for refreshing.");
+        xnav.SetDone(xtoa.TxtDone[16]);
         xnav.SetReset('d');
 
         await appuserClient.RemAsync(Auxx.GuidId);
@@ -72,7 +73,7 @@
 
     private async Task Redirect()
     {
-        xnav.SetDone("This unregistered visitors was redirected to a teacher. Press “Search” for refreshing.");
+        xnav.SetDone(xtoa.TxtDone[17]);
         xnav.SetReset('d');
 
         await appuserClient.PreAsync(Auxx.GuidId, 12);

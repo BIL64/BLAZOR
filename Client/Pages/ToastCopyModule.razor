@@ -1,4 +1,5 @@
 ﻿@inject IXDtoClient xClient
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Toast component by Björn Lindqvist*@
@@ -18,10 +19,7 @@
                 <div class="toast-body">
                     <EditForm Model="@xClient" Context="copymodulelmslexnet" OnSubmit="HandleSubmitCopy">
                         <div style="font-size: 0.8rem; margin-bottom: 18px; color:darkred">
-                            Documents will be moved (not copied) and all documents belonging to this module deleted.
-                            <br />
-                            This into new - button will create a new module that is a copy of this module and all its
-                            activities but do not care for any documents.
+                            @xtoa.TxtText[0]<br />@xtoa.TxtText[1]
                         </div>
                         <fieldset class="form-group border">
                             <legend class="w-auto" style="font-size: 0.65rem; position: relative; top: -8px; left: 10px; background-color: white">
@@ -30,36 +28,36 @@
                             <InputRadioGroup Name="DocRadio" @bind-Value="DocSelect">
                                 <div class="form-group m-1">
                                     <InputRadio id="Select0" class="form-check-inline" Value="0" />
-                                    <label for="Select0">Copy module but do not move any document</label>
+                                    <label for="Select0">@xtoa.TxtText[2]</label>
                                 </div>
                                 <div class="form-group m-1">
                                     <InputRadio id="Select1" class="form-check-inline" Value="1" />
-                                    <label for="Select1">Move all documents</label>
+                                    <label for="Select1">@xtoa.TxtText[3]</label>
                                 </div>
                                 <div class="form-group m-1">
                                     <InputRadio id="Select2" class="form-check-inline" Value="2" />
-                                    <label for="Select2">Move module documents solely</label>
+                                    <label for="Select2">@xtoa.TxtText[4]</label>
                                 </div>
                                 <div class="form-group m-1">
                                     <InputRadio id="Select3" class="form-check-inline" Value="3" />
-                                    <label for="Select3">Move activity documents solely</label>
+                                    <label for="Select3">@xtoa.TxtText[5]</label>
                                 </div>
                             </InputRadioGroup>
                         </fieldset>
                         <div class="form-group m-3">
                             <InputCheckbox id="ThisCourse" class="form-check-inline" @bind-Value="IsThis" />
-                            <label for="ThisCourse">Search the module in this course</label>
+                            <label for="ThisCourse">@xtoa.TxtText[6]</label>
                         </div>
                         <div class="form-group m-3">
-                            <label for="Modulename">Type the module name</label>
+                            <label for="Modulename">@xtoa.TxtText[7]</label>
                             <InputText id="Modulename" class="form-control" @bind-Value="Mname" />
                         </div>
                         <div class="form-group m-3">
                             <button type="submit" class="text-white remyes" style="margin-right: 15px"
-                                title="Copy a module to this module">COPY</button>
+                                title=@xtoa.TxtTitle[2]>@xtoa.TxtButton[12]</button> @* Copy *@
                             <button type="button" class="text-white rembtn" style="margin-right: 15px" @onclick="ThisIntoNew"
-                                title="Make a new copy with this module except the documents">THIS INTO NEW</button>
-                            <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+                                title=@xtoa.TxtTitle[3]>@xtoa.TxtButton[13]</button> @* This Into New *@
+                            <button type="button" class="text-white remnot" @onclick="Close">@xtoa.TxtButton[0]</button> @* NO *@
                         </div>
                     </EditForm>
                 </div>
@@ -80,7 +78,6 @@
     private int DocSelect; // Måste vara int!
     private bool IsSame;
     private bool IsThis;
-    private bool IsDoc;
     private bool IsFind;
 
     private int Win_Height;
@@ -99,7 +96,7 @@
         IsSame = false;
         IsFind = false;
         IsThis = true;
-        HeaderText = "Copy module...";
+        HeaderText = xtoa.TxtHead[1];
         showClass = "d-block";
         StateHasChanged();
     }
@@ -148,19 +145,19 @@
 
         if (!IsFind && IsThis)
         {
-            xnav.SetError("A module named " + Mname + " was not found in this course.");
+            xnav.SetError(xtoa.TxtError[1] + Mname + xtoa.TxtError[2]);
             xnav.SetReset('e');
         }
 
         if (!IsFind && !IsThis)
         {
-            xnav.SetError("A module named " + Mname + " was not found.");
+            xnav.SetError(xtoa.TxtError[1] + Mname + xtoa.TxtError[3]);
             xnav.SetReset('e');
         }
 
         if (IsSame)
         {
-            xnav.SetError("Cannot copy with the same name.");
+            xnav.SetError(xtoa.TxtError[4]);
             xnav.SetReset('e');
         }
 
@@ -210,7 +207,7 @@
                     lmod.CourseId = mod.CourseId;
 
                     await xClient.PutAsync<ModuleDto>(lmod.Id, lmod, "api/Module");
-                    xnav.SetDone("A new module has been created.");
+                    xnav.SetDone(xtoa.TxtDone[1]);
                     xnav.SetReset('d');
                 }
             }
@@ -306,7 +303,7 @@
         };
 
         await xClient.PutAsync<ModuleDto>(lmod.Id, lmod, "api/Module");
-        xnav.SetDone("The module has been copied.");
+        xnav.SetDone(xtoa.TxtDone[2]);
         xnav.SetReset('d');
 
         // Kopiering av aktiviteter.

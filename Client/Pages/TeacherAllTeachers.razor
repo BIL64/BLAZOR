@@ -3,6 +3,8 @@
 @inject NavigationManager Navigation
 @inject IAppUserDtoClient appuserClient
 @inject IXDtoClient xClient
+@inject XLangTeacher xtea
+@inject XLangToast xtoa
 @inject XPagination xpag
 @inject XNavMenu xnav
 @attribute [Authorize]
@@ -31,7 +33,7 @@ else
                 <button type="button" @onclick="SortName" class="btn m-lg-auto btn-outline-dark">Sort names</button>
             </span>
             <span class="nav m-lg-auto input-group-append" style="z-index: 0">
-                <button type="button" @onclick="PagControl" class="btn m-lg-auto btn-outline-dark" title="Pagination settings">P</button>
+                <button type="button" @onclick="PagControl" class="btn m-lg-auto btn-outline-dark" title=@xtea.TxtTitle[29]>P</button>
             </span>
         </span>
     </EditForm>
@@ -47,10 +49,10 @@ else
             <tr>
                 @if (xpag.ClassPag == "d-flex") // Eliminerar visuella störningar.
                 {
-                    <th>Student</th>
-                    <th>Email</th>
-                    <th>Phone number</th>
-                    <th>Course</th>
+                    <th>@xtea.TxtText[64]</th>
+                    <th>@xtea.TxtText[66]</th>
+                    <th>@xtea.TxtText[67]</th>
+                    <th>@xtea.TxtText[68]</th>
                 }
             </tr>
         </thead>
@@ -79,53 +81,53 @@ else
                             }
                             @if (!IsCourse)
                             {
-                                <span>No course yet...</span>
+                                <span>@xtea.TxtText[69]</span>
                             }
                             @{IsCourse = false;}
                         </td>
                         <td class="noline">
-                        @if (data.Id is not null)
-                        {
-                            // Laddar upp ett privat dokument till en särskild lärare.
-                            <button type="button" class="text-white coursebtn" @onclick=" _ => LoadFile(data.Id, 10, data.FirstName + ' ' + data.LastName)"
-                            title="Add document to teacher">+Doc</button> // CSS!
-                            <div class="dropdoc">
-                                <button type="button" class="@DocClass">Docs</button>
-                                <div class="dropdoc-content">
-                                    @foreach (var doc in documents)
-                                    {
-                                        if (doc.UserId == data.Id && doc.Id4Course != -2 && doc.ActivityId == 0)
+                            @if (data.Id is not null)
+                            {
+                                // Laddar upp ett privat dokument till en särskild lärare.
+                                <button type="button" class="text-white coursebtn" @onclick=" _ => LoadFile(data.Id, 10, data.FirstName + ' ' + data.LastName)"
+                                title=@xtea.TxtTitle[36]>+Doc</button> // CSS!
+                                <div class="dropdoc">
+                                    <button type="button" class="@DocClass">Docs</button>
+                                    <div class="dropdoc-content">
+                                        @foreach (var doc in documents)
                                         {
-                                            if (doc.DocName != "")
+                                            if (doc.UserId == data.Id && doc.Id4Course != -2 && doc.ActivityId == 0)
                                             {
-                                                <a @onclick="_ => DocEditControl(doc.Id, 1)"
-                                                title="File: @doc.Description by @doc.Author @doc.TimeStamp">@doc.DocName</a> // Öppnar filen (dokumentet).
-                                            }
-                                            else
-                                            {
-                                                <a @onmouseover="_ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)" @onclick="_ => DeleteMess(doc.Id)"
-                                                title="Mess: @doc.Description by @doc.Author @doc.TimeStamp">From @doc.Author</a> // Visar meddelandet.
+                                                if (doc.DocName != "")
+                                                {
+                                                    <a @onclick="_ => DocEditControl(doc.Id, 1)"
+                                                    title="File: @doc.Description by @doc.Author @doc.TimeStamp">@doc.DocName</a> // Öppnar filen (dokumentet).
+                                                }
+                                                else
+                                                {
+                                                    <a @onmouseover="_ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)" @onclick="_ => DeleteMess(doc.Id)"
+                                                    title="Mess: @doc.Description by @doc.Author @doc.TimeStamp">From @doc.Author</a> // Visar meddelandet.
+                                                }
                                             }
                                         }
-                                    }
+                                    </div>
                                 </div>
-                            </div>
 
-                            <button type="button" class="text-white coursebtn" @onclick="OpenCloseCourse"
-                            title="Add/change course for student">Course</button> // CSS!
-                            <div class="dropuse">
-                                <button type="button" class="@CourseClass">+</button>
-                                <div class="dropuse-content">
-                                    @foreach (var item in courses)
-                                    {
-                                        <a @onclick="_ => GetCourse(data.Id, item.Id)">@item.Name</a> // Lägger in en ny kurs för användaren.
-                                    }
+                                <button type="button" class="text-white coursebtn" @onclick="OpenCloseCourse"
+                                title=@xtea.TxtTitle[37]>Course</button> // CSS!
+                                <div class="dropuse">
+                                    <button type="button" class="@CourseClass">+</button>
+                                    <div class="dropuse-content">
+                                        @foreach (var item in courses)
+                                        {
+                                            <a @onclick="_ => GetCourse(data.Id, item.Id)">@item.Name</a> // Lägger in en ny kurs för användaren.
+                                        }
+                                    </div>
                                 </div>
-                            </div>
 
-                            <button type="button" class="oi oi-circle-x text-white delbtn"
-                            @onclick=" _ => DeleteUser(data.Id)" title="Delete or redirect user"></button> // CSS!
-                        }
+                                <button type="button" class="oi oi-circle-x text-white delbtn"
+                                @onclick=" _ => DeleteUser(data.Id)" title=@xtea.TxtTitle[35]></button> // CSS!
+                            }
                         </td>
                     </tr>
                 }
@@ -244,7 +246,7 @@ else
 
     private List<DocumentDto> documents = new();
 
-    private string Emptydb = "List of teachers";
+    private string Emptydb = string.Empty;
 
     private string DocClass = "d-none";
     private string CourseClass = "d-none";
@@ -264,21 +266,35 @@ else
 
     private async Task RefreshAfterThis(bool delay) // Uppdaterar efter förändring av innehåll.
     {
-        while (!Auxx.Flag) await xnav.Intermission(500, false);
-        if (delay) await xnav.Intermission(2000, false);
+        while (!Auxx.Flag) await xnav.Intermission(500, false); // Nödvändigt för att kunna uppdatera sidan efteråt.
+        if (delay) await xnav.Intermission(1500, false); // Undviker att ShowAvatar-metoden omgående nollställer errormenyn.
         await OnInitializedAsync();
     }
 
     protected override async Task OnInitializedAsync()
     {
-        xnav.SetJohnDoe(false);
-        xnav.SetReset('a');
+        if (xtea.RenderPage != "STILL_HERE")
+        {
+            xnav.SetJohnDoe(false);
+            xnav.MainRole = 2;
+            xnav.ClassSettings = "d-block"; // Settings.
+            if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xtea.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xtea.SetLanguage_SV(); xtoa.SetLanguage_SV(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "DE") { xtea.SetLanguage_DE(); xtoa.SetLanguage_DE(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") { xtea.SetLanguage_FR(); xtoa.SetLanguage_FR(); }
+            else { xtea.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+        }
+
+        if (!Auxx.Flag) xnav.SetReset('a');
 
         await xpag.InitPag(2, teachers); // Pagineringskontroll.
+        Auxx.Flag = false; // Efter pagineringen så att sifferraden inte döljs.
 
         teachers.Clear(); // Sökfunktionen kräver att listorna rensas.
         courses.Clear();
         documents.Clear();
+
+        Emptydb = xtea.TxtText[45];
 
         var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
         if (document is not null) documents = document.ToList(); // Hämtar alla dokument.
@@ -300,12 +316,12 @@ else
                     if (item.UserRole == 2) teachers.Add(item);
                 }
             }
-            if (teachers.Count < 1) Emptydb = "No teachers !";
-            if (!string.IsNullOrWhiteSpace(searchString) && teachers.Count < 1) Emptydb = "There is no teacher with that name...";
+            if (teachers.Count < 1) Emptydb = xtea.TxtText[47];
+            if (!string.IsNullOrWhiteSpace(searchString) && teachers.Count < 1) Emptydb = xtea.TxtText[49];
         }
         else
         {
-            Emptydb = "No teachers !";
+            Emptydb = xtea.TxtText[47];
         }
 
         var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
@@ -314,6 +330,9 @@ else
         {
             courses = course.ToList();
         }
+
+        xtea.OnChange += StateHasChanged;
+        xtoa.OnChange += StateHasChanged;
     }
 
     private async Task LoadFile(string id, byte doctype, string name) // Öppnar filsparfönster.
@@ -342,11 +361,11 @@ else
     {
         courseId = courseId + 100;
         await appuserClient.PreAsync(id, courseId);
-        Emptydb = "This teacher has now been updated...";
+        Emptydb = xtea.TxtText[51];
         Emptydbcolor = "headeron";
         StateHasChanged();
         await xnav.Intermission(1000, false);
-        Emptydb = "List of teachers";
+        Emptydb = xtea.TxtText[45];
         Emptydbcolor = "headeroff";
         Auxx.Flag = true;
         await OnInitializedAsync();
@@ -362,20 +381,23 @@ else
     {
         bool FindAvatar = false;
 
-        @foreach (var doc in documents)
+        if (!Auxx.Flag)
         {
-            if (doc.UserId == id && doc.Id4Course == -2)
+            @foreach (var doc in documents)
             {
-                xnav.SetMessAvatar("xnavavatar", xClient.GetFilepath() + doc.NameIx + doc.DocName);
-                xnav.SetReset('v');
-                FindAvatar = true;
+                if (doc.UserId == id && doc.Id4Course == -2)
+                {
+                    xnav.SetMessAvatar("xnavavatar", xClient.GetFilepath() + doc.NameIx + doc.DocName);
+                    xnav.SetReset('v');
+                    FindAvatar = true;
+                }
             }
-        }
 
-        if (!FindAvatar)
-        {
-            xnav.SetMessAvatar("d-none", "");
-            xnav.SetReset('v');
+            if (!FindAvatar)
+            {
+                xnav.SetMessAvatar("d-none", "");
+                xnav.SetReset('v');
+            }
         }
     }
 }

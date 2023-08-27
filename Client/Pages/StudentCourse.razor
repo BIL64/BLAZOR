@@ -3,6 +3,9 @@
 @inject IAppUserDtoClient appuserClient
 @inject NavigationManager Navigation
 @inject IXDtoClient xClient
+@inject XLangStudent xstu
+@inject XLangTeacher xtea
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Björn Lindqvist*@
@@ -13,13 +16,13 @@
 <AuthorizeView Roles="Student, Teacher">
     <Authorized>
         <nav style="display: flex">
-            <div style="width: 75%"><h3>@loggeduser.FirstName, this is your course:
+            <div style="width: 75%"><h3>@loggeduser.FirstName, @xstu.TxtText[0] @* this is your course: *@
                 <em style="cursor: pointer" @onclick=" _ => InfoTitle(CourseDescription)">@CourseName</em></h3>
             </div>
             <div style="margin: 0 auto 0 auto"><h5>@CourseDate</h5></div>
             <div style="margin: 0 0 0 auto">
-                <button type="button" class="mb-1 text-white delbtn" @onclick="AddDeleteAvatar" title="Add or delete avatar">A</button>
-                <button type="button" class="mb-1 text-white delbtn" @onclick="DeleteAllDocs" title="Delete all documents and messages">E</button>
+                <button type="button" class="mb-1 text-white delbtn" @onclick="AddDeleteAvatar" title=@xstu.TxtTitle[0]>A</button>
+                <button type="button" class="mb-1 text-white delbtn" @onclick="DeleteAllDocs" title=@xstu.TxtTitle[1]>E</button>
             </div>
         </nav><br />
 
@@ -31,7 +34,7 @@
                         @if (doc.Id4Course == CourseId)
                         {
                             <li class="doclink">
-                                <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title="Mandatory post">@doc.DocName</span>
+                                <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title=@xstu.TxtTitle[2]>@doc.DocName</span>
                                 <span class="oi oi-file text-primary text-decoration-none docicon"
                                 @onclick=" _ => DocUserControl(doc.Id, false)"></span>
                             </li>
@@ -42,7 +45,7 @@
                             if (DateTime.Parse(doc.TimeStamp).AddDays(1) > DateTime.Now)
                             {
                                 <li class="doclink" style="background-color:lavenderblush; box-shadow: 0 0 10px plum">
-                                    <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title="Personal post">@doc.DocName</span>
+                                    <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title=@xstu.TxtTitle[3]>@doc.DocName</span>
                                     <span class="oi oi-file text-primary text-decoration-none docicon"
                                     @onclick=" _ => DocUserControl(doc.Id, true)"></span>
                                 </li>
@@ -50,7 +53,7 @@
                             else
                             {
                                 <li class="doclink" style="background-color:lavenderblush">
-                                    <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title="Personal post">@doc.DocName</span>
+                                    <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title=@xstu.TxtTitle[3]>@doc.DocName</span>
                                     <span class="oi oi-file text-primary text-decoration-none docicon"
                                     @onclick=" _ => DocUserControl(doc.Id, true)"></span>
                                 </li>
@@ -155,11 +158,11 @@
                             <div style="width: 85%">
                                 @if (data.Select == 1)
                                 {
-                                    <b>Module @data.Id: <em style="cursor: pointer" @onclick=" _ => InfoTitle(data.Description)">@data.Name</em></b>
+                                    <b>@xstu.TxtText[1] @data.Id: <em style="cursor: pointer" @onclick=" _ => InfoTitle(data.Description)">@data.Name</em></b>
                                 }
                                 else
                                 {
-                                    <b>Module <em style="cursor: pointer" @onclick=" _ => InfoTitle(data.Description)">@data.Name</em></b>
+                                    <b>@xstu.TxtText[1] <em style="cursor: pointer" @onclick=" _ => InfoTitle(data.Description)">@data.Name</em></b>
                                 }
                             </div>
                             <div style="margin: 0 0 0 auto"><b>@xnav.StartEndDate(data.StartDate, data.EndDate)</b></div>
@@ -199,30 +202,30 @@
                                 @if (data.Select == 1 || data.Select == 10)
                                 {
                                     <tr>
-                                        <th>Nr</th>
-                                        <th>Aktivity</th>
-                                        <th>Type</th>
-                                        <th>Date</th>
-                                        <th>Items</th>
+                                        <th>@xstu.TxtText[2]</th> @* Nr *@
+                                        <th>@xstu.TxtText[3]</th> @* Activity *@
+                                        <th>@xstu.TxtText[5]</th> @* Type *@
+                                        <th>@xstu.TxtText[6]</th> @* Date *@
+                                        <th>@xstu.TxtText[7]</th> @* Appendix *@
                                     </tr>
                                 }
 
                                 @if (data.Select == 2 || data.Select == 20)
                                 {
                                     <tr>
-                                        <th>Aktivity</th>
-                                        <th>Type</th>
-                                        <th>Date</th>
-                                        <th>Items</th>
+                                        <th>@xstu.TxtText[3]</th> @* Activity *@
+                                        <th>@xstu.TxtText[5]</th> @* Type *@
+                                        <th>@xstu.TxtText[6]</th> @* Date *@
+                                        <th>@xstu.TxtText[7]</th> @* Appendix *@
                                     </tr>
                                 }
 
                                 @if (data.Select == 4)
                                 {
                                     <tr>
-                                        <th>Aktivity</th>
-                                        <th>Description</th>
-                                        <th>Items</th>
+                                        <th>@xstu.TxtText[3]</th> @* Activity *@
+                                        <th>@xstu.TxtText[4]</th> @* Description *@
+                                        <th>@xstu.TxtText[7]</th> @* Appendix *@
                                     </tr>
                                 }
                             </thead>
@@ -283,7 +286,7 @@
                                                             Empty = true;
                                                         }
                                                         <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(act.Id, 40, act.Name)"
-                                                        title="Add a document or a message to this activity">+ DOC</button>
+                                                        title=@xstu.TxtTitle[4]>+ DOC</button> @* Add a document or message to this activity *@
                                                         <div class="dropdoc">
                                                             <button type="button" id="A@(act.Id)" class="docviewbtn">DOCs</button>
                                                             <div class="dropdoc-content">
@@ -368,10 +371,10 @@
                             <table class="table" style="color: #555"> @*Grå text*@
                                 <thead>
                                     <tr>
-                                        <th>Aktivity</th>
-                                        <th>Type</th>
-                                        <th>Date</th>
-                                        <th>Items</th>
+                                        <th>@xstu.TxtText[3]</th> @* Activity *@
+                                        <th>@xstu.TxtText[5]</th> @* Type *@
+                                        <th>@xstu.TxtText[6]</th> @* Date *@
+                                        <th>@xstu.TxtText[7]</th> @* Appendix *@
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -400,7 +403,7 @@
                                                     <td>
                                                         @{Empty = true;}
                                                         <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(act.Id, 40, act.Name)"
-                                                        title="Add a document or a message to this activity">+ DOC</button>
+                                                        title=@xstu.TxtTitle[4]>+ DOC</button> @* Add a document or message to this activity *@
                                                         <div class="dropdoc">
                                                             <button type="button" id="A@(act.Id)" class="docviewbtn">DOCs</button>
                                                             <div class="dropdoc-content">
@@ -479,7 +482,7 @@
     {
         Auxx.IntId = id;
         await deletemessRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(false); // Uppdaterar sidan.
     }
 
     private ToastDeleteAllDocUser? deletealldocRef; // Delete-fönster.
@@ -488,7 +491,7 @@
     {
         Auxx.Loggeduser = loggeduser;
         await deletealldocRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(false); // Uppdaterar sidan.
     }
 
     private ToastDocumentAdd? docsaveRef; // Filsparfönster.
@@ -499,7 +502,7 @@
         Auxx.DocType = doctype;
         Auxx.Name4Type = name;
         await docsaveRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(false); // Uppdaterar sidan.
     }
 
     private ToastDocumentUser? docuserRef; // Filmottagarefönster.
@@ -510,7 +513,7 @@
         Auxx.Flag = delete;
         Auxx.Documents = documents;
         await docuserRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(false); // Uppdaterar sidan.
     }
 
     private ToastDocumentAvatar? addavatarRef; // Avatar-fönster.
@@ -520,7 +523,7 @@
         Auxx.Name4Type = loggeduser.FirstName + ' ' + loggeduser.LastName;
         Auxx.Loggeduser = loggeduser;
         await addavatarRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(false); // Uppdaterar sidan.
     }
 
     private List<CourseDto> courses = new();
@@ -548,17 +551,28 @@
     private bool Empty;
     private bool IsTextMess;
 
-    private async Task RefreshAfterThis() // Uppdaterar efter förändring av innehåll.
+    private async Task RefreshAfterThis(bool delay) // Uppdaterar efter förändring av innehåll.
     {
-        while (!Auxx.Flag) await xnav.Intermission(1000, false);
-        Auxx.Flag = false;
-        await xnav.Intermission(1000, false);
+        while (!Auxx.Flag) await xnav.Intermission(500, false); // Nödvändigt för att kunna uppdatera sidan efteråt.
+        if (delay) await xnav.Intermission(1500, false); // Undviker att ShowAvatar-metoden omgående nollställer errormenyn.
         await OnInitializedAsync();
     }
 
     protected override async Task OnInitializedAsync()
     {
-        xnav.SetReset('a');
+        if (xstu.RenderPage != "STILL_HERE")
+        {
+            xnav.MainRole = 1;
+            xnav.ClassSettings = "d-block"; // Settings.
+            if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xtea.SetMenu_EN(); xstu.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xtea.SetMenu_SV(); xstu.SetLanguage_SV(); xtoa.SetLanguage_SV(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "DE") { xtea.SetMenu_DE(); xstu.SetLanguage_DE(); xtoa.SetLanguage_DE(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") { xtea.SetMenu_FR(); xstu.SetLanguage_FR(); xtoa.SetLanguage_FR(); }
+            else { xtea.SetMenu_EN(); xstu.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+        }
+
+        if (!Auxx.Flag) xnav.SetReset('a');
+        Auxx.Flag = false;
 
         courses.Clear();
         modules.Clear();
@@ -616,7 +630,8 @@
                         }
                         else modules.Add(mod);
 
-                        if (!string.IsNullOrWhiteSpace(searchString) && modules.Count < 1) CourseName = "No module matched the search term...";
+                        if (!string.IsNullOrWhiteSpace(searchString) && modules.Count < 1) CourseName = xstu.TxtText[19];
+                        // No module matched the search term...
 
                         foreach (var act in mod.Activities) // Hämtar aktiviteter.
                         {
@@ -625,14 +640,19 @@
                     }
                 }
             }
+
+            xstu.OnChange += StateHasChanged;
+            xtoa.OnChange += StateHasChanged;
         }
         else
         {
-            CourseName = "No course could be find...";
+            CourseName = xstu.TxtText[20]; // No course could be find...
         }
 
         if (string.IsNullOrWhiteSpace(searchString) && modules.Count > 1) // Sist: sortering av moduler.
+        {
             modules = OrderModules(modules);
+        }
 
         if (activityType is not null) // Hämtar aktivitetstyper.
         {
@@ -734,12 +754,12 @@
         {
             modules.Clear();
             modules.Add(module);
-            xnav.SetDone("Your current module.");
+            xnav.SetDone(xstu.TxtText[17]); // The current module.
             xnav.SetReset('d');
         }
         else
         {
-            xnav.SetDone("There is no current module.");
+            xnav.SetDone(xstu.TxtText[18]); // There is no current module.
             xnav.SetReset('d');
         }
     }

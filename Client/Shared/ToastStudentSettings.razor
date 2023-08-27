@@ -1,0 +1,125 @@
+﻿@inject IXDtoClient xClient
+@inject XLangStudent xstu
+@inject XLangToast xtoa
+@inject XNavMenu xnav
+@*Toast component by Björn Lindqvist*@
+@*Endast för studenter*@
+
+<div class="toast-container p-3 @showClass"
+    style="position: fixed; top: auto; top: @(xnav.Pos_V)px; margin-left: @(xnav.Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
+    <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header" @onmouseup=" _ => xnav.Mouse(0, 'U', _)" @onmousedown=" _ => xnav.Mouse(Win_Height, 'D', _)"
+            @onmousemove=" _ => xnav.Mouse(Win_Height, 'M', _)" @onmouseout=" _ => xnav.Mouse(Win_Height, 'M', _)">
+            <strong class="me-auto">@HeaderText</strong>
+            <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+        </div>
+
+        <div class="toast-body">
+            <EditForm Model="@xClient" Context="studentsettingslmslexnet" OnSubmit="HandleSubmitCopy">
+                <fieldset class="form-group border">
+                    <legend class="w-auto" style="font-size: 0.9rem; font-style: italic;
+                        position: relative; top: -11px; left: 60px; background-color: white">
+                        &nbsp;language selection&nbsp;
+                    </legend>
+                    <InputRadioGroup Name="DocRadio" @bind-Value="LangSelect">
+                        <div class="form-group" style="margin: 0 0 5px 15px">
+                            <InputRadio id="Select0" class="form-check-inline" Value="0" />
+                            <label for="Select0">English</label>
+                        </div>
+                        <div class="form-group" style="margin: 0 0 5px 15px">
+                            <InputRadio id="Select1" class="form-check-inline" Value="1" />
+                            <label for="Select1">Swedish</label>
+                        </div>
+                        @* <div class="form-group" style="margin: 0 0 5px 15px">
+                            <InputRadio id="Select2" class="form-check-inline" Value="2" />
+                            <label for="Select2">Deutsch</label>
+                        </div>
+                        <div class="form-group" style="margin: 0 0 5px 15px">
+                            <InputRadio id="Select3" class="form-check-inline" Value="3" />
+                            <label for="Select3">Français</label>
+                        </div> *@
+                    </InputRadioGroup>
+                </fieldset><br />
+                <div>
+                    <button type="submit" class="text-white rembtn" style="margin-right: 15px"
+                        title=@xtoa.TxtTitle[1]>@xtoa.TxtButton[6]</button> @* Save *@
+                    <button type="button" class="text-white remnot" @onclick="Close">@xtoa.TxtButton[0]</button> @* NO *@
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private string HeaderText = string.Empty;
+    private string showClass = "d-none";
+    private int LangSelect; // Måste vara int!
+
+    private int Win_Height;
+
+    public async Task Show()
+    {
+        xnav.SetReset('a');
+
+        var dim = await xClient.GetWindow(); // Hämtar aktuell skärmstorlek.
+        Win_Height = dim.Height;
+        xnav.Pos_H = (int)Math.Round(dim.Width * 0.08); // 08%
+        xnav.Pos_V = (int)Math.Round(Win_Height * 0.2); // 20%
+
+        if (await xClient.GetStorage<string>("LMS_Lang") == "EN") LangSelect = 0;
+        else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") LangSelect = 1;
+        else if (await xClient.GetStorage<string>("LMS_Lang") == "DE") LangSelect = 2;
+        else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") LangSelect = 3;
+        else LangSelect = 0;
+
+        HeaderText = "Options...";
+        showClass = "d-block";
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        HeaderText = string.Empty;
+        showClass = "d-none";
+        StateHasChanged();
+    }
+
+    private async Task HandleSubmitCopy()
+    {
+        try
+        {
+            if (LangSelect == 0)
+            {
+                await xClient.SetStorage<string>("LMS_Lang", "EN");
+                xstu.SetLanguage_EN();
+                xtoa.SetLanguage_EN();
+            }
+            if (LangSelect == 1)
+            {
+                await xClient.SetStorage<string>("LMS_Lang", "SV");
+                xstu.SetLanguage_SV();
+                xtoa.SetLanguage_SV();
+            }
+            if (LangSelect == 2)
+            {
+                await xClient.SetStorage<string>("LMS_Lang", "DE");
+                xstu.SetLanguage_DE();
+                xtoa.SetLanguage_DE();
+            }
+            if (LangSelect == 3)
+            {
+                await xClient.SetStorage<string>("LMS_Lang", "FR");
+                xstu.SetLanguage_FR();
+                xtoa.SetLanguage_FR();
+            }
+        }
+        catch
+        {
+            xnav.SetError("An error occurred while saving to local storage.");
+            xnav.SetReset('e');
+        }
+
+        Close(); // En omnavigering här nollställer alla variabler inklusive statiska.
+    }
+}

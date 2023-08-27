@@ -1,5 +1,6 @@
 ﻿@inject NavigationManager Navigation
 @inject IXDtoClient xClient
+@inject XLangToastEdit xted
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Toast component by Björn Lindqvist*@
@@ -15,8 +16,8 @@
                 </div>
 
                 <div class="toast-body">
-                    <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove this module and all its activities from the system">DELETE NOW</button>
-                    <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+                    <button type="button" class="text-white remyes" @onclick="DeleteNow" title=@xted.TxtTitle[1]>@xted.TxtButton[2]</button> @* DELETE NOW *@
+                    <button type="button" class="text-white remnot" @onclick="Close">@xted.TxtButton[0]</button> @* NO *@
                 </div>
             </div>
         </div>
@@ -36,7 +37,7 @@
     {
         xnav.SetReset('a');
 
-        HeaderText = "Remove this module...";
+        HeaderText = xted.TxtText[1];
         showClass = "d-block";
         StateHasChanged();
     }
@@ -50,7 +51,7 @@
 
     private async Task DeleteNow()
     {
-        xnav.SetDone("This module and all its documents and activities were deleted.");
+        xnav.SetDone(xted.TxtText[2]);
         xnav.SetReset('d');
         await xnav.Intermission(3000, false);
 

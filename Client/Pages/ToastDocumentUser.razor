@@ -1,5 +1,6 @@
 ﻿@inject ILogger<CourseDetail> Logger
 @inject IXDtoClient xClient
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Toast component by Björn Lindqvist*@
@@ -22,7 +23,7 @@
                     <div class="m-3">By: @document.Author</div>
                     <div class="m-3">Created: @document.TimeStamp</div>
                     <div class="m-3">
-                        <button type="button" class="@classDelete" @onclick="DeleteFile" title="Remove this file from the system">Delete file</button>
+                        <button type="button" class="@classDelete" @onclick="DeleteFile" title=@xtoa.TxtTitle[16]>@xtoa.TxtButton[3]</button> @* Delete file *@
                     </div>
                 </div>
             </div>
@@ -54,7 +55,7 @@
         xnav.Pos_H = (int)Math.Round(dim.Width * 0.08); // 08%
         xnav.Pos_V = (int)Math.Round(Win_Height * 0.2); // 20%
 
-        HeaderText = "Your document file...";
+        HeaderText = xtoa.TxtHead[9];
 
         if (Auxx.Flag) classDelete = "text-white remyes";
         else classDelete = "d-none";
@@ -87,7 +88,7 @@
     {
         await xClient.RemAsync(document.Id, "api/Document");
         await xClient.DeleteFile(document.NameIx + document.DocName);
-        xnav.SetDone("This document file was deleted.");
+        xnav.SetDone(xtoa.TxtDone[28]);
         xnav.SetReset('d');
         Auxx.Flag = true;
         Close();

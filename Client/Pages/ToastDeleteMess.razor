@@ -1,4 +1,5 @@
 ﻿@inject IXDtoClient xClient
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Toast component by Björn Lindqvist*@
@@ -8,7 +9,7 @@
     <Authorized>
         <div class="toast-container p-3 @showClass"
              style="position: fixed; top: auto; top: @(xnav.Pos_V)px; margin-left: @(xnav.Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
-            <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true" style="width: 200px">
+            <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true" style="width: 220px">
                 <div class="toast-header" @onmouseup=" _ => xnav.Mouse(0, 'U', _)" @onmousedown=" _ => xnav.Mouse(Win_Height, 'D', _)"
                      @onmousemove=" _ => xnav.Mouse(Win_Height, 'M', _)" @onmouseout=" _ => xnav.Mouse(Win_Height, 'M', _)">
                     <strong class="me-auto">@HeaderText</strong>
@@ -16,7 +17,7 @@
                 </div>
 
                 <div class="toast-body">
-                    <button type="button" class="text-white remyes" @onclick="DeleteNow" title="Remove this message from the system">DELETE</button>
+                    <button type="button" class="text-white remyes" @onclick="DeleteNow" title=@xtoa.TxtTitle[6]>@xtoa.TxtButton[1]</button> @* DELETE *@
                 </div>
             </div>
         </div>
@@ -42,7 +43,7 @@
         Win_Height = dim.Height;
         xnav.Pos_H = (int)Math.Round(dim.Width * 0.08); // 08%
         xnav.Pos_V = (int)Math.Round(Win_Height * 0.2); // 20%
-        HeaderText = "Remove message...";
+        HeaderText = xtoa.TxtHead[5];
         showClass = "d-block";
         StateHasChanged();
     }
@@ -56,7 +57,7 @@
 
     private async Task DeleteNow()
     {
-        xnav.SetDone("This message was deleted.");
+        xnav.SetDone(xtoa.TxtDone[7]);
         xnav.SetReset('d');
 
         await xClient.RemAsync(Auxx.IntId, "api/Document");

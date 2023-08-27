@@ -3,6 +3,8 @@
 @inject IAppUserDtoClient appuserClient
 @inject NavigationManager Navigation
 @inject IXDtoClient xClient
+@inject XLangTeacher xtea
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Björn Lindqvist*@
@@ -15,8 +17,8 @@
         <nav style="display: flex">
             <div style="width: 75%"><h4>@TeacherName</h4></div>
             <div style="margin: 0 0 0 auto">
-                <button type="button" class="mb-1 text-white delbtn" @onclick="AddDeleteAvatar" title="Add or delete avatar">A</button>
-                <button type="button" class="mb-1 text-white delbtn" @onclick="DeleteAllDocs" title="Delete all documents and messages">E</button>
+                <button type="button" class="mb-1 text-white delbtn" @onclick="AddDeleteAvatar" title=@xtea.TxtTitle[1]>A</button>
+                <button type="button" class="mb-1 text-white delbtn" @onclick="DeleteAllDocs" title=@xtea.TxtTitle[2]>E</button>
             </div>
         </nav>
 
@@ -32,7 +34,7 @@
                                 if (DateTime.Parse(doc.TimeStamp).AddDays(1) > DateTime.Now)
                                 {
                                     <li class="doclink" style="background-color:lavenderblush; box-shadow: 0 0 10px plum">
-                                        <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title="Personal post">@doc.DocName</span>
+                                        <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title=@xtea.TxtTitle[3]>@doc.DocName</span>
                                         <span class="oi oi-file text-primary text-decoration-none docicon"
                                         @onclick=" _ => DocUserControl(doc.Id, true)"></span>
                                     </li>
@@ -40,7 +42,7 @@
                                 else
                                 {
                                     <li class="doclink" style="background-color:lavenderblush">
-                                        <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title="Personal post">@doc.DocName</span>
+                                        <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title=@xtea.TxtTitle[3]>@doc.DocName</span>
                                         <span class="oi oi-file text-primary text-decoration-none docicon"
                                         @onclick=" _ => DocUserControl(doc.Id, true)"></span>
                                     </li>
@@ -102,10 +104,10 @@
                     <section class="coursebox">
                         <div style="display: flex">
                             <div style="width: 75%">
-                                @data.Id.&nbsp; <em style="cursor: pointer" title="@data.Description -Click for edit-"
+                                @data.Id.&nbsp; <em style="cursor: pointer" title="@data.Description @xtea.TxtTitle[4]"
                                 @onclick=" _ => RedirectToCourse(data.Id)">@data.Name</em>
 
-                                @if (data.Total_M == 1) SP = "module"; else SP = "modules";
+                                @if (data.Total_M == 1) SP = @xtea.TxtText[2]; else SP = @xtea.TxtText[3];
                                 <span style="margin-left: 2%; color:sandybrown" class="dropuse">
                                     <span><span>@data.Total_M</span><span>&nbsp;@SP,</span></span>
                                     <span style="font-size: 0.78rem; padding: 3px; cursor: default" class="dropuse-content">
@@ -119,7 +121,7 @@
                                     </span>
                                 </span>
 
-                                @if (data.Total_S == 1) SP = "participant"; else SP = "participants";
+                                @if (data.Total_S == 1) SP = @xtea.TxtText[4]; else SP = @xtea.TxtText[5];
                                 <span style="margin-left: 2%; color:slategray" class="dropuse">
                                     <span><span>@data.Total_S</span><span>&nbsp;@SP,</span></span>
                                     <span style="font-size: 0.78rem; padding: 3px; cursor: default" class="dropuse-content">
@@ -141,7 +143,7 @@
                                     </span>
                                 </span>
 
-                                @if (data.Total_D == 1) SP = "document"; else SP = "documents";
+                                @if (data.Total_D == 1) SP = @xtea.TxtText[6]; else SP = @xtea.TxtText[7];
                                 <span style="margin-left: 2%; color:darkblue" class="dropuse">
                                     <span><span>@data.Total_D</span><span>&nbsp;@SP</span></span>
                                     <span style="font-size: 0.78rem; padding: 3px; cursor: pointer" class="dropuse-content">
@@ -204,18 +206,18 @@
                                 {
                                     <div style="margin-left: auto; margin-right: 0">
                                         <NavLink style="cursor: pointer" class="oi oi-x text-danger text-decoration-none"
-                                        @onclick=" _ => DeleteControl(data.Id)" Title="Delete course"></NavLink>
+                                        @onclick=" _ => DeleteControl(data.Id)" Title=@xtea.TxtTitle[5]></NavLink>
                                     </div>
                                 }
                                 else
                                 {
                                     <div style="margin-left: auto">
                                         <NavLink style="cursor: pointer" class="oi oi-x text-danger text-decoration-none"
-                                        @onclick=" _ => DeleteControl(data.Id)" Title="Delete course"></NavLink>
+                                        @onclick=" _ => DeleteControl(data.Id)" Title=@xtea.TxtTitle[5]></NavLink>
                                     </div>
                                     <div style="margin-left: auto; margin-right: 0">
                                         <NavLink style="cursor: pointer; margin-left: 1%" class="oi oi-browser text-primary text-decoration-none"
-                                        @onclick=" _ => AddModule(data.Id)" Title="Add a blank module"></NavLink>
+                                        @onclick=" _ => AddModule(data.Id)" Title=@xtea.TxtTitle[6]></NavLink>
                                     </div>  
                                 }
                         </div>
@@ -238,7 +240,7 @@
     {
         Auxx.IntId = id;
         await deleteRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(false); // Uppdaterar sidan.
     }
 
     private ToastDeleteAllDocUser? deletealldocRef; // Delete-fönster.
@@ -247,7 +249,7 @@
     {
         Auxx.Loggeduser = loggeduser;
         await deletealldocRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(false); // Uppdaterar sidan.
     }
 
     private ToastDocumentUser? docuserRef; // Filmottagarefönster.
@@ -258,7 +260,7 @@
         Auxx.Flag = delete;
         Auxx.Documents = documents;
         await docuserRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(false); // Uppdaterar sidan.
     }
 
     private ToastDocumentAvatar? addavatarRef; // Avatar-fönster.
@@ -268,7 +270,7 @@
         Auxx.Name4Type = loggeduser.FirstName + ' ' + loggeduser.LastName;
         Auxx.Loggeduser = loggeduser;
         await addavatarRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(false); // Uppdaterar sidan.
     }
 
     private List<CourseDto> courses = new();
@@ -290,18 +292,29 @@
     private bool DeleteFlag;
     private bool RepeatTable;
 
-    private async Task RefreshAfterThis() // Uppdaterar efter förändring av innehåll.
+    private async Task RefreshAfterThis(bool delay) // Uppdaterar efter förändring av innehåll.
     {
-        while (!Auxx.Flag) await xnav.Intermission(1000, false);
-        Auxx.Flag = false;
-        await xnav.Intermission(1000, false);
+        while (!Auxx.Flag) await xnav.Intermission(500, false); // Nödvändigt för att kunna uppdatera sidan efteråt.
+        if (delay) await xnav.Intermission(1500, false); // Undviker att ShowAvatar-metoden omgående nollställer errormenyn.
         await OnInitializedAsync();
     }
 
     protected override async Task OnInitializedAsync()
     {
-        xnav.SetJohnDoe(false);
-        xnav.SetReset('a');
+        if (xtea.RenderPage != "STILL_HERE")
+        {
+            xnav.SetJohnDoe(false);
+            xnav.MainRole = 2;
+            xnav.ClassSettings = "d-block"; // Settings.
+            if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xtea.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xtea.SetLanguage_SV(); xtoa.SetLanguage_SV(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "DE") { xtea.SetLanguage_DE(); xtoa.SetLanguage_DE(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") { xtea.SetLanguage_FR(); xtoa.SetLanguage_FR(); }
+            else { xtea.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+        }
+
+        if (!Auxx.Flag) xnav.SetReset('a');
+        Auxx.Flag = false;
 
         courses.Clear(); // Sökfunktionen kräver att listorna rensas.
         modules.Clear();
@@ -383,7 +396,10 @@
             }
         }
 
-        TeacherName = $"Hello, {loggeduser.FirstName} {loggeduser.LastName}!";
+        TeacherName = @xtea.TxtText[1] + loggeduser.FirstName + loggeduser.LastName + "!";
+
+        xtea.OnChange += StateHasChanged;
+        xtoa.OnChange += StateHasChanged;
     }
 
     private async Task DeleteControl(int id)
@@ -423,7 +439,7 @@
 
         if (DeleteFlag)
         {
-            xnav.SetDone("This course was deleted.");
+            xnav.SetDone(xtea.TxtDone[1]);
             xnav.SetReset('d');
             await xnav.Intermission(3000, false);
             await xClient.RemAsync(id, "api/Course");
@@ -433,8 +449,7 @@
         else
         {
             await xnav.Intermission(100, true);
-            xnav.SetError("All modules, activities, document, message, and users belonging to a course" +
-            " must first be deleted or redirected before a course can be deleted.");
+            xnav.SetError(xtea.TxtError[1]);
             xnav.SetReset('e');
         }
     }
@@ -495,7 +510,7 @@
 
     private async Task CreateAndRefresh(int id)
     {
-        xnav.SetDone("An empty module was added.");
+        xnav.SetDone(xtea.TxtDone[2]);
         xnav.SetReset('d');
         await xnav.Intermission(2000, false);
         Navigation.NavigateTo($"/coursedetail/{id}", true);

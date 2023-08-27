@@ -4,6 +4,7 @@
 @inject IAppUserDtoClient appuserClient
 @inject ILogger<CourseDetail> Logger
 @inject IXDtoClient xClient
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Toast component by Björn Lindqvist*@
@@ -29,17 +30,17 @@
                             <InputFile class="form-control text-white" style="background-color:blueviolet" OnChange="@OnInputFileChange" />
                         </div>
                         <div class="form-group m-3">
-                            <label for="Description">Description / message</label>
+                            <label for="Description">@xtoa.TxtText[10]</label>
                             <InputTextArea id="Description" class="form-control" @bind-Value="document.Description" placeholder="Enter description / message" />
                         </div>
                         <div class="@classFile">
-                            <label for="Author">Author / sender</label>
+                            <label for="Author">@xtoa.TxtText[11]</label>
                             <InputText id="Author" class="form-control" @bind-Value="document.Author" />
                         </div>
                         <div class="form-group m-3">
-                            <button type="submit" class="text-white rembtn" style="margin-right: 15px">Save</button>
-                            <button type="button" class="text-white remnot" @onclick="Close">NO</button>
-                            <button type="button" class="@classBtn" @onclick="ToggleFileMess" title="Toggle between file and message">File/Message</button>
+                            <button type="submit" class="text-white rembtn" style="margin-right: 15px">@xtoa.TxtButton[6]</button> @* Save *@
+                            <button type="button" class="text-white remnot" @onclick="Close">@xtoa.TxtButton[0]</button> @* NO *@
+                            <button type="button" class="@classBtn" @onclick="ToggleFileMess" title=@xtoa.TxtTitle[15]>@xtoa.TxtButton[9]</button> @* File / Message *@
                         </div>
                     </EditForm>
                 </div>
@@ -108,14 +109,14 @@
             Auxx.DocType -= 100;
         }
 
-        if (Auxx.DocType == 1) HeaderText = "Add USER document file...";
-        if (Auxx.DocType == 2) HeaderText = "Add COURSE document file...";
-        if (Auxx.DocType == 3) HeaderText = "Add MODULE document file...";
-        if (Auxx.DocType == 4) HeaderText = "Add ACTIVITY document file...";
-        if (Auxx.DocType == 10) HeaderText = "Add USER file or message...";
-        if (Auxx.DocType == 20) HeaderText = "Add COURSE file or message...";
-        if (Auxx.DocType == 30) HeaderText = "Add MODULE file or message...";
-        if (Auxx.DocType == 40) HeaderText = "Add ACTIVITY file or message...";
+        if (Auxx.DocType == 1) HeaderText = xtoa.TxtHead[17]; // Add MEMBER document file...
+        if (Auxx.DocType == 2) HeaderText = xtoa.TxtHead[18]; // Add COURSE document file...
+        if (Auxx.DocType == 3) HeaderText = xtoa.TxtHead[19]; // Add MODULE document file...
+        if (Auxx.DocType == 4) HeaderText = xtoa.TxtHead[20]; // Add ACTIVITY document file...
+        if (Auxx.DocType == 10) HeaderText = xtoa.TxtHead[24]; // Add MEMBER file or message...
+        if (Auxx.DocType == 20) HeaderText = xtoa.TxtHead[25]; // Add COURSE file or message...
+        if (Auxx.DocType == 30) HeaderText = xtoa.TxtHead[26]; // Add MODULE file or message...
+        if (Auxx.DocType == 40) HeaderText = xtoa.TxtHead[27]; // Add ACTIVITY file or message...
         if (Auxx.DocType > 5) classBtn = "text-white rembtn";
         uploadResults = new();
         content = new();
@@ -164,7 +165,7 @@
                         content.Add(content: fileContent, name: "\"files\"", fileName: NameIndex + file.Name);
                         Upload = true;
 
-                        xnav.SetDone("Selected file Ok.");
+                        xnav.SetDone(xtoa.TxtDone[18]);
                         xnav.SetReset('d');
                     }
                     catch (Exception ex)
@@ -180,7 +181,7 @@
                             });
 
                         Upload = false;
-                        xnav.SetError($"{file.Name} not selected (Err: 6): {ex.Message}");
+                        xnav.SetError(file.Name + xtoa.TxtError[9] + ex.Message);
                         xnav.SetReset('e');
                     }
                 }
@@ -197,7 +198,7 @@
                     });
 
                 Upload = false;
-                xnav.SetError("Failed to set a unique filename index.");
+                xnav.SetError(xtoa.TxtError[10]);
                 xnav.SetReset('e');
             }
         }
@@ -236,7 +237,7 @@
             if (IsMan) ldoc.Id4Course = -1; // Kursid sätts till -1 vilket markerar särskiljning.
 
             await xClient.PostAsync<DocumentDto>(ldoc, "api/Document");
-            xnav.SetDone("Your document file was added.");
+            xnav.SetDone(xtoa.TxtDone[19]);
             xnav.SetReset('d');
             Auxx.Flag = true;
             Close();
@@ -245,7 +246,7 @@
         {
             if (classFile == "form-group m-md-3")
             {
-                xnav.SetError("The file was not approved or was never selected.");
+                xnav.SetError(xtoa.TxtError[14]);
                 xnav.SetReset('e');
             }
         }
@@ -277,7 +278,7 @@
             if (IsMan) ldoc.Id4Course = -1; // Kursid sätts till -1 vilket markerar särskiljning.
 
             await xClient.PostAsync<DocumentDto>(ldoc, "api/Document");
-            xnav.SetDone("Your message was posted.");
+            xnav.SetDone(xtoa.TxtDone[20]);
             xnav.SetReset('d');
             Auxx.Flag = true;
             Close();
@@ -312,12 +313,12 @@
         if (classFile == "form-group m-md-3")
         {
             classFile = "d-none";
-            HeaderText = "* M E S S A G E *";
+            HeaderText = xtoa.TxtText[27];
         }
         else
         {
             classFile = "form-group m-md-3";
-            HeaderText = "* F I L E *";
+            HeaderText = xtoa.TxtText[28];
         }
     }
 }

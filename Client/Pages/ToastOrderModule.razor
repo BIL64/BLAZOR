@@ -1,4 +1,5 @@
 ﻿@inject IXDtoClient xClient
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Toast component by Björn Lindqvist*@
@@ -18,18 +19,15 @@
                 <div class="toast-body">
                     <EditForm Model="@xClient" Context="copymodulelmslexnet" OnSubmit="HandleSubmitCopy">
                         <div style="font-size: 0.8rem; margin-bottom: 18px; color:darkblue">
-                            If you want to add more modules somewhere in the course or for some other reason
-                            wish to change the position of a module, then you can enter a suitable value here.
-                            For example, 1 becomes the first module. 0 means that the module will retain its
-                            original position.
+                            @xtoa.TxtText[20]
                         </div>
                         <div class="form-group m-3 col-4">
-                            <label for="Modulenr">Enter position</label>
+                            <label for="Modulenr">@xtoa.TxtText[21]</label>
                             <InputNumber id="Modulenr" class="form-control" @bind-Value="Mpos" min="0"/>
                         </div>
                         <div class="form-group m-3">
-                            <button type="submit" class="text-white rembtn" style="margin-right: 15px">Save</button>
-                            <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+                            <button type="submit" class="text-white rembtn" style="margin-right: 15px">@xtoa.TxtButton[6]</button> @* Save *@
+                            <button type="button" class="text-white remnot" @onclick="Close">@xtoa.TxtButton[0]</button> @* NO *@
                         </div>
                     </EditForm>
                 </div>
@@ -66,7 +64,7 @@
         number = 0;
         IsSame = false;
         IsOver = false;
-        HeaderText = "Set new module position...";
+        HeaderText = xtoa.TxtHead[15];
         showClass = "d-block";
         StateHasChanged();
     }
@@ -118,18 +116,18 @@
                         };
 
                         await xClient.PutAsync<ModuleDto>(lmod.Id, lmod, "api/Module");
-                        xnav.SetDone("Change position for a module.");
+                        xnav.SetDone(xtoa.TxtDone[30]);
                         xnav.SetReset('d');
                     }
                 }
             }
             else
             {
-                xnav.SetError("A position cannot apply twice.");
+                xnav.SetError(xtoa.TxtError[18]);
                 xnav.SetReset('e');
                 if (IsOver)
                 {
-                    xnav.SetError("The position exceeds the number of modules.");
+                    xnav.SetError(xtoa.TxtError[19]);
                     xnav.SetReset('e');
                 }
             }

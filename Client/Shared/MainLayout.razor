@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject IAppUserDtoClient appuserClient
 @inject XNavMenu xnav
 
@@ -15,6 +16,14 @@
 
         <article class="content px-4">
             @Body
+            <ToastStudentSettings @ref="setting1Ref" /> @*Inställningar för studenter*@
+            <ToastTeacherSettings @ref="setting2Ref" /> @*Inställningar för lärare*@
+            @if (xnav.IsClickSett) // När man klickar på inställningar.
+            {
+                if (xnav.MainRole == 1) setting1Ref!.Show().GetAwaiter(); // GetAwaiter istället för await här!
+                if (xnav.MainRole == 2) setting2Ref!.Show().GetAwaiter();
+                xnav.SetClickSett(false);
+            }
         </article>
 
         @if (xnav.JohnDoe) // Hjälp vid uppstart när man har populerat Min eller Max.
@@ -40,10 +49,16 @@
 
 @code {
 
+    private ToastStudentSettings? setting1Ref; // Iställningar student.
+    private ToastTeacherSettings? setting2Ref; // Iställningar lärare.
+
     private List<AppUserDto> johndoe = new(); // De med lärarrollen.
 
     protected override async Task OnInitializedAsync()
     {
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+
         var appuser = await appuserClient.GetAsync();
 
         if (appuser is not null)

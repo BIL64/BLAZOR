@@ -2,6 +2,7 @@
 @using System.Text.Json
 @inject ILogger<StudentCourse> Logger
 @inject IXDtoClient xClient
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Toast component by Björn Lindqvist*@
@@ -21,18 +22,16 @@
                 <div class="toast-body">
                     <div style="font-size: 0.8rem; color:darkblue"><em>For @Auxx.Name4Type...</em></div>
                     <div style="font-size: 0.8rem">
-                        Avatar file types are .png or .jpeg.<br />
-                        It should be square and its file size no larger than 100kb.<br />
-                        Optimal size (WxH) is 225 x 225 pixels.
+                        @xtoa.TxtText[13]<br />@xtoa.TxtText[14]<br />@xtoa.TxtText[15]
                     </div><br />
                     <div>
                         <InputFile class="form-control text-white" style="background-color:blueviolet"
                         accept="image/x-png, image/jpeg" OnChange="@OnInputFileChange" />
                     </div><br />
                     <div>
-                        <button type="button" class="text-white rembtn" style="margin-right: 15px" @onclick="SaveAvatar">Save avatar</button>
-                        <button type="button" class="text-white remyes" style="margin-right: 15px" @onclick=" _ => DeleteAvatar(true)">Delete avatar</button>
-                        <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+                        <button type="button" class="text-white rembtn" style="margin-right: 15px" @onclick="SaveAvatar">@xtoa.TxtButton[8]</button> @* Save avatar *@
+                        <button type="button" class="text-white remyes" style="margin-right: 15px" @onclick=" _ => DeleteAvatar(true)">@xtoa.TxtButton[4]</button> @* Delete avatar *@
+                        <button type="button" class="text-white remnot" @onclick="Close">@xtoa.TxtButton[0]</button> @* NO *@
                     </div>
                 </div>
             </div>
@@ -77,7 +76,7 @@
 
         Upload = false;
 
-        HeaderText = "Add or delete avatar...";
+        HeaderText = xtoa.TxtHead[8];
         uploadResults = new();
         content = new();
         NameIndex = 0;
@@ -136,7 +135,7 @@
                         content.Add(content: fileContent, name: "\"files\"", fileName: NameIndex + file.Name);
                         Upload = true;
 
-                        xnav.SetDone("Selected file Ok.");
+                        xnav.SetDone(xtoa.TxtDone[18]);
                         xnav.SetReset('d');
                     }
                     catch (Exception ex)
@@ -152,7 +151,7 @@
                             });
 
                         Upload = false;
-                        xnav.SetError($"{file.Name} not selected (Err: 6): {ex.Message}");
+                        xnav.SetError(file.Name + xtoa.TxtError[9] + ex.Message);
                         xnav.SetReset('e');
                     }
                 }
@@ -169,7 +168,7 @@
                     });
 
                 Upload = false;
-                xnav.SetError("Failed to set a unique avatar name.");
+                xnav.SetError(xtoa.TxtError[15]);
                 xnav.SetReset('e');
             }
         }
@@ -218,14 +217,14 @@
 
                 await xClient.PostAsync<DocumentDto>(ldoc, "api/Document");
             }
-            xnav.SetDone("Your avatar was added.");
+            xnav.SetDone(xtoa.TxtDone[24]);
             xnav.SetReset('d');
             Auxx.Flag = true;
             Close();
         }
         else
         {
-            xnav.SetError("The file was not approved or was never selected.");
+            xnav.SetError(xtoa.TxtError[14]);
             xnav.SetReset('e');
         }
     }
@@ -246,7 +245,7 @@
 
         if (navmess)
         {
-            xnav.SetDone("Your avatar was deleted.");
+            xnav.SetDone(xtoa.TxtDone[25]);
             xnav.SetReset('d');
             Auxx.Flag = true;
             Close();

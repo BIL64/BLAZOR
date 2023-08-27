@@ -1,4 +1,6 @@
 ﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject XLangStudent xstu
+@inject XLangTeacher xtea
 @inject XNavMenu xnav
 @*Av Jonny Walter*@
 
@@ -15,10 +17,12 @@
     <Authorized>
         @if (context.User.IsInRole("Student"))
         {
-            Logintype = "S T U D E N T";
-            Navbtn1 = "Course";
+            Logintype = xstu.TxtMenu[3]; // S T U D E N T
+            Navbtn0 = xstu.TxtMenu[0]; // Home
+            Navlink0 = "/";
+            Navbtn1 = xstu.TxtMenu[1]; // Course
             Navlink1 = "studentcourse";
-            Navbtn2 = "Students";
+            Navbtn2 = xstu.TxtMenu[2]; // Students
             Navlink2 = "studentallstudents";
             Navbtn3 = string.Empty;
             Navlink3 = string.Empty;
@@ -29,37 +33,42 @@
 
         @if (context.User.IsInRole("Teacher"))
         {
-            Logintype = "T E A C H E R";
-            Navbtn1 = "All courses";
+            Logintype = xtea.TxtMenu[6]; // T E A C H E R
+            Navbtn0 = xtea.TxtMenu[0]; // Home
+            Navlink0 = "/";
+            Navbtn1 = xtea.TxtMenu[1]; // All courses
             Navlink1 = "teacherallcourses";
-            Navbtn2 = "Add course";
+            Navbtn2 = xtea.TxtMenu[2]; // Add course
             Navlink2 = "teacheraddcourse";
-            Navbtn3 = "All teachers";
+            Navbtn3 = xtea.TxtMenu[3]; // All teachers
             Navlink3 = "teacherallteachers";
-            Navbtn4 = "All students";
+            Navbtn4 = xtea.TxtMenu[4]; // All students
             Navlink4 = "teacherallstudents";
-            Navbtn5 = "All unregistered";
+            Navbtn5 = xtea.TxtMenu[5]; // All unregistered
             Navlink5 = "teacherallunregistered";
         }
 
         <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
             <nav class="flex-column">
-                @if (Logintype != string.Empty) // Student eller teacher.
+                @if (Logintype != string.Empty) // Student eller lärare.
                 {
                     <div style="text-align: center; padding: 20px; color: white">
                         @Logintype
                     </div>
                 }
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link bhover" href="/" Match="NavLinkMatch.All">
-                        <span aria-hidden="true"></span> Home
-                    </NavLink>
-                </div>
+                @if (Navbtn0 != string.Empty) // Menyval 0.
+                {
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link bhover" href="@Navlink0" Match="NavLinkMatch.All">
+                            <span aria-hidden="true">@Navbtn0</span>
+                        </NavLink>
+                    </div>
+                }
                 @if (Navbtn1 != string.Empty) // Menyval 1.
                 {
                     <div class="nav-item px-3">
                         <NavLink class="nav-link bhover" href="@Navlink1">
-                            <span aria-hidden="true"></span>@Navbtn1
+                            <span aria-hidden="true">@Navbtn1</span>
                         </NavLink>
                     </div>
                 }
@@ -67,7 +76,7 @@
                 {
                     <div class="nav-item px-3">
                         <NavLink class="nav-link bhover" href="@Navlink2">
-                            <span aria-hidden="true"></span>@Navbtn2
+                            <span aria-hidden="true">@Navbtn2</span>
                         </NavLink>
                     </div>
                 }
@@ -75,7 +84,7 @@
                 {
                     <div class="nav-item px-3">
                         <NavLink class="nav-link bhover" href="@Navlink3">
-                            <span aria-hidden="true"></span>@Navbtn3
+                            <span aria-hidden="true">@Navbtn3</span>
                         </NavLink>
                     </div>
                 }
@@ -83,7 +92,7 @@
                 {
                     <div class="nav-item px-3">
                         <NavLink class="nav-link bhover" href="@Navlink4">
-                            <span aria-hidden="true"></span>@Navbtn4
+                            <span aria-hidden="true">@Navbtn4</span>
                         </NavLink>
                     </div>
                 }
@@ -91,7 +100,7 @@
                 {
                     <div class="nav-item px-3">
                         <NavLink class="nav-link bhover" href="@Navlink5">
-                            <span aria-hidden="true"></span>@Navbtn5
+                            <span aria-hidden="true">@Navbtn5</span>
                         </NavLink>
                     </div>
                 }
@@ -124,7 +133,8 @@
 @code {
 
     private string Logintype = string.Empty;
-    private string Homeclass = string.Empty;
+    private string Navbtn0 = string.Empty;
+    private string Navlink0 = string.Empty;
     private string Navbtn1 = string.Empty;
     private string Navlink1 = string.Empty;
     private string Navbtn2 = string.Empty;
@@ -147,6 +157,8 @@
 
     protected override void OnInitialized()
     {
+        xstu.OnChange += StateHasChanged;
+        xtea.OnChange += StateHasChanged;
         xnav.OnChange += StateHasChanged;
     }
 }

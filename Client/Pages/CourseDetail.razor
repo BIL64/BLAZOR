@@ -2,6 +2,9 @@
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject IAppUserDtoClient appuserClient
 @inject NavigationManager Navigation
+@inject XLangTeacher xtea
+@inject XLangDetail xdet
+@inject XLangToast xtoa
 @inject IXDtoClient xClient
 @inject XNavMenu xnav
 @attribute [Authorize]
@@ -13,20 +16,20 @@
 <AuthorizeView Roles="Teacher">
     <Authorized>
         <nav style="display: flex">
-            <div style="width: 75%"><h3>Administration of this course @CourseId: @NoModules
-                    <i style="cursor: pointer" @onclick=" _ => EditCourse(CourseId)" title="@CourseDescription -Click for edit-">@CourseName</i>
+            <div style="width: 75%"><h3>@xdet.TxtText[1] @CourseId: @NoModules @* Administration of this course *@
+                    <i style="cursor: pointer" @onclick=" _ => EditCourse(CourseId)" title="@CourseDescription @xdet.TxtTitle[4]">@CourseName</i>
                 </h3>
             </div>
             <div style="margin: 0 auto 0 auto"><h5>@CourseDate</h5></div>
             <div style="margin: 0 0 0 auto">
-                <button type="button" class="mb-1 text-white delbtn" @onclick="DateCheck" title="Perform Date Check for this course">DC</button>
-                <button type="button" class="mb-1 text-white delbtn" @onclick="StudentPage" title="Shortcut to student page">S</button>
+                <button type="button" class="mb-1 text-white delbtn" @onclick="DateCheck" title=@xdet.TxtTitle[1]>DC</button>
+                <button type="button" class="mb-1 text-white delbtn" @onclick="StudentPage" title=@xdet.TxtTitle[2]>S</button>
             </div>
         </nav> 
         <nav style="display: flex">
             <div style="margin: 20px 0 0 auto">
                 <button type="button" class="docplusbtn"
-                @onclick=" _ => DocSaveControl(IId, 2, CourseName)" title="Add a document to this course">+ DOC</button>
+                @onclick=" _ => DocSaveControl(IId, 2, CourseName)" title=@xdet.TxtTitle[3]>+ DOC</button>
             </div>
         </nav>
 
@@ -138,26 +141,26 @@
                             <div style="width: 85%">
                                 @if (data.Select == 1 || data.Select == 10)
                                 {
-                                    <b title="@data.Description -Click for edit-">Module @data.Id:
+                                    <b title="@data.Description @xdet.TxtTitle[4]">@xdet.TxtText[8] @data.Id: @* Module *@
                                     <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
                                 }
                                 else
                                 {
                                     if (data.Select == 3)
                                     {
-                                        <b title="Click for edit. Type #E# for empty or #H# for hide a field">
+                                        <b title=@xdet.TxtTitle[5]>
                                         <i style="cursor: pointer; margin-left: 10px" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
                                     }
                                     else
                                     {
-                                        <b title="@data.Description -Click for edit-">Module
+                                        <b title="@data.Description @xdet.TxtTitle[4]">@xdet.TxtText[8] @* Module *@
                                         <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
                                     }
                                 }
-                                <span class="order" @onclick=" _ => OrderModule(data.Id)" title="Click to set order">@data.Morder</span>
+                                <span class="order" @onclick=" _ => OrderModule(data.Id)" title=@xdet.TxtTitle[6]>@data.Morder</span>
                             </div>
                             <div style="margin: 0 0 0 auto"><b style="cursor: pointer" @onclick=" _ => ModuleDate(data.Id)"
-                                title="Click to edit date">@xnav.StartEndDate(data.StartDate, data.EndDate)</b>
+                                title=@xdet.TxtTitle[7]>@xnav.StartEndDate(data.StartDate, data.EndDate)</b>
                             </div>
                         </div>
                         <div style="display: flex">
@@ -166,7 +169,8 @@
                             @if (data.Select != 3 && data.Select != 4 && data.Select != 5)
                             {
                                 <div style="width: 75%; margin-top: 20px">
-                                    <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(data.Id, 30, data.Name)" title="Add a document to this module">+ DOC</button>
+                                    <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(data.Id, 30, data.Name)"
+                                        title=@xdet.TxtTitle[8]>+ DOC</button>
                                     <div class="dropdoc">
                                         <button  type="button" id="M@(data.Id)" class="docviewbtn">DOCs</button>
                                         <div class="dropdoc-content">
@@ -196,12 +200,12 @@
                                         if (data.Select > 8)
                                         {
                                             <NavLink style="cursor: pointer" class="oi oi-x mx-2 text-danger text-decoration-none"
-                                            @onclick=" _ => ShowOrHide(data.Id, (byte) (data.Select / 10))" title="Show document"></NavLink>
+                                            @onclick=" _ => ShowOrHide(data.Id, (byte) (data.Select / 10))" title=@xdet.TxtTitle[9]></NavLink>
                                         }
                                         else
                                         {
                                             <NavLink style="cursor: pointer" class="oi oi-aperture mx-2 text-primary text-decoration-none"
-                                            @onclick=" _ => ShowOrHide(data.Id, (byte) (data.Select * 10))" title="Hide document"></NavLink>
+                                            @onclick=" _ => ShowOrHide(data.Id, (byte) (data.Select * 10))" title=@xdet.TxtTitle[10]></NavLink>
                                         }
                                     }
                                 </div>
@@ -210,29 +214,29 @@
                             {
                                 if (data.Select == 3)
                                 {
-                                    <div style="font-size: 0.8rem; text-indent: 10px; color:darkslategrey" title="Type #H# for hide or #E# for empty a field">
+                                    <div style="font-size: 0.8rem; text-indent: 10px; color:darkslategrey" title=@xdet.TxtTitle[14]>
                                     <em>@data.Description</em></div>
                                 }
                             }
 
                             <div style="margin: 0 0 0 auto">
                                 <NavLink style="cursor: pointer; margin-right: 2px" class="oi oi-layers text-primary text-decoration-none"
-                                @onclick=" _ => CopyModule(data.Id, data.Name)" title="Copy another modules data to this module"></NavLink>
+                                @onclick=" _ => CopyModule(data.Id, data.Name)" title=@xdet.TxtTitle[15]></NavLink>
 
                                 <NavLink style="cursor: pointer; margin-right: 2px" class="oi oi-menu text-primary text-decoration-none"
-                                @onclick=" _ => SelectModuleType(data.Id, 5)" title="Simple text message"></NavLink>
+                                @onclick=" _ => SelectModuleType(data.Id, 5)" title=@xdet.TxtTitle[16]></NavLink>
 
                                 <NavLink style="cursor: pointer; margin-right: 2px" class="oi oi-list text-primary text-decoration-none"
-                                @onclick=" _ => SelectModuleType(data.Id, 4)" title="Only activities"></NavLink>
+                                @onclick=" _ => SelectModuleType(data.Id, 4)" title=@xdet.TxtTitle[17]></NavLink>
 
                                 <NavLink style="cursor: pointer; margin-right: 2px" class="oi oi-folder text-primary text-decoration-none"
-                                @onclick=" _ => SelectModuleType(data.Id, 3)" title="Simple text as a heading for a module"></NavLink>
+                                @onclick=" _ => SelectModuleType(data.Id, 3)" title=@xdet.TxtTitle[18]></NavLink>
 
                                 <NavLink style="cursor: pointer; margin-right: 2px" class="oi oi-document text-primary text-decoration-none"
-                                @onclick=" _ => SelectModuleType(data.Id, 1)" title="Extend with identity number"></NavLink>
+                                @onclick=" _ => SelectModuleType(data.Id, 1)" title=@xdet.TxtTitle[19]></NavLink>
 
                                 <NavLink style="cursor: pointer" class="oi oi-arrow-circle-bottom mt-2 text-primary text-decoration-none"
-                                @onclick=" _ => ActivateOrDisable(data.Id, 0)" title="Disable module and exclude identity nr"></NavLink>
+                                @onclick=" _ => ActivateOrDisable(data.Id, 0)" title=@xdet.TxtTitle[20]></NavLink>
                             </div>
                         </div>
                     </section>
@@ -244,37 +248,37 @@
                                 @if (data.Select == 1 || data.Select == 10)
                                 {
                                     <tr>
-                                        <th>Nr</th>
-                                        <th>Aktivity</th>
-                                        <th>Type</th>
-                                        <th>Date</th>
-                                        <th>Items</th>
+                                        <th>@xdet.TxtText[2]</th> @* Nr *@
+                                        <th>@xdet.TxtText[3]</th> @* Activity *@
+                                        <th>@xdet.TxtText[5]</th> @* Type *@
+                                        <th>@xdet.TxtText[6]</th> @* Date *@
+                                        <th>@xdet.TxtText[7]</th> @* Appendix *@
                                     </tr>
                                 }
 
                                 @if (data.Select == 2 || data.Select == 20 || data.Select == 3)
                                 {
                                     <tr>
-                                        <th>Aktivity</th>
-                                        <th>Type</th>
-                                        <th>Date</th>
-                                        <th>Items</th>
+                                        <th>@xdet.TxtText[3]</th> @* Activity *@
+                                        <th>@xdet.TxtText[5]</th> @* Type *@
+                                        <th>@xdet.TxtText[6]</th> @* Date *@
+                                        <th>@xdet.TxtText[7]</th> @* Appendix *@
                                     </tr>
                                 }
 
                                 @if (data.Select == 4)
                                 {
                                     <tr>
-                                        <th>Aktivity</th>
-                                        <th>Description</th>
-                                        <th>Items</th>
+                                        <th>@xdet.TxtText[3]</th> @* Activity *@
+                                        <th>@xdet.TxtText[4]</th> @* Description *@
+                                        <th>@xdet.TxtText[7]</th> @* Appendix *@
                                     </tr>
                                 }
 
                                 @if (data.Select == 5)
                                 {
                                     <tr>
-                                        <th>Text message (the <u>description</u> of the aktivity)</th>
+                                        <th>@xdet.TxtText[9] <u>@xdet.TxtText[10]</u> @xdet.TxtText[11]</th>
                                     </tr>
                                 }
                             </thead>
@@ -294,7 +298,7 @@
                                                 if (data.Select != 5)
                                                 {
                                                     <td>
-                                                        <i style="cursor: pointer" title="@act.Description -Click for edit-"
+                                                        <i style="cursor: pointer" title="@act.Description @xdet.TxtTitle[4]"
                                                         @onclick=" _ => EditActivity(act.Id)">@act.Name</i>
                                                     </td>
                                                 }
@@ -311,7 +315,7 @@
                                                         }
                                                     </td>
                                                     <td>
-                                                        <span style="cursor: pointer" @onclick=" _ => ActivityDate(act.Id)" title="Click to edit date">
+                                                        <span style="cursor: pointer" @onclick=" _ => ActivityDate(act.Id)" title=@xdet.TxtTitle[7]>
                                                         @xnav.StartEndDate(act.StartDate, act.EndDate)</span>
                                                     </td>
                                                 }
@@ -319,7 +323,7 @@
                                                 {
                                                     if (data.Select == 5)
                                                     {
-                                                        <td style="cursor: pointer; color: darkorange" title="The name: @act.Name -Click for edit-"
+                                                        <td style="cursor: pointer; color: darkorange" title="@xdet.TxtTitle[24] @act.Name @xdet.TxtTitle[4]"
                                                         @onclick=" _ => EditActivity(act.Id)">@act.Description</td>
                                                     }
                                                     else
@@ -332,7 +336,7 @@
                                                     @if (data.Select != 5)
                                                     {
                                                         <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(act.Id, 140, act.Name)"
-                                                        title="Add a document to this activity">+ DOC</button>
+                                                        title=@xdet.TxtTitle[25]>+ DOC</button>
                                                         <div class="dropdoc">
                                                             <button type="button" id="A@(act.Id)" class="docviewbtn">DOCs</button>
                                                             <div class="dropdoc-content">
@@ -362,7 +366,7 @@
                                                     }
 
                                                     <NavLink style="cursor: pointer" class="oi oi-arrow-circle-bottom text-primary mt-2 text-decoration-none"
-                                                    @onclick=" _ => ActivateOrDisable(act.Id, 1)" title="Disable this activity"></NavLink>
+                                                    @onclick=" _ => ActivateOrDisable(act.Id, 1)" title=@xdet.TxtTitle[26]></NavLink>
                                                 </td>
                                                 <td>
                                                     @if (!Empty && data.Select != 5)
@@ -370,12 +374,12 @@
                                                         if (act.Select > 8)
                                                         {
                                                             <NavLink style="cursor: pointer" class="oi oi-x text-danger mt-2 text-decoration-none"
-                                                            @onclick=" _ => ShowOrHide(act.Id, 101)" title="Show document"></NavLink>
+                                                            @onclick=" _ => ShowOrHide(act.Id, 101)" title=@xdet.TxtTitle[9]></NavLink>
                                                         }
                                                         else
                                                         {
                                                             <NavLink style="cursor: pointer" class="oi oi-aperture text-primary mt-2 text-decoration-none"
-                                                            @onclick=" _ => ShowOrHide(act.Id, 110)" title="Hide document"></NavLink>
+                                                            @onclick=" _ => ShowOrHide(act.Id, 110)" title=@xdet.TxtTitle[10]></NavLink>
                                                         }
                                                     }
                                                 </td>
@@ -388,17 +392,17 @@
                                             @if (act.ModuleId == data.Id)
                                             {
                                                 <td>
-                                                    <i style="cursor: pointer" title="@act.Description -Click for edit-"
+                                                    <i style="cursor: pointer" title="@act.Description @xdet.TxtTitle[4]"
                                                     @onclick=" _ => EditActivity(act.Id)">@act.Name</i>
                                                 </td>
                                                 <td>
-                                                    <div style="font-weight: bold; color:red">DISABLE</div>
+                                                    <div style="font-weight: bold; color:red">@xdet.TxtText[12]</div> @* DISABLE *@
                                                 </td>
                                                 <td>@xnav.StartEndDate(act.StartDate, act.EndDate)</td>
                                                 <td>
                                                     <div style="margin-left: auto; margin-right: 0">
                                                     <NavLink style="cursor: pointer" class="oi oi-arrow-circle-top text-primary mt-2 text-decoration-none"
-                                                    @onclick=" _ => ActivateOrDisable(act.Id, 3)" title="Activate this activity"></NavLink>
+                                                    @onclick=" _ => ActivateOrDisable(act.Id, 3)" title=@xdet.TxtTitle[28]></NavLink>
                                                     </div>
                                                 </td>
                                             }
@@ -412,12 +416,8 @@
                         {
                             <div style="font-family:'Courier New'; font-size: 0.8rem; font-style: italic">
                                 <details>
-                                    <summary title="Click for more information...">Info about #T#</summary>
-                                    The same thing can be accomplished by adding the text string #T#
-                                    somewhere in the name of any activity and then disabling the activity
-                                    (if you don't want both to appear). It is the same as here - that it is
-                                    the description of the activity that constitutes the text message. The
-                                    message is displayed after the current module.
+                                    <summary title=@xdet.TxtTitle[30]>@xdet.TxtText[13]</summary>
+                                    @xdet.TxtText[14] @* Info about #T#... *@
                                 </details>
                             </div>
                         }
@@ -429,17 +429,17 @@
                     <section class="modulebox" style="color:grey; background-color:lightgrey">
                         <div style="display: flex">
                             <div style="width: 85%">
-                                <b title="@data.Description -Click for edit-">Module:
+                                <b title="@data.Description @xdet.TxtTitle[4]">@xdet.TxtText[8] @* Module *@
                                 <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
-                                <span class="order" @onclick=" _ => OrderModule(data.Id)" title="Click to set order">@data.Morder</span>
+                                <span class="order" @onclick=" _ => OrderModule(data.Id)" title=@xdet.TxtTitle[6]>@data.Morder</span>
                             </div>
                             <div style="margin-left: auto; margin-right: 0"><b>@xnav.StartEndDate(data.StartDate, data.EndDate)</b></div>
                         </div>
                         <div style="display: flex">
-                            <div style="font-weight: bold; color:red; margin-left: auto; margin-right: auto">DISABLE</div>
+                            <div style="font-weight: bold; color:red; margin-left: auto; margin-right: auto">@xdet.TxtText[12]</div> @* DISABLE *@
                             <div style="margin: 0 0 0 auto">
                                 <NavLink style="cursor: pointer" class="oi oi-arrow-circle-top text-primary mt-2 text-decoration-none"
-                                @onclick=" _ => ActivateOrDisable(data.Id, 2)" title="Activate this module"></NavLink>
+                                @onclick=" _ => ActivateOrDisable(data.Id, 2)" title=@xdet.TxtTitle[29]></NavLink>
                             </div>
                         </div>
                     </section>
@@ -449,10 +449,10 @@
                         <table class="table" style="color:#AAA"> @*Grå text*@
                             <thead>
                                 <tr>
-                                    <th>Aktivity</th>
-                                    <th>Type</th>
-                                    <th>Date</th>
-                                    <th>Items</th>
+                                    <th>@xdet.TxtText[3]</th> @* Activity *@
+                                    <th>@xdet.TxtText[5]</th> @* Type *@
+                                    <th>@xdet.TxtText[6]</th> @* Date *@
+                                    <th>@xdet.TxtText[7]</th> @* Appendix *@
                                 </tr>
                             </thead>
                             <tbody>
@@ -461,7 +461,7 @@
                                     <tr>
                                         @if (act.ModuleId == data.Id)
                                         {
-                                            <td><i style="cursor: pointer" title="@act.Description -Click for edit-"
+                                            <td><i style="cursor: pointer" title="@act.Description @xdet.TxtTitle[4]"
                                                 @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
                                             <td>
                                                 @foreach (var actype in activityTypes)
@@ -503,7 +503,7 @@
         Auxx.DocType = doctype;
         Auxx.Name4Type = name;
         await docsaveRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(false); // Uppdaterar sidan.
     }
 
     private ToastDocumentEdit? doceditRef; // Filredigeringsfönster.
@@ -514,7 +514,7 @@
         Auxx.DocType = doctype;
         Auxx.Documents = documents;
         await doceditRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(false); // Uppdaterar sidan.
     }
 
     private ToastFastModuleDate? fastmodRef; // Datumredigeringsfönster.
@@ -523,7 +523,7 @@
     {
         Auxx.IntId = id;
         await fastmodRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(false); // Uppdaterar sidan.
     }
 
     private ToastFastActivityDate? fastactRef; // Datumredigeringsfönster.
@@ -532,7 +532,7 @@
     {
         Auxx.IntId = id;
         await fastactRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(false); // Uppdaterar sidan.
     }
 
     private ToastCopyModule? copymodRef; // Modulkopiering.
@@ -543,7 +543,7 @@
         Auxx.CourseId = IId;
         Auxx.Name4Type = name;
         await copymodRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(false); // Uppdaterar sidan.
     }
 
     private ToastOrderModule? ordermodRef; // Modulkopiering.
@@ -553,7 +553,7 @@
         Auxx.IntId = id;
         Auxx.CourseId = IId;
         await ordermodRef!.Show();
-        await RefreshAfterThis(); // Uppdaterar sidan.
+        await RefreshAfterThis(false); // Uppdaterar sidan.
     }
 
     private List<CourseDto> courses = new();
@@ -581,17 +581,29 @@
     private string TestMess1 = string.Empty; // Test.
     private string TestMess2 = string.Empty; // Test.
 
-    private async Task RefreshAfterThis() // Uppdaterar efter förändring av innehåll.
+    private async Task RefreshAfterThis(bool delay) // Uppdaterar efter förändring av innehåll.
     {
-        while (!Auxx.Flag) await xnav.Intermission(500, false);
+        while (!Auxx.Flag) await xnav.Intermission(500, false); // Nödvändigt för att kunna uppdatera sidan efteråt.
+        if (delay) await xnav.Intermission(1500, false); // Undviker att ShowAvatar-metoden omgående nollställer errormenyn.
         await OnInitializedAsync();
-        Auxx.Flag = false;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        xnav.SetJohnDoe(false);
+        if (xdet.RenderPage != "STILL_HERE")
+        {
+            xnav.SetJohnDoe(false);
+            xnav.MainRole = 2;
+            xnav.ClassSettings = "d-block"; // Settings.
+            if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xtea.SetMenu_EN(); xdet.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xtea.SetMenu_SV(); xdet.SetLanguage_SV(); xtoa.SetLanguage_SV(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "DE") { xtea.SetMenu_DE(); xdet.SetLanguage_DE(); xtoa.SetLanguage_DE(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") { xtea.SetMenu_FR(); xdet.SetLanguage_FR(); xtoa.SetLanguage_FR(); }
+            else { xtea.SetMenu_EN(); xdet.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+        }
+
         if (!Auxx.Flag) xnav.SetReset('a');
+        Auxx.Flag = false;
 
         courses.Clear(); // Direkt feedback kräver att listorna rensas.
         modules.Clear();
@@ -632,7 +644,7 @@
                         }
                         else modules.Add(mod);
 
-                        if (!string.IsNullOrWhiteSpace(searchString) && modules.Count < 1) CourseName = "No module matched the search term...";
+                        if (!string.IsNullOrWhiteSpace(searchString) && modules.Count < 1) CourseName = xdet.TxtText[17];
 
                         foreach (var act in mod.Activities) // Hämtar aktiviteter.
                         {
@@ -644,18 +656,20 @@
         }
         else
         {
-            CourseName = "No course could be find...";
+            CourseName = xdet.TxtText[18]; // No course could be find...
         }
 
-        if (modules.Count < 1 && CourseName != "No module matched the search term...")
+        if (modules.Count < 1 && CourseName != xdet.TxtText[17]) // No module matched the search term...
         {
-            NoModules = "No modules could be find...";
+            NoModules = xdet.TxtText[19]; // No modules could be find...
             CourseName = "";
         }
         else NoModules = "";
 
         if (string.IsNullOrWhiteSpace(searchString) && modules.Count > 1) // Sist: sortering av moduler.
+        {
             modules = OrderModules(modules);
+        }
 
         if (activityType is not null) // Hämtar aktivitetstyper.
         {
@@ -679,6 +693,9 @@
                 xnav.SetLogAvatar("avatarlog", xClient.GetFilepath() + doc.NameIx + doc.DocName);
             }
         }
+
+        xdet.OnChange += StateHasChanged;
+        xtoa.OnChange += StateHasChanged;
     }
 
     protected override async void OnAfterRender(bool firstRender) // Byter klass på knapp om dokument hittas.
@@ -727,19 +744,19 @@
         {
             if (over == 1)
             {
-                xnav.SetError("There is a module whose order number is greater than the actual number of modules.");
+                xnav.SetError(xdet.TxtText[20]); // Order number is greater...
                 xnav.SetReset('e');
             }
             else
             {
-                xnav.SetError("There are several modules whose order number is greater than the actual number of modules.");
+                xnav.SetError(xdet.TxtText[21]); // Several order number is greater...
                 xnav.SetReset('e');
             }
         }
 
         if (IsSameName)
         {
-            xnav.SetError("There is one or several modules whose name is equal. To avoid problems with handling data, all modules should have different names.");
+            xnav.SetError(xdet.TxtText[22]); // Name is equal...
             xnav.SetReset('e');
         }
 
@@ -917,7 +934,7 @@
         int InInt = 0;
         int Count = 1;
 
-        xnav.SetDone("Perform calculation...");
+        xnav.SetDone(xdet.TxtDateC[1]); // Perform calculation...
         xnav.SetReset('d');
         await xnav.Intermission(1, false);
 
@@ -928,13 +945,13 @@
             if (cour.Id == IId) // Hämtar kursen.
             {
                 // Kollar om kursens startdatum är större än slutdatumet.
-                if (cour.StartDate > cour.EndDate) CourseCheck = "Course date mismatch (start date is greater than end date).";
+                if (cour.StartDate > cour.EndDate) CourseCheck = xdet.TxtDateC[2]; // Mismatch><.
 
                 InInt = PlacingInArray(cour.StartDate, Count, '+');
-                if (InInt < 1) LimCheck = "Cannot calculate.";
+                if (InInt < 1) LimCheck = xdet.TxtDateC[3]; // Cannot calculate.
                 datearray[InInt] = Count;
                 InInt = PlacingInArray(cour.EndDate, Count, '-');
-                if (InInt < 1) LimCheck = "Cannot calculate.";
+                if (InInt < 1) LimCheck = xdet.TxtDateC[3]; // Cannot calculate.
                 datearray[InInt] = Count;
                 Count++;
 
@@ -942,16 +959,16 @@
                 {
                     // Kollar om båda datumen ligger utanför datumspannet för kursen.
                     if (mod.StartDate < cour.StartDate && mod.EndDate < cour.StartDate ||
-                    mod.StartDate > cour.EndDate && mod.EndDate > cour.EndDate) ModuleCheck = "Module date mismatch (date is outside the course date).";
+                    mod.StartDate > cour.EndDate && mod.EndDate > cour.EndDate) ModuleCheck = xdet.TxtDateC[4]; // Mismatch><.
 
                     // Kollar om modulens startdatum är större än slutdatumet.
-                    if (mod.StartDate > mod.EndDate) ModuleCheck = "Module date mismatch (start date is greater than end date).";
+                    if (mod.StartDate > mod.EndDate) ModuleCheck = xdet.TxtDateC[5]; // Mismatch><.
 
                     InInt = PlacingInArray(mod.StartDate, Count, '+');
-                    if (InInt < 1) LimCheck = "Cannot calculate (overloading).";
+                    if (InInt < 1) LimCheck = xdet.TxtDateC[6]; // Cannot calculate (overloading).
                     datearray[InInt] = Count;
                     InInt = PlacingInArray(mod.EndDate, Count, '-');
-                    if (InInt < 1) LimCheck = "Cannot calculate (overloading).";
+                    if (InInt < 1) LimCheck = xdet.TxtDateC[6]; // Cannot calculate (overloading).
                     datearray[InInt] = Count;
                     Count++;
 
@@ -959,16 +976,16 @@
                     {
                         // Kollar om båda datumen ligger utanför datumspannet för modulen.
                         if (act.StartDate < mod.StartDate && act.EndDate < mod.StartDate ||
-                        act.StartDate > mod.EndDate && act.EndDate > mod.EndDate) ActivityCheck = "Activity date mismatch (date is outside the module date).";
+                        act.StartDate > mod.EndDate && act.EndDate > mod.EndDate) ActivityCheck = xdet.TxtDateC[7]; // Mismatch><.
 
                         // Kollar om aktivitetens startdatum är större än slutdatumet.
-                        if (act.StartDate > act.EndDate) ActivityCheck = "Activity date mismatch (start date is greater than end date).";
+                        if (act.StartDate > act.EndDate) ActivityCheck = xdet.TxtDateC[8]; // Mismatch><.
 
                         InInt = PlacingInArray(act.StartDate, Count, '+');
-                        if (InInt < 1) LimCheck = "Cannot calculate (overloading).";
+                        if (InInt < 1) LimCheck = xdet.TxtDateC[6]; // Cannot calculate (overloading).
                         datearray[InInt] = Count;
                         InInt = PlacingInArray(act.EndDate, Count, '-');
-                        if (InInt < 1) LimCheck = "Cannot calculate (overloading).";
+                        if (InInt < 1) LimCheck = xdet.TxtDateC[6]; // Cannot calculate (overloading).
                         datearray[InInt] = Count;
                         Count++;
                     }
@@ -994,11 +1011,11 @@
             if (dates.IndexOf(i.ToString() + i.ToString()) != -1) dates = dates.Replace(i.ToString() + i.ToString(), "");
         }
 
-        if (dates.Length > 0) EndCheck = "Date mismatch (entangled dates)"; // Inga siffror kvar, ingen osymmetri!
+        if (dates.Length > 0) EndCheck = xdet.TxtDateC[9]; // Inga siffror kvar, ingen osymmetri!
 
         if (LimCheck == "" && CourseCheck == "" && ModuleCheck == "" && ActivityCheck == "" && EndCheck == "")
         {
-            xnav.SetDone("No date errors could be found.");
+            xnav.SetDone(xdet.TxtDateC[10]); // No date errors could be found.
             xnav.SetReset('d');
         }
         else
@@ -1049,7 +1066,7 @@
 
     private void StudentPage()
     {
-        Navigation.NavigateTo($"/studentcourse", true);
+        Navigation.NavigateTo("/studentcourse", true);
     }
 
     private void EditCourse(int id)
@@ -1096,12 +1113,12 @@
         {
             modules.Clear();
             modules.Add(module);
-            xnav.SetDone("Your current module.");
+            xnav.SetDone(xdet.TxtText[15]); // The current module.
             xnav.SetReset('d');
         }
         else
         {
-            xnav.SetDone("There is no current module.");
+            xnav.SetDone(xdet.TxtText[16]); // There is no current module.
             xnav.SetReset('d');
         }
     }

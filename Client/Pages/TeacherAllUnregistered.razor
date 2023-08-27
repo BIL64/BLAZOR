@@ -2,7 +2,9 @@
 @using System.Diagnostics;
 @inject NavigationManager Navigation
 @inject IAppUserDtoClient appuserClient
-@inject HttpClient Http
+@inject IXDtoClient xClient
+@inject XLangTeacher xtea
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Björn Lindqvist*@
@@ -27,7 +29,7 @@ else
                 <button type="submit" class="btn m-lg-auto btn-outline-dark">Search</button>
             </span>
             <span class="nav m-lg-auto input-group-append">
-                <button type="button" class="btn m-lg-auto btn-outline-dark" @onclick="DeleteAllVisitors">Delete all or set REG</button>
+                <button type="button" class="btn m-lg-auto btn-outline-dark" @onclick="DeleteAllVisitors">Delete all</button>
             </span>
         </span>
     </EditForm>
@@ -38,9 +40,9 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Visitor</th>
-                <th>Email</th>
-                <th>Phone number</th>
+                <th>@xtea.TxtText[65]</th>
+                <th>@xtea.TxtText[66]</th>
+                <th>@xtea.TxtText[67]</th>
             </tr>
         </thead>
         <tbody>
@@ -56,13 +58,13 @@ else
                             if (data.Id is not null)
                             {
                                 <button type="button" class="text-white regbtn" @onclick=" _ => GetRegistered(data.Id)"
-                                    title="Not yet authorized student">Register now!</button>
+                                    title=@xtea.TxtTitle[38]>@xtea.TxtButton[13]</button>
                             }
                         }
                         @if (data.Id is not null)
                         {
                             <button type="button" class="oi oi-circle-x text-white delbtn" @onclick=" _ => DeleteUser(data.Id)"
-                                title="Delete or redirect user"></button> // CSS!
+                                title=@xtea.TxtTitle[35]></button> // CSS!
                         }
                     </td>
                 </tr>
@@ -102,20 +104,31 @@ else
 
     private List<AppUserDto> visitors = new();
 
-    private string Emptydb = "List of unregistered";
+    private string Emptydb = string.Empty;
 
     private string searchString = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        xnav.SetJohnDoe(false);
+        if (xtea.RenderPage != "STILL_HERE")
+        {
+            xnav.SetJohnDoe(false);
+            xnav.MainRole = 2;
+            xnav.ClassSettings = "d-block"; // Settings.
+            if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xtea.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xtea.SetLanguage_SV(); xtoa.SetLanguage_SV(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "DE") { xtea.SetLanguage_DE(); xtoa.SetLanguage_DE(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") { xtea.SetLanguage_FR(); xtoa.SetLanguage_FR(); }
+            else { xtea.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+        }
+
         xnav.SetReset('a');
 
         visitors.Clear(); // Sökfunktionen kräver att listan rensas.
 
-        var appuser = await appuserClient.GetAsync();
+        Emptydb = xtea.TxtText[57];
 
-        Emptydb = "List of unregistered";
+        var appuser = await appuserClient.GetAsync();
 
         if (appuser is not null)
         {
@@ -133,19 +146,22 @@ else
                     if (item.UserRole == 0) visitors.Add(item);
                 }
             }
-            if (visitors.Count < 1) Emptydb = "No unregistered !";
-            if (!string.IsNullOrWhiteSpace(searchString) && visitors.Count < 1) Emptydb = "There is no visitor with that name...";
+            if (visitors.Count < 1) Emptydb = xtea.TxtText[58];
+            if (!string.IsNullOrWhiteSpace(searchString) && visitors.Count < 1) Emptydb = xtea.TxtText[59];
         }
         else
         {
-            Emptydb = "No unregistered !";
+            Emptydb = xtea.TxtText[58];
         }
+
+        xtea.OnChange += StateHasChanged;
+        xtoa.OnChange += StateHasChanged;
     }
 
     private async Task GetRegistered(string id) // Registrerar den oregistrerade.
     {
         await xnav.Intermission(500, true);
-        xnav.SetDone("This visitor was registered. Press “Search” for refreshing.");
+        xnav.SetDone(xtea.TxtDone[6]);
         xnav.SetReset('d');
         await appuserClient.PreAsync(id, 1);
     }

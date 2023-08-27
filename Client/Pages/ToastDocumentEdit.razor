@@ -1,5 +1,6 @@
 ﻿@inject ILogger<CourseDetail> Logger
 @inject IXDtoClient xClient
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Toast component by Björn Lindqvist*@
@@ -23,17 +24,17 @@
                         <div class="form-group" style="font-size: 0.9rem; font-weight: bold; cursor: pointer" title="Open file"
                         @onclick=" _ => OpenFileControl(document.NameIx, document.DocName)">@document.DocName</div>
                         <div class="form-group m-3">
-                            <label for="Description">Description</label>
+                            <label for="Description">@xtoa.TxtText[16]</label>
                             <InputTextArea id="Description" class="form-control" @bind-Value="document.Description" placeholder="Enter description" />
                         </div>
                         <div class="form-group m-3">
-                            <label for="Author">Author (sender)</label>
+                            <label for="Author">@xtoa.TxtText[17]</label>
                             <InputText id="Author" class="form-control" @bind-Value="document.Author" placeholder="Enter author" />
                         </div>
                         <div class="form-group m-3">
-                            <button type="submit" class="text-white rembtn" style="margin-right: 15px">Edit form</button>
-                            <button type="button" class="text-white remyes" @onclick="DeleteFile" title="Remove this file from the system">Delete file</button>
-                            <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+                            <button type="submit" class="text-white rembtn" style="margin-right: 15px">@xtoa.TxtButton[6]</button> @* Save *@
+                            <button type="button" class="text-white remyes" @onclick="DeleteFile" title=@xtoa.TxtTitle[16]>@xtoa.TxtButton[3]</button> @* Delete file *@
+                            <button type="button" class="text-white remnot" @onclick="Close">@xtoa.TxtButton[0]</button> @* NO *@
                         </div>
                     </EditForm>
                 </div>
@@ -64,10 +65,10 @@
         xnav.Pos_H = (int)Math.Round(dim.Width * 0.08); // 08%
         xnav.Pos_V = (int)Math.Round(Win_Height * 0.2); // 20%
 
-        if (Auxx.DocType == 1) HeaderText = "Edit USER document file...";
-        if (Auxx.DocType == 2) HeaderText = "Edit COURSE document file...";
-        if (Auxx.DocType == 3) HeaderText = "Edit MODULE document file...";
-        if (Auxx.DocType == 4) HeaderText = "Edit ACTIVITY document file...";
+        if (Auxx.DocType == 1) HeaderText = xtoa.TxtHead[28];
+        if (Auxx.DocType == 2) HeaderText = xtoa.TxtHead[29];
+        if (Auxx.DocType == 3) HeaderText = xtoa.TxtHead[30];
+        if (Auxx.DocType == 4) HeaderText = xtoa.TxtHead[31];
 
         foreach (var doc in Auxx.Documents)
         {
@@ -114,7 +115,7 @@
         };
 
         await xClient.PutAsync<DocumentDto>(document.Id, ldoc, "api/Document");
-        xnav.SetDone("Your document file was edited.");
+        xnav.SetDone(xtoa.TxtDone[26]);
         xnav.SetReset('i');
         Auxx.Flag = true;
         Close();
@@ -124,7 +125,7 @@
     {
         await xClient.RemAsync(document.Id, "api/Document");
         await xClient.DeleteFile(document.NameIx.ToString() + document.DocName);
-        xnav.SetDone("Your document file was deleted.");
+        xnav.SetDone(xtoa.TxtDone[27]);
         xnav.SetReset('d');
         Auxx.Flag = true;
         Close();

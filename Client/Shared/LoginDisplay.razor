@@ -4,6 +4,7 @@
 
 <AuthorizeView>
     <Authorized>
+        <span class="@xnav.ClassSettings oi oi-menu settlog" @onclick="Settings" title="Options"></span>
         <span class="@xnav.ClassRegStatus">@xnav.RegText</span>
         <a href="authentication/profile">Hello, @context.User.Identity?.Name!</a>
         <img src="@xnav.PathImgLog" class="@xnav.ClassAvatarLog" />
@@ -48,5 +49,11 @@
         }
 
         xnav.OnChange += StateHasChanged;
+    }
+
+    private void Settings()
+    {
+        xnav.SetClickSett(true);
+        StateHasChanged();
     }
 }

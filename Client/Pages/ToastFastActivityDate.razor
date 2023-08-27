@@ -1,4 +1,5 @@
 ﻿@inject IXDtoClient xClient
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Toast component by Björn Lindqvist*@
@@ -19,17 +20,17 @@
                     <EditForm Model="@xClient" Context="fastdatelmslexnet" OnSubmit="HandleSubmitDates">
                         <div class="form-group row">
                             <span class="col-6">
-                                <label for="Startdate">Set start date</label>
+                                <label for="Startdate">@xtoa.TxtText[18]</label>
                                 <InputDate id="Startdate" class="form-control" @bind-Value="Sdate" />
                             </span>
                             <span class="col-6">
-                                <label for="Enddate">Set end date</label>
+                                <label for="Enddate">@xtoa.TxtText[19]</label>
                                 <InputDate id="Enddate" class="form-control" @bind-Value="Edate" />
                             </span>
-                        </div>
-                        <div class="form-group m-3">
-                            <button type="submit" class="text-white rembtn" style="margin-right: 15px">Save dates</button>
-                            <button type="button" class="text-white remnot" @onclick="Close">NO</button>
+                        </div><br />
+                        <div>
+                            <button type="submit" class="text-white rembtn" style="margin-right: 15px">@xtoa.TxtButton[6]</button> @* Save *@
+                            <button type="button" class="text-white remnot" @onclick="Close">@xtoa.TxtButton[0]</button> @* NO *@
                         </div>
                     </EditForm>
                 </div>
@@ -76,7 +77,7 @@
             }
         }
 
-        HeaderText = "Edit dates for this activity...";
+        HeaderText = xtoa.TxtHead[10];
         showClass = "d-block";
         StateHasChanged();
     }
@@ -113,12 +114,12 @@
         try
         {
             await xClient.PutAsync<ActivityDto>(Auxx.IntId, lact, "api/Activity");
-            xnav.SetDone("The dates were saved.");
+            xnav.SetDone(xtoa.TxtDone[29]);
             xnav.SetReset('d');
         }
         catch
         {
-            xnav.SetError("An error occurred while saving to activity.");
+            xnav.SetError(xtoa.TxtError[16]);
             xnav.SetReset('e');
         }
         Auxx.Flag = true;

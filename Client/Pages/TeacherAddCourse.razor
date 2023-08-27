@@ -6,6 +6,8 @@
 @inject NavigationManager Navigation
 @inject ILogger<TeacherAddCourse> Logger
 @inject IXDtoClient xClient
+@inject XLangTeacher xtea
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Björn Lindqvist*@
@@ -15,38 +17,42 @@
 
 <AuthorizeView Roles="Teacher">
     <Authorized>
-    <h3>Add a course with modules and activities...</h3>
+    <h3>@xtea.TxtText[8]</h3>
     <br />
 
     <section class="@classCourse">
         <div style="display: flex; width: 80%">
-            <div style="width: 50%"><h5>Add course:</h5></div>
+            <div style="width: 50%"><h5>@xtea.TxtText[9]</h5></div>
             <div style="margin: 0 0 0 auto"><h6>@stepCourse</h6></div>
         </div>
         <EditForm EditContext="courseContext" Context="courselmslexnet" OnValidSubmit="HandleSubmitCourse">
             <DataAnnotationsValidator />
             <ValidationSummary />
             <div class="form-group m-3">
-                <label for="Name">Name</label>
+                <label for="Name">@xtea.TxtText[13]</label>
                 <InputText id="Name" class="form-control" @bind-Value="course.Name" placeholder="Enter name" />
             </div>
             <div class="form-group m-3">
-                <label for="Description">Description</label>
+                <label for="Description">@xtea.TxtText[14]</label>
                 <InputTextArea id="Description" class="form-control" @bind-Value="course.Description" placeholder="Enter description" />
             </div>
             <div class="form-group m-3">
-                <label for="Startdate">Start date</label>
+                <label for="Startdate">@xtea.TxtText[15]</label>
                 <InputDate id="Startdate" class="form-control" @bind-Value="course.StartDate" />
             </div>
             <div class="form-group m-3">
-                <label for="Enddate">End date</label>
+                <label for="Enddate">@xtea.TxtText[16]</label>
                 <InputDate id="Enddate" class="form-control" @bind-Value="course.EndDate" />
             </div>
             <div class="form-group m-3">
-                <button type="button" class="@classCouRegBtn m-1" @onclick="RegretRefresh" title="Avoid add course">Regret</button>
-                <button type="submit" class="@classCouSubBtn m-1" title="Save only this course">Save</button>
-                <button type="button" class="@classCouBtn m-1" @onclick="AddModule" title="To step 2: Add module">Add module</button>
-                <button type="button" class="@classCouBtn m-1" @onclick="AddActivityType" title="Add or edit activity types">Add / edit activity types</button>
+                <button type="button" class="@classCouRegBtn m-1" @onclick="RegretRefresh"
+                    title=@xtea.TxtTitle[7]>@xtea.TxtButton[0]</button> @* Regret *@
+                <button type="submit" class="@classCouSubBtn m-1"
+                    title=@xtea.TxtTitle[8]>@xtea.TxtButton[2]</button> @* Save *@
+                <button type="button" class="@classCouBtn m-1" @onclick="AddModule"
+                    title=@xtea.TxtTitle[9]>@xtea.TxtButton[8]</button> @* Add module *@
+                <button type="button" class="@classCouBtn m-1" @onclick="AddActivityType"
+                    title=@xtea.TxtTitle[10]>@xtea.TxtButton[11]</button> @* Add / edit activity types *@
             </div>
         </EditForm>
     </section>
@@ -56,12 +62,12 @@
         repeatActivityType = false;
 
         <section class="@classActtyp">
-            <h5>Add or edit activity types:</h5>
+            <h5>@xtea.TxtText[23]</h5>
             <EditForm EditContext="activitytypeContext" Context="activitytypelmslexnet" OnValidSubmit="HandleSubmitActivityType">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 <div class="form-group m-3">
-                    <label for="Typename">Type</label>
+                    <label for="Typename">@xtea.TxtText[24]</label>
                     <InputSelect class="form-control" id="Typename" @bind-Value="activityType.Name">
                         @foreach (var acttype in activitytypelist)
                         {
@@ -71,13 +77,16 @@
                     @{repeatActivityType = true;}
                 </div>
                 <div class="form-group m-3">
-                    <label for="New">New</label>
+                    <label for="New">@xtea.TxtText[25]</label>
                     <InputText id="New" class="form-control" @bind-Value="newActType" placeholder="Enter new name" />
                 </div>
                 <div class="form-group m-3">
-                    <button type="button" class="@classCouRegBtn m-1" @onclick="FinishActivityType" title="Finish add or delete activity type">Finish</button>
-                    <button type="submit" class="@classCouSubBtn m-1" title="Add this new activity type">Save new type</button>
-                    <button type="button" class="@classCouBtn m-1" @onclick="EditActivityType" title="Edit this activity type">Edit type</button>
+                    <button type="button" class="@classCouRegBtn m-1" @onclick="FinishActivityType"
+                        title=@xtea.TxtTitle[14]>@xtea.TxtButton[1]</button> @* Finish *@
+                    <button type="submit" class="@classCouSubBtn m-1"
+                        title=@xtea.TxtTitle[15]>@xtea.TxtButton[3]</button> @* Save new type *@
+                    <button type="button" class="@classCouBtn m-1" @onclick="EditActivityType"
+                        title=@xtea.TxtTitle[16]>@xtea.TxtButton[12]</button> @* Edit type *@
                 </div>
             </EditForm>
         </section>
@@ -89,31 +98,31 @@
 
         <section class="@classModule">
             <div style="display: flex; width: 80%">
-                <div style="width: 50%"><h5>Add module:</h5></div>
+                <div style="width: 50%"><h5>@xtea.TxtText[26]</h5></div>
                 <div style="margin: 0 0 0 auto"><h6>@stepModule</h6></div>
             </div>
             <EditForm EditContext="moduleContext" Context="modulelmslexnet" OnValidSubmit="HandleSubmitModule">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 <div class="form-group m-3">
-                    <label for="Name">Name</label>
+                    <label for="Name">@xtea.TxtText[13]</label>
                     <InputText id="Name" class="form-control" @bind-Value="module.Name" placeholder="Enter name" />
                 </div>
                 <div class="form-group m-3">
-                    <label for="Description">Description</label>
+                    <label for="Description">@xtea.TxtText[14]</label>
                     <InputTextArea id="Description" class="form-control" @bind-Value="module.Description" placeholder="Enter description" />
                 </div>
                 <div class="form-group m-3">
-                    <label for="Startdate">Start date</label>
+                    <label for="Startdate">@xtea.TxtText[15]</label>
                     <InputDate id="Startdate" class="form-control" @bind-Value="module.StartDate" />
                 </div>
                 <div class="form-group m-3">
-                    <label for="Enddate">End date</label>
+                    <label for="Enddate">@xtea.TxtText[16]</label>
                     <InputDate id="Enddate" class="form-control" @bind-Value="module.EndDate" />
                 </div>
                 <div class="form-group m-md-3">
                     <InputCheckbox id="switch" class="control-label checkbox" type="checkbox" @bind-Value="DateControl" />
-                        <label class="control-label toggle" for="switch" title="To avoid entangled dates"></label>
+                        <label class="control-label toggle" for="switch" title=@xtea.TxtTitle[17]></label>
                     @if (DateControl)
                     {
                         <span style="position: relative; top: -3px"> Complex date controll ON</span>
@@ -124,9 +133,12 @@
                     }
                 </div>
                 <div class="form-group m-3">
-                    <button type="button" class="@classModRegBtn m-1" @onclick="RegretRefresh" title="Avoid add course with modules">Regret</button>
-                    <button type="submit" class="@classModBtn m-1" title="To step 3: Add activity">Add activity</button>
-                    <button type="button" class="@classModSubNotBtn m-1" @onclick="SaveButNotMod" title="Save course but not this module">Save but not this module</button>
+                    <button type="button" class="@classModRegBtn m-1" @onclick="RegretRefresh"
+                        title=@xtea.TxtTitle[18]>@xtea.TxtButton[0]</button> @* Regret *@
+                    <button type="submit" class="@classModBtn m-1"
+                        title=@xtea.TxtTitle[19]>@xtea.TxtButton[9]</button> @* Add activity *@
+                    <button type="button" class="@classModSubNotBtn m-1" @onclick="SaveButNotMod"
+                        title=@xtea.TxtTitle[20]>@xtea.TxtButton[6]</button> @* Save but not this module *@
                 </div>
             </EditForm>
         </section>
@@ -139,18 +151,18 @@
 
             <section class="@classActivi">
                 <div style="display: flex; width: 80%">
-                    <div style="width: 50%"><h5>Add activity:</h5></div>
+                    <div style="width: 50%"><h5>@xtea.TxtText[27]</h5></div>
                     <div style="margin: 0 0 0 auto"><h6>@stepActivi</h6></div>
                 </div>
                 <EditForm EditContext="activityContext" Context="activitylmslexnet" OnValidSubmit="HandleSubmitActivity">
                     <DataAnnotationsValidator />
                     <ValidationSummary />
                     <div class="form-group m-3">
-                        <label for="Name">Name</label>
+                        <label for="Name">@xtea.TxtText[13]</label>
                         <InputText id="Name" class="form-control" @bind-Value="activity.Name" placeholder="Enter name" />
                     </div>
                     <div class="form-group m-3">
-                        <label for="Typename">Type</label>
+                        <label for="Typename">@xtea.TxtText[24]</label>
                         <InputSelect class="form-control" id="Typename" @bind-Value="activityType.Name">
                             @foreach (var acttype in activitytypelist)
                             {
@@ -159,39 +171,44 @@
                         </InputSelect>
                     </div>
                     <div class="form-group m-3">
-                        <label for="Description">Description</label>
+                        <label for="Description">@xtea.TxtText[14]</label>
                         <InputTextArea id="Description" class="form-control" @bind-Value="activity.Description" placeholder="Enter description" />
                     </div>
                     <div class="form-group m-3">
-                        <label for="Startdate">Start date</label>
+                        <label for="Startdate">@xtea.TxtText[15]</label>
                         <InputDate id="Startdate" class="form-control" @bind-Value="activity.StartDate" />
                     </div>
                     <div class="form-group m-3">
-                        <label for="Enddate">End date</label>
+                        <label for="Enddate">@xtea.TxtText[16]</label>
                         <InputDate id="Enddate" class="form-control" @bind-Value="activity.EndDate" />
                     </div>
                     <div class="form-group m-3">
-                        <button type="button" class="@classActRegBtn m-1" @onclick="RegretRefresh" title="Avoid add course with modules and activities">Regret</button>
-                        <button type="button" class="@classActBtn m-1" @onclick="AddMoreActivities" title="Add more activities">Add more activities</button>
-                        <button type="submit" class="@classActSubBtn m-1" title="Save and done">Save and done</button>
-                        <button type="button" class="@classActBtn m-1" @onclick="AddMoreModules" title="Save this and add more modules">Save and add more modules</button>
-                        <button type="button" class="@classActSubNotBtn m-1" @onclick="SaveButNotAct" title="Save earlier but not this activity">Save but not this</button>
+                        <button type="button" class="@classActRegBtn m-1" @onclick="RegretRefresh"
+                            title=@xtea.TxtTitle[24]>@xtea.TxtButton[0]</button> @* Regret *@
+                        <button type="button" class="@classActBtn m-1" @onclick="AddMoreActivities"
+                            title=@xtea.TxtTitle[25]>@xtea.TxtButton[10]</button> @* Add more activities *@
+                        <button type="submit" class="@classActSubBtn m-1"
+                            title=@xtea.TxtTitle[26]>@xtea.TxtButton[4]</button> @* Save and done *@
+                        <button type="button" class="@classActBtn m-1" @onclick="AddMoreModules"
+                            title=@xtea.TxtTitle[27]>@xtea.TxtButton[5]</button> @* Save and add more modules *@
+                        <button type="button" class="@classActSubNotBtn m-1" @onclick="SaveButNotAct"
+                            title=@xtea.TxtTitle[28]>@xtea.TxtButton[7]</button> @* Save but not this *@
                     </div>
                 </EditForm>
             </section>
 
             <section class="@classTable"> @*Hjälptabeller vid inmatning av moduler och aktiviteter*@ 
                 <div style="display: flex">
-                    <h4 style="width: 75%">COURSE: @course.Name</h4>
+                    <h4 style="width: 75%">@xtea.TxtText[28] @course.Name</h4>
                     <h5 style="margin: 0 0 0 auto">@xnav.StartEndDate(course.StartDate, course.EndDate)</h5>
                 </div>
-                <h6>Modules...</h6>
+                <h6>@xtea.TxtText[29]</h6>
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Module name</th>
-                            <th>Module description</th>
-                            <th>Module date</th>
+                            <th>@xtea.TxtText[33]</th>
+                            <th>@xtea.TxtText[34]</th>
+                            <th>@xtea.TxtText[35]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -206,14 +223,14 @@
                     }
                 </table>
                 <br />
-                <h6>Activities for this module</h6>
+                <h6>@xtea.TxtText[36]</h6>
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Activity name</th>
-                            <th>Activity type</th>
-                            <th>Activity description</th>
-                            <th>Activity date</th>
+                            <th>@xtea.TxtText[37]</th>
+                            <th>@xtea.TxtText[38]</th>
+                            <th>@xtea.TxtText[39]</th>
+                            <th>@xtea.TxtText[40]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -273,9 +290,9 @@
     private int CourseID = 0; // Kursens Id.
     private int CountModules = 0; // Räknar antalet moduler.
 
-    private string stepCourse = "Step 1 of 3";
-    private string stepModule = "Step 2 of 3";
-    private string stepActivi = "Step 3 of 3";
+    private string stepCourse = string.Empty;
+    private string stepModule = string.Empty;
+    private string stepActivi = string.Empty;
     private string newActType = string.Empty;
 
     // Klassvariabler för att visa/inte visa formulär.
@@ -299,13 +316,28 @@
 
     protected override async Task OnInitializedAsync()
     {
-        xnav.SetJohnDoe(false);
-        xnav.SetReset('a');
-
         courseContext = new EditContext(course); // Formulärkontext.
         moduleContext = new EditContext(module);
         activityContext = new EditContext(activity);
         activitytypeContext = new EditContext(activityType);
+
+        stepCourse = xtea.TxtText[17];
+        stepModule = xtea.TxtText[18];
+        stepActivi = xtea.TxtText[19];
+
+        if (xtea.RenderPage != "STILL_HERE")
+        {
+            xnav.SetJohnDoe(false);
+            xnav.MainRole = 2;
+            xnav.ClassSettings = "d-block"; // Settings.
+            if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xtea.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xtea.SetLanguage_SV(); xtoa.SetLanguage_SV(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "DE") { xtea.SetLanguage_DE(); xtoa.SetLanguage_DE(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") { xtea.SetLanguage_FR(); xtoa.SetLanguage_FR(); }
+            else { xtea.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+        }
+
+        xnav.SetReset('a');
 
         var actType = await xClient.GetAsync<IEnumerable<ActivityTypeDto>>("api/Acttype");
 
@@ -316,6 +348,9 @@
         var firstacttype = new ActivityTypeDto();
         firstacttype = activitytypelist.ElementAt(0);
         activityType.Name = firstacttype.Name;
+
+        xtea.OnChange += StateHasChanged;
+        xtoa.OnChange += StateHasChanged;
     }
 
     private async Task HandleSubmitCourse()
@@ -329,7 +364,7 @@
         }
         else
         {
-            xnav.SetError("Course date mismatch (start date is greater than end date).");
+            xnav.SetError(xtea.TxtError[2]);
             xnav.SetReset('e');
         }
     }
@@ -437,7 +472,7 @@
 
     private async Task FinishActivityType()
     {
-        xnav.SetDone("Finish add or edit activity types.");
+        xnav.SetDone(xtea.TxtDone[3]);
         xnav.SetReset('d');
         await xnav.Intermission(2000, false);
         Navigation.NavigateTo("/teacheraddcourse", true);
@@ -445,7 +480,7 @@
 
     private async Task SaveButNotMod() // Om man ångrar en modul.
     {
-        xnav.SetDone("Your course is created.");
+        xnav.SetDone(xtea.TxtDone[4]);
         xnav.SetReset('d');
         await xnav.Intermission(3000, false);
         Navigation.NavigateTo("/teacherallcourses", true);
@@ -465,13 +500,13 @@
         else
         {
             await xnav.Intermission(100, true);
-            xnav.SetError("Course date mismatch (start date is greater than end date).");
+            xnav.SetError(xtea.TxtError[2]);
             if (course.Name == "")
-                xnav.SetError("The Name field is required.");
+                xnav.SetError(xtea.TxtError[3]);
             if (course.Description == "")
-                xnav.SetError("The Description field is required.");
+                xnav.SetError(xtea.TxtError[4]);
             if (course.Name == "" && course.Description == "")
-                xnav.SetError("The Name and Description fields are required.");
+                xnav.SetError(xtea.TxtError[5]);
             xnav.SetReset('e');
         }
     }
@@ -527,7 +562,7 @@
 
     private async Task RegretRefresh()
     {
-        xnav.SetDone("The course was NOT edited or created.");
+        xnav.SetDone(xtea.TxtDone[5]);
         xnav.SetReset('d');
         await xnav.Intermission(2000, false);
         Navigation.NavigateTo("/teacheraddcourse", true);
@@ -535,7 +570,7 @@
 
     private async Task CreateAndRefresh()
     {
-        xnav.SetDone("Your course is created.");
+        xnav.SetDone(xtea.TxtDone[4]);
         xnav.SetReset('d');
         await xnav.Intermission(3000, false);
         Navigation.NavigateTo("/teacherallcourses", true);
@@ -656,7 +691,7 @@
             string dates = "";
             int InInt = 0;
 
-            xnav.SetDone("Perform a date check...");
+            xnav.SetDone(xtea.TxtDateC[1]);
             xnav.SetReset('d');
             await xnav.Intermission(1, false);
 
@@ -731,7 +766,7 @@
             string dates = "";
             int InInt = 0;
 
-            xnav.SetDone("Perform a date check...");
+            xnav.SetDone(xtea.TxtDateC[1]);
             xnav.SetReset('d');
             await xnav.Intermission(1, false);
 
@@ -793,10 +828,10 @@
 
         if (c1 || c2 || c3 || c4)
         {
-            xnav.SetError("Date mismatch (start date is greater than end date).");
-            if (c2) xnav.SetError("Date mismatch (date is outside the course or the module date).");
-            if (c3) xnav.SetError("Date mismatch (entangled dates).");
-            if (c4) xnav.SetError("Cannot calculate (overloading).");
+            xnav.SetError(xtea.TxtDateC[2]);
+            if (c2) xnav.SetError(xtea.TxtDateC[3]);
+            if (c3) xnav.SetError(xtea.TxtDateC[4]);
+            if (c4) xnav.SetError(xtea.TxtDateC[5]);
             xnav.SetReset('e');
             result = false;
         }
