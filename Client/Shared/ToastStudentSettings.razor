@@ -16,6 +16,10 @@
 
         <div class="toast-body">
             <EditForm Model="@xClient" Context="studentsettingslmslexnet" OnSubmit="HandleSubmitCopy">
+                <div class="form-group m-3">
+                    <InputCheckbox id="Notes" class="form-check-inline" @bind-Value="IsNote" />
+                    <label for="Notes">Show notepad</label>
+                </div>
                 <fieldset class="form-group border">
                     <legend class="w-auto" style="font-size: 0.9rem; font-style: italic;
                         position: relative; top: -11px; left: 60px; background-color: white">
@@ -55,6 +59,7 @@
     private string HeaderText = string.Empty;
     private string showClass = "d-none";
     private int LangSelect; // Måste vara int!
+    private bool IsNote;
 
     private int Win_Height;
 
@@ -66,6 +71,9 @@
         Win_Height = dim.Height;
         xnav.Pos_H = (int)Math.Round(dim.Width * 0.08); // 08%
         xnav.Pos_V = (int)Math.Round(Win_Height * 0.2); // 20%
+
+        if (await xClient.GetStorage<string>("LMS_Note") == "OFF") IsNote = false;
+        else IsNote = true;
 
         if (await xClient.GetStorage<string>("LMS_Lang") == "EN") LangSelect = 0;
         else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") LangSelect = 1;
@@ -87,6 +95,17 @@
 
     private async Task HandleSubmitCopy()
     {
+        try
+        {
+            if (IsNote) await xClient.SetStorage<string>("LMS_Note", "ON");
+            else await xClient.SetStorage<string>("LMS_Note", "OFF");
+        }
+        catch
+        {
+            xnav.SetError("An error occurred while saving to local storage.");
+            xnav.SetReset('e');
+        }
+
         try
         {
             if (LangSelect == 0)

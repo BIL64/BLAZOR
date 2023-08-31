@@ -23,6 +23,10 @@
                     <InputCheckbox id="Register" class="form-check-inline" @bind-Value="IsReg" />
                     <label for="Register">Allow visitors to register</label>
                 </div>
+                <div class="form-group m-3">
+                    <InputCheckbox id="Notes" class="form-check-inline" @bind-Value="IsNote" />
+                    <label for="Notes">Show notepad</label>
+                </div>
                 <fieldset class="form-group border">
                     <legend class="w-auto" style="font-size: 0.9rem; font-style: italic;
                         position: relative; top: -11px; left: 60px; background-color: white">
@@ -63,6 +67,7 @@
     private string showClass = "d-none";
     private int LangSelect; // Måste vara int!
     private bool IsReg;
+    private bool IsNote;
 
     private int Win_Height;
 
@@ -75,13 +80,17 @@
         xnav.Pos_H = (int)Math.Round(dim.Width * 0.08); // 08%
         xnav.Pos_V = (int)Math.Round(Win_Height * 0.2); // 20%
 
+        if (xnav.ClassRegStatus == "regon") IsReg = true; else IsReg = false;
+
+        if (await xClient.GetStorage<string>("LMS_Note") == "OFF") IsNote = false;
+        else IsNote = true;
+
         if (await xClient.GetStorage<string>("LMS_Lang") == "EN") LangSelect = 0;
         else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") LangSelect = 1;
         else if (await xClient.GetStorage<string>("LMS_Lang") == "DE") LangSelect = 2;
         else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") LangSelect = 3;
         else LangSelect = 0;
 
-        if (xnav.ClassRegStatus == "regon") IsReg = true; else IsReg = false;
         HeaderText = "Options...";
         showClass = "d-block";
         StateHasChanged();
@@ -132,6 +141,17 @@
                 xnav.SetReset('e');
             }
             xnav.SetReg(false);
+        }
+
+        try
+        {
+            if (IsNote) await xClient.SetStorage<string>("LMS_Note", "ON");
+            else await xClient.SetStorage<string>("LMS_Note", "OFF");
+        }
+        catch
+        {
+            xnav.SetError("An error occurred while saving to local storage.");
+            xnav.SetReset('e');
         }
 
         try

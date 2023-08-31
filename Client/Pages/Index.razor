@@ -41,18 +41,19 @@
     <EditForm Context="notebooklmslexnet" Model="xClient" OnSubmit="SaveLS">
         <div class="row form-group">
             <div class="col-8 m-lg-auto">
-                <img src=@xstu.TxtText[22] style="width: 141px; height: 30px" alt="Notes" />
+                <img src=@xstu.TxtText[22] style="width: 162px; height: 30px" alt="Notes" />
             </div>
         </div>
         <div class="row form-group">
             <div style="width: 50px">
                 @for (int i = 0; i < 20; i++)
                 {
-                    <img src="images/spiral.jpg" style="width: 50px; height: 24px" alt="Spiral"/>
+                    <img src="images/spiral.jpg" style="width: 50px; height: 25px" alt="Spiral"/>
                 }
             </div>
             <div class="col-8">
-                <InputTextArea class="form-control" style="font-size: 1.2rem; border-left: none; border-radius: 0" @bind-Value="MyText" rows="17" />
+                <InputTextArea class="form-control"
+                    style="font-size: 1.2rem; border-left: none; border-radius: 0; background: url('images/NotesBG.jpg')" @bind-Value="MyText" rows="17" />
             </div>
         </div>
         <div class="row form-group" style="font-size: 0.9rem">
@@ -91,7 +92,13 @@
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         var user = authstate.User;
         var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
-        if (name is not null) classNotePad = "container";
+
+        if (name is not null)
+        {
+            if (await xClient.GetStorage<string>("LMS_Note") == "ON") classNotePad = "container";
+            else if (await xClient.GetStorage<string>("LMS_Note") == "OFF") classNotePad = "d-none";
+            else classNotePad = "container";
+        }
 
         if (user.IsInRole("Student") || user.IsInRole("Teacher")) xnav.ClassSettings = "d-block"; // Visar endast settings för registrerade.
 
@@ -141,7 +148,7 @@
             }
         }
 
-        if (await xClient.GetStorage<string>("LMS_NR") is not null)
+        if (await xClient.GetStorage<string>("LMS_NR") is not null) // Noteringshäftet.
         {
             Pagenr = byte.Parse(await xClient.GetStorage<string>("LMS_NR"));
 
