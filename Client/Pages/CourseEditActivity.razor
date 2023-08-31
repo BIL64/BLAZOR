@@ -9,7 +9,7 @@
 @inject IXDtoClient xClient
 @inject XLangTeacher xtea
 @inject XLangEdit xedi
-@inject XLangToastEdit xted
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Av Björn Lindqvist*@
@@ -257,11 +257,11 @@
         {
             xnav.MainRole = 2;
             xnav.ClassSettings = "d-block"; // Settings.
-            if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xtea.SetMenu_EN(); xedi.SetLanguage_EN(); xted.SetLanguage_EN(); }
-            else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xtea.SetMenu_EN(); xedi.SetLanguage_SV(); xted.SetLanguage_SV(); }
-            else if (await xClient.GetStorage<string>("LMS_Lang") == "DE") { xtea.SetMenu_DE(); xedi.SetLanguage_DE(); xted.SetLanguage_DE(); }
-            else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") { xtea.SetMenu_FR(); xedi.SetLanguage_FR(); xted.SetLanguage_FR(); }
-            else { xtea.SetMenu_EN(); xedi.SetLanguage_EN(); xted.SetLanguage_EN(); }
+            if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xtea.SetMenu_EN(); xedi.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xtea.SetMenu_EN(); xedi.SetLanguage_SV(); xtoa.SetLanguage_SV(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "DE") { xtea.SetMenu_DE(); xedi.SetLanguage_DE(); xtoa.SetLanguage_DE(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") { xtea.SetMenu_FR(); xedi.SetLanguage_FR(); xtoa.SetLanguage_FR(); }
+            else { xtea.SetMenu_EN(); xedi.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
         }
 
         if (!Auxx.Flag) xnav.SetReset('a');
@@ -384,7 +384,7 @@
         }
 
         xedi.OnChange += StateHasChanged;
-        xted.OnChange += StateHasChanged;
+        xtoa.OnChange += StateHasChanged;
     }
 
     private async Task RegretRefresh()

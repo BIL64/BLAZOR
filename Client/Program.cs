@@ -32,7 +32,6 @@ namespace LexiconLMSBlazor.Client
             builder.Services.AddScoped<XLangStudent>();
             builder.Services.AddScoped<XLangTeacher>();
             builder.Services.AddScoped<XLangToast>();
-            builder.Services.AddScoped<XLangToastEdit>();
             builder.Services.AddScoped<XNavMenu>();
             builder.Services.AddScoped<XPagination>();
 

@@ -79,15 +79,15 @@
         <ToastDocumentAvatar @ref="addavatarRef" /> @*Avatar-fönster*@
 
         <EditForm Context="searchlmslexnet" Model="@courses" OnSubmit="OnInitializedAsync">
-            <span class="nav m-lg-auto input-group">
+            <div class="input-group">
                 <InputText class="form-control" @bind-Value="searchString" placeholder="Course name" />
-                <span class="nav m-lg-auto input-group-append" style="z-index: 0">
-                    <button type="submit" class="btn m-lg-auto btn-outline-dark">Search</button>
-                </span>
-                <span class="nav m-lg-auto input-group-append" style="z-index: 0">
-                    <button type="button" class="btn m-lg-auto btn-outline-dark" @onclick="ReverseOrder">@textBtn</button>
-                </span>
-            </span>
+                <div style="z-index: 0">
+                    <button type="submit" class="btn btn-outline-dark">Search</button>
+                </div>
+                <div style="z-index: 0">
+                    <button type="button" class="btn btn-outline-dark" @onclick="ReverseOrder">@textBtn</button>
+                </div>
+            </div>
         </EditForm><br />
 
         @do

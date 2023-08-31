@@ -10,15 +10,15 @@
 <PageTitle>Index</PageTitle>
 
 <nav style="font-size: 1.1rem; padding-top: 50px; border-radius: 5px; color: white; background-color: darkturquoise">
-    <span style="padding-left: 1%">Welcome to </span>
+    <span style="padding-left: 1%">@xstu.TxtText[21]</span>
     <span style="font-weight: bold; background-color: red">Lexicon</span> LMS
 </nav>
 
 <section class="text-lg-end text-info">
-    &copy August 2023 Björn Lindqvist - Version 1.11
+    &copy August 2023 Björn Lindqvist - Version 1.12
 </section>
 
-<footer class="mt-4 p-4"> @*Hjälp vid uppstart när man har populerat Min eller Max*@
+<section class="mt-4 p-4"> @*Hjälp vid uppstart när man har populerat Min eller Max*@
     @*Om det bara finns en enda lärare och med namnet John Doe så visas denna info om lösenord*@
     @foreach (var item in johndoe)
     {
@@ -34,7 +34,37 @@
             <div>PassStudent@Word00!</div>
         }
     }
-</footer>
+</section>
+
+@*Noteringshäfte eller komihåg-block - när man önskar göra anteckningar*@
+<article class="@classNotePad">
+    <EditForm Context="notebooklmslexnet" Model="xClient" OnSubmit="SaveLS">
+        <div class="row form-group">
+            <div class="col-8 m-lg-auto">
+                <img src=@xstu.TxtText[22] style="width: 141px; height: 30px" alt="Notes" />
+            </div>
+        </div>
+        <div class="row form-group">
+            <div style="width: 50px">
+                @for (int i = 0; i < 20; i++)
+                {
+                    <img src="images/spiral.jpg" style="width: 50px; height: 24px" alt="Spiral"/>
+                }
+            </div>
+            <div class="col-8">
+                <InputTextArea class="form-control" style="font-size: 1.2rem; border-left: none; border-radius: 0" @bind-Value="MyText" rows="17" />
+            </div>
+        </div>
+        <div class="row form-group" style="font-size: 0.9rem">
+            <div class="col-8 m-lg-auto">
+                <button type="button" class="oi oi-caret-left btn btn-light px-2 mx-2" @onclick="_ => Buttons(false)"></button>
+                <span class="px-2 mx-2">@xstu.TxtText[23] @Pagenr @xstu.TxtText[24]</span>
+                <button type="button" class="oi oi-caret-right btn btn-light px-2 mx-2" @onclick="_ => Buttons(true)"></button>
+                <button type="submit" class="btn btn-light px-2 m-2" style="font-size: 0.9rem">@xstu.TxtText[25]</button>
+            </div>
+        </div>
+    </EditForm>
+</article>
 
 @code {
 
@@ -44,6 +74,16 @@
 
     private List<AppUserDto> johndoe = new(); // De med lärarrollen.
 
+    private string classNotePad = "d-none";
+
+    private string Page1 = string.Empty;
+    private string Page2 = string.Empty;
+    private string Page3 = string.Empty;
+
+    private string MyText = string.Empty;
+
+    private byte Pagenr;
+
     protected override async Task OnInitializedAsync()
     {
         xnav.SetJohnDoe(false);
@@ -51,6 +91,7 @@
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         var user = authstate.User;
         var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
+        if (name is not null) classNotePad = "container";
 
         if (user.IsInRole("Student") || user.IsInRole("Teacher")) xnav.ClassSettings = "d-block"; // Visar endast settings för registrerade.
 
@@ -74,15 +115,21 @@
         {
             if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xstu.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
             else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xstu.SetLanguage_SV(); xtoa.SetLanguage_SV(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "DE") { xstu.SetLanguage_DE(); xtoa.SetLanguage_DE(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") { xstu.SetLanguage_FR(); xtoa.SetLanguage_FR(); }
             else { xstu.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
         }
 
         if (loggeduser.UserRole == 2 && xtea.RenderPage != "STILL_HERE")
         {
-            if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xtea.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
-            else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xtea.SetLanguage_SV(); xtoa.SetLanguage_SV(); }
-            else { xtea.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+            if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xstu.SetLanguage_EN(); xtea.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xstu.SetLanguage_SV(); xtea.SetLanguage_SV(); xtoa.SetLanguage_SV(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "DE") { xstu.SetLanguage_DE(); xtea.SetLanguage_DE(); xtoa.SetLanguage_DE(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") { xstu.SetLanguage_FR(); xtea.SetLanguage_FR(); xtoa.SetLanguage_FR(); }
+            else { xstu.SetLanguage_EN(); xtea.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
         }
+
+        if (loggeduser.UserRole != 1 && loggeduser.UserRole != 2) xstu.TxtText[21] = "Welcome to";
 
         xnav.SetLogAvatar("d-none", "");
 
@@ -94,6 +141,52 @@
             }
         }
 
+        if (await xClient.GetStorage<string>("LMS_NR") is not null)
+        {
+            Pagenr = byte.Parse(await xClient.GetStorage<string>("LMS_NR"));
+
+            Page1 = await xClient.GetStorage<string>("LMS_P1");
+            Page2 = await xClient.GetStorage<string>("LMS_P2");
+            Page3 = await xClient.GetStorage<string>("LMS_P3");
+
+            if (Pagenr == 1) MyText = Page1;
+            else if (Pagenr == 2) MyText = Page2;
+            else if (Pagenr == 3) MyText = Page3;
+            else Pagenr = 1;
+        }
+        else Pagenr = 1;
+
         xnav.SetReset('a');
+
+        xstu.OnChange += StateHasChanged;
+        xtea.OnChange += StateHasChanged;
+        xtoa.OnChange += StateHasChanged;
+    }
+
+    private async Task SaveLS() // Sparar anteckningar i noteringshäftet i Local Storage.
+    {
+        if (Pagenr == 1) Page1 = MyText;
+        if (Pagenr == 2) Page2 = MyText;
+        if (Pagenr == 3) Page3 = MyText;
+
+        await xClient.SetStorage<string>("LMS_P1", Page1);
+        await xClient.SetStorage<string>("LMS_P2", Page2);
+        await xClient.SetStorage<string>("LMS_P3", Page3);
+        await xClient.SetStorage<string>("LMS_NR", Pagenr.ToString());
+    }
+
+    private async Task Buttons(bool right) // Bläddrar blad i noteringshäftet. Max 3 blad.
+    {
+        if (right) Pagenr++;
+        else Pagenr--;
+
+        if (Pagenr > 3) Pagenr = 3;
+        if (Pagenr < 1) Pagenr = 1;
+
+        if (Pagenr == 1) MyText = Page1;
+        if (Pagenr == 2) MyText = Page2;
+        if (Pagenr == 3) MyText = Page3;
+
+        await xClient.SetStorage<string>("LMS_NR", Pagenr.ToString());
     }
 }

@@ -6,7 +6,7 @@
 
     public string[] TxtTitle { get; private set; } = new string[6];
 
-    public string[] TxtText { get; private set; } = new string[21];
+    public string[] TxtText { get; private set; } = new string[26];
 
     public event Action? OnChange;
 
@@ -176,6 +176,21 @@
         i++;
         // 20
         TxtText[i] = "No course could be find...";
+        i++;
+        // 21
+        TxtText[i] = "Welcome to ";
+        i++;
+        // 22
+        TxtText[i] = "images/Notes_EN.jpg";
+        i++;
+        // 23
+        TxtText[i] = "Sheet";
+        i++;
+        // 24
+        TxtText[i] = "of 3";
+        i++;
+        // 25
+        TxtText[i] = "Save sheet";
     }
 
     private void Text_SV()
@@ -244,6 +259,21 @@
         i++;
         // 20
         TxtText[i] = "Ingen kurs kan hittas...";
+        i++;
+        // 21
+        TxtText[i] = "Välkommen till ";
+        i++;
+        // 22
+        TxtText[i] = "images/Notes_SV.jpg";
+        i++;
+        // 23
+        TxtText[i] = "Blad";
+        i++;
+        // 24
+        TxtText[i] = "av 3";
+        i++;
+        // 25
+        TxtText[i] = "Spara blad";
     }
 
     private void Text_DE()

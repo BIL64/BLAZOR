@@ -24,27 +24,27 @@
 else
 {
     <EditForm Context="searchlmslexnet" Model="@students" OnSubmit="OnInitializedAsync">
-        <span class="nav m-lg-auto input-group">
+        <div class="input-group">
             <InputText class="form-control" @bind-Value="searchString" placeholder="First name, last name or course" />
-            <span class="nav m-lg-auto input-group-append">
+            <div>
                 <InputSelect class="form-select" aria-label="Default select example" @bind-Value="searchType">
                     <option value="1">Name</option>
                     <option value="2">Course</option>
                 </InputSelect>
-            </span>
-            <span class="nav m-lg-auto input-group-append" style="z-index: 0">
-                <button type="submit" class="btn m-lg-auto btn-outline-dark">Search</button>
-            </span>
-            <span class="nav m-lg-auto input-group-append" style="z-index: 0">
-                <button type="button" @onclick="SortName" class="btn m-lg-auto btn-outline-dark">Sort names</button>
-            </span>
-            <span class="nav m-lg-auto input-group-append" style="z-index: 0">
-                <button type="button" @onclick="SortCourse" class="btn m-lg-auto btn-outline-dark">Sort courses</button>
-            </span>
-            <span class="nav m-lg-auto input-group-append" style="z-index: 0">
-                <button type="button" @onclick="PagControl" class="btn m-lg-auto btn-outline-dark" title=@xtea.TxtTitle[29]>P</button>
-            </span>
-        </span>
+            </div>
+            <div style="z-index: 0">
+                <button type="submit" class="btn btn-outline-dark">Search</button>
+            </div>
+            <div style="z-index: 0">
+                <button type="button" @onclick="SortName" class="btn btn-outline-dark">Sort names</button>
+            </div>
+            <div style="z-index: 0">
+                <button type="button" @onclick="SortCourse" class="btn btn-outline-dark">Sort courses</button>
+            </div>
+            <div style="z-index: 0">
+                <button type="button" @onclick="PagControl" class="btn btn-outline-dark" title=@xtea.TxtTitle[29]>P</button>
+            </div>
+        </div>
     </EditForm>
 
     <ToastDeleteMess @ref="messRef" /> @*Delete-fönster*@

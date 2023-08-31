@@ -1,5 +1,5 @@
 ﻿@inject IXDtoClient xClient
-@inject XLangToastEdit xted
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Toast component by Björn Lindqvist*@
@@ -14,17 +14,17 @@
                     <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
                 </div>
                 <div class="toast-body">
-                    <button type="button" class="text-white remnot" @onclick="Proceed">@xted.TxtButton[1]</button> @* YES *@
-                    <button type="button" class="text-white remnot" @onclick="Close">@xted.TxtButton[0]</button> @* NO *@
+                    <button type="button" class="text-white remnot" @onclick="Proceed">@xtoa.TxtButton[5]</button> @* YES *@
+                    <button type="button" class="text-white remnot" @onclick="Close">@xtoa.TxtButton[0]</button> @* NO *@
                 </div>
                 <div class="@classProceed">
                     <EditForm Model="@xClient" Context="deletealllmslexnet" OnSubmit="HandleSubmitDeleteAll">
                         <div class="form-group m-3">
-                            <label for="Date">@xted.TxtText[4]</label>
-                            <InputText id="Date" class="form-control" @bind-Value="Tdate" title=@xted.TxtTitle[3] />
+                            <label for="Date">@xtoa.TxtText[8]</label>
+                            <InputText id="Date" class="form-control" @bind-Value="Tdate" title=@xtoa.TxtTitle[19] />
                         </div>
                         <div class="form-group m-3">
-                            <button type="submit" class="text-white remyes" title=@xted.TxtTitle[2]>@xted.TxtButton[2]</button> @* DELETE NOW *@
+                            <button type="submit" class="text-white remyes" title=@xtoa.TxtTitle[4]>@xtoa.TxtButton[2]</button> @* DELETE NOW *@
                         </div>
                     </EditForm>
                 </div>
@@ -49,7 +49,7 @@
     {
         xnav.SetReset('a');
 
-        HeaderText = xted.TxtText[3];
+        HeaderText = xtoa.TxtHead[3];
         classProceed = "d-none";
         showClass = "d-block";
         StateHasChanged();
@@ -93,20 +93,20 @@
                 HeaderText = string.Empty;
                 showClass = "d-none";
                 StateHasChanged();
-                xnav.SetDone(xted.TxtText[5]);
+                xnav.SetDone(xtoa.TxtDone[8]);
                 xnav.SetReset('d');
                 Auxx.Flag = true;
             }
             else
             {
-                xnav.SetDone(xted.TxtText[6]);
+                xnav.SetDone(xtoa.TxtDone[4]);
                 xnav.SetReset('d');
             }
 
         }
         else
         {
-            xnav.SetError(xted.TxtText[7]);
+            xnav.SetError(xtoa.TxtError[5]);
             xnav.SetReset('e');
         }
     }

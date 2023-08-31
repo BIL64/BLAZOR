@@ -2,7 +2,7 @@
 {
     public string[] TxtButton { get; private set; } = new string[14];
 
-    public string[] TxtTitle { get; private set; } = new string[19];
+    public string[] TxtTitle { get; private set; } = new string[20];
 
     public string[] TxtHead { get; private set; } = new string[32];
 
@@ -156,7 +156,7 @@
         TxtTitle[i] = "Make this teacher a student...";
         i++;
         // 11
-        TxtTitle[i] = "reserve";
+        TxtTitle[i] = "Remove this module and all its activities from the system";
         i++;
         // 12
         TxtTitle[i] = "reserve";
@@ -178,6 +178,9 @@
         i++;
         // 18
         TxtTitle[i] = "To reduce the number of visible buttons (1=none)";
+        i++;
+        // 19
+        TxtTitle[i] = "Today's date";
     }
 
     private void Title_SV()
@@ -218,7 +221,7 @@
         TxtTitle[i] = "Gör den här läraren till en elev...";
         i++;
         // 11
-        TxtTitle[i] = "reserve";
+        TxtTitle[i] = "Ta bort den här modulen och alla dess aktiviteter från systemet";
         i++;
         // 12
         TxtTitle[i] = "reserve";
@@ -240,6 +243,9 @@
         i++;
         // 18
         TxtTitle[i] = "För att minska antalet synliga knappar (1=normal)";
+        i++;
+        // 19
+        TxtTitle[i] = "Dagens datum";
     }
 
     private void Title_DE()
@@ -263,7 +269,7 @@
         TxtHead[i] = "Copy module...";
         i++;
         // 2
-        TxtHead[i] = "reserve";
+        TxtHead[i] = "Remove this module...";
         i++;
         // 3
         TxtHead[i] = "Eliminate all your docs and mess...";
@@ -364,7 +370,7 @@
         TxtHead[i] = "Kopiera modul...";
         i++;
         // 2
-        TxtHead[i] = "reserve";
+        TxtHead[i] = "Ta bort den här modulen...";
         i++;
         // 3
         TxtHead[i] = "Eliminera alla dina docs & mess...";
@@ -494,7 +500,7 @@
         TxtText[i] = "Type the module name";
         i++;
         // 8
-        TxtText[i] = "reserve";
+        TxtText[i] = "Enter today's date (yyyy-mm-dd)";
         i++;
         // 9
         TxtText[i] = "Enter your email address";
@@ -593,7 +599,7 @@
         TxtText[i] = "Ange modulens namn";
         i++;
         // 8
-        TxtText[i] = "reserve";
+        TxtText[i] = "Ange dagens datum (åååå-mm-dd)";
         i++;
         // 9
         TxtText[i] = "Ange din e-postadress";
@@ -686,7 +692,7 @@
         TxtDone[i] = "The module has been copied.";
         i++;
         // 3
-        TxtDone[i] = "reserve";
+        TxtDone[i] = "This module and all its documents and activities were deleted.";
         i++;
         // 4
         TxtDone[i] = "No documents or messages could be found.";
@@ -701,7 +707,7 @@
         TxtDone[i] = "This message was deleted.";
         i++;
         // 8
-        TxtDone[i] = "reserve";
+        TxtDone[i] = "All non-mandatory documents and messages were deleted.";
         i++;
         // 9
         TxtDone[i] = "This student was deleted.";
@@ -784,7 +790,7 @@
         TxtDone[i] = "Modulen har kopierats.";
         i++;
         // 3
-        TxtDone[i] = "reserve";
+        TxtDone[i] = "Denna modul och alla dess dokument och aktiviteter raderades.";
         i++;
         // 4
         TxtDone[i] = "Inga dokument eller meddelanden kunde hittas.";
@@ -799,7 +805,7 @@
         TxtDone[i] = "Detta meddelande raderades.";
         i++;
         // 8
-        TxtDone[i] = "reserve";
+        TxtDone[i] = "Alla icke-obligatoriska dokument och meddelanden raderades.";
         i++;
         // 9
         TxtDone[i] = "Den här eleven togs bort.";
@@ -898,7 +904,7 @@
         TxtError[i] = "Cannot copy with the same name.";
         i++;
         // 5
-        TxtError[i] = "reserve";
+        TxtError[i] = "The date was incorrect.";
         i++;
         // 6
         TxtError[i] = "The email address was incorrect.";
@@ -918,7 +924,7 @@
         TxtError[i] = "Failed to set a unique filename index.";
         i++;
         // 11
-        TxtError[i] = "reserve";
+        TxtError[i] = "No documents or messages could be found.";
         i++;
         // 12
         TxtError[i] = "reserve";
@@ -968,7 +974,7 @@
         TxtError[i] = "Kan inte kopiera med samma namn.";
         i++;
         // 5
-        TxtError[i] = "reserve";
+        TxtError[i] = "Datumet var felaktigt.";
         i++;
         // 6
         TxtError[i] = "E-postadressen var felaktig.";
@@ -988,7 +994,7 @@
         TxtError[i] = "Det gick inte att sätta ett unikt filnamnsindex.";
         i++;
         // 11
-        TxtError[i] = "reserve";
+        TxtError[i] = "Inga dokument eller meddelanden kunde hittas.";
         i++;
         // 12
         TxtError[i] = "reserve";

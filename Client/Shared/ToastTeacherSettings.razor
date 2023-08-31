@@ -4,7 +4,6 @@
 @inject XLangStudent xstu
 @inject XLangTeacher xtea
 @inject XLangToast xtoa
-@inject XLangToastEdit xted
 @inject XNavMenu xnav
 @*Toast component by Björn Lindqvist*@
 @*Endast för lärare*@
@@ -82,13 +81,6 @@
         else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") LangSelect = 3;
         else LangSelect = 0;
 
-        if (xtoa.TxtButton[6] is null)
-        {
-            xtoa.TxtButton[0] = xted.TxtButton[0];
-            xtoa.TxtButton[6] = xted.TxtButton[3];
-            xtoa.TxtTitle[1] = xted.TxtTitle[4];
-        }
-
         if (xnav.ClassRegStatus == "regon") IsReg = true; else IsReg = false;
         HeaderText = "Options...";
         showClass = "d-block";
@@ -152,7 +144,6 @@
                 xstu.SetLanguage_EN();
                 xtea.SetLanguage_EN();
                 xtoa.SetLanguage_EN();
-                xted.SetLanguage_EN();
             }
             if (LangSelect == 1)
             {
@@ -162,7 +153,6 @@
                 xstu.SetLanguage_SV();
                 xtea.SetLanguage_SV();
                 xtoa.SetLanguage_SV();
-                xted.SetLanguage_SV();
             }
             if (LangSelect == 2)
             {
@@ -172,7 +162,6 @@
                 xstu.SetLanguage_DE();
                 xtea.SetLanguage_DE();
                 xtoa.SetLanguage_DE();
-                xted.SetLanguage_DE();
             }
             if (LangSelect == 3)
             {
@@ -182,7 +171,6 @@
                 xstu.SetLanguage_FR();
                 xtea.SetLanguage_FR();
                 xtoa.SetLanguage_FR();
-                xted.SetLanguage_FR();
             }
         }
         catch

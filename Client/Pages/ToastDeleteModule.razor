@@ -1,6 +1,6 @@
 ﻿@inject NavigationManager Navigation
 @inject IXDtoClient xClient
-@inject XLangToastEdit xted
+@inject XLangToast xtoa
 @inject XNavMenu xnav
 @attribute [Authorize]
 @*Toast component by Björn Lindqvist*@
@@ -16,8 +16,8 @@
                 </div>
 
                 <div class="toast-body">
-                    <button type="button" class="text-white remyes" @onclick="DeleteNow" title=@xted.TxtTitle[1]>@xted.TxtButton[2]</button> @* DELETE NOW *@
-                    <button type="button" class="text-white remnot" @onclick="Close">@xted.TxtButton[0]</button> @* NO *@
+                    <button type="button" class="text-white remyes" @onclick="DeleteNow" title=@xtoa.TxtTitle[11]>@xtoa.TxtButton[2]</button> @* DELETE NOW *@
+                    <button type="button" class="text-white remnot" @onclick="Close">@xtoa.TxtButton[0]</button> @* NO *@
                 </div>
             </div>
         </div>
@@ -37,7 +37,7 @@
     {
         xnav.SetReset('a');
 
-        HeaderText = xted.TxtText[1];
+        HeaderText = xtoa.TxtHead[2];
         showClass = "d-block";
         StateHasChanged();
     }
@@ -51,7 +51,7 @@
 
     private async Task DeleteNow()
     {
-        xnav.SetDone(xted.TxtText[2]);
+        xnav.SetDone(xtoa.TxtDone[3]);
         xnav.SetReset('d');
         await xnav.Intermission(3000, false);
 
