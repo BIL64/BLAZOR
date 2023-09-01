@@ -367,10 +367,10 @@
         TxtText[i] = "Info about #T#";
         i++;
         // 14
-        TxtText[i] = "The same thing can be accomplished by adding the text string #T#\r\n" +
-                     "somewhere in the name of any activity and then disabling the activity\r\n" +
-                     "(if you don't want both to appear). It is the same as here - that it is\r\n" +
-                     "the description of the activity that constitutes the text message. The\r\n" +
+        TxtText[i] = "The same thing can be accomplished by adding the text string #T#" +
+                     "somewhere in the name of any activity and then disabling the activity" +
+                     "(if you don't want both to appear). It is the same as here - that it is" +
+                     "the description of the activity that constitutes the text message. The" +
                      "message is displayed after the current module.";
         i++;
         // 15

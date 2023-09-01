@@ -126,8 +126,7 @@
             else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") { xstu.SetLanguage_FR(); xtoa.SetLanguage_FR(); }
             else { xstu.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
         }
-
-        if (loggeduser.UserRole == 2 && xtea.RenderPage != "STILL_HERE")
+        if (loggeduser.UserRole == 2 && (xtea.RenderPage != "STILL_HERE" || xstu.RenderPage != "STILL_HERE"))
         {
             if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xstu.SetLanguage_EN(); xtea.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
             else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xstu.SetLanguage_SV(); xtea.SetLanguage_SV(); xtoa.SetLanguage_SV(); }
