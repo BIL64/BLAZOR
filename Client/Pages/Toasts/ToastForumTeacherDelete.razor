@@ -105,8 +105,11 @@
 
         if (DelSelect == 0) // Raderar endast en sparad tråd.
         {
-            if (names.IndexOf(Tname) != -1 && Tname != "")
+            Tname = "|" + Tname + "|";
+
+            if (names.IndexOf(Tname) != -1 && Tname != "||")
             {
+                Tname = Tname.Replace("|", "");
                 names = names.Replace(Tname + "|", "");
 
                 try
@@ -162,8 +165,11 @@
             }
             Auxx.Flag = true;
 
-            if (names.IndexOf(Tname) != -1 && Tname != "") // Raderar även en ev sparad tråd.
+            Tname = "|" + Tname + "|";
+
+            if (names.IndexOf(Tname) != -1 && Tname != "||") // Raderar även en ev sparad tråd.
             {
+                Tname = Tname.Replace("|", "");
                 names = names.Replace(Tname + "|", "");
 
                 try
