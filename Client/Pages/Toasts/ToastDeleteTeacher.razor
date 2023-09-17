@@ -9,7 +9,7 @@
 <AuthorizeView Roles ="Teacher">
     <Authorized>
         <div class="toast-container p-3 @showClass"
-             style="position: fixed; top: auto; top: @(xnav.Pos_V)px; margin-left: @(xnav.Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
+            style="position: fixed; top: auto; top: @(xnav.Pos_V)px; margin-left: @(xnav.Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
             <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="toast-header" @onmouseup=" _ => xnav.Mouse(0, 'U', _)" @onmousedown=" _ => xnav.Mouse(Win_Height, 'D', _)"
                      @onmousemove=" _ => xnav.Mouse(Win_Height, 'M', _)" @onmouseout=" _ => xnav.Mouse(Win_Height, 'M', _)">
@@ -40,6 +40,8 @@
 
     private List<DocumentDto> documents = new();
 
+    private List<ThumbDto> thumbs = new();
+
     private List<AppUserDto> users = new();
 
     public async Task Show()
@@ -66,9 +68,11 @@
     {
         bool FindDoc = false;
         var document = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
+        var thumb = await xClient.GetAsync<IEnumerable<ThumbDto>>("api/Thumb");
         var appuser = await appuserClient.GetAsync();
 
         if (document is not null) documents = document.ToList();
+        if (thumb is not null) thumbs = thumb.ToList();
         if (appuser is not null) users = appuser.ToList();
 
         foreach (var use in users)
@@ -79,6 +83,14 @@
                 {
                     if (doc.UserId == use.Id) FindDoc = true;
                 }
+            }
+        }
+
+        if (!FindDoc) // Alla tumma upp/ned tas bort.
+        {
+            foreach (var thu in thumbs)
+            {
+                if (thu.Id4User == Auxx.GuidId) await xClient.RemAsync(thu.Id, "api/Thumb");
             }
         }
 

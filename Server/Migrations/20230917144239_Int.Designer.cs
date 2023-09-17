@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LexiconLMSBlazor.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230914184647_Init")]
-    partial class Init
+    [Migration("20230917144239_Int")]
+    partial class Int
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -470,6 +470,32 @@ namespace LexiconLMSBlazor.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Register");
+                });
+
+            modelBuilder.Entity("LexiconLMSBlazor.Server.Models.Thumb", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Id4Thread")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Id4User")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsLike")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Thumb");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

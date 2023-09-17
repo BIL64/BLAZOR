@@ -6,7 +6,7 @@
 
     public string[] TxtTitle { get; private set; } = new string[12];
 
-    public string[] TxtText { get; private set; } = new string[52];
+    public string[] TxtText { get; private set; } = new string[59];
 
     public event Action? OnChange;
 
@@ -311,6 +311,27 @@
         i++;
         // 51
         TxtText[i] = "The thread cannot be found.";
+        i++;
+        // 52
+        TxtText[i] = "reserve";
+        i++;
+        // 53
+        TxtText[i] = "reserve";
+        i++;
+        // 54
+        TxtText[i] = "reserve";
+        i++;
+        // 55
+        TxtText[i] = "Thumbs UP for this.";
+        i++;
+        // 56
+        TxtText[i] = "Thumbs down for this.";
+        i++;
+        // 57
+        TxtText[i] = "You changed your mind.";
+        i++;
+        // 58
+        TxtText[i] = "One is enough!";
     }
 
     private void Text_SV()
@@ -472,6 +493,27 @@
         i++;
         // 51
         TxtText[i] = "Tråden går inte att hitta.";
+        i++;
+        // 52
+        TxtText[i] = "reserve";
+        i++;
+        // 53
+        TxtText[i] = "reserve";
+        i++;
+        // 54
+        TxtText[i] = "reserve";
+        i++;
+        // 55
+        TxtText[i] = "Tumme UPP för denna.";
+        i++;
+        // 56
+        TxtText[i] = "Tumme ned för denna.";
+        i++;
+        // 57
+        TxtText[i] = "Du ändrade dig.";
+        i++;
+        // 58
+        TxtText[i] = "En räcker!";
     }
 
     private void Text_DE()

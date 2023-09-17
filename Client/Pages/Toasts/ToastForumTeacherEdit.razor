@@ -228,21 +228,20 @@
 
         var forum = await xClient.GetAsync<IEnumerable<ForumDto>>("api/Forum");
 
-        if (forum is not null) IsFind = forum.Any(f => f.Id == Auxx.IntId);
-
-        if (IsFind)
+        if (forum is not null)
         {
-            if (forum is not null)
+            foreach (var fum in forum)
             {
-                foreach (var fum in forum)
+                // Raderar posten från databasen.
+                if (fum.Id == Auxx.IntId)
                 {
-                    // Raderar posten från databasen.
-                    if (fum.Id == Auxx.IntId) await xClient.RemAsync(fum.Id, "api/Forum");
+                    await xClient.RemAsync(fum.Id, "api/Forum");
+                    IsFind = true;
                 }
-                xnav.SetDone(xtoa.TxtDone[46]);
-                xnav.SetReset('d');
-                Auxx.Flag = true;
             }
+            xnav.SetDone(xtoa.TxtDone[46]);
+            xnav.SetReset('d');
+            Auxx.Flag = true;
         }
 
         if (!IsFind)

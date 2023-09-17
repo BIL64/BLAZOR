@@ -16,7 +16,7 @@
 <AuthorizeView Roles="Teacher">
     <Authorized>
         <nav class="d-flex">
-            <div style="width: 75%"><h3>@xdet.TxtText[1] @CourseId: @NoModules @* Administration of this course *@
+            <div style="width: 75%"><h3>@xdet.TxtText[1]: @CourseId @NoModules @* Administration of this course *@
                     <i style="cursor: pointer" @onclick=" _ => EditCourse(CourseId)" title="@CourseDescription @xdet.TxtTitle[4]">@CourseName</i>
                 </h3>
             </div>

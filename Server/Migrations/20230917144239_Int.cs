@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LexiconLMSBlazor.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class Int : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -165,6 +165,22 @@ namespace LexiconLMSBlazor.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Register", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Thumb",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IsLike = table.Column<bool>(type: "bit", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Id4User = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Id4Thread = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Thumb", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -486,6 +502,9 @@ namespace LexiconLMSBlazor.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "Register");
+
+            migrationBuilder.DropTable(
+                name: "Thumb");
 
             migrationBuilder.DropTable(
                 name: "Module");

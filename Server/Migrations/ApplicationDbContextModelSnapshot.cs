@@ -469,6 +469,32 @@ namespace LexiconLMSBlazor.Server.Migrations
                     b.ToTable("Register");
                 });
 
+            modelBuilder.Entity("LexiconLMSBlazor.Server.Models.Thumb", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Id4Thread")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Id4User")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsLike")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Thumb");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")

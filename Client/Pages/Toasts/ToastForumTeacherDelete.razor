@@ -150,6 +150,22 @@
 
         if (DelSelect == 2) // Raderar hela diskussionstråden med alla dess poster i databasen!
         {
+            var thumb = await xClient.GetAsync<IEnumerable<ThumbDto>>("api/Thumb");
+
+            if (forum is not null && thumb is not null) // Radering av tumma upp/ned först.
+            {
+                foreach (var fum in forum)
+                {
+                    if (fum.ThreadName == Tname)
+                    {
+                        foreach (var thu in thumb)
+                        {
+                            if (thu.Id4Thread == fum.Id) await xClient.RemAsync(thu.Id, "api/Thumb");
+                        }
+                    }
+                }
+            }
+
             if (forum is not null)
             {
                 foreach (var fum in forum)

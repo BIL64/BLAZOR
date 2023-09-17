@@ -12,7 +12,7 @@
 
     public string[] TxtText { get; private set; } = new string[87];
 
-    public string[] TxtDone { get; private set; } = new string[10];
+    public string[] TxtDone { get; private set; } = new string[14];
 
     public string[] TxtError { get; private set; } = new string[8];
 
@@ -1159,6 +1159,18 @@
         i++;
         // 9
         TxtDone[i] = "No content no post.";
+        i++;
+        // 10
+        TxtDone[i] = "Thumbs UP for this.";
+        i++;
+        // 11
+        TxtDone[i] = "Thumbs down for this.";
+        i++;
+        // 12
+        TxtDone[i] = "You changed your mind.";
+        i++;
+        // 13
+        TxtDone[i] = "One is enough!";
     }
 
     private void Done_SV()
@@ -1194,6 +1206,18 @@
         i++;
         // 9
         TxtDone[i] = "Inget innehåll inget inlägg.";
+        i++;
+        // 10
+        TxtDone[i] = "Tumme UPP för denna.";
+        i++;
+        // 11
+        TxtDone[i] = "Tumme ned för denna.";
+        i++;
+        // 12
+        TxtDone[i] = "Du ändrade dig.";
+        i++;
+        // 13
+        TxtDone[i] = "En räcker!";
     }
 
     private void Done_DE()

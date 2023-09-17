@@ -167,14 +167,16 @@
 
         var forum = await xClient.GetAsync<IEnumerable<ForumDto>>("api/Forum");
 
-        if (forum is not null) IsFind = forum.Any(f => (f.Id == Auxx.IntId && f.Id4User == Auxx.GuidId));
-
-        if (forum is not null && IsFind)
+        if (forum is not null)
         {
             foreach (var fum in forum)
             {
-                // Raderar posten från databasen.
-                if (fum.Id == Auxx.IntId && fum.Id4User == Auxx.GuidId) await xClient.RemAsync(fum.Id, "api/Forum");
+                // Raderar posten för den specifika användaren från databasen.
+                if (fum.Id == Auxx.IntId && fum.Id4User == Auxx.GuidId)
+                {
+                    await xClient.RemAsync(fum.Id, "api/Forum");
+                    IsFind = true;
+                }
             }
             xnav.SetDone(xtoa.TxtDone[46]);
             xnav.SetReset('d');

@@ -164,11 +164,35 @@ else
                                 <div style="font-size: 0.85rem; max-width: 700px; margin-top: 5px"><s>@fum.Text</s></div>
                                 <div style="font-size: 0.85rem; font-style: oblique">@xtea.TxtText[74]</div>
                             }
-                            else // Text, datum och redigering:
+                            else // Text, tumma upp/ner datum och redigering:
                             {
                                 <div style="font-size: 0.85rem; max-width: 700px; margin-top: 5px">@fum.Text</div>
                             }
                             <div class="d-flex">
+                                <span style="margin: 4px 10px 0 0" class="dropuse">
+                                    <span class="oi oi-thumb-up" style="color: goldenrod; cursor: pointer" @onclick="_ => ThumbsUp(fum.Id)"></span>
+                                    <span class="dropuse-content thumbnames" style="color: royalblue">
+                                        @foreach (var thu in thumbs)
+                                        {
+                                            if (thu.Id4Thread == fum.Id && thu.IsLike)
+                                            {
+                                                <div>@thu.Name</div>
+                                            }
+                                        }
+                                    </span>
+                                </span>
+                                <span style="margin-top: 7px" class="dropuse">
+                                    <span class="oi oi-thumb-down" style="color: goldenrod; cursor: pointer" @onclick="_ => ThumbsDown(fum.Id)"></span>
+                                    <span class="dropuse-content thumbnames" style="color: tomato">
+                                        @foreach (var thu in thumbs)
+                                        {
+                                            if (thu.Id4Thread == fum.Id && !thu.IsLike)
+                                            {
+                                                <div>@thu.Name</div>
+                                            }
+                                        }
+                                    </span>
+                                </span>
                                 <span class="postdate">@fum.Date.ToString()[..16]</span>
                                 <span class="postedit" @onclick="_ => EditPost(fum.Id)" title=@xtea.TxtTitle[45]>@fum.Edited</span>
                             </div><br />
@@ -272,6 +296,8 @@ else
 
     private List<ForumDto> formans = new();
 
+    private List<ThumbDto> thumbs = new();
+
     private List<AppUserDto> appusers = new();
 
     private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
@@ -316,6 +342,7 @@ else
         courses.Clear();
         forums.Clear();
         formans.Clear();
+        thumbs.Clear();
         appusers.Clear();
 
         if (nameString == "") Emptydb = xtea.TxtText[84]; // Discussion forum.
@@ -329,6 +356,7 @@ else
 
         var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
         var forum = await xClient.GetAsync<IEnumerable<ForumDto>>("api/Forum");
+        var thumb = await xClient.GetAsync<IEnumerable<ThumbDto>>("api/Thumb");
         var appuser = await appuserClient.GetAsync();
 
         if (course is not null) courses = course.ToList(); // Hämtar alla kurser.
@@ -417,6 +445,8 @@ else
             }
 
             formans = forum.OrderBy(n => n.ThreadName).ToList();
+
+            if (thumb is not null) thumbs = thumb.ToList();
 
             if (forums.Count < 1) Emptydb = xtea.TxtText[85]; // Forum is missing...
             if (!string.IsNullOrWhiteSpace(searchString) && threadnames.Count < 1) Emptydb = xtea.TxtText[86]; // No threads could be find...
@@ -581,6 +611,108 @@ else
             IsMan = isman,
             Select = 1,
             Id4Course = cid
+        };
+        return dto;
+    }
+
+    private async Task ThumbsUp(int id) // Tumma upp.
+    {
+        bool IsExist = false;
+        bool DelThis = false;
+        int OldId = 0;
+        Scroll = false;
+
+        foreach (var thu in thumbs)
+        {
+            if (thu.Id4Thread == id && thu.Id4User == loggeduser.Id)
+            {
+                OldId = thu.Id;
+                IsExist = true;
+
+                if (IsExist && !thu.IsLike)
+                {
+                    IsExist = false;
+                    DelThis = true;
+                }
+            }
+        }
+
+        await ThumbDone(IsExist, DelThis, true);
+
+        if (DelThis) await xClient.RemAsync(OldId, "api/Thumb");
+        if (!IsExist) await xClient.PostAsync<ThumbDto>(GetNewThumb(true, id), "api/Thumb");
+        Auxx.Flag = true;
+        await OnInitializedAsync();
+    }
+
+    private async Task ThumbsDown(int id) // Tumma ned.
+    {
+        bool IsExist = false;
+        bool DelThis = false;
+        int OldId = 0;
+        Scroll = false;
+
+        foreach (var thu in thumbs)
+        {
+            if (thu.Id4Thread == id && thu.Id4User == loggeduser.Id)
+            {
+                OldId = thu.Id;
+                IsExist = true;
+
+                if (IsExist && thu.IsLike)
+                {
+                    IsExist = false;
+                    DelThis = true;
+                }
+            }
+        }
+
+        await ThumbDone(IsExist, DelThis, false);
+
+        if (DelThis) await xClient.RemAsync(OldId, "api/Thumb");
+        if (!IsExist) await xClient.PostAsync<ThumbDto>(GetNewThumb(false, id), "api/Thumb");;
+        Auxx.Flag = true;
+        await OnInitializedAsync();
+    }
+
+    private async Task ThumbDone(bool isexist, bool delthis, bool updown)
+    {
+        xnav.SetReset('a');
+        await xnav.Intermission(100, false);
+
+        if (!isexist && !delthis && updown)
+        {
+            xnav.SetDone(xtea.TxtDone[10]);
+            xnav.SetReset('d');
+        }
+
+        if (!isexist && !delthis && !updown)
+        {
+            xnav.SetDone(xtea.TxtDone[11]);
+            xnav.SetReset('d');
+        }
+
+        if (!isexist && delthis)
+        {
+            xnav.SetDone(xtea.TxtDone[12]);
+            xnav.SetReset('d');
+        }
+
+        if (isexist)
+        {
+            xnav.SetDone(xtea.TxtDone[13]);
+            xnav.SetReset('d');
+        }
+    }
+
+    private ThumbDto GetNewThumb(bool islike, int tid) // Nytt tumobjekt.
+    {
+        var dto = new ThumbDto
+        {
+            IsLike = islike,
+            Name = loggeduser.FirstName + " " + loggeduser.LastName,
+            Id4User = loggeduser.Id,
+            Id4Thread = tid
         };
         return dto;
     }
