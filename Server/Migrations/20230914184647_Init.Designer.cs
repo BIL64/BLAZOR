@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LexiconLMSBlazor.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230812133050_Init")]
+    [Migration("20230914184647_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -369,6 +369,53 @@ namespace LexiconLMSBlazor.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Document");
+                });
+
+            modelBuilder.Entity("LexiconLMSBlazor.Server.Models.Forum", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AuxHead")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Edited")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id4Course")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Id4User")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsMan")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Pmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte>("Select")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ThreadName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Forum");
                 });
 
             modelBuilder.Entity("LexiconLMSBlazor.Server.Models.Module", b =>

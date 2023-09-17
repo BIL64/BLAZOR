@@ -14,6 +14,7 @@
 
         public int UserRole { get; set; }
 
+        // Foreign Key
         public int CourseId { get; set; }
     }
 }

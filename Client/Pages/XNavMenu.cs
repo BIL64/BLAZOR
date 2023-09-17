@@ -2,6 +2,8 @@
 
 public class XNavMenu // Klass som kan kommunicera med navmenyn.
 {
+    public byte[] ColorRGB = new byte[3] { 0, 206, 209 }; // Standard RGB-värden för sidofält etc.
+
     public bool JohnDoe { get; private set; } = true;
 
     public string ClassInfoMess { get; private set; } = "d-none";

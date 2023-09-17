@@ -26,8 +26,8 @@ else
     <EditForm Context="searchlmslexnet" Model="@students" OnSubmit="OnInitializedAsync">
         <div class="input-group">
             <InputText class="form-control" @bind-Value="searchString" placeholder="First name, last name or course" />
-            <div>
-                <InputSelect class="form-select" aria-label="Default select example" @bind-Value="searchType">
+            <div style="z-index: 0">
+                <InputSelect class="form-select" aria-label="Select type" @bind-Value="searchType">
                     <option value="1">Name</option>
                     <option value="2">Course</option>
                 </InputSelect>

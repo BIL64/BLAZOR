@@ -1,7 +1,4 @@
-﻿@using Microsoft.AspNetCore.Components.Forms
-@using Microsoft.Extensions.Logging;
-
-@page "/teacheraddcourse"
+﻿@page "/teacheraddcourse"
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject NavigationManager Navigation
 @inject ILogger<TeacherAddCourse> Logger
@@ -30,19 +27,19 @@
             <ValidationSummary />
             <div class="form-group m-3">
                 <label for="Name">@xtea.TxtText[13]</label>
-                <InputText id="Name" class="form-control" @bind-Value="course.Name" placeholder="Enter name" />
+                <InputText id="Name" class="form-control" style="@colorCourse" @bind-Value="course.Name" placeholder="Enter name" />
             </div>
             <div class="form-group m-3">
                 <label for="Description">@xtea.TxtText[14]</label>
-                <InputTextArea id="Description" class="form-control" @bind-Value="course.Description" placeholder="Enter description" />
+                <InputTextArea id="Description" class="form-control" style="@colorCourse" @bind-Value="course.Description" placeholder="Enter description" />
             </div>
             <div class="form-group m-3">
                 <label for="Startdate">@xtea.TxtText[15]</label>
-                <InputDate id="Startdate" class="form-control" @bind-Value="course.StartDate" />
+                <InputDate id="Startdate" class="form-control" style="@colorCourse" @bind-Value="course.StartDate" />
             </div>
             <div class="form-group m-3">
                 <label for="Enddate">@xtea.TxtText[16]</label>
-                <InputDate id="Enddate" class="form-control" @bind-Value="course.EndDate" />
+                <InputDate id="Enddate" class="form-control" style="@colorCourse" @bind-Value="course.EndDate" />
             </div>
             <div class="form-group m-3">
                 <button type="button" class="@classCouRegBtn m-1" @onclick="RegretRefresh"
@@ -106,19 +103,19 @@
                 <ValidationSummary />
                 <div class="form-group m-3">
                     <label for="Name">@xtea.TxtText[13]</label>
-                    <InputText id="Name" class="form-control" @bind-Value="module.Name" placeholder="Enter name" />
+                    <InputText id="Name" class="form-control" style="@colorModule" @bind-Value="module.Name" placeholder="Enter name" />
                 </div>
                 <div class="form-group m-3">
                     <label for="Description">@xtea.TxtText[14]</label>
-                    <InputTextArea id="Description" class="form-control" @bind-Value="module.Description" placeholder="Enter description" />
+                    <InputTextArea id="Description" class="form-control" style="@colorModule" @bind-Value="module.Description" placeholder="Enter description" />
                 </div>
                 <div class="form-group m-3">
                     <label for="Startdate">@xtea.TxtText[15]</label>
-                    <InputDate id="Startdate" class="form-control" @bind-Value="module.StartDate" />
+                    <InputDate id="Startdate" class="form-control" style="@colorModule" @bind-Value="module.StartDate" />
                 </div>
                 <div class="form-group m-3">
                     <label for="Enddate">@xtea.TxtText[16]</label>
-                    <InputDate id="Enddate" class="form-control" @bind-Value="module.EndDate" />
+                    <InputDate id="Enddate" class="form-control" style="@colorModule" @bind-Value="module.EndDate" />
                 </div>
                 <div class="form-group m-md-3">
                     <InputCheckbox id="switch" class="control-label checkbox" type="checkbox" @bind-Value="DateControl" />
@@ -295,6 +292,10 @@
     private string stepActivi = string.Empty;
     private string newActType = string.Empty;
 
+    // Stilvariabler för att gråa ut inamatade data.
+    private string colorCourse = "color: black";
+    private string colorModule = "color: black";
+
     // Klassvariabler för att visa/inte visa formulär.
     private string classCourse = "courseeditbox";
     private string classModule = "d-none";
@@ -401,6 +402,7 @@
         await xnav.Intermission(100, true);
         if (await DateModuleControl())
         {
+            colorModule = "color: grey";
             classActivi = "activityeditbox";
             classTable = "activityeditbox";
             stepModule = "Module ready...";
@@ -490,6 +492,7 @@
     {
         if (course.StartDate <= course.EndDate && course.Name != "" && course.Description != "")
         {
+            colorCourse = "color: grey";
             classModule = "moduleeditbox";
             stepCourse = "Course ready...";
             classCouRegBtn = "d-none";
@@ -524,6 +527,7 @@
             else activitylist.Add(lact);
             saveActButNot = false;
             repeatModule = true;
+            colorModule = "color: black";
             classActivi = "d-none";
             classActRegBtn = "d-none";
             classModBtn = "btn btn-primary btn-sm";

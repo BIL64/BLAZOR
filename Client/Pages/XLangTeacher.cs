@@ -2,19 +2,19 @@
 {
     public string RenderPage { get; set; } = string.Empty;
 
-    public string[] TxtMenu { get; private set; } = new string[7];
+    public string[] TxtMenu { get; private set; } = new string[8];
 
-    public string[] TxtButton { get; private set; } = new string[14];
+    public string[] TxtButton { get; private set; } = new string[19];
 
-    public string[] TxtTitle { get; private set; } = new string[39];
+    public string[] TxtTitle { get; private set; } = new string[48];
 
     public string[] TxtDateC { get; private set; } = new string[6];
 
-    public string[] TxtText { get; private set; } = new string[70];
+    public string[] TxtText { get; private set; } = new string[87];
 
-    public string[] TxtDone { get; private set; } = new string[7];
+    public string[] TxtDone { get; private set; } = new string[10];
 
-    public string[] TxtError { get; private set; } = new string[6];
+    public string[] TxtError { get; private set; } = new string[8];
 
     public event Action? OnChange;
 
@@ -41,6 +41,9 @@
         TxtMenu[i] = "Unregistered";
         i++;
         // 6
+        TxtMenu[i] = "Forum";
+        i++;
+        // 7
         TxtMenu[i] = "T E A C H E R";
     }
 
@@ -67,6 +70,9 @@
         TxtMenu[i] = "Oregistrerade";
         i++;
         // 6
+        TxtMenu[i] = "Forum";
+        i++;
+        // 7
         TxtMenu[i] = "L Ä R A R E";
     }
 
@@ -125,6 +131,21 @@
         i++;
         // 13
         TxtButton[i] = "Register now!";
+        i++;
+        // 14
+        TxtButton[i] = "Add/edit thread";
+        i++;
+        // 15
+        TxtButton[i] = "Delete thread";
+        i++;
+        // 16
+        TxtButton[i] = "Close";
+        i++;
+        // 17
+        TxtButton[i] = "Save thread";
+        i++;
+        // 18
+        TxtButton[i] = "Post it!";
     }
 
     private void Button_SV()
@@ -172,6 +193,21 @@
         i++;
         // 13
         TxtButton[i] = "Registrera nu!";
+        i++;
+        // 14
+        TxtButton[i] = "Lägg till / redigera tråd";
+        i++;
+        // 15
+        TxtButton[i] = "Ta bort tråd";
+        i++;
+        // 16
+        TxtButton[i] = "Stäng";
+        i++;
+        // 17
+        TxtButton[i] = "Spara tråd";
+        i++;
+        // 18
+        TxtButton[i] = "Posta nu!";
     }
 
     private void Button_DE()
@@ -304,6 +340,33 @@
         i++;
         // 38
         TxtTitle[i] = "Not yet authorized student";
+        i++;
+        // 39
+        TxtTitle[i] = "Mandatory thread";
+        i++;
+        // 40
+        TxtTitle[i] = "Open this thread";
+        i++;
+        // 41
+        TxtTitle[i] = "reserve";
+        i++;
+        // 42
+        TxtTitle[i] = "reserve";
+        i++;
+        // 43
+        TxtTitle[i] = "reserve";
+        i++;
+        // 44
+        TxtTitle[i] = "Save this thread to your system";
+        i++;
+        // 45
+        TxtTitle[i] = "Edit this post";
+        i++;
+        // 46
+        TxtTitle[i] = "Number of edits for this post";
+        i++;
+        // 47
+        TxtTitle[i] = "Up again";
     }
 
     private void Title_SV()
@@ -426,6 +489,33 @@
         i++;
         // 38
         TxtTitle[i] = "Ännu inte behörig student";
+        i++;
+        // 39
+        TxtTitle[i] = "Obligatorisk tråd";
+        i++;
+        // 40
+        TxtTitle[i] = "Öppna den här tråden";
+        i++;
+        // 41
+        TxtTitle[i] = "reserve";
+        i++;
+        // 42
+        TxtTitle[i] = "reserve";
+        i++;
+        // 43
+        TxtTitle[i] = "reserve";
+        i++;
+        // 44
+        TxtTitle[i] = "Spara den här tråden i ditt system";
+        i++;
+        // 45
+        TxtTitle[i] = "Redigera det här inlägget";
+        i++;
+        // 46
+        TxtTitle[i] = "Antal redigeringar för detta inlägg";
+        i++;
+        // 47
+        TxtTitle[i] = "Upp igen";
     }
 
     private void Title_DE()
@@ -707,6 +797,57 @@
         i++;
         // 69
         TxtText[i] = "No course yet...";
+        i++;
+        // 70
+        TxtText[i] = "reserve";
+        i++;
+        // 71
+        TxtText[i] = "reserve";
+        i++;
+        // 72
+        TxtText[i] = "SELECT A THREAD";
+        i++;
+        // 73
+        TxtText[i] = "Your saved threads...";
+        i++;
+        // 74
+        TxtText[i] = "“This post has been deleted” is displayed for 6 hours before the post disappears.";
+        i++;
+        // 75
+        TxtText[i] = "Created by";
+        i++;
+        // 76
+        TxtText[i] = " - Private";
+        i++;
+        // 77
+        TxtText[i] = " - Mandatory";
+        i++;
+        // 78
+        TxtText[i] = " - No restrictions";
+        i++;
+        // 79
+        TxtText[i] = "Write a reply";
+        i++;
+        // 80
+        TxtText[i] = "Replaces the name (red)";
+        i++;
+        // 81
+        TxtText[i] = "reserve";
+        i++;
+        // 82
+        TxtText[i] = "reserve";
+        i++;
+        // 83
+        TxtText[i] = "reserve";
+        i++;
+        // 84
+        TxtText[i] = "Discussion forum";
+        i++;
+        // 85
+        TxtText[i] = "Forum is missing...";
+        i++;
+        // 86
+        TxtText[i] = "No threads could be found...";
     }
 
     private void Text_SV()
@@ -922,6 +1063,57 @@
         i++;
         // 69
         TxtText[i] = "Ingen kurs ännu...";
+        i++;
+        // 70
+        TxtText[i] = "reserve";
+        i++;
+        // 71
+        TxtText[i] = "reserve";
+        i++;
+        // 72
+        TxtText[i] = "VÄLJ EN TRÅD";
+        i++;
+        // 73
+        TxtText[i] = "Dina sparade trådar...";
+        i++;
+        // 74
+        TxtText[i] = "”Detta inlägg har tagits bort” visas i 6 timmar innan inlägget försvinner.";
+        i++;
+        // 75
+        TxtText[i] = "Skapad av";
+        i++;
+        // 76
+        TxtText[i] = " - Privat";
+        i++;
+        // 77
+        TxtText[i] = " - Obligatorisk";
+        i++;
+        // 78
+        TxtText[i] = " - Inga restriktioner";
+        i++;
+        // 79
+        TxtText[i] = "Skriv ett inlägg";
+        i++;
+        // 80
+        TxtText[i] = "Ersätter namnet (rött)";
+        i++;
+        // 81
+        TxtText[i] = "reserve";
+        i++;
+        // 82
+        TxtText[i] = "reserve";
+        i++;
+        // 83
+        TxtText[i] = "reserve";
+        i++;
+        // 84
+        TxtText[i] = "Diskussionsforum";
+        i++;
+        // 85
+        TxtText[i] = "Forum saknas...";
+        i++;
+        // 86
+        TxtText[i] = "Inga trådar kunde hittas...";
     }
 
     private void Text_DE()
@@ -958,6 +1150,15 @@
         i++;
         // 6
         TxtDone[i] = "This visitor was registered. Press “Search” for refreshing.";
+        i++;
+        // 7
+        TxtDone[i] = "The thread is saved.";
+        i++;
+        // 8
+        TxtDone[i] = "The thread is already saved.";
+        i++;
+        // 9
+        TxtDone[i] = "No content no post.";
     }
 
     private void Done_SV()
@@ -984,6 +1185,15 @@
         i++;
         // 6
         TxtDone[i] = "Denna besökare registrerades. Tryck på ”Search” för att uppdatera.";
+        i++;
+        // 7
+        TxtDone[i] = "Tråden är sparad.";
+        i++;
+        // 8
+        TxtDone[i] = "Tråden är redan sparad.";
+        i++;
+        // 9
+        TxtDone[i] = "Inget innehåll inget inlägg.";
     }
 
     private void Done_DE()
@@ -1018,6 +1228,12 @@
         i++;
         // 5
         TxtError[i] = "The Name and Description fields are required.";
+        i++;
+        // 6
+        TxtError[i] = "You are not authorized to write in this thread.";
+        i++;
+        // 7
+        TxtError[i] = "The thread cannot be found.";
     }
 
     private void Error_SV()
@@ -1042,6 +1258,12 @@
         i++;
         // 5
         TxtError[i] = "Namn och beskrivning är obligatoriskt.";
+        i++;
+        // 6
+        TxtError[i] = "Du är inte behörig att skriva i denna tråd.";
+        i++;
+        // 7
+        TxtError[i] = "Tråden går inte att hitta.";
     }
 
     private void Error_DE()

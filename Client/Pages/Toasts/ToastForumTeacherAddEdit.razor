@@ -1,0 +1,314 @@
+﻿@inject IAppUserDtoClient appuserClient
+@inject IXDtoClient xClient
+@inject XLangToast xtoa
+@inject XNavMenu xnav
+@attribute [Authorize]
+@*Toast component by Björn Lindqvist*@
+@*Endast lärare har åtkomst hit*@
+
+<AuthorizeView Roles ="Teacher">
+    <Authorized>
+        <div class="toast-container p-3 @showClass"
+             style="position: fixed; top: auto; top: @(xnav.Pos_V)px; margin-left: @(xnav.Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
+            <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header" @onmouseup=" _ => xnav.Mouse(0, 'U', _)" @onmousedown=" _ => xnav.Mouse(Win_Height, 'D', _)"
+                     @onmousemove=" _ => xnav.Mouse(Win_Height, 'M', _)" @onmouseout=" _ => xnav.Mouse(Win_Height, 'M', _)">
+                    <strong class="me-auto">@HeaderText</strong>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+                </div>
+
+                <div class="toast-body">
+                    @*Viktigt: Model=courses med InputSelect!*@
+                    <EditForm Model="courses" Context="addeditthreadteachlmslexnet" OnSubmit="HandleSubmitAE">
+                        <InputRadioGroup Name="AddRadio" @bind-Value="AESelect">
+                            <div class="form-group m-1">
+                                <InputRadio id="Select0" class="form-check-inline" Value="0" />
+                                <label for="Select0">@xtoa.TxtText[33]</label> @* Mandatory thread for a selected course *@
+                            </div>
+                            <div class="form-group m-1">
+                                <InputRadio id="Select1" class="form-check-inline" Value="1" />
+                                <label for="Select1">@xtoa.TxtText[34]</label> @* Mandatory thread for all courses *@
+                            </div>
+                            <div class="form-group m-1">
+                                <InputRadio id="Select2" class="form-check-inline" Value="2" />
+                                <label for="Select2">@xtoa.TxtText[35]</label> @* Open thread for all users *@
+                            </div>
+                            <div class="form-group m-1">
+                                <InputRadio id="Select3" class="form-check-inline" Value="3" />
+                                <label for="Select3">@xtoa.TxtText[36]</label> @* Private thread *@
+                            </div>
+                        </InputRadioGroup>
+                        @if (AESelect == 0)
+                        {
+                            <div class="form-group m-3">
+                                <label for="Coursename">@xtoa.TxtText[37]</label> @* Select course *@
+                                <InputSelect id="Coursename" class="form-select" @bind-Value="selectCourseId">
+                                @foreach (var cour in courses)
+                                {
+                                    <option value="@cour.Id">@cour.Name</option>
+                                }
+                                </InputSelect>
+                            </div>
+                        }
+                        @if (AESelect == 3)
+                        {
+                            <div class="form-group m-3">
+                                <div style="font-size: 0.77rem; font-style: italic">@xtoa.TxtText[40]</div><br />
+                                <label for="Username">@xtoa.TxtText[38]</label> @* Select discussion partner *@
+                                <InputSelect id="Username" class="form-select" @bind-Value="selectUserEmail">
+                                @foreach (var use in appusers)
+                                {
+                                    <option value="@use.Email">@use.FirstName @use.LastName</option>
+                                }
+                                </InputSelect>
+                            </div>
+                        }
+                        <div class="form-group m-3">
+                            <label for="Threadname">@xtoa.TxtText[39]</label> @* Type a name for this thread *@
+                            <InputText id="Threadname" class="form-control" @bind-Value="Tname" />
+                            @if (IsFind)
+                            {
+                                <div style="font-size: 0.77rem; color: purple">@xtoa.TxtText[44]@Tname@xtoa.TxtText[45]
+                                    <u>@xtoa.TxtText[46]</u> @xtoa.TxtText[47]</div>
+                            }
+                        </div>
+                        <div class="form-group m-3">
+                            <button type="submit" class="text-white rembtn"
+                                title=@xtoa.TxtTitle[23] style="margin-right: 15px">@xtoa.TxtButton[6]</button> @* Save *@
+                            <button type="button" class="text-white remnot" @onclick="Close">@xtoa.TxtButton[0]</button> @* NO *@
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+
+    </Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private List<CourseDto> courses = new();
+
+    private List<AppUserDto> appusers = new();
+
+    private string HeaderText = string.Empty;
+    private string showClass = "d-none";
+    private int selectCourseId;
+    private string selectUserEmail = string.Empty;
+    private string Tname = string.Empty;
+    private int AESelect; // Måste vara int!
+    private bool IsFind;
+
+    private int Win_Height;
+
+    public async Task Show()
+    {
+        xnav.SetReset('a');
+
+        var dim = await xClient.GetWindow(); // Hämtar aktuell skärmstorlek.
+        Win_Height = dim.Height;
+        xnav.Pos_H = (int)Math.Round(dim.Width * 0.08); // 08%
+        xnav.Pos_V = (int)Math.Round(Win_Height * 0.2); // 20%
+
+        AESelect = 0;
+        selectCourseId = 0;
+        selectUserEmail = string.Empty;
+        Tname = string.Empty;
+        IsFind = false;
+
+        courses.Clear();
+        appusers.Clear();
+
+        var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
+        if (course is not null) courses = course.ToList();
+
+        var appuser = await appuserClient.GetAsync();
+        if (appuser is not null) appusers = appuser.ToList();
+
+        var forum = await xClient.GetAsync<IEnumerable<ForumDto>>("api/Forum");
+
+        if (forum is not null)
+        {
+            foreach (var fum in forum) // Hittas tråden så hamnar man i redigeringsläge.
+            {
+                if (fum.ThreadName == Auxx.Name4Type && fum.Select == 0)
+                {
+                    if (fum.IsMan && fum.Id4Course > 0) AESelect = 0;
+                    if (fum.IsMan && fum.Id4Course == 0) AESelect = 1;
+                    if (fum.Pmail == "" && !fum.IsMan) AESelect = 2;
+                    if (fum.Pmail != "" && !fum.IsMan) AESelect = 3;
+                    Tname = fum.ThreadName;
+                    selectCourseId = fum.Id4Course;
+                    selectUserEmail = fum.Pmail;
+                    IsFind = true;
+                }
+            }
+        }
+        HeaderText = xtoa.TxtHead[35];
+        showClass = "d-block";
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        HeaderText = string.Empty;
+        showClass = "d-none";
+        StateHasChanged();
+    }
+
+    private async Task HandleSubmitAE()
+    {
+        bool amountchar = false;
+        bool samename = false;
+        bool nocourseid = false;
+        string pmail = string.Empty;
+        bool isman = false;
+        int courseid = 0;
+
+        var forum = await xClient.GetAsync<IEnumerable<ForumDto>>("api/Forum");
+
+        var appuser = await appuserClient.GetAsync();
+
+        Tname = Tname.Replace("|", "/");
+
+        switch (AESelect)
+        {
+            case 0:
+                isman = true;
+                courseid = selectCourseId;
+                break;
+
+            case 1:
+                isman = true;
+                break;
+
+            case 3:
+                pmail = selectUserEmail;
+                break;
+        }
+
+        if (Tname.Length < 1 || Tname.Length > 25) amountchar = true; // Teckenintervallet.
+
+        if (AESelect == 0 && courseid < 1) nocourseid = true; // Ett kurs-id krävs.
+
+        if (forum is not null && !amountchar)
+        {
+            foreach (var fum in forum) // En nytt trådnamn måste vara unikt.
+                if (fum.ThreadName.ToLower() == Tname.ToLower()) samename = true;
+
+            if (Tname.ToLower() == Auxx.Name4Type.ToLower()) samename = false;
+        }
+
+        if (forum is not null && IsFind && !amountchar && !samename && !nocourseid) // Redigering av befintlig tråd.
+        {
+            foreach (var fum in forum)
+            {
+                if (fum.ThreadName == Auxx.Name4Type && fum.Select == 0)
+                {
+                    await xClient.PutAsync<ForumDto>(fum.Id, GetNewZeroPost(fum, pmail, isman, courseid), "api/Forum");
+                }
+
+                if (fum.ThreadName == Auxx.Name4Type)
+                {
+                    await xClient.PutAsync<ForumDto>(fum.Id, GetNewUserPost(fum, pmail, isman, courseid), "api/Forum");
+                }
+            }
+            xnav.SetDone(xtoa.TxtDone[34]);
+            xnav.SetReset('d');
+            Auxx.Name4Type = Tname;
+            Auxx.Flag = true;
+        }
+
+        if (appuser is not null && !IsFind && !amountchar && !samename && !nocourseid) // En initieringspost krävs för en ny tråd.
+        {
+            foreach (var use in appuser)
+            {
+                if (use.Id == Auxx.GuidId)
+                    await xClient.PostAsync<ForumDto>(GetNewZeroThread(use.Id, pmail, isman, courseid), "api/Forum");
+            }
+            xnav.SetDone(xtoa.TxtDone[35]);
+            xnav.SetReset('d');
+            Auxx.Name4Type = Tname;
+            Auxx.Flag = true;
+        }
+
+        if (nocourseid)
+        {
+            xnav.SetError(xtoa.TxtError[24]);
+            xnav.SetReset('e');
+        }
+
+        if (samename)
+        {
+            xnav.SetError(xtoa.TxtError[25]);
+            xnav.SetReset('e');
+        }
+
+        if (amountchar)
+        {
+            xnav.SetError(xtoa.TxtError[26]);
+            xnav.SetReset('e');
+        }
+
+        Close();
+    }
+
+    private ForumDto GetNewZeroPost(ForumDto fum, string pmail, bool isman, int cid) // Nytt zero-postobjekt.
+    {
+        var dto = new ForumDto
+        {
+            Id = fum.Id,
+            ThreadName = Tname,
+            Date = fum.Date,
+            Text = fum.Text,
+            AuxHead = fum.AuxHead,
+            Id4User = fum.Id4User,
+            Edited = fum.Edited,
+            Pmail = pmail,
+            IsMan = isman,
+            Select = 0,
+            Id4Course = cid
+        };
+        return dto;
+    }
+
+    private ForumDto GetNewUserPost(ForumDto fum, string pmail, bool isman, int cid) // Nytt user-postobjekt.
+    {
+        var dto = new ForumDto
+        {
+            Id = fum.Id,
+            ThreadName = Tname,
+            Date = fum.Date,
+            Text = fum.Text,
+            AuxHead = fum.AuxHead,
+            Id4User = fum.Id4User,
+            Edited = fum.Edited,
+            Pmail = pmail,
+            IsMan = isman,
+            Select = fum.Select,
+            Id4Course = cid
+        };
+        return dto;
+    }
+
+    private ForumDto GetNewZeroThread(string? userid, string pmail, bool isman, int cid) // Nytt zero-trådobjekt.
+    {
+        var dto = new ForumDto
+        {
+            ThreadName = Tname,
+            Date = DateTime.Now,
+            Text = "Initiation post.",
+            AuxHead = "",
+            Id4User = userid,
+            Edited = 0,
+            Pmail = pmail,
+            IsMan = isman,
+            Select = 0,
+            Id4Course = cid
+        };
+        return dto;
+    }
+}

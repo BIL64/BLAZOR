@@ -1,0 +1,276 @@
+﻿@inject IAppUserDtoClient appuserClient
+@inject IXDtoClient xClient
+@inject XLangToast xtoa
+@inject XNavMenu xnav
+@attribute [Authorize]
+@*Toast component by Björn Lindqvist*@
+@*Endast lärare har åtkomst hit*@
+
+<AuthorizeView Roles ="Teacher">
+    <Authorized>
+        <div class="toast-container p-3 @showClass"
+             style="position: fixed; top: auto; top: @(xnav.Pos_V)px; margin-left: @(xnav.Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
+            <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header" @onmouseup=" _ => xnav.Mouse(0, 'U', _)" @onmousedown=" _ => xnav.Mouse(Win_Height, 'D', _)"
+                     @onmousemove=" _ => xnav.Mouse(Win_Height, 'M', _)" @onmouseout=" _ => xnav.Mouse(Win_Height, 'M', _)">
+                    <strong class="me-auto">@HeaderText</strong>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+                </div>
+
+                <div class="toast-body">
+                    <EditForm Model="xClient" Context="editthreadteachlmslexnet" OnSubmit="HandleSubmitAE">
+                        <div class="form-group m-3">
+                            <InputTextArea class="form-control" @bind-Value="Posttext" />
+                        </div>
+                        <div class="form-group m-3">
+                            <label for="Auxpost">@xtoa.TxtText[57]</label> @* Header... *@
+                            <InputText id="Auxpost" class="form-control" @bind-Value="Auxtext" />
+                        </div>
+                         <InputRadioGroup Name="EditRadio" @bind-Value="EditSelect">
+                            <div class="form-group m-1">
+                                <InputRadio id="Select0" class="form-check-inline" Value="0" />
+                                <label for="Select0">@xtoa.TxtText[58]</label> @* Just edit the text *@
+                            </div>
+                            <div class="form-group m-1">
+                                <InputRadio id="Select1" class="form-check-inline" Value="1" />
+                                <label for="Select1">@xtoa.TxtText[59]</label> @* Permit to censor post *@
+                            </div>
+                            <div class="form-group m-1">
+                                <InputRadio id="Select2" class="form-check-inline" Value="2" />
+                                <label for="Select2">@xtoa.TxtText[60]</label> @* Permit to uncensor post *@
+                            </div>
+                            <div class="form-group m-1">
+                                <InputRadio id="Select3" class="form-check-inline" Value="3" />
+                                <label for="Select3" style="color: red">@xtoa.TxtText[61]</label> @* Permit to delete post from the data base *@
+                            </div>
+                        </InputRadioGroup>
+                        <div class="form-group m-3">
+                            @if (EditSelect == 0 || EditSelect == 2)
+                            {
+                                <button type="submit" class="text-white rembtn"
+                                title=@xtoa.TxtTitle[25] style="margin-right: 15px">@xtoa.TxtButton[6]</button> @* Save *@
+                            }
+                            @if (EditSelect == 1)
+                            {
+                                <button type="button" class="text-white rembtn"
+                                title=@xtoa.TxtTitle[27] style="margin-right: 15px" @onclick="GetCensored">@xtoa.TxtButton[14]</button> @* CENSOR *@
+                            }
+                            @if (EditSelect == 3)
+                            {
+                                <button type="button" class="text-white remyes"
+                                title=@xtoa.TxtTitle[26] style="margin-right: 15px" @onclick="DeletePost">@xtoa.TxtButton[1]</button> @* DELETE *@
+                            }
+                            <button type="button" class="text-white remnot" @onclick="Close">@xtoa.TxtButton[0]</button> @* NO *@
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+
+    </Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private string HeaderText = string.Empty;
+    private string showClass = "d-none";
+    private string Posttext = string.Empty;
+    private string Posttemptext = string.Empty;
+    private string Auxtext = string.Empty;
+    private string Auxtemptext = string.Empty;
+    private int EditSelect; // Måste vara int!
+
+    private int Win_Height;
+
+    public async Task Show()
+    {
+        xnav.SetReset('a');
+
+        var dim = await xClient.GetWindow(); // Hämtar aktuell skärmstorlek.
+        Win_Height = dim.Height;
+        xnav.Pos_H = (int)Math.Round(dim.Width * 0.08); // 08%
+        xnav.Pos_V = (int)Math.Round(Win_Height * 0.2); // 20%
+
+        EditSelect = 0;
+
+        var forum = await xClient.GetAsync<IEnumerable<ForumDto>>("api/Forum");
+
+        if (forum is not null)
+        {
+            foreach (var fum in forum)
+            {
+                if (fum.Id == Auxx.IntId)
+                {
+                    Posttext = fum.Text;
+                    Posttemptext = Posttext;
+                    Auxtext = fum.AuxHead;
+                    Auxtemptext = Auxtext;
+                }
+            }
+        }
+        HeaderText = xtoa.TxtHead[37];
+        showClass = "d-block";
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        HeaderText = string.Empty;
+        showClass = "d-none";
+        StateHasChanged();
+    }
+
+    private async Task HandleSubmitAE()
+    {
+        bool IsEdit = false;
+
+        if (Auxtext != Auxtemptext) IsEdit = true;
+
+        if (Posttext != Posttemptext || IsEdit || EditSelect == 2) // Om texten eller rubriken har ändrats så måste posten redigeras.
+        {
+            IsEdit = true;
+            int editnr;
+            byte select = 1;
+
+            var forum = await xClient.GetAsync<IEnumerable<ForumDto>>("api/Forum");
+            var appuser = await appuserClient.GetAsync();
+
+            if (forum is not null)
+            {
+                foreach (var fum in forum)
+                {
+                    if (fum.Id == Auxx.IntId)
+                    {
+                        editnr = fum.Edited;
+                        if (EditSelect != 2) editnr++; // Öka med ett.
+                        if (EditSelect == 2 && fum.Select == 22) select = 2;
+
+                        if (appuser is not null)
+                        {
+                            foreach (var use in appuser)
+                            {
+                                if (use.Id == fum.Id4User)
+                                {
+                                    if (EditSelect != 2)
+                                        await xClient.PutAsync<ForumDto>(fum.Id, GetEditPost(fum.Id, fum.ThreadName, fum.Date, Posttext, Auxtext,
+                                            use.Id, editnr, fum.Pmail, fum.IsMan, fum.Select, fum.Id4Course), "api/Forum");
+                                    else
+                                        await xClient.PutAsync<ForumDto>(fum.Id, GetEditPost(fum.Id, fum.ThreadName, fum.Date, Posttext, Auxtext,
+                                            use.Id, editnr, fum.Pmail, fum.IsMan, select, fum.Id4Course), "api/Forum");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (EditSelect == 2)
+            {
+                xnav.SetDone(xtoa.TxtDone[39]);
+                xnav.SetReset('d');
+            }
+            else
+            {
+                xnav.SetDone(xtoa.TxtDone[40]);
+                xnav.SetReset('d');
+            }
+            Auxx.Flag = true;
+        }
+
+        if (!IsEdit)
+        {
+            xnav.SetDone(xtoa.TxtDone[41]);
+            xnav.SetReset('d');
+        }
+
+        Close();
+    }
+
+    private async Task GetCensored()
+    {
+        byte select = 11;
+
+        var forum = await xClient.GetAsync<IEnumerable<ForumDto>>("api/Forum");
+        var appuser = await appuserClient.GetAsync();
+
+        if (forum is not null)
+        {
+            foreach (var fum in forum)
+            {
+                if (fum.Id == Auxx.IntId)
+                {
+                    if (fum.Select == 2) select = 22;
+
+                    if (appuser is not null)
+                    {
+                        foreach (var use in appuser)
+                        {
+                            if (use.Id == fum.Id4User)
+                                await xClient.PutAsync<ForumDto>(fum.Id, GetEditPost(fum.Id, fum.ThreadName, fum.Date, fum.Text, fum.AuxHead,
+                                    use.Id, fum.Edited, fum.Pmail, fum.IsMan, select, fum.Id4Course), "api/Forum"); // 3.
+                        }
+                    }
+                }
+            }
+        }
+        xnav.SetDone(xtoa.TxtDone[45]);
+        xnav.SetReset('d');
+        Auxx.Flag = true;
+
+        Close();
+    }
+
+    private async Task DeletePost()
+    {
+        bool IsFind = false;
+
+        var forum = await xClient.GetAsync<IEnumerable<ForumDto>>("api/Forum");
+
+        if (forum is not null) IsFind = forum.Any(f => f.Id == Auxx.IntId);
+
+        if (IsFind)
+        {
+            if (forum is not null)
+            {
+                foreach (var fum in forum)
+                {
+                    // Raderar posten från databasen.
+                    if (fum.Id == Auxx.IntId) await xClient.RemAsync(fum.Id, "api/Forum");
+                }
+                xnav.SetDone(xtoa.TxtDone[46]);
+                xnav.SetReset('d');
+                Auxx.Flag = true;
+            }
+        }
+
+        if (!IsFind)
+        {
+            xnav.SetError(xtoa.TxtError[29]);
+            xnav.SetReset('e');
+        }
+
+        Close();
+    }
+
+    private ForumDto GetEditPost(int id, string tname, DateTime date, string text, string aux, string? userid,
+        int edit, string pmail, bool isman, byte select, int cid) // Nytt postobjekt.
+    {
+        var dto = new ForumDto
+        {
+            Id = id,
+            ThreadName = tname,
+            Date = date,
+            Text = text,
+            AuxHead = aux,
+            Id4User = userid,
+            Edited = edit,
+            Pmail = pmail,
+            IsMan = isman,
+            Select = select,
+            Id4Course = cid
+        };
+        return dto;
+    }
+}

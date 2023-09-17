@@ -15,6 +15,7 @@
         Task<HttpResponseMessage> PostFile(MultipartFormDataContent content);
         Task<bool> PutAsync<T>(int id, T dto, string route);
         Task<bool> RemAsync(int id, string route);
+        Task Scroll2View(string id);
         Task SetStorage<T>(string name, string value);
     }
 }

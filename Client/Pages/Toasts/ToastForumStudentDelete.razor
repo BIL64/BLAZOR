@@ -1,0 +1,187 @@
+﻿@inject IXDtoClient xClient
+@inject XLangToast xtoa
+@inject XNavMenu xnav
+@attribute [Authorize]
+@*Toast component by Björn Lindqvist*@
+@*Både studenter och lärare har åtkomst hit*@
+
+<AuthorizeView Roles ="Student, Teacher">
+    <Authorized>
+        <div class="toast-container p-3 @showClass"
+             style="position: fixed; top: auto; top: @(xnav.Pos_V)px; margin-left: @(xnav.Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
+            <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header" @onmouseup=" _ => xnav.Mouse(0, 'U', _)" @onmousedown=" _ => xnav.Mouse(Win_Height, 'D', _)"
+                     @onmousemove=" _ => xnav.Mouse(Win_Height, 'M', _)" @onmouseout=" _ => xnav.Mouse(Win_Height, 'M', _)">
+                    <strong class="me-auto">@HeaderText</strong>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+                </div>
+
+                <div class="toast-body">
+                    <EditForm Model="@xClient" Context="deletethreadstudlmslexnet" OnSubmit="HandleSubmitThread">
+                        <InputRadioGroup Name="DeleteRadio" @bind-Value="DelSelect">
+                            <div class="form-group m-1">
+                                <InputRadio id="Select0" class="form-check-inline" Value="0" />
+                                <label for="Select0">@xtoa.TxtText[48]</label> @* Remove a specific saved thread *@
+                            </div>
+                            <div class="form-group m-1">
+                                <InputRadio id="Select1" class="form-check-inline" Value="1" />
+                                <label for="Select1">@xtoa.TxtText[49]</label> @* Remove all saved thread (reset) *@
+                            </div>
+                            <div class="form-group m-1">
+                                <InputRadio id="Select2" class="form-check-inline" Value="2" />
+                                <label for="Select2" style="color: red">@xtoa.TxtText[50]</label> @* Remove the thread from the database *@
+                            </div>
+                        </InputRadioGroup>
+                        @if (DelSelect != 1)
+                        {
+                            <div class="form-group m-3">
+                                <label for="Threadname">@xtoa.TxtText[54]</label> @* Type the thread name *@
+                                <InputText id="Threadname" class="form-control" @bind-Value="Tname" />
+                            </div>
+                        }
+                        @if (DelSelect == 1)
+                        {
+                            <div style="font-size: 1rem"><b>@xtoa.TxtText[55]</b></div> @* This will delete all your saved threads! *@
+                        }
+                        @if (DelSelect == 2)
+                        {
+                            <div style="font-size: 1.3rem; color: red"><b>@xtoa.TxtText[56]</b></div> @* This irrevocably eliminates the thread and all its posts! *@
+                        }
+                        <div class="form-group m-3">
+                            <button type="submit" class="text-white remyes" title=@xtoa.TxtTitle[24]>@xtoa.TxtButton[2]</button> @* DELETE NOW *@
+                            <button type="button" class="text-white remnot" @onclick="Close">@xtoa.TxtButton[0]</button> @* NO *@
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+
+    </Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private string HeaderText = string.Empty;
+    private string showClass = "d-none";
+    private string Tname = string.Empty;
+    private int DelSelect; // Måste vara int!
+
+    private int Win_Height;
+
+    public async Task Show()
+    {
+        xnav.SetReset('a');
+
+        var dim = await xClient.GetWindow(); // Hämtar aktuell skärmstorlek.
+        Win_Height = dim.Height;
+        xnav.Pos_H = (int)Math.Round(dim.Width * 0.08); // 08%
+        xnav.Pos_V = (int)Math.Round(Win_Height * 0.2); // 20%
+
+        Tname = string.Empty;
+        DelSelect = 0;
+        HeaderText = xtoa.TxtHead[36];
+        showClass = "d-block";
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        HeaderText = string.Empty;
+        showClass = "d-none";
+        StateHasChanged();
+    }
+
+    private async Task HandleSubmitThread()
+    {
+        bool IsFind = false;
+
+        string names = await xClient.GetStorage<string>("LMS_F_Name");
+        var forum = await xClient.GetAsync<IEnumerable<ForumDto>>("api/Forum");
+
+        Tname = Tname.Replace("|", "/");
+
+        if (DelSelect == 0) // Raderar endast en sparad tråd.
+        {
+            if (names.IndexOf(Tname) != -1 && Tname != "")
+            {
+                names = names.Replace(Tname + "|", "");
+
+                try
+                {
+                    await xClient.SetStorage<string>("LMS_F_Name", names);
+                    xnav.SetDone(xtoa.TxtDone[36]);
+                    xnav.SetReset('d');
+                    Auxx.Flag = true;
+                }
+                catch
+                {
+                    xnav.SetError(@xtoa.TxtError[20]);
+                    xnav.SetReset('e');
+                }
+            }
+            else
+            {
+                xnav.SetError(xtoa.TxtError[27]);
+                xnav.SetReset('e');
+            }
+        }
+
+        if (DelSelect == 1) // Nollställer (alla) sparade trådar i local storage.
+        {
+            try
+            {
+                await xClient.SetStorage<string>("LMS_F_Name", "");
+                xnav.SetDone(xtoa.TxtDone[37]);
+                xnav.SetReset('d');
+                Auxx.Flag = true;
+            }
+            catch
+            {
+                xnav.SetError(@xtoa.TxtError[20]);
+                xnav.SetReset('e');
+            }
+        }
+
+        if (DelSelect == 2) // Raderar hela diskussionstråden med alla dess poster i databasen!
+        {
+            if (forum is not null) IsFind = forum.Any(f => (f.ThreadName == Tname && f.Id4User == Auxx.GuidId && f.Select == 0));
+
+            if (forum is not null && IsFind)
+            {
+                foreach (var fum in forum)
+                {
+                    if (fum.ThreadName == Tname) await xClient.RemAsync(fum.Id, "api/Forum");
+                }
+                xnav.SetDone(xtoa.TxtDone[38]);
+                xnav.SetReset('d');
+            }
+            Auxx.Flag = true;
+
+            if (names.IndexOf(Tname) != -1 && Tname != "") // Raderar även en ev sparad tråd.
+            {
+                names = names.Replace(Tname + "|", "");
+
+                try
+                {
+                    await xClient.SetStorage<string>("LMS_F_Name", names);
+                }
+                catch
+                {
+                    xnav.SetError(@xtoa.TxtError[20]);
+                    xnav.SetReset('e');
+                }
+            }
+
+            if (!IsFind)
+            {
+                xnav.SetError(xtoa.TxtError[28]);
+                xnav.SetReset('e');
+            }
+        }
+
+        Close();
+    }
+}

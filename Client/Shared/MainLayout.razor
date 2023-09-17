@@ -1,10 +1,11 @@
 ﻿@inherits LayoutComponentBase
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject IAppUserDtoClient appuserClient
+@inject IXDtoClient xClient
 @inject XNavMenu xnav
 
 <div class="page">
-    <div class="sidebar">
+    <div class="sidebar" style="@colorStyle">
         <NavMenu />
     </div>
 
@@ -54,6 +55,12 @@
 
     private List<AppUserDto> johndoe = new(); // De med lärarrollen.
 
+    private bool IsStandard;
+    private byte ColorR;
+    private byte ColorG;
+    private byte ColorB;
+    private string colorStyle = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
@@ -68,6 +75,25 @@
                 if (item.UserRole == 2) johndoe.Add(item); // Hämtar endast användare med lärarrollen.
             }
         }
+
+        // Hämtar färgkoder från lokal storage.
+        if (await xClient.GetStorage<string>("LMS_C_Standard") == "False") IsStandard = false;
+        else IsStandard = true;
+
+        string LScolor = await xClient.GetStorage<string>("LMS_C-R");
+        if (LScolor is not null && LScolor != "") ColorR = byte.Parse(LScolor); else ColorR = xnav.ColorRGB[0];
+        LScolor = await xClient.GetStorage<string>("LMS_C-G");
+        if (LScolor is not null && LScolor != "") ColorG = byte.Parse(LScolor); else ColorG = xnav.ColorRGB[1];
+        LScolor = await xClient.GetStorage<string>("LMS_C-B");
+        if (LScolor is not null && LScolor != "") ColorB = byte.Parse(LScolor); else ColorB = xnav.ColorRGB[2];
+
+        if (IsStandard)
+        {
+            ColorR = xnav.ColorRGB[0];
+            ColorG = xnav.ColorRGB[1];
+            ColorB = xnav.ColorRGB[2];
+        }
+        colorStyle = $"background-image: linear-gradient(180deg, rgb(80, 35, 60) 0%, rgb({ColorR}, {ColorG}, {ColorB}) 170%)";
 
         xnav.OnChange += StateHasChanged;
     }

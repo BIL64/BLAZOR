@@ -1,0 +1,610 @@
+﻿@page "/studentforum"
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject IAppUserDtoClient appuserClient
+@inject IXDtoClient xClient
+@inject XLangStudent xstu
+@inject XLangToast xtoa
+@inject XNavMenu xnav
+@attribute [Authorize]
+@*Av Björn Lindqvist*@
+@*Både studenter och lärare har åtkomst hit*@
+
+<PageTitle>Student Forum</PageTitle>
+
+<AuthorizeView Roles="Student, Teacher">
+    <Authorized>
+
+<h5 id="targethead">@Emptydb</h5><br />
+
+@if (forums == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <nav class="float-end" style="width: 280px; margin: 0 3% 0 10%; padding: 10px; border: 4px outset lightgray; border-radius: 10px">
+        <EditForm Context="studentforumlmslexnet" Model="@forums" OnSubmit="OnInitializedAsync">
+            <div class="input-group">
+                <div style="position: relative; top: 1px; z-index: 0">
+                    <button type="submit" class="btn btn-outline-dark btn-sm">Search</button>
+                </div>
+                <InputText class="form-control-sm" @bind-Value="searchString" placeholder="Thread name" />
+            </div>
+        </EditForm>
+        <div class="my-3">
+            <button type="button" class="btn btn-outline-dark btn-sm"
+                @onclick="_ => AddEditThread(nameString)">@xstu.TxtText[26]</button> @* Add/edit thread *@
+        </div>
+        <div class="my-3">
+            <button type="button" class="btn btn-outline-dark text-danger btn-sm"
+                @onclick="DeleteThread">@xstu.TxtText[27]</button> @* Delete thread *@
+        </div>
+        <div class="my-3">
+            <button type="button" class="btn btn-outline-dark btn-sm"
+                @onclick="CloseThread">@xstu.TxtText[28]</button> @* Close *@
+                <hr />
+        </div>
+        <div>
+            @foreach (var fan in formans)
+            {
+                if (fan.IsMan && fan.Select == 0) // Endast obligatoriska.
+                {
+                    if (fan.Id4Course == 0) // Oberoende av kurs.
+                    {
+                        <div class="my-3" style="margin-left: 20%">
+                            <button type="button" class="btn btn-outline-dark border-info btn-sm"
+                                @onclick="_ => OpenThread(fan.ThreadName)" title=@xstu.TxtTitle[6]>@fan.ThreadName
+                            </button>
+                        </div>
+                    }
+
+                    if (loggeduser.CourseId == fan.Id4Course) // Om specifik kurs.
+                    {
+                        <div class="my-3" style="margin-left: 20%">
+                            <button type="button" class="btn btn-outline-dark border-info btn-sm"
+                                @onclick="_ => OpenThread(fan.ThreadName)" title=@xstu.TxtTitle[6]>@fan.ThreadName
+                            </button>
+                        </div>
+                    }
+                }
+            }
+        </div>
+        <div>
+            @xstu.TxtText[33] @* Your saved threads... *@
+        </div>
+
+        @foreach (var name in myownthreads) // Sparade trådar.
+        {
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                <div class="my-2" style="margin-left: 20%">
+                    <button type="button" class="btn btn-outline-primary border-info btn-sm"
+                        @onclick="_ => OpenThread(name)">@name</button>
+                </div>
+            }
+        }
+    </nav>
+
+    <aside class="container">
+        @if (!string.IsNullOrWhiteSpace(searchString)) // Presentation av sökta trådar.
+        {
+            foreach (var name in threadnames)
+            {
+                <div style="color: darkblue; cursor: pointer; margin: 5px"
+                    @onclick="_ => OpenThread(name)" title=@xstu.TxtTitle[7]><u>@name</u></div>
+            }
+        }
+        else
+        {
+            if (!string.IsNullOrWhiteSpace(nameString))
+            {
+                Emptydb = nameString + " \u2BA7";
+                <button type="button" class="btn btn-outline-dark btn-sm my-4"
+                    @onclick="_ => SaveThread(nameString)" title=@xstu.TxtTitle[8]>@xstu.TxtText[29]</button>
+                foreach (var fum in forums)
+                {
+                    foreach (var use in appusers)
+                    {
+                        if (use.Id == fum.Id4User && fum.ThreadName == nameString && fum.Select != 0)
+                        {
+                            if (fum.AuxHead != "") // Om extra rubrik:
+                            {
+                                if (fum.Select == 1)
+                                {
+                                    <div style="font-size: 0.8rem; font-weight: bold; color: red">@fum.AuxHead</div>
+                                }
+
+                                if (fum.Select == 2)
+                                {
+                                    if (fum.Id4User == loggeduser.Id)
+                                    {
+                                        <div style="font-size: 0.8rem; font-weight: bold">
+                                            <span style="color: red">@fum.AuxHead </span>
+                                            <span style="font-size: 0.77rem; color: magenta">
+                                                @use.FirstName @use.LastName</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div style="font-size: 0.8rem; font-weight: bold">
+                                            <span style=" color: red">@fum.AuxHead </span>
+                                            <span style="font-size: 0.77rem; color: darkblue">
+                                                @use.FirstName @use.LastName</span>
+                                        </div>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (fum.Select == 1) // Ingen rubrik:
+                                {
+                                    <div style="font-size: 0.77rem; font-weight: bold; color: darkred">
+                                        @use.FirstName @use.LastName</div>
+                                }
+
+                                if (fum.Select == 2)
+                                {
+                                    if (fum.Id4User == loggeduser.Id)
+                                    {
+                                        <span style="font-size: 0.77rem; font-weight: bold; color: magenta">
+                                            @use.FirstName @use.LastName</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="font-size: 0.77rem; font-weight: bold; color: darkblue">
+                                            @use.FirstName @use.LastName</span>
+                                    }
+                                }
+                            }
+
+                            if (fum.Select > 10 && DateTime.Now < fum.Date.AddHours(6)) // Om posten är censurerad:
+                            {
+                                <div style="font-size: 0.8rem; font-style: italic; color: darksalmon"><b>@xstu.TxtText[34]</b></div>
+                                <div style="font-size: 0.65rem; font-style: italic">@fum.Date.ToString()[..16]</div><br />
+                            }
+
+                            if (fum.Select < 10) // Text, datum och redigering:
+                            {
+                                <div style="font-size: 0.85rem; max-width: 700px; margin-top: 5px">@fum.Text</div>
+                                <div class="d-flex">
+                                    @if (fum.Id4User == loggeduser.Id)
+                                    {
+                                        <span class="postdate">@fum.Date.ToString()[..16]</span>
+                                        <span class="postedit" @onclick="_ => EditPost(fum.Id)" title=@xstu.TxtTitle[9]>@fum.Edited</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="postdate">@fum.Date.ToString()[..16]</span>
+                                        <span class="posteditnr" title=@xstu.TxtTitle[10]>@fum.Edited</span>
+                                    }
+                                </div><br />
+                            }
+                        }
+
+                        else if (use.Id == fum.Id4User && fum.ThreadName == nameString && fum.Select == 0) // Initieringspost.
+                        {
+                            <div style="font-size: 0.85rem; font-style: oblique; margin-bottom: 20px">
+                                @xstu.TxtText[35] @use.FirstName @use.LastName @fum.Date.ToString()[..10]
+                                @if (fum.Pmail != "")
+                                {
+                                    <span>@xstu.TxtText[36]</span>
+                                }
+
+                                @if (fum.IsMan)
+                                {
+                                    <span>@xstu.TxtText[37]</span>
+                                }
+
+                                @if (fum.Id4Course != 0)
+                                {
+                                    foreach (var cour in courses)
+                                    {
+                                        if (cour.Id == fum.Id4Course)
+                                        {
+                                            <span> - @cour.Name</span>
+                                        }
+                                    }
+                                }
+
+                                @if (fum.Pmail == "" && !fum.IsMan && fum.Id4Course == 0)
+                                {
+                                    <span>@xstu.TxtText[38]</span>
+                                }
+                            </div>
+                        }
+                    }
+                }
+                <EditForm Context="addthreadlmslexnet" Model="@forums" OnSubmit="_ => AddPost(nameString)">
+                    <InputTextArea class="form-control" style="max-width: 700px; margin-top: 20px" @bind-Value="addString" placeholder=@xstu.TxtText[39] />
+                    <div class="d-flex">
+                        <InputText class="form-control my-2" style="max-width: 300px" @bind-Value="auxString" placeholder=@xstu.TxtText[40] />
+                        <button type="button" class="btn btn-outline-dark oi oi-arrow-circle-top border-light btn-sm"
+                            style="height: 30px; margin: 11px 0 0 20px" title=@xstu.TxtTitle[11] @onclick="UpAgain"></button>
+                    </div>
+                    <button type="submit" id="targetarea"class="btn btn-outline-success btn-sm">@xstu.TxtText[30]</button>
+                </EditForm><br />
+            }
+        }
+    </aside>
+
+    <ToastForumStudentAddEdit @ref="addeditthreadRef" /> @*Läggtillredigeratrådfönster*@
+    <ToastForumStudentEdit @ref="editpostRef" /> @*Redigerapostfönster*@
+    <ToastForumStudentDelete @ref="deleteRef" /> @*Delete-fönster*@
+}
+</Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private ToastForumStudentAddEdit? addeditthreadRef; // Läggtillredigeratrådfönster.
+
+    private async Task AddEditThread(string name) // Läggtillredigeratrådfönster.
+    {
+        Scroll = false;
+        Auxx.GuidId = loggeduser.Id!;
+        Auxx.Name4Type = name;
+        await addeditthreadRef!.Show();
+        await RefreshAfterThis(true); // Uppdaterar sidan.
+    }
+
+    private ToastForumStudentEdit? editpostRef; // Redigerapostfönster.
+
+    private async Task EditPost(int id) // Redigerapostfönster.
+    {
+        Scroll = false;
+        Auxx.GuidId = loggeduser.Id!;
+        Auxx.IntId = id;
+        await editpostRef!.Show();
+        await RefreshAfterThis(false); // Uppdaterar sidan.
+    }
+
+    private ToastForumStudentDelete? deleteRef; // Delete-fönster.
+
+    private async Task DeleteThread() // Delete-fönster.
+    {
+        Scroll = false;
+        Auxx.GuidId = loggeduser.Id!;
+        await deleteRef!.Show();
+        await RefreshAfterThis(false); // Uppdaterar sidan.
+    }
+
+    private List<string> threadnames = new();
+
+    private List<string> myownthreads = new();
+
+    private List<CourseDto> courses = new();
+
+    private List<ForumDto> forums = new();
+
+    private List<ForumDto> formans = new();
+
+    private List<AppUserDto> appusers = new();
+
+    private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
+
+    private string searchString = string.Empty;
+    private string nameString = string.Empty;
+    private string addString = string.Empty;
+    private string auxString = string.Empty;
+    private string Emptydb = string.Empty;
+    private bool Scroll = false;
+
+    private async Task RefreshAfterThis(bool thread) // Uppdaterar efter förändring av innehåll.
+    {
+        while (!Auxx.Flag) await xnav.Intermission(500, false); // Nödvändigt för att kunna uppdatera sidan efteråt.
+        if (thread)
+        {
+            nameString = Auxx.Name4Type;
+            Emptydb = nameString + " \u2BA7";
+        }
+        await OnInitializedAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (xstu.RenderPage != "STILL_HERE")
+        {
+            xnav.SetJohnDoe(false);
+            xnav.MainRole = 1;
+            xnav.ClassSettings = "d-block"; // Settings.
+            if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xstu.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xstu.SetLanguage_SV(); xtoa.SetLanguage_SV(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "DE") { xstu.SetLanguage_DE(); xtoa.SetLanguage_DE(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") { xstu.SetLanguage_FR(); xtoa.SetLanguage_FR(); }
+            else { xstu.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+        }
+
+        if (!Auxx.Flag) xnav.SetReset('a');
+        Auxx.Flag = false;
+
+        threadnames.Clear();
+        myownthreads.Clear();
+        courses.Clear();
+        forums.Clear();
+        formans.Clear();
+        appusers.Clear();
+
+        if (nameString == "") Emptydb = xstu.TxtText[44]; // Discussion forum.
+
+        string OWNER = string.Empty;
+        string PMAIL = string.Empty;
+
+        var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
+
+        var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
+        var forum = await xClient.GetAsync<IEnumerable<ForumDto>>("api/Forum");
+        var appuser = await appuserClient.GetAsync();
+
+        if (course is not null) courses = course.ToList(); // Hämtar alla kurser.
+        if (appuser is not null) appusers = appuser.ToList(); // Hämtar alla användare.
+
+        if (appuser is not null && name is not null)
+        {
+            foreach (var item in appuser) // Hämtar den som för tillfället är inloggad.
+            {
+                if (item.Email == name) loggeduser = item;
+            }
+        }
+
+        if (forum is not null)
+        {
+            foreach (var fum in forum)
+            {
+                // Sökfiltrering med IndexOf: trådnamn.
+                if (!string.IsNullOrWhiteSpace(searchString))
+                {
+                    nameString = "";
+
+                    if (fum.ThreadName.ToLower().IndexOf(searchString.ToLower()) != -1)
+                    {
+                        foreach (var zero in forum) // Vem äger tråden?
+                        {
+                            if (zero.ThreadName == fum.ThreadName && zero.Select == 0) OWNER = zero.Id4User!;
+                        }
+
+                        foreach (var use in appusers) // Vem postade inlägget.
+                        {
+                            if (use.Id == fum.Id4User) PMAIL = use.Email!;
+                        }
+
+                        if (fum.Pmail == "" || fum.Id4User == loggeduser.Id || // Alla icke privata
+                            (PMAIL == fum.Pmail && OWNER == loggeduser.Id) ||  // eller egna eller den utvalda
+                                fum.Pmail == loggeduser.Email)                 // eller de som är till mig.
+                        {
+                            if (!fum.IsMan || (fum.IsMan && fum.Id4Course == 0) ||   // Alla icke obligatoriska eller obligatoriska utan kurs-id
+                                (fum.IsMan && fum.Id4Course == loggeduser.CourseId)) // eller obligatoriska med ett kurs-id = ditt kurs-id.
+                            {
+                                threadnames.Add(fum.ThreadName);
+                                forums.Add(fum);
+                            }
+                        }
+                    }
+                }
+                // En specifik tråd.
+                else if (!string.IsNullOrWhiteSpace(nameString) && fum.ThreadName == nameString)
+                {
+                    foreach (var zero in forum) // Vem äger tråden?
+                    {
+                        if (zero.ThreadName == fum.ThreadName && zero.Select == 0) OWNER = zero.Id4User!;
+                    }
+
+                    foreach (var use in appusers) // Vem postade inlägget.
+                    {
+                        if (use.Id == fum.Id4User) PMAIL = use.Email!;
+                    }
+
+                    if (fum.Pmail == "" || fum.Id4User == loggeduser.Id || // Alla icke privata
+                        (PMAIL == fum.Pmail && OWNER == loggeduser.Id) ||  // eller egna eller den utvalda
+                            fum.Pmail == loggeduser.Email)                 // eller de som är till mig.
+                    {
+                        if (!fum.IsMan || (fum.IsMan && fum.Id4Course == 0) ||   // Alla icke obligatoriska eller obligatoriska utan kurs-id
+                            (fum.IsMan && fum.Id4Course == loggeduser.CourseId)) // eller obligatoriska med ett kurs-id = ditt kurs-id.
+                        {
+                            threadnames.Add(fum.ThreadName);
+                            forums.Add(fum);
+                        }
+                    }
+                }
+                // Vid uppstart.
+                else
+                {
+                    foreach (var zero in forum) // Vem äger tråden?
+                    {
+                        if (zero.ThreadName == fum.ThreadName && zero.Select == 0) OWNER = zero.Id4User!;
+                    }
+
+                    foreach (var use in appusers) // Vem postade inlägget.
+                    {
+                        if (use.Id == fum.Id4User) PMAIL = use.Email!;
+                    }
+
+                    if (fum.Pmail == "" || fum.Id4User == loggeduser.Id || // Alla icke privata
+                        (PMAIL == fum.Pmail && OWNER == loggeduser.Id) ||  // eller egna eller den utvalda
+                            fum.Pmail == loggeduser.Email)                 // eller de som är till mig.
+                    {
+                        if (!fum.IsMan || (fum.IsMan && fum.Id4Course == 0) ||   // Alla icke obligatoriska eller obligatoriska utan kurs-id
+                            (fum.IsMan && fum.Id4Course == loggeduser.CourseId)) // eller obligatoriska med ett kurs-id = ditt kurs-id.
+                        {
+                            threadnames.Add(fum.ThreadName);
+                            forums.Add(fum);
+                        }
+                    }
+                }
+            }
+
+            formans = forum.OrderBy(n => n.ThreadName).ToList();
+
+            if (forums.Count < 1) Emptydb = xstu.TxtText[45]; // Forum is missing...
+            if (!string.IsNullOrWhiteSpace(searchString) && threadnames.Count < 1) Emptydb = xstu.TxtText[46]; // No threads could be find...
+
+            threadnames = threadnames.Distinct().ToList();
+
+            string myownthread = await xClient.GetStorage<string>("LMS_F_Name"); // Hämtar alla sparade trådar från local storage.
+            if (!string.IsNullOrWhiteSpace(myownthread))
+            {
+                string[] threadsarray = myownthread.Split('|');
+                myownthreads = threadsarray.ToList();
+            }
+        }
+        else
+        {
+            Emptydb = xstu.TxtText[45]; // Forum is missing...
+        }
+
+        // // För att kunna studera trådnamnen i lokal storage.
+        // string lsnames = await xClient.GetStorage<string>("LMS_F_Name");
+        // xnav.SetDone(lsnames);
+        // xnav.SetReset('d');
+    }
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (Scroll) await xClient.Scroll2View("targetarea"); // Skrollar ned sidan.
+    }
+
+    private async Task UpAgain()
+    {
+        await xClient.Scroll2View("targethead"); // Skrollar upp sidan.
+    }
+
+    private async Task OpenThread(string name)
+    {
+        searchString = string.Empty;
+        nameString = name;
+        Scroll = true;
+        await OnInitializedAsync();
+    }
+
+    private async Task CloseThread()
+    {
+        searchString = string.Empty;
+        nameString = string.Empty;
+        await OnInitializedAsync();
+    }
+
+    private async Task SaveThread(string threadname)
+    {
+        string names = await xClient.GetStorage<string>("LMS_F_Name");
+
+        threadname = threadname.Replace("|", "/");
+
+        if (names.ToLower().IndexOf(threadname.ToLower()) == -1)
+        {
+            names += threadname + "|";
+
+            try
+            {
+                await xClient.SetStorage<string>("LMS_F_Name", names);
+                xnav.SetDone(xstu.TxtText[47]);
+                xnav.SetReset('d');
+            }
+            catch
+            {
+                xnav.SetError(@xtoa.TxtError[20]);
+                xnav.SetReset('e');
+            }
+
+            Auxx.Flag = true;
+            await OnInitializedAsync();
+        }
+        else
+        {
+            xnav.SetDone(xstu.TxtText[48]);
+            xnav.SetReset('d');
+        }
+    }
+
+    private async Task AddPost(string threadname)
+    {
+        string OWNER = string.Empty;
+        string PMAIL = string.Empty;
+        bool IsFind = false;
+        bool IsAuthorized = false;
+
+        var forum = await xClient.GetAsync<IEnumerable<ForumDto>>("api/Forum");
+
+        xnav.SetReset('a');
+
+        if (forum is not null && addString != "")
+        {
+            foreach (var fum in forum)
+            {
+                if (fum.ThreadName == threadname && fum.Select == 0)  // Initieringsposten hämtas.
+                {
+                    IsFind = true;
+
+                    foreach (var zero in forum) // Vem äger tråden?
+                    {
+                        if (zero.ThreadName == fum.ThreadName && zero.Select == 0) OWNER = zero.Id4User!;
+                    }
+
+                    foreach (var use in appusers) // Vem postade inlägget.
+                    {
+                        if (use.Id == fum.Id4User) PMAIL = use.Email!;
+                    }
+
+                    if (fum.Pmail == "" || fum.Id4User == loggeduser.Id || // Alla icke privata
+                        (PMAIL == fum.Pmail && OWNER == loggeduser.Id) ||  // eller egna eller den utvalda
+                            fum.Pmail == loggeduser.Email)                 // eller de som är till mig.
+                    {
+                        if (!fum.IsMan || (fum.IsMan && fum.Id4Course == 0) ||   // Alla icke obligatoriska eller obligatoriska utan kurs-id
+                            (fum.IsMan && fum.Id4Course == loggeduser.CourseId)) // eller obligatoriska med ett kurs-id = ditt kurs-id.
+                        {
+                            await xClient.PostAsync<ForumDto>(GetNewPost(threadname, addString, auxString,
+                                loggeduser.Id, fum.Pmail, fum.IsMan, fum.Id4Course), "api/Forum");
+                            IsAuthorized = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!IsAuthorized)
+        {
+            xnav.SetError(xstu.TxtText[50]);
+            xnav.SetReset('e');
+        }
+
+        if (!IsFind)
+        {
+            xnav.SetError(xstu.TxtText[51]);
+            xnav.SetReset('e');
+        }
+
+        if (addString == "")
+        {
+            xnav.SetDone(xstu.TxtText[49]);
+            xnav.SetReset('d');
+        }
+
+        addString = string.Empty;
+        auxString = string.Empty;
+        Scroll = true;
+        Auxx.Flag = true;
+        await OnInitializedAsync();
+    }
+
+    private ForumDto GetNewPost(string tname, string text, string aux, string? userid,
+        string pmail, bool isman, int cid) // Nytt postobjekt.
+    {
+        var dto = new ForumDto
+        {
+            ThreadName = tname,
+            Date = DateTime.Now,
+            Text = text,
+            AuxHead = aux,
+            Id4User = userid,
+            Edited = 0,
+            Pmail = pmail,
+            IsMan = isman,
+            Select = 2,
+            Id4Course = cid
+        };
+        return dto;
+    }
+}

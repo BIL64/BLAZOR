@@ -20,8 +20,10 @@ namespace LexiconLMSBlazor.Shared.Dtos
 
         public byte Select { get; set; } = 2;
 
+        // Enumerable Key
         public int CourseId { get; set; }
 
+        // Enumerable Type
         public IEnumerable<ActivityDto> Activities { get; set; } = new List<ActivityDto>();
     }
 }

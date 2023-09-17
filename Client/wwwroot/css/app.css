@@ -591,6 +591,39 @@ i {
         background-color: lightcoral;
     }
 
+.postedit {
+    font-size: 0.55rem;
+    padding: 0 10px 0 10px;
+    border: 2px solid white;
+    margin: 6px 0 6px 0;
+    color: gray;
+    background-color: lightcyan;
+    border-radius: 13px;
+    cursor: pointer;
+}
+
+    .postedit:hover {
+        border: 2px solid black;
+    }
+
+.posteditnr {
+    font-size: 0.55rem;
+    padding: 0 10px 0 10px;
+    border: 2px solid white;
+    margin: 6px 0 6px 0;
+    color: gray;
+    background-color: lightcyan;
+    border-radius: 13px;
+}
+
+.postdate {
+    font-size: 0.65rem;
+    font-style: italic;
+    position: relative;
+    top: 7px;
+    margin: 0 10px 0 20px;
+}
+
 /* DROPUSE */
 /* The container <div> - needed to position the dropuse content */
 .dropuse {

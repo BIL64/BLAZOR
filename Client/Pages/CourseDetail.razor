@@ -15,7 +15,7 @@
 
 <AuthorizeView Roles="Teacher">
     <Authorized>
-        <nav style="display: flex">
+        <nav class="d-flex">
             <div style="width: 75%"><h3>@xdet.TxtText[1] @CourseId: @NoModules @* Administration of this course *@
                     <i style="cursor: pointer" @onclick=" _ => EditCourse(CourseId)" title="@CourseDescription @xdet.TxtTitle[4]">@CourseName</i>
                 </h3>
@@ -26,7 +26,7 @@
                 <button type="button" class="mb-1 text-white delbtn" @onclick="StudentPage" title=@xdet.TxtTitle[2]>S</button>
             </div>
         </nav> 
-        <nav style="display: flex">
+        <nav class="d-flex">
             <div style="margin: 20px 0 0 auto">
                 <button type="button" class="docplusbtn"
                 @onclick=" _ => DocSaveControl(IId, 2, CourseName)" title=@xdet.TxtTitle[3]>+ DOC</button>
@@ -698,12 +698,13 @@
         xtoa.OnChange += StateHasChanged;
     }
 
-    protected override async void OnAfterRender(bool firstRender) // Byter klass på knapp om dokument hittas.
+    protected override async void OnAfterRender(bool firstRender)
     {
         foreach (var mod in modules)
         {
             foreach (var doc in documents)
             {
+                // Byter klass på knapp om dokument hittas.
                 if (mod.Id == doc.ModuleId && (mod.Select == 1 || mod.Select == 10 || mod.Select == 2 || mod.Select == 20))
                     await xClient.ChangeClass("M" + mod.Id, "docviewbtn-docs");
             }
@@ -714,6 +715,7 @@
                 {
                     foreach (var doc in documents)
                     {
+                        // Byter klass på knapp om dokument hittas.
                         if (act.Id == doc.ActivityId && act.Select != 0 && mod.Select != 0)
                             await xClient.ChangeClass("A" + act.Id, "docviewbtn-docs");
                     }

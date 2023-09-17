@@ -83,7 +83,7 @@
         TxtTitle[i] = "Avoid edit activity";
         i++;
         // 4
-        TxtTitle[i] = "Save this edit form";
+        TxtTitle[i] = "Save this edited form";
         i++;
         // 5
         TxtTitle[i] = "Add this module with one blank activity";

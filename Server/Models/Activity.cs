@@ -20,10 +20,8 @@ namespace LexiconLMSBlazor.Server.Models
 
         public byte Select { get; set; } = 1;
 
-        // Foreign Key
+        // Foreign Keys
         public int? ModuleId { get; set; }
-
-        // Foreign Key
         public int? ActivityTypeId { get; set; }
     }
 }

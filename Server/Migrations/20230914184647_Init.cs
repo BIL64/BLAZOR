@@ -95,6 +95,28 @@ namespace LexiconLMSBlazor.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Forum",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ThreadName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AuxHead = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Id4User = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Edited = table.Column<int>(type: "int", nullable: false),
+                    Pmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsMan = table.Column<bool>(type: "bit", nullable: false),
+                    Select = table.Column<byte>(type: "tinyint", nullable: false),
+                    Id4Course = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Forum", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Keys",
                 columns: table => new
                 {
@@ -452,6 +474,9 @@ namespace LexiconLMSBlazor.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "Document");
+
+            migrationBuilder.DropTable(
+                name: "Forum");
 
             migrationBuilder.DropTable(
                 name: "Keys");

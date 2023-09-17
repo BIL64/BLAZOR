@@ -47,6 +47,14 @@
         window.swapDocClass = (id, name) => {
             document.getElementById(id).className = name;
         }
+
+        window.scrollIntoView = (elementId) => {
+            var elem = document.getElementById(elementId);
+            if (elem) {
+                elem.scrollIntoView();
+                window.location.hash = elementId;
+            }
+        }
     </script>
 </body>
 

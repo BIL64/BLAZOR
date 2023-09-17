@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Pages\ToastDeleteModule.razor">
+    <Content Update="Pages\Toasts\ToastDeleteModule.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
   </ItemGroup>

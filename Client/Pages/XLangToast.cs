@@ -1,16 +1,16 @@
 ﻿public class XLangToast // Implementerar det språk man valt via Local Storage.
 {
-    public string[] TxtButton { get; private set; } = new string[14];
+    public string[] TxtButton { get; private set; } = new string[15];
 
-    public string[] TxtTitle { get; private set; } = new string[20];
+    public string[] TxtTitle { get; private set; } = new string[28];
 
-    public string[] TxtHead { get; private set; } = new string[32];
+    public string[] TxtHead { get; private set; } = new string[38];
 
-    public string[] TxtText { get; private set; } = new string[30];
+    public string[] TxtText { get; private set; } = new string[62];
 
-    public string[] TxtDone { get; private set; } = new string[31];
+    public string[] TxtDone { get; private set; } = new string[47];
 
-    public string[] TxtError { get; private set; } = new string[21];
+    public string[] TxtError { get; private set; } = new string[30];
 
     public event Action? OnChange;
 
@@ -59,6 +59,9 @@
         i++;
         // 13
         TxtButton[i] = "This Into New";
+        i++;
+        // 14
+        TxtButton[i] = "CENSOR";
     }
 
     private void Button_SV()
@@ -106,6 +109,9 @@
         i++;
         // 13
         TxtButton[i] = "Till en ny";
+        i++;
+        // 14
+        TxtButton[i] = "CENSURERA";
     }
 
     private void Button_DE()
@@ -181,6 +187,30 @@
         i++;
         // 19
         TxtTitle[i] = "Today's date";
+        i++;
+        // 20
+        TxtTitle[i] = "reserve";
+        i++;
+        // 21
+        TxtTitle[i] = "reserve";
+        i++;
+        // 22
+        TxtTitle[i] = "reserve";
+        i++;
+        // 23
+        TxtTitle[i] = "Add a new thread or save this edited form";
+        i++;
+        // 24
+        TxtTitle[i] = "Remove thread";
+        i++;
+        // 25
+        TxtTitle[i] = "Save this edited form";
+        i++;
+        // 26
+        TxtTitle[i] = "Remove this post from the system";
+        i++;
+        // 27
+        TxtTitle[i] = "Censor this post";
     }
 
     private void Title_SV()
@@ -246,6 +276,30 @@
         i++;
         // 19
         TxtTitle[i] = "Dagens datum";
+        i++;
+        // 20
+        TxtTitle[i] = "reserve";
+        i++;
+        // 21
+        TxtTitle[i] = "reserve";
+        i++;
+        // 22
+        TxtTitle[i] = "reserve";
+        i++;
+        // 23
+        TxtTitle[i] = "Lägg till en ny tråd eller spara detta redigerade formulär";
+        i++;
+        // 24
+        TxtTitle[i] = "Ta bort tråd";
+        i++;
+        // 25
+        TxtTitle[i] = "Spara detta redigerade formulär";
+        i++;
+        // 26
+        TxtTitle[i] = "Ta bort det här inlägget från systemet";
+        i++;
+        // 27
+        TxtTitle[i] = "Censurera detta inlägg";
     }
 
     private void Title_DE()
@@ -357,6 +411,24 @@
         i++;
         // 31
         TxtHead[i] = "Edit ACTIVITY document file...";
+        i++;
+        // 32
+        TxtHead[i] = "reserve";
+        i++;
+        // 33
+        TxtHead[i] = "reserve";
+        i++;
+        // 34
+        TxtHead[i] = "reserve";
+        i++;
+        // 35
+        TxtHead[i] = "Add or edit a thread...";
+        i++;
+        // 36
+        TxtHead[i] = "Delete a thread...";
+        i++;
+        // 37
+        TxtHead[i] = "Edit this post...";
     }
 
     private void Head_SV()
@@ -458,6 +530,24 @@
         i++;
         // 31
         TxtHead[i] = "Redigera AKTIVITET dokumentfil...";
+        i++;
+        // 32
+        TxtHead[i] = "reserve";
+        i++;
+        // 33
+        TxtHead[i] = "reserve";
+        i++;
+        // 34
+        TxtHead[i] = "reserve";
+        i++;
+        // 35
+        TxtHead[i] = "Lägg till eller redigera en tråd...";
+        i++;
+        // 36
+        TxtHead[i] = "Ta bort en tråd...";
+        i++;
+        // 37
+        TxtHead[i] = "Redigera detta inlägg...";
     }
 
     private void Head_DE()
@@ -567,6 +657,102 @@
         i++;
         // 29
         TxtText[i] = "Working...";
+        i++;
+        // 30
+        TxtText[i] = "reserve";
+        i++;
+        // 31
+        TxtText[i] = "reserve";
+        i++;
+        // 32
+        TxtText[i] = "reserve";
+        i++;
+        // 33
+        TxtText[i] = "Mandatory thread for a selected course";
+        i++;
+        // 34
+        TxtText[i] = "Mandatory thread for all courses";
+        i++;
+        // 35
+        TxtText[i] = "Open thread for all users";
+        i++;
+        // 36
+        TxtText[i] = "Private thread";
+        i++;
+        // 37
+        TxtText[i] = "Select course";
+        i++;
+        // 38
+        TxtText[i] = "Select a discussion partner";
+        i++;
+        // 39
+        TxtText[i] = "Type a name for this thread";
+        i++;
+        // 40
+        TxtText[i] = "Private threads are only available to those selected (two participants).";
+        i++;
+        // 41
+        TxtText[i] = "reserve";
+        i++;
+        // 42
+        TxtText[i] = "reserve";
+        i++;
+        // 43
+        TxtText[i] = "reserve";
+        i++;
+        // 44
+        TxtText[i] = "The thread “";
+        i++;
+        // 45
+        TxtText[i] = "” will be edited. Do not";
+        i++;
+        // 46
+        TxtText[i] = "open";
+        i++;
+        // 47
+        TxtText[i] = "any thread before choosing to create a new one!";
+        i++;
+        // 48
+        TxtText[i] = "Remove a specific saved thread";
+        i++;
+        // 49
+        TxtText[i] = "Remove all saved thread (reset)";
+        i++;
+        // 50
+        TxtText[i] = "Remove the thread from the database";
+        i++;
+        // 51
+        TxtText[i] = "reserve";
+        i++;
+        // 52
+        TxtText[i] = "reserve";
+        i++;
+        // 53
+        TxtText[i] = "reserve";
+        i++;
+        // 54
+        TxtText[i] = "Type the thread name";
+        i++;
+        // 55
+        TxtText[i] = "This will delete all your saved threads!";
+        i++;
+        // 56
+        TxtText[i] = "This irrevocably eliminates the thread and all its posts!";
+        i++;
+        // 57
+        TxtText[i] = "Header...";
+        i++;
+        // 58
+        TxtText[i] = "Just edit the text";
+        i++;
+        // 59
+        TxtText[i] = "Permit to censor post";
+        i++;
+        // 60
+        TxtText[i] = "Permit to uncensor post";
+        i++;
+        // 61
+        TxtText[i] = "Permit to delete the post from the database";
     }
 
     private void Text_SV()
@@ -666,6 +852,102 @@
         i++;
         // 29
         TxtText[i] = "Arbetar...";
+        i++;
+        // 30
+        TxtText[i] = "reserve";
+        i++;
+        // 31
+        TxtText[i] = "reserve";
+        i++;
+        // 32
+        TxtText[i] = "reserve";
+        i++;
+        // 33
+        TxtText[i] = "Obligatorisk tråd för vald kurs";
+        i++;
+        // 34
+        TxtText[i] = "Obligatorisk tråd för alla kurser";
+        i++;
+        // 35
+        TxtText[i] = "Öppen tråd för alla användare";
+        i++;
+        // 36
+        TxtText[i] = "Privat tråd";
+        i++;
+        // 37
+        TxtText[i] = "Välj kurs";
+        i++;
+        // 38
+        TxtText[i] = "Välj en diskussionspartner";
+        i++;
+        // 39
+        TxtText[i] = "Ange ett namn för denna tråd";
+        i++;
+        // 40
+        TxtText[i] = "Privata trådar är endast tillgängliga för de utvalda (två deltagare).";
+        i++;
+        // 41
+        TxtText[i] = "reserve";
+        i++;
+        // 42
+        TxtText[i] = "reserve";
+        i++;
+        // 43
+        TxtText[i] = "reserve";
+        i++;
+        // 44
+        TxtText[i] = "Tråden ”";
+        i++;
+        // 45
+        TxtText[i] = "” kommer att bli redigerad.";
+        i++;
+        // 46
+        TxtText[i] = "Öppna";
+        i++;
+        // 47
+        TxtText[i] = "inte någon tråd innan du väljer att skapa en ny!";
+        i++;
+        // 48
+        TxtText[i] = "Ta bort en specifik sparad tråd";
+        i++;
+        // 49
+        TxtText[i] = "Ta bort alla sparade trådar (återställ)";
+        i++;
+        // 50
+        TxtText[i] = "Ta bort tråden från databasen";
+        i++;
+        // 51
+        TxtText[i] = "reserve";
+        i++;
+        // 52
+        TxtText[i] = "reserve";
+        i++;
+        // 53
+        TxtText[i] = "reserve";
+        i++;
+        // 54
+        TxtText[i] = "Ange trådens namn";
+        i++;
+        // 55
+        TxtText[i] = "Detta kommer att radera alla dina sparade trådar!";
+        i++;
+        // 56
+        TxtText[i] = "Detta eliminerar oåterkalleligt tråden och alla dess inlägg!";
+        i++;
+        // 57
+        TxtText[i] = "Rubrik...";
+        i++;
+        // 58
+        TxtText[i] = "Redigera enbart texten";
+        i++;
+        // 59
+        TxtText[i] = "Tillåt att censurera inlägget";
+        i++;
+        // 60
+        TxtText[i] = "Tillåt att avcensurera inlägget";
+        i++;
+        // 61
+        TxtText[i] = "Tillåt att radera inlägget från databasen";
     }
 
     private void Text_DE()
@@ -774,6 +1056,54 @@
         i++;
         // 30
         TxtDone[i] = "A new position.";
+        i++;
+        // 31
+        TxtDone[i] = "reserve";
+        i++;
+        // 32
+        TxtDone[i] = "reserve";
+        i++;
+        // 33
+        TxtDone[i] = "reserve";
+        i++;
+        // 34
+        TxtDone[i] = "This thread has been edited.";
+        i++;
+        // 35
+        TxtDone[i] = "A new thread has been created.";
+        i++;
+        // 36
+        TxtDone[i] = "This saved thread was deleted.";
+        i++;
+        // 37
+        TxtDone[i] = "Saved threads have been reset.";
+        i++;
+        // 38
+        TxtDone[i] = "This thread was deleted from the database.";
+        i++;
+        // 39
+        TxtDone[i] = "This post is legit and/or not edited.";
+        i++;
+        // 40
+        TxtDone[i] = "The post has been edited.";
+        i++;
+        // 41
+        TxtDone[i] = "The post has not been edited.";
+        i++;
+        // 42
+        TxtDone[i] = "reserve";
+        i++;
+        // 43
+        TxtDone[i] = "reserve";
+        i++;
+        // 44
+        TxtDone[i] = "reserve";
+        i++;
+        // 45
+        TxtDone[i] = "This post has been censored.";
+        i++;
+        // 46
+        TxtDone[i] = "This post was deleted from the database.";
     }
 
     private void Done_SV()
@@ -872,6 +1202,54 @@
         i++;
         // 30
         TxtDone[i] = "En ny position.";
+        i++;
+        // 31
+        TxtDone[i] = "reserve";
+        i++;
+        // 32
+        TxtDone[i] = "reserve";
+        i++;
+        // 33
+        TxtDone[i] = "reserve";
+        i++;
+        // 34
+        TxtDone[i] = "Den här tråden har redigerats.";
+        i++;
+        // 35
+        TxtDone[i] = "En ny tråd har skapats.";
+        i++;
+        // 36
+        TxtDone[i] = "Den här sparade tråden raderades.";
+        i++;
+        // 37
+        TxtDone[i] = "Sparade trådar har nollställts";
+        i++;
+        // 38
+        TxtDone[i] = "Den här tråden togs bort från databasen.";
+        i++;
+        // 39
+        TxtDone[i] = "Detta inlägg är legitimt och/eller inte redigerat.";
+        i++;
+        // 40
+        TxtDone[i] = "Inlägget har redigerats.";
+        i++;
+        // 41
+        TxtDone[i] = "Inlägget har inte redigerats.";
+        i++;
+        // 42
+        TxtDone[i] = "reserve";
+        i++;
+        // 43
+        TxtDone[i] = "reserve";
+        i++;
+        // 44
+        TxtDone[i] = "reserve";
+        i++;
+        // 45
+        TxtDone[i] = "Det här inlägget har censurerats.";
+        i++;
+        // 46
+        TxtDone[i] = "Detta inlägg raderades från databasen.";
     }
 
     private void Done_DE()
@@ -951,7 +1329,34 @@
         TxtError[i] = "The position exceeds the number of modules.";
         i++;
         // 20
-        TxtError[i] = "An error occurred while saving to local storage.";
+        TxtError[i] = "An error occurred while saving to Local Storage.";
+        i++;
+        // 21
+        TxtError[i] = "reserve";
+        i++;
+        // 22
+        TxtError[i] = "reserve";
+        i++;
+        // 23
+        TxtError[i] = "reserve";
+        i++;
+        // 24
+        TxtError[i] = "No course was selected.";
+        i++;
+        // 25
+        TxtError[i] = "This thread name already exists.";
+        i++;
+        // 26
+        TxtError[i] = "Character length error (0 < name < 26). Change the length of the thread name.";
+        i++;
+        // 27
+        TxtError[i] = "The thread cannot be found.";
+        i++;
+        // 28
+        TxtError[i] = "The thread cannot be found. You can only delete your own threads.";
+        i++;
+        // 29
+        TxtError[i] = "The post cannot be found.";
     }
 
     private void Error_SV()
@@ -1022,6 +1427,33 @@
         i++;
         // 20
         TxtError[i] = "Ett fel uppstod vid skrivning i Local Storage.";
+        i++;
+        // 21
+        TxtError[i] = "reserve";
+        i++;
+        // 22
+        TxtError[i] = "reserve";
+        i++;
+        // 23
+        TxtError[i] = "reserve";
+        i++;
+        // 24
+        TxtError[i] = "Ingen kurs valdes.";
+        i++;
+        // 25
+        TxtError[i] = "Detta trådnamn finns redan.";
+        i++;
+        // 26
+        TxtError[i] = "Teckenlängdsfel (0 < namn < 26). Ändra längden på trådnamnet.";
+        i++;
+        // 27
+        TxtError[i] = "Tråden kan inte hittas.";
+        i++;
+        // 28
+        TxtError[i] = "Tråden kan inte hittas. Du kan bara ta bort dina egna trådar.";
+        i++;
+        // 29
+        TxtError[i] = "Inlägget kan inte hittas.";
     }
 
     private void Error_DE()

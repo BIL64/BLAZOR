@@ -9,13 +9,13 @@
 
 <PageTitle>Index</PageTitle>
 
-<nav style="font-size: 1.1rem; padding-top: 50px; border-radius: 5px; color: white; background-color: darkturquoise">
+<nav style=@colorStyle>
     <span style="padding-left: 1%">@xstu.TxtText[21]</span>
     <span style="font-weight: bold; background-color: red">Lexicon</span> LMS
 </nav>
 
 <section class="text-lg-end text-info">
-    &copy August 2023 Björn Lindqvist - Version 1.12
+    &copy September 2023 Björn Lindqvist - Version 1.13
 </section>
 
 <section class="mt-4 p-4"> @*Hjälp vid uppstart när man har populerat Min eller Max*@
@@ -85,6 +85,12 @@
 
     private byte Pagenr;
 
+    private bool IsStandard;
+    private byte ColorR;
+    private byte ColorG;
+    private byte ColorB;
+    private string colorStyle = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         xnav.SetJohnDoe(false);
@@ -93,10 +99,9 @@
         var user = authstate.User;
         var name = user.Identity?.Name!; // Email för den som för tillfället är inloggad.
 
-        if (name is not null)
+        if (name is not null && (user.IsInRole("Student") || user.IsInRole("Teacher")))
         {
-            if (await xClient.GetStorage<string>("LMS_Note") == "ON") classNotePad = "container";
-            else if (await xClient.GetStorage<string>("LMS_Note") == "OFF") classNotePad = "d-none";
+            if (await xClient.GetStorage<string>("LMS_Note") == "False") classNotePad = "d-none";
             else classNotePad = "container";
         }
 
@@ -162,6 +167,25 @@
         }
         else Pagenr = 1;
 
+        // Hämtar färgkoder från lokal storage.
+        if (await xClient.GetStorage<string>("LMS_C_Standard") == "False") IsStandard = false;
+        else IsStandard = true;
+
+        string LScolor = await xClient.GetStorage<string>("LMS_C-R");
+        if (LScolor is not null && LScolor != "") ColorR = byte.Parse(LScolor); else ColorR = xnav.ColorRGB[0];
+        LScolor = await xClient.GetStorage<string>("LMS_C-G");
+        if (LScolor is not null && LScolor != "") ColorG = byte.Parse(LScolor); else ColorG = xnav.ColorRGB[1];
+        LScolor = await xClient.GetStorage<string>("LMS_C-B");
+        if (LScolor is not null && LScolor != "") ColorB = byte.Parse(LScolor); else ColorB = xnav.ColorRGB[2];
+
+        if (IsStandard)
+        {
+            ColorR = xnav.ColorRGB[0];
+            ColorG = xnav.ColorRGB[1];
+            ColorB = xnav.ColorRGB[2];
+        }
+        colorStyle = $"font-size: 1.1rem; padding-top: 50px; border-radius: 5px; color: white; background-color: rgb({ColorR}, {ColorG}, {ColorB})";
+
         xnav.SetReset('a');
 
         xstu.OnChange += StateHasChanged;
@@ -175,10 +199,18 @@
         if (Pagenr == 2) Page2 = MyText;
         if (Pagenr == 3) Page3 = MyText;
 
-        await xClient.SetStorage<string>("LMS_P1", Page1);
-        await xClient.SetStorage<string>("LMS_P2", Page2);
-        await xClient.SetStorage<string>("LMS_P3", Page3);
-        await xClient.SetStorage<string>("LMS_NR", Pagenr.ToString());
+        try
+        {
+            await xClient.SetStorage<string>("LMS_P1", Page1);
+            await xClient.SetStorage<string>("LMS_P2", Page2);
+            await xClient.SetStorage<string>("LMS_P3", Page3);
+            await xClient.SetStorage<string>("LMS_NR", Pagenr.ToString());
+        }
+        catch
+        {
+            xnav.SetError(@xtoa.TxtError[20]);
+            xnav.SetReset('e');
+        }
     }
 
     private async Task Buttons(bool right) // Bläddrar blad i noteringshäftet. Max 3 blad.
@@ -193,6 +225,14 @@
         if (Pagenr == 2) MyText = Page2;
         if (Pagenr == 3) MyText = Page3;
 
-        await xClient.SetStorage<string>("LMS_NR", Pagenr.ToString());
+        try
+        {
+            await xClient.SetStorage<string>("LMS_NR", Pagenr.ToString());
+        }
+        catch
+        {
+            xnav.SetError(@xtoa.TxtError[20]);
+            xnav.SetReset('e');
+        }
     }
 }

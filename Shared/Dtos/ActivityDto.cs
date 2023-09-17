@@ -18,8 +18,8 @@ namespace LexiconLMSBlazor.Shared.Dtos
 
         public byte Select { get; set; } = 1;
 
+        // Foreign Keys
         public int ModuleId { get; set; }
-
         public int ActivityTypeId { get; set; }
 
         public string ActivityTypeName { get; set; } = string.Empty;

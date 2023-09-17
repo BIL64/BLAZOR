@@ -30,20 +30,20 @@ namespace LexiconLMSBlazor.Client.Services
             return response;
         }
 
+        public async Task<bool> PutAsync<T>(int id, T dto, string route)
+        {
+            return (await _httpClient.PutAsJsonAsync($"{route}/{id}", dto)).IsSuccessStatusCode;
+        }
+
         public async Task<T?> PostAsync<T>(T dto, string route)
         {
             var response = await _httpClient.PostAsJsonAsync(route, dto);
-            return response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<T>() : default(T);
+            return response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<T>() : default;
         }
 
         public async Task<bool> RemAsync(int id, string route)
         {
             return (await _httpClient.DeleteAsync($"{route}/{id}")).IsSuccessStatusCode;
-        }
-
-        public async Task<bool> PutAsync<T>(int id, T dto, string route)
-        {
-            return (await _httpClient.PutAsJsonAsync($"{route}/{id}", dto)).IsSuccessStatusCode;
         }
 
         public async Task<T> GetStorage<T>(string name) // LocalStorage Get.
@@ -92,6 +92,11 @@ namespace LexiconLMSBlazor.Client.Services
         public async Task ChangeClass(string id, string newclassname) // Byter css-klass på ett id-försett objekt.
         {
             await _js.InvokeVoidAsync("swapDocClass", id, newclassname);
+        }
+
+        public async Task Scroll2View(string id) // Skrollar till en id-tag med hjälp av ett javascript.
+        {
+            await _js.InvokeVoidAsync("scrollIntoView", id);
         }
     }
 

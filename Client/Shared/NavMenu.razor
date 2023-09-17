@@ -17,15 +17,15 @@
     <Authorized>
         @if (context.User.IsInRole("Student"))
         {
-            Logintype = xstu.TxtMenu[3]; // S T U D E N T
+            Logintype = xstu.TxtMenu[4]; // S T U D E N T
             Navbtn0 = xstu.TxtMenu[0]; // Home
             Navlink0 = "/";
             Navbtn1 = xstu.TxtMenu[1]; // Course
             Navlink1 = "studentcourse";
             Navbtn2 = xstu.TxtMenu[2]; // Students
             Navlink2 = "studentallstudents";
-            Navbtn3 = string.Empty;
-            Navlink3 = string.Empty;
+            Navbtn3 = xstu.TxtMenu[3]; // Forum
+            Navlink3 = "studentforum";
             Navbtn4 = string.Empty;
             Navlink4 = string.Empty;
             Navbtn5 = string.Empty;
@@ -33,7 +33,7 @@
 
         @if (context.User.IsInRole("Teacher"))
         {
-            Logintype = xtea.TxtMenu[6]; // T E A C H E R
+            Logintype = xtea.TxtMenu[7]; // T E A C H E R
             Navbtn0 = xtea.TxtMenu[0]; // Home
             Navlink0 = "/";
             Navbtn1 = xtea.TxtMenu[1]; // All courses
@@ -46,6 +46,8 @@
             Navlink4 = "teacherallstudents";
             Navbtn5 = xtea.TxtMenu[5]; // All unregistered
             Navlink5 = "teacherallunregistered";
+            Navbtn6 = xtea.TxtMenu[6]; // Forum
+            Navlink6 = "teacherforum";
         }
 
         <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
@@ -104,6 +106,14 @@
                         </NavLink>
                     </div>
                 }
+                @if (Navbtn6 != string.Empty) // Menyval 6.
+                {
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link bhover" href="@Navlink6">
+                            <span aria-hidden="true">@Navbtn6</span>
+                        </NavLink>
+                    </div>
+                }
             </nav>
             <footer class="xnavwindow"> @*Info, Mess, Done, Error, and Avatar window*@
                 <div class="@xnav.ClassInfoMess">
@@ -145,6 +155,8 @@
     private string Navlink4 = string.Empty;
     private string Navbtn5 = string.Empty;
     private string Navlink5 = string.Empty;
+    private string Navbtn6 = string.Empty;
+    private string Navlink6 = string.Empty;
 
     private bool collapseNavMenu = true;
 
