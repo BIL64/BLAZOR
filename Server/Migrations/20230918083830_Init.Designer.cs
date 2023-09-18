@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LexiconLMSBlazor.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230917144239_Int")]
-    partial class Int
+    [Migration("20230918083830_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -480,7 +480,7 @@ namespace LexiconLMSBlazor.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Id4Thread")
+                    b.Property<int>("Id4Post")
                         .HasColumnType("int");
 
                     b.Property<string>("Id4User")

@@ -10,7 +10,7 @@
 
         public string? Id4User { get; set; }
 
-        public int Id4Thread { get; set; }
+        public int Id4Post { get; set; }
     }
 }
 

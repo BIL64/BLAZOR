@@ -477,7 +477,7 @@ namespace LexiconLMSBlazor.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Id4Thread")
+                    b.Property<int>("Id4Post")
                         .HasColumnType("int");
 
                     b.Property<string>("Id4User")

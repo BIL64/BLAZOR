@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LexiconLMSBlazor.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class Int : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -176,7 +176,7 @@ namespace LexiconLMSBlazor.Server.Migrations
                     IsLike = table.Column<bool>(type: "bit", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Id4User = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Id4Thread = table.Column<int>(type: "int", nullable: false)
+                    Id4Post = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

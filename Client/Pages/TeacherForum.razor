@@ -176,7 +176,7 @@ else
                                     <span class="dropuse-content thumbnames" style="color: royalblue">
                                         @foreach (var thu in thumbs)
                                         {
-                                            if (thu.Id4Thread == fum.Id && thu.IsLike)
+                                            if (thu.Id4Post == fum.Id && thu.IsLike)
                                             {
                                                 <div>@thu.Name</div>
                                                 Tup++;
@@ -193,7 +193,7 @@ else
                                     <span class="dropuse-content thumbnames" style="color: tomato">
                                         @foreach (var thu in thumbs)
                                         {
-                                            if (thu.Id4Thread == fum.Id && !thu.IsLike)
+                                            if (thu.Id4Post == fum.Id && !thu.IsLike)
                                             {
                                                 <div>@thu.Name</div>
                                                 Tdn++;
@@ -638,7 +638,7 @@ else
 
         foreach (var thu in thumbs)
         {
-            if (thu.Id4Thread == id && thu.Id4User == loggeduser.Id)
+            if (thu.Id4Post == id && thu.Id4User == loggeduser.Id)
             {
                 OldId = thu.Id;
                 IsExist = true;
@@ -668,7 +668,7 @@ else
 
         foreach (var thu in thumbs)
         {
-            if (thu.Id4Thread == id && thu.Id4User == loggeduser.Id)
+            if (thu.Id4Post == id && thu.Id4User == loggeduser.Id)
             {
                 OldId = thu.Id;
                 IsExist = true;
@@ -726,7 +726,7 @@ else
             IsLike = islike,
             Name = loggeduser.FirstName + " " + loggeduser.LastName,
             Id4User = loggeduser.Id,
-            Id4Thread = tid
+            Id4Post = tid
         };
         return dto;
     }

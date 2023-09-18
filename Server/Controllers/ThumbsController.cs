@@ -33,7 +33,7 @@ namespace LexiconLMSBlazor.Server.Controllers
                     IsLike = d.IsLike,
                     Name = d.Name,
                     Id4User = d.Id4User,
-                    Id4Thread = d.Id4Thread
+                    Id4Post = d.Id4Post
                 });
 
             return await dto.ToListAsync();

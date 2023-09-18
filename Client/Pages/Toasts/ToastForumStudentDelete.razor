@@ -160,7 +160,7 @@
                     {
                         foreach (var thu in thumb)
                         {
-                            if (thu.Id4Thread == fum.Id) await xClient.RemAsync(thu.Id, "api/Thumb");
+                            if (thu.Id4Post == fum.Id) await xClient.RemAsync(thu.Id, "api/Thumb");
                         }
                     }
                 }
