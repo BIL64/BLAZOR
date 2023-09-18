@@ -7,14 +7,22 @@ En bit in i projektets genomförande märkte jag att gruppen började avvika fr�
 
 Detta är alltså variant två och som jag anser är ett fungerande LMS. Vi beslöt att bygga efter en Blazor WebAssembly App med ett API och med en "ASP.NET Core Hosted". Därtill, med autentisering i form av "Individual Accounts". Av vad jag kan förstå täcker min lösning in hela kravspecen.
 
-•	Så här några månader efteråt har en hel del förbättringar genomförts:
+Så här några månader efteråt har en hel del förbättringar genomförts:
+
 •	Flexiblare hantering av moduler såsom placering, utseende, innehåll och status. 
+
 •	Meddelanderuta för info, feedback och error.
+
 •	Kraftfulla sökfunktioner.
+
 •	Fullt fungerande dokumenthantering och möjligheten att välja en avatar.
+
 •	Paginering (personsökning) för både studenter och lärare.
+
 •	Förbättrade Toasts som går att flytta med musen.
+
 •	En Options eller ett fönster där man kan välja övergripande inställningar såsom aktivering för registrering, språkval, färgval mm.
+
 •	Och till sist ett diskussionsforum som är ett krav om det hela ska fungera i praktiken.
 
 Man kan se denna LMS som en fattigmans Teams. Det finns exempelvis inga möjligheter att kommunicera med ljud och bild via dator/mobil, eller att kunna fjärrstyra studenternas dator etc.
