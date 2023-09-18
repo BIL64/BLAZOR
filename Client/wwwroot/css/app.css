@@ -611,12 +611,15 @@ i {
 
 .posteditnr {
     font-size: 0.55rem;
+    height: 15px;
     padding: 0 10px 0 10px;
     border: 2px solid white;
     margin: 6px 0 6px 0;
     color: gray;
     background-color: lightcyan;
     border-radius: 13px;
+    position: relative;
+    top: 1px;
 }
 
 .postdate {

@@ -163,8 +163,10 @@ else
                                 <div style="font-size: 0.65rem; font-style: italic">@fum.Date.ToString()[..16]</div><br />
                             }
 
-                            if (fum.Select < 10) // Text, tumma upp/ner datum och redigering:
+                            if (fum.Select < 10) // Text, tumma upp/ner, datum och redigering:
                             {
+                                Tup = 0;
+                                Tdn = 0;
                                 <div style="font-size: 0.85rem; max-width: 700px; margin-top: 5px">@fum.Text</div>
                                 <div class="d-flex">
                                     <span style="margin: 4px 10px 0 0" class="dropuse">
@@ -175,9 +177,14 @@ else
                                                 if (thu.Id4Thread == fum.Id && thu.IsLike)
                                                 {
                                                     <div>@thu.Name</div>
+                                                    Tup++;
                                                 }
                                             }
                                         </span>
+                                        @if (Tup > 0)
+                                        {
+                                            <span style="font-size: 0.65rem; margin-left: -2px; color: gray">@Tup</span>
+                                        }
                                     </span>
                                     <span style="margin-top: 7px" class="dropuse">
                                         <span class="oi oi-thumb-down" style="color: goldenrod; cursor: pointer" @onclick="_ => ThumbsDown(fum.Id)"></span>
@@ -187,9 +194,14 @@ else
                                                 if (thu.Id4Thread == fum.Id && !thu.IsLike)
                                                 {
                                                     <div>@thu.Name</div>
+                                                    Tdn++;
                                                 }
                                             }
                                         </span>
+                                        @if (Tdn > 0)
+                                        {
+                                            <span style="font-size: 0.65rem; margin-left: -2px; position: relative; top: -3px; color: gray">@Tdn</span>
+                                        }
                                     </span>
                                     <span class="postdate">@fum.Date.ToString()[..16]</span>
                                     @if (fum.Id4User == loggeduser.Id)
@@ -316,6 +328,8 @@ else
     private string auxString = string.Empty;
     private string Emptydb = string.Empty;
     private bool Scroll = false;
+    private int Tup;
+    private int Tdn;
 
     private async Task RefreshAfterThis(bool thread) // Uppdaterar efter förändring av innehåll.
     {

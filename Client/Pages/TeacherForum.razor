@@ -164,10 +164,12 @@ else
                                 <div style="font-size: 0.85rem; max-width: 700px; margin-top: 5px"><s>@fum.Text</s></div>
                                 <div style="font-size: 0.85rem; font-style: oblique">@xtea.TxtText[74]</div>
                             }
-                            else // Text, tumma upp/ner datum och redigering:
+                            else // Text, tumma upp/ner, datum och redigering:
                             {
                                 <div style="font-size: 0.85rem; max-width: 700px; margin-top: 5px">@fum.Text</div>
                             }
+                            Tup = 0;
+                            Tdn = 0;
                             <div class="d-flex">
                                 <span style="margin: 4px 10px 0 0" class="dropuse">
                                     <span class="oi oi-thumb-up" style="color: goldenrod; cursor: pointer" @onclick="_ => ThumbsUp(fum.Id)"></span>
@@ -177,9 +179,14 @@ else
                                             if (thu.Id4Thread == fum.Id && thu.IsLike)
                                             {
                                                 <div>@thu.Name</div>
+                                                Tup++;
                                             }
                                         }
                                     </span>
+                                    @if (Tup > 0)
+                                    {
+                                        <span style="font-size: 0.65rem; margin-left: -2px; color: gray">@Tup</span>
+                                    }
                                 </span>
                                 <span style="margin-top: 7px" class="dropuse">
                                     <span class="oi oi-thumb-down" style="color: goldenrod; cursor: pointer" @onclick="_ => ThumbsDown(fum.Id)"></span>
@@ -189,9 +196,14 @@ else
                                             if (thu.Id4Thread == fum.Id && !thu.IsLike)
                                             {
                                                 <div>@thu.Name</div>
+                                                Tdn++;
                                             }
                                         }
                                     </span>
+                                    @if (Tdn > 0)
+                                    {
+                                        <span style="font-size: 0.65rem; margin-left: -2px; position: relative; top: -3px; color: gray">@Tdn</span>
+                                    }
                                 </span>
                                 <span class="postdate">@fum.Date.ToString()[..16]</span>
                                 <span class="postedit" @onclick="_ => EditPost(fum.Id)" title=@xtea.TxtTitle[45]>@fum.Edited</span>
@@ -308,6 +320,8 @@ else
     private string auxString = string.Empty;
     private string Emptydb = string.Empty;
     private bool Scroll = false;
+    private int Tup;
+    private int Tdn;
 
     private async Task RefreshAfterThis(bool thread) // Uppdaterar efter förändring av innehåll.
     {
