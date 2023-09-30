@@ -33,7 +33,11 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel (ombyggd av Björn
 
             await roleManager.CreateAsync(new IdentityRole { Name = Title_admin }); // Skapar en roll-titel för administratörer.
 
-            db.Add(new Register { RegClass = "d-block" }); // Iorningsställer registertabellen - ON (besökare kan registrera sig)
+            db.Add(new Auxiliary {
+                RegClass = "d-block",     // Iorningsställer registertabellen - ON (besökare kan registrera sig)
+                MaxFileSize = 1024 * 977, // Maximal filstorlek för dokument = 1000448 byte.
+                MaxAvatarSize = 1024 * 98 // Maximal filstorlek för avatar = 100352 byte.
+            });
             await db.SaveChangesAsync();
 
             db.AddRange(GenerateActivityTypes()); // Laddar tabellen med aktivitetstyper av fördefinerade typer.

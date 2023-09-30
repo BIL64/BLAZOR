@@ -17,7 +17,8 @@
     <Authorized>
         <nav style="display: flex">
             <div style="width: 75%"><h3>@loggeduser.FirstName, @xstu.TxtText[0] @* this is your course: *@
-                <em style="cursor: pointer" @onclick=" _ => InfoTitle(CourseDescription)">@CourseName</em></h3>
+                <span class="verdanahead" style="background-color: rgb(@ColorR, @ColorG, @ColorB)"
+                @onclick=" _ => InfoTitle(CourseDescription)">@CourseName</span></h3>
             </div>
             <div style="margin: 0 auto 0 auto"><h5>@CourseDate</h5></div>
             <div style="margin: 0 0 0 auto">
@@ -114,9 +115,7 @@
                 {
                     foreach (var mess in textmessage)
                     {
-                        <div class="activity5S_box" style="padding-left: 22px; padding-bottom: 15px; color: darkorange">
-                            <b>@mess</b>
-                        </div>
+                        <div class="activity5S_box" style="padding-left: 22px; padding-bottom: 15px; color: darkorange"><b>@mess</b></div>
                     }
                     textmessage.Clear();
                     IsTextMess = false;
@@ -158,11 +157,13 @@
                             <div style="width: 85%">
                                 @if (data.Select == 1)
                                 {
-                                    <b>@xstu.TxtText[1] @data.Id: <em style="cursor: pointer" @onclick=" _ => InfoTitle(data.Description)">@data.Name</em></b>
+                                    <b>@xstu.TxtText[1] @data.Id: <u class="verdana" style="font-size: 0.97rem; cursor: pointer"
+                                    @onclick=" _ => InfoTitle(data.Description)">@data.Name</u></b>
                                 }
                                 else
                                 {
-                                    <b>@xstu.TxtText[1] <em style="cursor: pointer" @onclick=" _ => InfoTitle(data.Description)">@data.Name</em></b>
+                                    <b>@xstu.TxtText[1] <u class="verdana" style="font-size: 0.97rem; cursor: pointer"
+                                    @onclick=" _ => InfoTitle(data.Description)">@data.Name</u></b>
                                 }
                             </div>
                             <div style="margin: 0 0 0 auto"><b>@xnav.StartEndDate(data.StartDate, data.EndDate)</b></div>
@@ -242,16 +243,115 @@
                                                     <td>@act.Id</td>
                                                 }
 
-                                                if (data.Select == 3 || data.Select == 4)
+                                                if (data.Select != 5)
                                                 {
-                                                    <td><b style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</b></td>
-                                                }
-                                                else
-                                                {
-                                                    if (data.Select != 5)
+                                                    if (act.Name.IndexOf("#r#") != -1 && actStyleName == "")
                                                     {
-                                                        <td><em style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</em></td>
+                                                        actStyleName = act.Name;
+                                                        actStyleName = actStyleName.Replace("#r#", "");
+                                                        if (act.Name.IndexOf("#i#") != -1)
+                                                        {
+                                                            actStyleName = actStyleName.Replace("#i#", "");
+                                                            actStyleName = actStyleName.Replace("i#", "");
+                                                            actStyleName = actStyleName.Replace("#i", "");
+                                                            <td><em style="cursor: pointer; color: crimson" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</em></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><b style="cursor: pointer; color: crimson" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                        }
                                                     }
+
+                                                    if (act.Name.IndexOf("#m#") != -1 && actStyleName == "")
+                                                    {
+                                                        actStyleName = act.Name;
+                                                        actStyleName = actStyleName.Replace("#m#", "");
+                                                        if (act.Name.IndexOf("#i#") != -1)
+                                                        {
+                                                            actStyleName = actStyleName.Replace("#i#", "");
+                                                            actStyleName = actStyleName.Replace("i#", "");
+                                                            actStyleName = actStyleName.Replace("#i", "");
+                                                            <td><em style="cursor: pointer; color: magenta" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</em></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><b style="cursor: pointer; color: magenta" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                        }
+                                                    }
+
+                                                    if (act.Name.IndexOf("#g#") != -1 && actStyleName == "")
+                                                    {
+                                                        actStyleName = act.Name;
+                                                        actStyleName = actStyleName.Replace("#g#", "");
+                                                        if (act.Name.IndexOf("#i#") != -1)
+                                                        {
+                                                            actStyleName = actStyleName.Replace("#i#", "");
+                                                            actStyleName = actStyleName.Replace("i#", "");
+                                                            actStyleName = actStyleName.Replace("#i", "");
+                                                            <td><em style="cursor: pointer; color: darkgreen" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</em></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><b style="cursor: pointer; color: darkgreen" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                        }
+                                                    }
+
+                                                    if (act.Name.IndexOf("#b#") != -1 && actStyleName == "")
+                                                    {
+                                                        actStyleName = act.Name;
+                                                        actStyleName = actStyleName.Replace("#b#", "");
+                                                        if (act.Name.IndexOf("#i#") != -1)
+                                                        {
+                                                            actStyleName = actStyleName.Replace("#i#", "");
+                                                            actStyleName = actStyleName.Replace("i#", "");
+                                                            actStyleName = actStyleName.Replace("#i", "");
+                                                            <td><em style="cursor: pointer; color: royalblue" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</em></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><b style="cursor: pointer; color: royalblue" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                        }
+                                                    }
+
+                                                    if (act.Name.IndexOf("#B#") != -1 && actStyleName == "")
+                                                    {
+                                                        actStyleName = act.Name;
+                                                        actStyleName = actStyleName.Replace("#B#", "");
+                                                        if (act.Name.IndexOf("#i#") != -1)
+                                                        {
+                                                            actStyleName = actStyleName.Replace("#i#", "");
+                                                            actStyleName = actStyleName.Replace("i#", "");
+                                                            actStyleName = actStyleName.Replace("#i", "");
+                                                            <td><em style="cursor: pointer; color: black" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</em></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><span style="cursor: pointer; color: black" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</span></td>
+                                                        }
+                                                    }
+
+                                                    if (act.Name.IndexOf("#BB#") != -1 && actStyleName == "")
+                                                    {
+                                                        actStyleName = act.Name;
+                                                        actStyleName = actStyleName.Replace("#BB#", "");
+                                                        if (act.Name.IndexOf("#i#") != -1)
+                                                        {
+                                                            actStyleName = actStyleName.Replace("#i#", "");
+                                                            actStyleName = actStyleName.Replace("i#", "");
+                                                            actStyleName = actStyleName.Replace("#i", "");
+                                                            <td><em style="cursor: pointer; color: black" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</em></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><b style="cursor: pointer; color: black" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                        }
+                                                    }
+
+                                                    if (actStyleName == "")
+                                                    {
+                                                        <td><span style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</span></td>
+                                                    }
+                                                    actStyleName = "";
                                                 }
 
                                                 if (data.Select != 4 && data.Select != 5)
@@ -346,7 +446,7 @@
                         <section class="module3S_box">
                             @if (data.Name.IndexOf("#E#") == -1 && data.Name.IndexOf("#H#") == -1)
                             {
-                                <div style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 1.2rem"><b>@data.Name</b></div>
+                                <div class="verdana" style="font-size: 1.2rem"><b>@data.Name</b></div>
                             }
 
                             @if (data.Name.IndexOf("#E#") != -1)
@@ -356,7 +456,7 @@
 
                             @if (data.Description.IndexOf("#E#") == -1 && data.Description.IndexOf("#H#") == -1)
                             {
-                                <div style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 0.8rem; margin: 5px 0 10px 0">
+                                <div class="verdana" style="font-size: 0.8rem; margin: 5px 0 10px 0; color: black">
                                 <b><em>@data.Description</em></b></div>
                             }
 
@@ -389,7 +489,99 @@
                                                     {
                                                         <td>@act.Id</td>
                                                     }
-                                                    <td><b style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</b></td>
+
+                                                    if (act.Name.IndexOf("#r#") != -1 && actStyleName == "")
+                                                    {
+                                                        actStyleName = act.Name;
+                                                        actStyleName = actStyleName.Replace("#r#", "");
+                                                        if (act.Name.IndexOf("#i#") != -1)
+                                                        {
+                                                            actStyleName = actStyleName.Replace("#i#", "");
+                                                            actStyleName = actStyleName.Replace("i#", "");
+                                                            actStyleName = actStyleName.Replace("#i", "");
+                                                            <td><b style="cursor: pointer; color: crimson" @onclick=" _ => InfoTitle(act.Description)"><em>@actStyleName</em></b></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><b style="cursor: pointer; color: crimson" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                        }
+                                                    }
+
+                                                    if (act.Name.IndexOf("#m#") != -1 && actStyleName == "")
+                                                    {
+                                                        actStyleName = act.Name;
+                                                        actStyleName = actStyleName.Replace("#m#", "");
+                                                        if (act.Name.IndexOf("#i#") != -1)
+                                                        {
+                                                            actStyleName = actStyleName.Replace("#i#", "");
+                                                            actStyleName = actStyleName.Replace("i#", "");
+                                                            actStyleName = actStyleName.Replace("#i", "");
+                                                            <td><b style="cursor: pointer; color: magenta" @onclick=" _ => InfoTitle(act.Description)"><em>@actStyleName</em></b></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><b style="cursor: pointer; color: magenta" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                        }
+                                                    }
+
+                                                    if (act.Name.IndexOf("#g#") != -1 && actStyleName == "")
+                                                    {
+                                                        actStyleName = act.Name;
+                                                        actStyleName = actStyleName.Replace("#g#", "");
+                                                        if (act.Name.IndexOf("#i#") != -1)
+                                                        {
+                                                            actStyleName = actStyleName.Replace("#i#", "");
+                                                            actStyleName = actStyleName.Replace("i#", "");
+                                                            actStyleName = actStyleName.Replace("#i", "");
+                                                            <td><b style="cursor: pointer; color: darkgreen" @onclick=" _ => InfoTitle(act.Description)"><em>@actStyleName</em></b></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><b style="cursor: pointer; color: darkgreen" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                        }
+                                                    }
+
+                                                    if (act.Name.IndexOf("#b#") != -1 && actStyleName == "")
+                                                    {
+                                                        actStyleName = act.Name;
+                                                        actStyleName = actStyleName.Replace("#b#", "");
+                                                        if (act.Name.IndexOf("#i#") != -1)
+                                                        {
+                                                            actStyleName = actStyleName.Replace("#i#", "");
+                                                            actStyleName = actStyleName.Replace("i#", "");
+                                                            actStyleName = actStyleName.Replace("#i", "");
+                                                            <td><b style="cursor: pointer; color: royalblue" @onclick=" _ => InfoTitle(act.Description)"><em>@actStyleName</em></b></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><b style="cursor: pointer; color: royalblue" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                        }
+                                                    }
+
+                                                    if ((act.Name.IndexOf("#B#") != -1 || act.Name.IndexOf("#BB#") != -1) && actStyleName == "")
+                                                    {
+                                                        actStyleName = act.Name;
+                                                        actStyleName = actStyleName.Replace("#BB#", "");
+                                                        actStyleName = actStyleName.Replace("#B#", "");
+                                                        if (act.Name.IndexOf("#i#") != -1)
+                                                        {
+                                                            actStyleName = actStyleName.Replace("#i#", "");
+                                                            actStyleName = actStyleName.Replace("i#", "");
+                                                            actStyleName = actStyleName.Replace("#i", "");
+                                                            <td><b style="cursor: pointer; color: black" @onclick=" _ => InfoTitle(act.Description)"><em>@actStyleName</em></b></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><b style="cursor: pointer; color: black" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                        }
+                                                    }
+
+                                                    if (actStyleName == "")
+                                                    {
+                                                        <td><b style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</b></td>
+                                                    }
+                                                    actStyleName = "";
+
                                                     <td>
                                                         @foreach (var actype in activityTypes)
                                                         {
@@ -547,6 +739,11 @@
     private string classActTopic = string.Empty;
     private string classMainTopic = string.Empty;
     private string searchString = string.Empty;
+    private string actStyleName = string.Empty;
+    private bool IsStandard;
+    private byte ColorR;
+    private byte ColorG;
+    private byte ColorB;
     private int CourseId;
     private bool Empty;
     private bool IsTextMess;
@@ -573,6 +770,24 @@
 
         if (!Auxx.Flag) xnav.SetReset('a');
         Auxx.Flag = false;
+
+        // Hämtar färgkoder från lokal storage.
+        if (await xClient.GetStorage<string>("LMS_C_Standard") == "False") IsStandard = false;
+        else IsStandard = true;
+
+        string LScolor = await xClient.GetStorage<string>("LMS_C-R");
+        if (LScolor is not null && LScolor != "") ColorR = byte.Parse(LScolor); else ColorR = xnav.ColorRGB[0];
+        LScolor = await xClient.GetStorage<string>("LMS_C-G");
+        if (LScolor is not null && LScolor != "") ColorG = byte.Parse(LScolor); else ColorG = xnav.ColorRGB[1];
+        LScolor = await xClient.GetStorage<string>("LMS_C-B");
+        if (LScolor is not null && LScolor != "") ColorB = byte.Parse(LScolor); else ColorB = xnav.ColorRGB[2];
+
+        if (IsStandard)
+        {
+            ColorR = xnav.ColorRGB[0];
+            ColorG = xnav.ColorRGB[1];
+            ColorB = xnav.ColorRGB[2];
+        }
 
         courses.Clear();
         modules.Clear();

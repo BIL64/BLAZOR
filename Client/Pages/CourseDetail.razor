@@ -249,7 +249,7 @@
                                 {
                                     <tr>
                                         <th>@xdet.TxtText[2]</th> @* Nr *@
-                                        <th>@xdet.TxtText[3]</th> @* Activity *@
+                                        <th title=@xdet.TxtTitle[21]>@xdet.TxtText[3]</th> @* Activity *@
                                         <th>@xdet.TxtText[5]</th> @* Type *@
                                         <th>@xdet.TxtText[6]</th> @* Date *@
                                         <th>@xdet.TxtText[7]</th> @* Appendix *@
@@ -259,7 +259,7 @@
                                 @if (data.Select == 2 || data.Select == 20 || data.Select == 3)
                                 {
                                     <tr>
-                                        <th>@xdet.TxtText[3]</th> @* Activity *@
+                                        <th title=@xdet.TxtTitle[21]>@xdet.TxtText[3]</th> @* Activity *@
                                         <th>@xdet.TxtText[5]</th> @* Type *@
                                         <th>@xdet.TxtText[6]</th> @* Date *@
                                         <th>@xdet.TxtText[7]</th> @* Appendix *@
@@ -269,7 +269,7 @@
                                 @if (data.Select == 4)
                                 {
                                     <tr>
-                                        <th>@xdet.TxtText[3]</th> @* Activity *@
+                                        <th title=@xdet.TxtTitle[21]>@xdet.TxtText[3]</th> @* Activity *@
                                         <th>@xdet.TxtText[4]</th> @* Description *@
                                         <th>@xdet.TxtText[7]</th> @* Appendix *@
                                     </tr>
@@ -297,10 +297,54 @@
 
                                                 if (data.Select != 5)
                                                 {
-                                                    <td>
-                                                        <i style="cursor: pointer" title="@act.Description @xdet.TxtTitle[4]"
-                                                        @onclick=" _ => EditActivity(act.Id)">@act.Name</i>
-                                                    </td>
+                                                    if (act.Name.IndexOf("#r#") != -1 && !IsStyle)
+                                                    {
+                                                        <td><i style="cursor: pointer; color: crimson" title="@act.Description @xdet.TxtTitle[4]"
+                                                        @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
+                                                        IsStyle = true;
+                                                    }
+
+                                                    if (act.Name.IndexOf("#m#") != -1 && !IsStyle)
+                                                    {
+                                                        <td><i style="cursor: pointer; color: magenta" title="@act.Description @xdet.TxtTitle[4]"
+                                                        @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
+                                                        IsStyle = true;
+                                                    }
+
+                                                    if (act.Name.IndexOf("#g#") != -1 && !IsStyle)
+                                                    {
+                                                        <td><i style="cursor: pointer; color: darkgreen" title="@act.Description @xdet.TxtTitle[4]"
+                                                        @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
+                                                        IsStyle = true;
+                                                    }
+
+                                                    if (act.Name.IndexOf("#b#") != -1 && !IsStyle)
+                                                    {
+                                                        <td><i style="cursor: pointer; color: royalblue" title="@act.Description @xdet.TxtTitle[4]"
+                                                        @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
+                                                        IsStyle = true;
+                                                    }
+
+                                                    if (act.Name.IndexOf("#B#") != -1 && !IsStyle)
+                                                    {
+                                                        <td><i style="cursor: pointer; color: black" title="@act.Description @xdet.TxtTitle[4]"
+                                                        @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
+                                                        IsStyle = true;
+                                                    }
+
+                                                    if (act.Name.IndexOf("#BB#") != -1 && !IsStyle)
+                                                    {
+                                                        <td><i style="cursor: pointer; color: black" title="@act.Description @xdet.TxtTitle[4]"
+                                                        @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
+                                                        IsStyle = true;
+                                                    }
+
+                                                    if (!IsStyle)
+                                                    {
+                                                        <td><i style="cursor: pointer" title="@act.Description @xdet.TxtTitle[4]"
+                                                        @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
+                                                    }
+                                                    IsStyle = false;
                                                 }
 
                                                 if (data.Select != 4 && data.Select != 5)
@@ -577,6 +621,7 @@
     private string searchString = string.Empty;
     private int CourseId;
     private bool Empty;
+    private bool IsStyle;
 
     private string TestMess1 = string.Empty; // Test.
     private string TestMess2 = string.Empty; // Test.

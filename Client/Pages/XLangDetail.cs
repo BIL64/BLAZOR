@@ -78,7 +78,7 @@
         TxtTitle[i] = "Disable the module and exclude identity nr";
         i++;
         // 21
-        TxtTitle[i] = "reserve";
+        TxtTitle[i] = "#r# = bold red, #m# = bold magenta, #g# = bold green, #b# = bold blue, #B# = black normal, #BB# = bold black, #i# = italic";
         i++;
         // 22
         TxtTitle[i] = "reserve";
@@ -185,7 +185,7 @@
         TxtTitle[i] = "Inaktivera modulen och exkludera identitetsnr";
         i++;
         // 21
-        TxtTitle[i] = "reserve";
+        TxtTitle[i] = "#r# = fet röd, #m# = fet magenta, #g# = fet grön, #b# = fet blå, #B# = svart normal, #BB# = fet svart, #i# = kursiv";
         i++;
         // 22
         TxtTitle[i] = "reserve";

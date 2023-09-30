@@ -96,7 +96,10 @@
     {
         List<File> files = new();
         int maxAllowedFiles = 1; // Max 1 fil!
-        long maxFileSize = 1024 * 98; // Max 100kb.
+        long maxAvatarSize; // Maximal avatarstorlek.
+
+        var auxiliary = await xClient.GetAsync<AuxiliaryDto>(1, "api/Auxiliary");
+        if (auxiliary is not null) maxAvatarSize = auxiliary.MaxAvatarSize; else maxAvatarSize = 100352;
 
         var alldoc = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
         if (alldoc is not null) documents = alldoc.ToList(); // Hämtar alla dokument.
@@ -129,7 +132,7 @@
                         files.Add(new() { Name = file.Name });
                         DocFileName = file.Name;
 
-                        var fileContent = new StreamContent(file.OpenReadStream(maxFileSize));
+                        var fileContent = new StreamContent(file.OpenReadStream(maxAvatarSize));
                         fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
 
                         content.Add(content: fileContent, name: "\"files\"", fileName: NameIndex + file.Name);

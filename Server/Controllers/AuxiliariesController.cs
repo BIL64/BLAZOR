@@ -5,43 +5,43 @@ using LexiconLMSBlazor.Server.Models;
 
 namespace LexiconLMSBlazor.Server.Controllers
 {
-    [Route("api/Register")]
+    [Route("api/Auxiliary")]
     [ApiController]
-    public class RegisterController : ControllerBase
+    public class AuxiliariesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public RegisterController(ApplicationDbContext context)
+        public AuxiliariesController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Register>> GetRegister(int id)
+        public async Task<ActionResult<Auxiliary>> GetAuxiliary(int id)
         {
-            if (_context.Register == null)
+            if (_context.Auxiliary == null)
             {
                 return NotFound();
             }
-            var @register = await _context.Register.FindAsync(id);
+            var @auxiliary = await _context.Auxiliary.FindAsync(id);
 
-            if (@register == null)
+            if (@auxiliary == null)
             {
                 return NotFound();
             }
 
-            return @register;
+            return @auxiliary;
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRegister(int id, Register @register)
+        public async Task<IActionResult> PutAuxiliary(int id, Auxiliary @auxiliary)
         {
-            if (id != @register.Id)
+            if (id != @auxiliary.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(@register).State = EntityState.Modified;
+            _context.Entry(@auxiliary).State = EntityState.Modified;
 
             try
             {
@@ -49,7 +49,7 @@ namespace LexiconLMSBlazor.Server.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!RegisterExists(id))
+                if (!AuxiliaryExists(id))
                 {
                     return NotFound();
                 }
@@ -62,9 +62,9 @@ namespace LexiconLMSBlazor.Server.Controllers
             return NoContent();
         }
 
-        private bool RegisterExists(int id)
+        private bool AuxiliaryExists(int id)
         {
-            return (_context.Register?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Auxiliary?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

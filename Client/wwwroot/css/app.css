@@ -481,6 +481,20 @@ i {
     color: darkorange;
 }
 
+.verdana {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color: #444;
+}
+
+.verdanahead {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 1.5rem;
+    padding: 3px;
+    border-radius: 3px;
+    color: white;
+    cursor: pointer;
+}
+
 .regbtn {
     margin-right: 20px;
     background-color: lightslategray;

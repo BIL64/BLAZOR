@@ -296,6 +296,28 @@ namespace LexiconLMSBlazor.Server.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("LexiconLMSBlazor.Server.Models.Auxiliary", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<long>("MaxAvatarSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("MaxFileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("RegClass")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Auxiliary");
+                });
+
             modelBuilder.Entity("LexiconLMSBlazor.Server.Models.Course", b =>
                 {
                     b.Property<int>("Id")
@@ -451,22 +473,6 @@ namespace LexiconLMSBlazor.Server.Migrations
                     b.HasIndex("CourseId");
 
                     b.ToTable("Module");
-                });
-
-            modelBuilder.Entity("LexiconLMSBlazor.Server.Models.Register", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("RegClass")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Register");
                 });
 
             modelBuilder.Entity("LexiconLMSBlazor.Server.Models.Thumb", b =>

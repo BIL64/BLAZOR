@@ -39,6 +39,21 @@ namespace LexiconLMSBlazor.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Auxiliary",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RegClass = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MaxFileSize = table.Column<long>(type: "bigint", nullable: false),
+                    MaxAvatarSize = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Auxiliary", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Course",
                 columns: table => new
                 {
@@ -152,19 +167,6 @@ namespace LexiconLMSBlazor.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PersistedGrants", x => x.Key);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Register",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RegClass = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Register", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -486,6 +488,9 @@ namespace LexiconLMSBlazor.Server.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Auxiliary");
+
+            migrationBuilder.DropTable(
                 name: "DeviceCodes");
 
             migrationBuilder.DropTable(
@@ -499,9 +504,6 @@ namespace LexiconLMSBlazor.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "PersistedGrants");
-
-            migrationBuilder.DropTable(
-                name: "Register");
 
             migrationBuilder.DropTable(
                 name: "Thumb");

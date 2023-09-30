@@ -27,9 +27,9 @@
     {
         try
         {
-            var regist = await xClient.GetAsync<RegisterDto>(1, "api/Register");
+            var auxiliary = await xClient.GetAsync<AuxiliaryDto>(1, "api/Auxiliary");
 
-            if (regist is not null) xnav.ClassReg = regist.RegClass;
+            if (auxiliary is not null) xnav.ClassReg = auxiliary.RegClass;
             else xnav.ClassReg = "d-block";
         }
         catch

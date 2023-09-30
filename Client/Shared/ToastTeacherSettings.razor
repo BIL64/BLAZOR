@@ -75,7 +75,25 @@
                         <InputCheckbox id="Standard" class="form-check-inline" @bind-Value="IsStandard" />
                         <label for="Standard">Standard settings</label>
                     </div>
-                </fieldset><br />
+                </fieldset>
+                <div class="form-group text-white m-2">
+                    <label for="filesize">Maximum file size: </label>
+                    <InputNumber id="filesize" class="form-control-inline col-3 mx-2" style="font-size: 0.75rem"
+                    @bind-Value="maxFileSize" min="5120" />
+                </div>
+                <div class="form-group text-white m-2">
+                    <InputCheckbox id="onemegabyte" class="form-check-inline" @bind-Value="IsFSize" />
+                    <label for="onemegabyte">Standard value (1Mb)</label>
+                </div>
+                <div class="form-group text-white m-2">
+                    <label for="avatarsize">Maximum avatar size: </label>
+                    <InputNumber id="avatarsize" class="form-control-inline col-3 mx-2" style="font-size: 0.75rem"
+                    @bind-Value="maxAvatarSize" min="2048" />
+                </div>
+                <div class="form-group text-white m-2">
+                    <InputCheckbox id="hundredkilos" class="form-check-inline" @bind-Value="IsASize" />
+                    <label for="hundredkilos">Standard value (100kb)</label>
+                </div><br />
                 <div>
                     <button type="submit" class="text-white rembtn" style="margin-right: 15px"
                         title=@xtoa.TxtTitle[1]>@xtoa.TxtButton[6]</button> @* Save *@
@@ -93,11 +111,15 @@
     private int LangSelect; // Måste vara int!
     private bool IsReg;
     private bool IsNote;
+    private bool IsFSize;
+    private bool IsASize;
 
     private bool IsStandard;
     private int ColorR;
     private int ColorG;
     private int ColorB;
+    private long maxFileSize;
+    private long maxAvatarSize;
 
     private int Win_Height;
 
@@ -109,6 +131,17 @@
         Win_Height = dim.Height;
         xnav.Pos_H = (int)Math.Round(dim.Width * 0.08); // 08%
         xnav.Pos_V = (int)Math.Round(Win_Height * 0.2); // 20%
+
+        var auxiliary = await xClient.GetAsync<AuxiliaryDto>(1, "api/Auxiliary");
+        if (auxiliary is not null)
+        {
+            // Hämtar maximal filstorlek.
+            if (auxiliary.MaxFileSize == 1000448) IsFSize = true; else IsFSize = false;
+            maxFileSize = auxiliary.MaxFileSize;
+            // Hämtar maximal avatarstorlek.
+            if (auxiliary.MaxAvatarSize == 100352) IsASize = true; else IsASize = false;
+            maxAvatarSize = auxiliary.MaxAvatarSize;
+        }
 
         if (xnav.ClassRegStatus == "regon") IsReg = true; else IsReg = false;
 
@@ -153,16 +186,76 @@
 
     private async Task HandleSubmitCopy()
     {
-        if (IsReg)
+        var laux = new AuxiliaryDto
         {
-            var lreg = new RegisterDto
-            {
-                Id = 1,
-                RegClass = "d-block"
-            };
+            Id = 1,
+            RegClass = "d-block",
+            MaxFileSize = maxFileSize,
+            MaxAvatarSize = maxAvatarSize
+        };
+
+        if (IsFSize)
+        {
+            laux.MaxFileSize = 1000448;
             try
             {
-                await xClient.PutAsync<RegisterDto>(1, lreg, "api/Register");
+                await xClient.PutAsync<AuxiliaryDto>(1, laux, "api/Auxiliary");
+            }
+            catch
+            {
+                xnav.SetError("DB max file size falure. Id = 1 and MaxFileSize = 1000448");
+                xnav.SetReset('e');
+            }
+        }
+
+        if (!IsFSize)
+        {
+            laux.MaxFileSize = maxFileSize;
+            try
+            {
+                await xClient.PutAsync<AuxiliaryDto>(1, laux, "api/Auxiliary");
+            }
+            catch
+            {
+                xnav.SetError("DB max file size falure. Id = 1 and MaxFileSize = long integer");
+                xnav.SetReset('e');
+            }
+        }
+
+        if (IsASize)
+        {
+            laux.MaxAvatarSize = 100352;
+            try
+            {
+                await xClient.PutAsync<AuxiliaryDto>(1, laux, "api/Auxiliary");
+            }
+            catch
+            {
+                xnav.SetError("DB max avatar size falure. Id = 1 and MaxAvatarSize = 100352");
+                xnav.SetReset('e');
+            }
+        }
+
+        if (!IsASize)
+        {
+            laux.MaxAvatarSize = maxAvatarSize;
+            try
+            {
+                await xClient.PutAsync<AuxiliaryDto>(1, laux, "api/Auxiliary");
+            }
+            catch
+            {
+                xnav.SetError("DB max avatar size falure. Id = 1 and MaxAvatarSize = long integer");
+                xnav.SetReset('e');
+            }
+        }
+
+        if (IsReg)
+        {
+            laux.RegClass = "d-block";
+            try
+            {
+                await xClient.PutAsync<AuxiliaryDto>(1, laux, "api/Auxiliary");
             }
             catch
             {
@@ -174,14 +267,10 @@
 
         if (!IsReg)
         {
-            var lreg = new RegisterDto
-            {
-                Id = 1,
-                RegClass = "d-none"
-            };
+            laux.RegClass = "d-none";
             try
             {
-                await xClient.PutAsync<RegisterDto>(1, lreg, "api/Register");
+                await xClient.PutAsync<AuxiliaryDto>(1, laux, "api/Auxiliary");
             }
             catch
             {
