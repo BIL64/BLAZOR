@@ -315,10 +315,10 @@
         TxtTitle[i] = "Pagination settings";
         i++;
         // 30
-        TxtTitle[i] = "Add document to student";
+        TxtTitle[i] = "Shortcut to the student page";
         i++;
         // 31
-        TxtTitle[i] = "reserve";
+        TxtTitle[i] = "Add document to student";
         i++;
         // 32
         TxtTitle[i] = "reserve";
@@ -464,10 +464,10 @@
         TxtTitle[i] = "Inställningar för personsökning";
         i++;
         // 30
-        TxtTitle[i] = "Lägg till dokument till elev";
+        TxtTitle[i] = "Genväg till studentsidan";
         i++;
         // 31
-        TxtTitle[i] = "reserve";
+        TxtTitle[i] = "Lägg till dokument till elev";
         i++;
         // 32
         TxtTitle[i] = "reserve";

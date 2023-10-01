@@ -3,6 +3,7 @@
 @inject IAppUserDtoClient appuserClient
 @inject IXDtoClient xClient
 @inject XLangStudent xstu
+@inject XLangTeacher xtea
 @inject XLangToast xtoa
 @inject XNavMenu xnav
 @inject XPagination xpag
@@ -228,11 +229,11 @@ else
         {
             xnav.MainRole = 1;
             xnav.ClassSettings = "d-block"; // Settings.
-            if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xstu.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
-            else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xstu.SetLanguage_SV(); xtoa.SetLanguage_SV(); }
-            else if (await xClient.GetStorage<string>("LMS_Lang") == "DE") { xstu.SetLanguage_DE(); xtoa.SetLanguage_DE(); }
-            else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") { xstu.SetLanguage_FR(); xtoa.SetLanguage_FR(); }
-            else { xstu.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+            if (await xClient.GetStorage<string>("LMS_Lang") == "EN") { xtea.SetMenu_EN(); xstu.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "SV") { xtea.SetMenu_SV(); xstu.SetLanguage_SV(); xtoa.SetLanguage_SV(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "DE") { xtea.SetMenu_DE(); xstu.SetLanguage_DE(); xtoa.SetLanguage_DE(); }
+            else if (await xClient.GetStorage<string>("LMS_Lang") == "FR") { xtea.SetMenu_FR(); xstu.SetLanguage_FR(); xtoa.SetLanguage_FR(); }
+            else { xtea.SetMenu_EN(); xstu.SetLanguage_EN(); xtoa.SetLanguage_EN(); }
         }
 
         if (!Auxx.Flag) xnav.SetReset('a');

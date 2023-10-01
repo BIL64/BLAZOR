@@ -44,6 +44,9 @@ else
             <div style="z-index: 0">
                 <button type="button" @onclick="PagControl" class="btn btn-outline-dark" title=@xtea.TxtTitle[29]>P</button>
             </div>
+            <div style="z-index: 0">
+                <button type="button" @onclick="StudentPage" class="btn btn-outline-dark" title=@xtea.TxtTitle[30]>S</button>
+            </div>
         </div>
     </EditForm>
 
@@ -99,7 +102,7 @@ else
                             {
                                 // Laddar upp ett privat dokument till en särskild student.
                                 <button type="button" class="text-white coursebtn" @onclick=" _ => LoadFile(data.Id, 10, data.FirstName + ' ' + data.LastName)"
-                                title=@xtea.TxtTitle[30]>+Doc</button> // CSS!
+                                title=@xtea.TxtTitle[31]>+Doc</button> // CSS!
                                 <div class="dropdoc">
                                     <button type="button" class="@DocClass">Docs</button>
                                     <div class="dropdoc-content">
@@ -444,6 +447,11 @@ else
         Emptydbcolor = "headeroff";
         Auxx.Flag = true;
         await OnInitializedAsync();
+    }
+
+    private void StudentPage()
+    {
+        Navigation.NavigateTo("/studentallstudents", true);
     }
 
     private async Task SortName() // Sorterar studenter efter deras namn.
