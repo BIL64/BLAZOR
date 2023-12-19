@@ -12,13 +12,15 @@ Detta är alltså variant två och som jag anser är ett fungerande LMS. Vi besl
 
 Så här några månader efteråt har en hel del förbättringar genomförts:
 
-•	Flexiblare hantering av moduler såsom placering, utseende, innehåll och status. 
+•	Flexiblare hantering av moduler såsom placering, utseende, innehåll och status.
 
-•	Meddelanderuta för info, feedback och error.
+•	Det går att ändra, bygga vidare, kopiera, flytta eller döpa om en redan skapad kurs. 
+
+•	Meddelanderuta för info, feedback, postmeddelanden och fel (error).
 
 •	Kraftfulla sökfunktioner.
 
-•	Fullt fungerande dokumenthantering och möjligheten att välja en avatar.
+•	Fullt fungerande dokumenthantering och möjlighet att välja avatarer.
 
 •	Paginering (personsökning) för både studenter och lärare.
 
@@ -26,6 +28,6 @@ Så här några månader efteråt har en hel del förbättringar genomförts:
 
 •	En Options eller ett fönster där man kan välja övergripande inställningar såsom aktivering för registrering, språkval, färgval mm.
 
-•	Och till sist ett diskussionsforum som är ett krav om det hela ska fungera i praktiken.
+•	Och till sist ett diskussionsforum som gör det hela tillämpningsbart.
 
-I övrigt ska applikationen fungera lika bra i mobiltelefonmiljö. Det först man möts av är ett notishäfte, där man kan göra anteckningar om sådant som är viktigt att komma ihåg. Man kan se denna LMS som en fattigmans Teams. Det finns exempelvis inga möjligheter att kommunicera med ljud och bild via dator/mobil, eller att kunna fjärrstyra studenternas dator etc.
+Avsaknaden av mobilanpassning är en nackdel men det gäller inte här. Det först man möts av är ett notishäfte, där man kan göra anteckningar om sådant som är viktigt att komma ihåg. Man kan se denna LMS som en fattigmans Teams. Det finns exempelvis inga möjligheter att kommunicera med ljud och bild via dator/mobil, eller att kunna fjärrstyra studenternas dator etc.
