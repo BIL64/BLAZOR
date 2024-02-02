@@ -22,7 +22,7 @@
                 <div class="toast-body">
                     <div style="font-size: 0.8rem; color:darkblue"><em>For @Auxx.Name4Type...</em></div>
                     <div style="font-size: 0.8rem">
-                        @xtoa.TxtText[13]<br />@xtoa.TxtText[14]<br />@xtoa.TxtText[15]
+                        @xtoa.TxtText[13]<br />@xtoa.TxtText[14] @Asize byte.<br />@xtoa.TxtText[15]
                     </div><br />
                     <div>
                         <InputFile class="form-control text-white" style="background-color:blueviolet"
@@ -56,6 +56,7 @@
     private int IntId;
     private string GuidId = string.Empty;
     private string DocFileName = string.Empty;
+    private string Asize = string.Empty;
 
     MultipartFormDataContent content = new();
 
@@ -73,6 +74,9 @@
         xnav.Pos_V = (int)Math.Round(Win_Height * 0.2); // 20%
 
         if (Auxx.Loggeduser.Id is not null) GuidId = Auxx.Loggeduser.Id;
+
+        var auxiliary1 = await xClient.GetAsync<AuxiliaryDto>(1, "api/Auxiliary");
+        if (auxiliary1 is not null) Asize = auxiliary1.MaxAvatarSize.ToString(); else Asize = "100352";
 
         Upload = false;
 
@@ -98,8 +102,8 @@
         int maxAllowedFiles = 1; // Max 1 fil!
         long maxAvatarSize; // Maximal avatarstorlek.
 
-        var auxiliary = await xClient.GetAsync<AuxiliaryDto>(1, "api/Auxiliary");
-        if (auxiliary is not null) maxAvatarSize = auxiliary.MaxAvatarSize; else maxAvatarSize = 100352;
+        var auxiliary2 = await xClient.GetAsync<AuxiliaryDto>(1, "api/Auxiliary");
+        if (auxiliary2 is not null) maxAvatarSize = auxiliary2.MaxAvatarSize; else maxAvatarSize = 100352;
 
         var alldoc = await xClient.GetAsync<IEnumerable<DocumentDto>>("api/Document");
         if (alldoc is not null) documents = alldoc.ToList(); // Hämtar alla dokument.

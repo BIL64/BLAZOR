@@ -608,10 +608,10 @@
         TxtText[i] = "Avatar file types are .png or .jpeg.";
         i++;
         // 14
-        TxtText[i] = "It should be square and its file size no larger than 100kb.";
+        TxtText[i] = "Max file size:";
         i++;
         // 15
-        TxtText[i] = "Optimal size (WxH) is 225 x 225 pixels.";
+        TxtText[i] = "Optimal image size (WxH) is 225 x 225 pixels.";
         i++;
         // 16
         TxtText[i] = "Description";
@@ -803,10 +803,10 @@
         TxtText[i] = "Avatar-filtyper är .png eller .jpeg.";
         i++;
         // 14
-        TxtText[i] = "Den ska vara kvadratisk och dess filstorlek max 100kb.";
+        TxtText[i] = "Max filstorlek:";
         i++;
         // 15
-        TxtText[i] = "Optimal storlek (BxH) är 225 x 225 pixlar.";
+        TxtText[i] = "Optimal bildstorlek (BxH) är 225 x 225 pixlar.";
         i++;
         // 16
         TxtText[i] = "Beskrivning";
