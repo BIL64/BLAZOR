@@ -1,6 +1,6 @@
 ﻿public class XLangToast // Implementerar det språk man valt via Local Storage.
 {
-    public string[] TxtButton { get; private set; } = new string[15];
+    public string[] TxtButton { get; private set; } = new string[16];
 
     public string[] TxtTitle { get; private set; } = new string[28];
 
@@ -62,6 +62,9 @@
         i++;
         // 14
         TxtButton[i] = "CENSOR";
+        i++;
+        // 15
+        TxtButton[i] = "Send";
     }
 
     private void Button_SV()
@@ -112,6 +115,9 @@
         i++;
         // 14
         TxtButton[i] = "CENSURERA";
+        i++;
+        // 15
+        TxtButton[i] = "Posta";
     }
 
     private void Button_DE()
