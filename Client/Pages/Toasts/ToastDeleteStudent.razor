@@ -18,7 +18,8 @@
                 </div>
 
                 <div class="toast-body">
-                    <button type="button" class="text-white remyes" @onclick="DeleteNow" title=@xtoa.TxtTitle[8]>@xtoa.TxtButton[2]</button> @* DELETE NOW *@
+                    <button type="button" class=@preRemove @onclick="PreDelete" title=@xtoa.TxtTitle[8]>@xtoa.TxtButton[2]</button> @* DELETE NOW *@
+                    <button type="button" class=@irrRemove @onclick="DeleteNow" title=@xtoa.TxtTitle[8]>@xtoa.TxtButton[16]</button> @* PRESS TWICE *@
                     <button type="button" class="text-white remnot" @onclick="Close">@xtoa.TxtButton[0]</button> @* NO *@
                     <button type="button" class="text-white remnot" @onclick="Redirect" title=@xtoa.TxtTitle[9]>@xtoa.TxtButton[10]</button> @* To teacher *@
                 </div>
@@ -35,12 +36,16 @@
 
     private string HeaderText = string.Empty;
     private string showClass = "d-none";
+    private string preRemove = "text-white remyes";
+    private string irrRemove = "d-none";
 
     private int Win_Height;
 
     private List<DocumentDto> documents = new();
 
     private List<ThumbDto> thumbs = new();
+
+    private List<ForumDto> forums = new();
 
     private List<AppUserDto> users = new();
 
@@ -54,6 +59,8 @@
         xnav.Pos_V = (int)Math.Round(Win_Height * 0.2); // 20%
         HeaderText = xtoa.TxtHead[7];
         showClass = "d-block";
+        preRemove = "text-white remyes";
+        irrRemove = "d-none";
         StateHasChanged();
     }
 
@@ -62,6 +69,12 @@
         HeaderText = string.Empty;
         showClass = "d-none";
         StateHasChanged();
+    }
+
+    private void PreDelete()
+    {
+        irrRemove = "text-white remyes";
+        preRemove = "d-none";
     }
 
     private async Task DeleteNow()
@@ -91,6 +104,50 @@
             foreach (var thu in thumbs)
             {
                 if (thu.Id4User == Auxx.GuidId) await xClient.RemAsync(thu.Id, "api/Thumb");
+            }
+        }
+
+        if (!FindDoc) // Söker och eliminerar studentens alla ev skapade trådar.
+        {
+            bool IsPthread;
+            do
+            {
+                IsPthread = false;
+                string Tname = "";
+
+                var forum1 = await xClient.GetAsync<IEnumerable<ForumDto>>("api/Forum");
+                if (forum1 is not null) forums = forum1.ToList();
+
+                foreach (var fum1 in forums)
+                {
+                    if (fum1.Id4User == Auxx.GuidId && fum1.Select == 0)
+                    {
+                        Tname = fum1.ThreadName;
+                        IsPthread = true;
+                    }
+                }
+
+                if (IsPthread) // En funnen tråd elimineras.
+                {
+                    foreach (var fum2 in forums)
+                    {
+                        if (fum2.ThreadName == Tname)
+                            await xClient.RemAsync(fum2.Id, "api/Forum");
+                    }
+                }
+            } while (IsPthread);
+        }
+
+
+        if (!FindDoc) // Tar bort alla övriga inlägg.
+        {
+            var forum2 = await xClient.GetAsync<IEnumerable<ForumDto>>("api/Forum");
+            if (forum2 is not null) forums = forum2.ToList();
+
+            foreach (var fum3 in forums)
+            {
+                if (fum3.Id4User == Auxx.GuidId)
+                    await xClient.RemAsync(fum3.Id, "api/Forum");
             }
         }
 

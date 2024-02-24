@@ -145,7 +145,7 @@
         TxtButton[i] = "Save thread";
         i++;
         // 18
-        TxtButton[i] = "Post it!";
+        TxtButton[i] = "Post!";
     }
 
     private void Button_SV()
@@ -207,7 +207,7 @@
         TxtButton[i] = "Spara tråd";
         i++;
         // 18
-        TxtButton[i] = "Posta nu!";
+        TxtButton[i] = "Posta!";
     }
 
     private void Button_DE()
@@ -225,7 +225,7 @@
         int i = 0;
 
         // 0
-        TxtTitle[i] = "reserve";
+        TxtTitle[i] = "Important information";
         i++;
         // 1
         TxtTitle[i] = "Add or delete avatar";
@@ -374,7 +374,7 @@
         int i = 0;
 
         // 0
-        TxtTitle[i] = "reserve";
+        TxtTitle[i] = "Viktig information";
         i++;
         // 1
         TxtTitle[i] = "Lägg till eller radera avatar";

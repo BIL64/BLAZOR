@@ -247,7 +247,7 @@
         TxtText[i] = "Save thread";
         i++;
         // 30
-        TxtText[i] = "Post it!";
+        TxtText[i] = "Post!";
         i++;
         // 31
         TxtText[i] = "reserve";
@@ -429,7 +429,7 @@
         TxtText[i] = "Spara tråd";
         i++;
         // 30
-        TxtText[i] = "Posta nu!";
+        TxtText[i] = "Posta!";
         i++;
         // 31
         TxtText[i] = "reserve";

@@ -1,12 +1,12 @@
 ﻿public class XLangToast // Implementerar det språk man valt via Local Storage.
 {
-    public string[] TxtButton { get; private set; } = new string[16];
+    public string[] TxtButton { get; private set; } = new string[18];
 
     public string[] TxtTitle { get; private set; } = new string[28];
 
     public string[] TxtHead { get; private set; } = new string[38];
 
-    public string[] TxtText { get; private set; } = new string[62];
+    public string[] TxtText { get; private set; } = new string[65];
 
     public string[] TxtDone { get; private set; } = new string[47];
 
@@ -65,6 +65,12 @@
         i++;
         // 15
         TxtButton[i] = "Send";
+        i++;
+        // 16
+        TxtButton[i] = "PRESS TWICE";
+        i++;
+        // 17
+        TxtButton[i] = "OK";
     }
 
     private void Button_SV()
@@ -118,6 +124,12 @@
         i++;
         // 15
         TxtButton[i] = "Posta";
+        i++;
+        // 16
+        TxtButton[i] = "TRYCK IGEN";
+        i++;
+        // 17
+        TxtButton[i] = "OK";
     }
 
     private void Button_DE()
@@ -341,7 +353,7 @@
         TxtHead[i] = "Remove message...";
         i++;
         // 6
-        TxtHead[i] = "reserve";
+        TxtHead[i] = "Info...";
         i++;
         // 7
         TxtHead[i] = "Remove this user...";
@@ -460,7 +472,7 @@
         TxtHead[i] = "Ta bort meddelandet...";
         i++;
         // 6
-        TxtHead[i] = "reserve";
+        TxtHead[i] = "Info...";
         i++;
         // 7
         TxtHead[i] = "Ta bort den här användaren...";
@@ -759,6 +771,20 @@
         i++;
         // 61
         TxtText[i] = "Permit to delete the post from the database";
+        i++;
+        // 62
+        TxtText[i] = "A teacher can only assign one course at a time. To avoid this, you can have several login names " +
+                     "that are numbered, for example, John1, John2, john1@mail.com, john2@mail.com, etc.";
+        i++;
+        // 63
+        TxtText[i] = "Courses, modules, and activities should once they have been created never be removed (deleted). " +
+                     "They are all numbered and if one is removed a gap appears, for example, 2, 3, 4... or 1, 2, 4... " +
+                     "where 1 or 3 are deleted. If a course becomes out of date, it is better to rebuild it or save it. " +
+                     "If a module or activity becomes out of date, it is better to disable it (make it invisible).";
+        i++;
+        // 64
+        TxtText[i] = "When you remove (delete) a student or a teacher, all posts made in a possible discussion thread " +
+                     "also disappear. Even created threads and private threads disappear.";
     }
 
     private void Text_SV()
@@ -954,6 +980,20 @@
         i++;
         // 61
         TxtText[i] = "Tillåt att radera inlägget från databasen";
+        i++;
+        // 62
+        TxtText[i] = "En lärare kan endast disponera en kurs åt gången. För att kringå detta kan man ha flera inloggningsnamn " +
+                     "som är numrerade, exempelvis Kalle1, Kalle2, kalle1@mejl.se, kalle2@mejl.se osv.";
+        i++;
+        // 63
+        TxtText[i] = "Kurser, moduler och aktiviteter bör aldrig tas bort (raderas) efter att de en gång har skapats. " +
+                     "De är alla numrerade och om en tas bort uppstår en lucka, exempelvis 2, 3, 4... eller 1, 2, 4... " +
+                     "där 1 eller 3 är raderade. Blir en kurs inaktuell så är det bättre att bygga om den eller spara den. " +
+                     "Blir en modul eller aktivitet inaktuell så är det bättre att inaktivera den (osynliggöra den).";
+        i++;
+        // 64
+        TxtText[i] = "När man tar bort (raderar) en student eller en lärare så förvinner även alla inlägg som gjorts i en ev. " +
+                     "diskussionstråd. Även skapade trådar och privata trådar försvinner.";
     }
 
     private void Text_DE()

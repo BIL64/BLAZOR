@@ -19,6 +19,7 @@
             <div style="margin: 0 0 0 auto">
                 <button type="button" class="mb-1 text-white delbtn" @onclick="AddDeleteAvatar" title=@xtea.TxtTitle[1]>A</button>
                 <button type="button" class="mb-1 text-white delbtn" @onclick="DeleteAllDocs" title=@xtea.TxtTitle[2]>E</button>
+                <button type="button" class="mb-1 text-white delbtn" @onclick="Info" title=@xtea.TxtTitle[0]>I</button>
             </div>
         </nav>
 
@@ -77,6 +78,7 @@
         <ToastDeleteAllDocUser @ref="deletealldocRef" /> @*Delete-fönster*@
         <ToastDocumentUser @ref="docuserRef" /> @*Filmottagarefönster*@
         <ToastDocumentAvatar @ref="addavatarRef" /> @*Avatar-fönster*@
+        <ToastInfo @ref="infoRef" /> @*Info-fönster*@
 
         <EditForm Context="searchlmslexnet" Model="@courses" OnSubmit="OnInitializedAsync">
             <div class="input-group">
@@ -271,6 +273,13 @@
         Auxx.Loggeduser = loggeduser;
         await addavatarRef!.Show();
         await RefreshAfterThis(false); // Uppdaterar sidan.
+    }
+
+    private ToastInfo? infoRef; // Info-fönster.
+
+    private async Task Info() // Info-fönster.
+    {
+        await infoRef!.Show();
     }
 
     private List<CourseDto> courses = new();
