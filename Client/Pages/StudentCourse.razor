@@ -587,7 +587,16 @@
 
                                                     if (actStyleName == "")
                                                     {
-                                                        <td><b style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</b></td>
+                                                        if (act.Name.IndexOf("#i#") != -1)
+                                                        {
+                                                            actStyleName = act.Name;
+                                                            actStyleName = actStyleName.Replace("#i#", "");
+                                                            <td><b style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)"><em>@actStyleName</em></b></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><b style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</b></td>
+                                                        }
                                                     }
                                                     actStyleName = "";
 
