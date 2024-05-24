@@ -590,7 +590,7 @@
                      "activities but do not care for any documents.";
         i++;
         // 2
-        TxtText[i] = "Copy the module but do not move any document";
+        TxtText[i] = "Copy module but do not move any document";
         i++;
         // 3
         TxtText[i] = "Move all documents";
