@@ -30,4 +30,4 @@ Så här några månader efteråt har en hel del förbättringar genomförts:
 
 •	Och till sist ett diskussionsforum som gör det hela tillämpningsbart.
 
-Avsaknaden av mobilanpassning är en nackdel men det gäller inte här. Det först man möts av är ett notishäfte, där man kan göra anteckningar om sådant som är viktigt att komma ihåg. Man kan se denna LMS som en fattigmans Teams. Det finns exempelvis inga möjligheter att kommunicera med ljud och bild via dator/mobil, eller att kunna fjärrstyra studenternas dator etc.
+Avsaknaden av mobilanpassning är en nackdel men det gäller inte här. Det första man möts av är ett notishäfte, där man kan göra anteckningar om sådant som är viktigt att komma ihåg. Man kan se denna LMS som en fattigmans Teams. Det finns exempelvis inga möjligheter att kommunicera med ljud och bild via dator/mobil, eller att kunna fjärrstyra studenternas dator etc.
