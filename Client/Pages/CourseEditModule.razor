@@ -19,7 +19,7 @@
     <section class="activityeditbox"> @*Hjälptabeller vid inmatning av moduler*@
         <div style="display: flex">
             <h4 style="width: 75%">@xedi.TxtText[17] @course.Name</h4>
-            <h5 style="margin: 0 0 0 auto">@xnav.StartEndDate(course.StartDate, course.EndDate)</h5>
+            <h5 style="margin: 0 0 0 auto">@XNavMenu.StartEndDate(course.StartDate, course.EndDate)</h5>
         </div>
         <h6>@xedi.TxtText[18]</h6>
         <table class="table">
@@ -37,7 +37,7 @@
                 <tr>
                     <td>@mod.Name</td>
                     <td>@mod.Description</td>
-                    <td>@xnav.StartEndDate(mod.StartDate, mod.EndDate)</td>
+                    <td>@XNavMenu.StartEndDate(mod.StartDate, mod.EndDate)</td>
                 </tr>
             }
         </table>

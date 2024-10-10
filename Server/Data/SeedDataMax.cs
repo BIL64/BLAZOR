@@ -58,11 +58,11 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel (ombyggd av Björn
         {
             var list = new List<ActivityType> // <-- antalet aktivitetstyper = 5.
             {
-                new ActivityType{ Name = "Assignments"},
-                new ActivityType{ Name = "E-learning sessions"},
-                new ActivityType{ Name = "Training sessions"},
-                new ActivityType{ Name = "Lectures"},
-                new ActivityType{ Name = "Other"},
+                new() { Name = "Assignments"},
+                new() { Name = "E-learning sessions"},
+                new() { Name = "Training sessions"},
+                new() { Name = "Lectures"},
+                new() { Name = "Other"},
             };
             return list;
         }

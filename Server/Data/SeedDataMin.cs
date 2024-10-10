@@ -58,9 +58,9 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel (ombyggd av Björn
         {
             var list = new List<ActivityType> // <-- antalet aktivitetstyper = 3.
             {
-                new ActivityType{ Name = "Assignments"},
-                new ActivityType{ Name = "E-learning sessions"},
-                new ActivityType{ Name = "Lectures"},
+                new() { Name = "Assignments"},
+                new() { Name = "E-learning sessions"},
+                new() { Name = "Lectures"},
             };
             return list;
         }
@@ -90,7 +90,6 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel (ombyggd av Björn
         {
             var courses = new List<Course>();
             var faker = new Faker("sv");
-            var rnd = new Random();
 
             for (int i = 0; i < nrOfCourses; i++)
             {

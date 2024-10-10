@@ -160,7 +160,7 @@
                                 <span class="order" @onclick=" _ => OrderModule(data.Id)" title=@xdet.TxtTitle[6]>@data.Morder</span>
                             </div>
                             <div style="margin: 0 0 0 auto"><b style="cursor: pointer" @onclick=" _ => ModuleDate(data.Id)"
-                                title=@xdet.TxtTitle[7]>@xnav.StartEndDate(data.StartDate, data.EndDate)</b>
+                                title=@xdet.TxtTitle[7]>@XNavMenu.StartEndDate(data.StartDate, data.EndDate)</b>
                             </div>
                         </div>
                         <div style="display: flex">
@@ -360,7 +360,7 @@
                                                     </td>
                                                     <td>
                                                         <span style="cursor: pointer" @onclick=" _ => ActivityDate(act.Id)" title=@xdet.TxtTitle[7]>
-                                                        @xnav.StartEndDate(act.StartDate, act.EndDate)</span>
+                                                        @XNavMenu.StartEndDate(act.StartDate, act.EndDate)</span>
                                                     </td>
                                                 }
                                                 else
@@ -442,7 +442,7 @@
                                                 <td>
                                                     <div style="font-weight: bold; color:red">@xdet.TxtText[12]</div> @* DISABLE *@
                                                 </td>
-                                                <td>@xnav.StartEndDate(act.StartDate, act.EndDate)</td>
+                                                <td>@XNavMenu.StartEndDate(act.StartDate, act.EndDate)</td>
                                                 <td>
                                                     <div style="margin-left: auto; margin-right: 0">
                                                     <NavLink style="cursor: pointer" class="oi oi-arrow-circle-top text-primary mt-2 text-decoration-none"
@@ -477,7 +477,7 @@
                                 <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
                                 <span class="order" @onclick=" _ => OrderModule(data.Id)" title=@xdet.TxtTitle[6]>@data.Morder</span>
                             </div>
-                            <div style="margin-left: auto; margin-right: 0"><b>@xnav.StartEndDate(data.StartDate, data.EndDate)</b></div>
+                            <div style="margin-left: auto; margin-right: 0"><b>@XNavMenu.StartEndDate(data.StartDate, data.EndDate)</b></div>
                         </div>
                         <div style="display: flex">
                             <div style="font-weight: bold; color:red; margin-left: auto; margin-right: auto">@xdet.TxtText[12]</div> @* DISABLE *@
@@ -516,7 +516,7 @@
                                                     }
                                                 }
                                             </td>
-                                            <td>@xnav.StartEndDate(act.StartDate, act.EndDate)</td>
+                                            <td>@XNavMenu.StartEndDate(act.StartDate, act.EndDate)</td>
                                         }
                                     </tr>
                                 }
@@ -678,7 +678,7 @@
                     CourseName = cour.Name;
                     CourseDescription = cour.Description;
                     CourseId = cour.Id;
-                    CourseDate = xnav.StartEndDate(cour.StartDate, cour.EndDate);
+                    CourseDate = XNavMenu.StartEndDate(cour.StartDate, cour.EndDate);
 
                     foreach (var mod in cour.Modules) // Hämtar moduler.
                     {
