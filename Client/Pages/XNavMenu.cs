@@ -216,7 +216,7 @@ public class XNavMenu // Klass som kan kommunicera med navmenyn.
     // Här har jag lagt andra funktioner som förekommer mer än en gång
     // ---------------------------------------------------------------
 
-    public string StartEndDate(DateTime start, DateTime end) // Returnerar datumsträng.
+    public static string StartEndDate(DateTime start, DateTime end) // Returnerar datumsträng.
     {
         return $"{start.ToString()[..10]} | {end.ToString()[..10]}";
     }
@@ -227,7 +227,7 @@ public class XNavMenu // Klass som kan kommunicera med navmenyn.
         await Task.Delay(time);
     }
 
-    public void Mouse(int height, char act, MouseEventArgs e) // Moveable Toaster.
+    public void Mouse(char act, MouseEventArgs e) // Moveable Toaster.
     {
         if (!IsDown && act == 'D') // Skillnaden mellan muspekarens position och css-värdet av objektet.
         {

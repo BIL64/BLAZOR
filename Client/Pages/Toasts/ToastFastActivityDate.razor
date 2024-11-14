@@ -10,8 +10,8 @@
         <div class="toast-container p-3 @showClass"
              style="position: fixed; top: auto; top: @(xnav.Pos_V)px; margin-left: @(xnav.Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
             <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header" @onmouseup=" _ => xnav.Mouse(0, 'U', _)" @onmousedown=" _ => xnav.Mouse(Win_Height, 'D', _)"
-                     @onmousemove=" _ => xnav.Mouse(Win_Height, 'M', _)" @onmouseout=" _ => xnav.Mouse(Win_Height, 'M', _)">
+                <div class="toast-header" @onmouseup=" _ => xnav.Mouse('U', _)" @onmousedown=" _ => xnav.Mouse('D', _)"
+                     @onmousemove=" _ => xnav.Mouse('M', _)" @onmouseout=" _ => xnav.Mouse('M', _)">
                     <strong class="me-auto">@HeaderText</strong>
                     <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
                 </div>
@@ -48,8 +48,6 @@
     private string HeaderText = string.Empty;
     private string showClass = "d-none";
 
-    private int Win_Height;
-
     private List<ActivityDto> activities = new();
 
     private DateTime Sdate;
@@ -61,9 +59,8 @@
         xnav.SetReset('a');
 
         var dim = await xClient.GetWindow(); // Hämtar aktuell skärmstorlek.
-        Win_Height = dim.Height;
         xnav.Pos_H = (int)Math.Round(dim.Width * 0.08); // 08%
-        xnav.Pos_V = (int)Math.Round(Win_Height * 0.2); // 20%
+        xnav.Pos_V = (int)Math.Round(dim.Height * 0.2); // 20%
 
         var activity = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
         if (activity is not null) activities = activity.ToList();
