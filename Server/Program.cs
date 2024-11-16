@@ -96,6 +96,9 @@ namespace LexiconLMSBlazor.Server
             // Om man vill förkasta de ändringar man gjort: "git reset --hard HEAD" Görs innan man hämtar en ny commit.
             // För att kopiera in en commit från en annan gren till den gren man befinner sig i: "git cherry-pick <commit-id>".
             // För att återställa paketen (NuGets): "dotnet restore" Om det misslyckats så kan man fixa det manuellt i .csproj-filen.
+            // Olösta konflikter visas med: "git status".
+            // Lägg till de lösta filerna (tidigare konflikter) till stagingområdet med kommandot: "git add <filnamn>".
+            // För att avsluta cherry-pick-processen och skapa en commit: "git cherry-pick --continue".
             // Push till GitHub: "git push <huvudgrenen>".
 
             // Configure the HTTP request pipeline.
