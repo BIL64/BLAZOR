@@ -57,6 +57,47 @@ namespace LexiconLMSBlazor.Server
                 }
             }
 
+            // FÖRFARANDE FÖR ATT SKAPA EN NY MIGRATION
+            // ========================================
+            // Genom att radera och skapa nya migrationer kan du ofta lösa beroendeproblem och
+            // säkerställa att din databas är i linje med den senaste koden.
+            // OBS. Lärare, elever, kurser, moduler och dokument försvinner!
+            //
+            // 1. Öppna Tools > NuGet Package Manager > Package Manager Console.
+            // Följande kommandon i konsolen ska skrivas:
+            // 2. remove-migration (om inte databasen kan tas bort här måste man radera den i SQL-SOE)
+            // 3. add-migration "Init"
+            // 4. update-database
+            // Nu finns en ny migration och databas tillgänglig.
+            // Clear solution och rebuild solution rensar upp!
+
+            // FÖRFARANDE FÖR ATT UPPGRADERA NETX - FRAMEWORK - VERSIONEN
+            // ==========================================================
+            // Ibland är det nödvändigt eftersom vissa NuGets inte kan uppdateras i en gammal netversion.
+            // NuGets är utspridda i projektet! En för Client, en för Server och en för Shared.
+            // Netversionen finns i .csproj-filerna. Det är tre stycken här (enligt ovan).
+            // Man kan även klicka i projektet, exempelvis på "LexiconLMSBlazor.Client".
+            //
+            // Under <PropertyGroup> nästan högst upp finns <TargetFramework>net7.0</TargetFramework>
+            // Ändra siffran för varje projektfil och bygg sedan om hela projektet (rebuild solution).
+            // Nu kan man konstatera fel i projektet men det brukar bara vara ett fåtal - beror på hur välskriven koden är...
+
+            // ANVÄNDBARA GIT-KOMMANDON I CMD
+            // ==============================
+            // Det är oftast enklare att utföra vissa git-operationer i CMD (finns i gitmenyn).
+            // Välj först vilken gren som det gäller (längst ned i högra hörnet).
+            //
+            // För att byta gren (branch) i CMD: "git checkout <gren>"
+            // Titta på alla commits och dess ID-nummer: "git log" Här kan man kopiera ett id för en intressant commit.
+            // Skapa en ny gren: "git checkout -b <ny-gren-namn>" Växlar till denna gren.
+            // Om man vill slå ihop en gren med den man befinner sig i (huvudgrenen): "git merge <annan-gren-namn>".
+            // Spara ändringar tillfälligt: "git stash". Återställ det stashade: "git stash pop".
+            // Hämta in en commit som man vill jobba med: "git checkout <commit-id>" Kör gärna "dotnet restore" efteråt.
+            // Om man vill förkasta de ändringar man gjort: "git reset --hard HEAD" Görs innan man hämtar en ny commit.
+            // För att kopiera in en commit från en annan gren till den gren man befinner sig i: "git cherry-pick <commit-id>".
+            // För att återställa paketen (NuGets): "dotnet restore" Om det misslyckats så kan man fixa det manuellt i .csproj-filen.
+            // Push till GitHub: "git push <huvudgrenen>".
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

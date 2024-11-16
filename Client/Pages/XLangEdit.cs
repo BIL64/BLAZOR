@@ -303,7 +303,7 @@
         TxtText[i] = "Moduler...";
         i++;
         // 19
-        TxtText[i] = "Aktiviteter för module";
+        TxtText[i] = "Aktiviteter för modul";
         i++;
         // 20
         TxtText[i] = "reserve";
