@@ -7,7 +7,8 @@ public class XPagination : XDtoClient
 {
     private readonly XNavMenu _nav;
 
-    public XPagination(HttpClient httpClient, ILocalStorageService localStorageService, IJSRuntime jS, XNavMenu xnav) : base(httpClient, localStorageService, jS)
+    public XPagination(HttpClient httpClient, ILocalStorageService localStorageService,
+    IJSRuntime jS, XNavMenu xnav) : base(httpClient, localStorageService, jS)
     {
         _nav = xnav;
     }

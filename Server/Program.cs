@@ -57,6 +57,20 @@ namespace LexiconLMSBlazor.Server
                 }
             }
 
+            // FÖRFARANDE FÖR ATT SKAPA EN NY MIGRATION
+            // ========================================
+            // Genom att radera och skapa nya migrationer kan du ofta lösa beroendeproblem och
+            // säkerställa att din databas är i linje med den senaste koden.
+            // OBS. Lärare, elever, kurser och moduler försvinner!
+            //
+            // 1. Öppna Tools > NuGet Package Manager > Package Manager Console.
+            // Följande kommandon i konsolen ska skrivas:
+            // 2. remove-migration (om inte databasen kan tas bort här måste man radera den i SQL-SOE)
+            // 3. add-migration "Init"
+            // 4. update-database
+            // Nu finns en ny migration och databas tillgänglig.
+            // Clear solution och rebuild solution rensar upp!
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

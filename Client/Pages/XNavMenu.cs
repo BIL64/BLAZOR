@@ -2,7 +2,7 @@
 
 public class XNavMenu // Klass som kan kommunicera med navmenyn.
 {
-    public byte[] ColorRGB = new byte[3] { 0, 206, 209 }; // Standard RGB-värden för sidofält etc.
+    public byte[] ColorRGB = [0, 206, 209]; // Standard RGB-värden för sidofält etc.
 
     public bool JohnDoe { get; private set; } = true;
 
@@ -104,7 +104,7 @@ public class XNavMenu // Klass som kan kommunicera med navmenyn.
     }
 
     public void SetReset(char ch)
-    { 
+    {
         switch (ch)
         {
             case 'i':
@@ -187,7 +187,7 @@ public class XNavMenu // Klass som kan kommunicera med navmenyn.
                     break;
                 }
         }
-    
+
     }
 
     public void SetClickSett(bool click)
