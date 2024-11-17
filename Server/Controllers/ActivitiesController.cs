@@ -8,14 +8,9 @@ namespace LexiconLMSBlazor.Server.Controllers
 {
     [Route("api/Activity")]
     [ApiController]
-    public class ActivitiesController : ControllerBase
+    public class ActivitiesController(ApplicationDbContext context) : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-
-        public ActivitiesController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         // GET: api/Activities
         [HttpGet]

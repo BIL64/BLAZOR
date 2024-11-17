@@ -15,7 +15,7 @@
 </nav>
 
 <section class="text-lg-end text-info">
-    &copy September 2023 Björn Lindqvist - Version 1.17 (NET9.0)
+    &copy September 2023 Björn Lindqvist - Version 1.18 NET9
 </section>
 
 <section class="mt-4 p-4"> @*Hjälp vid uppstart när man har populerat Min eller Max*@
@@ -53,7 +53,7 @@
             </div>
             <div class="col-8">
                 <InputTextArea class="form-control"
-                    style="font-size: 1.2rem; border-left: none; border-radius: 0; background: url('images/NotesBG.jpg')" @bind-Value="MyText" rows="17" />
+                style="font-size: 1.2rem; border-left: none; border-radius: 0; background: url('images/NotesBG.jpg')" @bind-Value="MyText" rows="17" />
             </div>
         </div>
         <div class="row form-group" style="font-size: 0.9rem">
@@ -152,13 +152,14 @@
             }
         }
 
+
         if (await xClient.GetStorage<string>("LMS_NR") is not null) // Noteringshäftet.
         {
-            Pagenr = byte.Parse(await xClient.GetStorage<string>("LMS_NR"));
+            Pagenr = byte.Parse(await GetLS("LMS_NR"));
 
-            Page1 = await xClient.GetStorage<string>("LMS_P1");
-            Page2 = await xClient.GetStorage<string>("LMS_P2");
-            Page3 = await xClient.GetStorage<string>("LMS_P3");
+            Page1 = await GetLS("LMS_P1");
+            Page2 = await GetLS("LMS_P2");
+            Page3 = await GetLS("LMS_P3");
 
             if (Pagenr == 1) MyText = Page1;
             else if (Pagenr == 2) MyText = Page2;
@@ -171,11 +172,11 @@
         if (await xClient.GetStorage<string>("LMS_C_Standard") == "False") IsStandard = false;
         else IsStandard = true;
 
-        string LScolor = await xClient.GetStorage<string>("LMS_C-R");
+        string LScolor = await GetLS("LMS_C-R");
         if (LScolor is not null && LScolor != "") ColorR = byte.Parse(LScolor); else ColorR = xnav.ColorRGB[0];
-        LScolor = await xClient.GetStorage<string>("LMS_C-G");
+        LScolor = await GetLS("LMS_C-G");
         if (LScolor is not null && LScolor != "") ColorG = byte.Parse(LScolor); else ColorG = xnav.ColorRGB[1];
-        LScolor = await xClient.GetStorage<string>("LMS_C-B");
+        LScolor = await GetLS("LMS_C-B");
         if (LScolor is not null && LScolor != "") ColorB = byte.Parse(LScolor); else ColorB = xnav.ColorRGB[2];
 
         if (IsStandard)
@@ -201,10 +202,10 @@
 
         try
         {
-            await xClient.SetStorage<string>("LMS_P1", Page1);
-            await xClient.SetStorage<string>("LMS_P2", Page2);
-            await xClient.SetStorage<string>("LMS_P3", Page3);
-            await xClient.SetStorage<string>("LMS_NR", Pagenr.ToString());
+            await xClient.SetStorage("LMS_P1", Page1);
+            await xClient.SetStorage("LMS_P2", Page2);
+            await xClient.SetStorage("LMS_P3", Page3);
+            await xClient.SetStorage("LMS_NR", Pagenr.ToString());
         }
         catch
         {
@@ -227,12 +228,19 @@
 
         try
         {
-            await xClient.SetStorage<string>("LMS_NR", Pagenr.ToString());
+            await xClient.SetStorage("LMS_NR", Pagenr.ToString());
         }
         catch
         {
             xnav.SetError(@xtoa.TxtError[20]);
             xnav.SetReset('e');
         }
+    }
+
+    private async Task<string> GetLS(string target) // Hämtar från LocalStorage.
+    {
+        var response = await xClient.GetStorage<string>(target);
+        if (response is not null) return response;
+        else return string.Empty;
     }
 }

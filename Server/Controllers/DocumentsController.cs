@@ -8,14 +8,9 @@ namespace LexiconLMSBlazor.Server.Controllers
 {
     [Route("api/Document")]
     [ApiController]
-    public class DocumentsController : ControllerBase
+    public class DocumentsController(ApplicationDbContext context) : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-
-        public DocumentsController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         // GET: api/Documents
         [HttpGet]

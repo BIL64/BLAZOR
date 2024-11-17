@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using LexiconLMSBlazor.Client.Pages;
 using LexiconLMSBlazor.Client.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;

@@ -8,14 +8,9 @@ namespace LexiconLMSBlazor.Server.Controllers
 {
     [Route("api/Forum")]
     [ApiController]
-    public class ForumController : ControllerBase
+    public class ForumController(ApplicationDbContext context) : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-
-        public ForumController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         // Av Björn Lindqvist
         [HttpGet]

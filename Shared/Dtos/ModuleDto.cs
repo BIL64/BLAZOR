@@ -24,7 +24,7 @@ namespace LexiconLMSBlazor.Shared.Dtos
         public int CourseId { get; set; }
 
         // Enumerable Type
-        public IEnumerable<ActivityDto> Activities { get; set; } = new List<ActivityDto>();
+        public IEnumerable<ActivityDto> Activities { get; set; } = [];
     }
 }
 

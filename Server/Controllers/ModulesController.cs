@@ -8,14 +8,9 @@ namespace LexiconLMSBlazor.Server.Controllers
 {
     [Route("api/Module")]
     [ApiController]
-    public class ModulesController : ControllerBase
+    public class ModulesController(ApplicationDbContext context) : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-
-        public ModulesController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         // Av Björn Lindqvist
         [HttpGet]

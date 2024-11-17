@@ -17,7 +17,7 @@ namespace LexiconLMSBlazor.Shared.Dtos
         public DateTime EndDate { get; set; } = DateTime.Now;
 
         // Enumerable Type
-        public IEnumerable<ModuleDto> Modules { get; set; } = new List<ModuleDto>();
+        public IEnumerable<ModuleDto> Modules { get; set; } = [];
 
         public int Total_M { get; set; } // Antal moduler.
 

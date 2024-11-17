@@ -114,10 +114,10 @@
             xpag.PagAuto = PagAuto;
             xpag.PagRows = PagRows;
             xpag.PagRed = PagRed;
-            await xClient.SetStorage<string>($"Pag{xpag.PagId}On", PagOn.ToString());
-            await xClient.SetStorage<string>($"Pag{xpag.PagId}Auto", PagAuto.ToString());
-            await xClient.SetStorage<string>($"Pag{xpag.PagId}Rows", PagRows.ToString());
-            await xClient.SetStorage<string>($"Pag{xpag.PagId}Red", PagRed.ToString());
+            await xClient.SetStorage($"Pag{xpag.PagId}On", PagOn.ToString());
+            await xClient.SetStorage($"Pag{xpag.PagId}Auto", PagAuto.ToString());
+            await xClient.SetStorage($"Pag{xpag.PagId}Rows", PagRows.ToString());
+            await xClient.SetStorage($"Pag{xpag.PagId}Red", PagRed.ToString());
             Auxx.Flag = true;
         }
         catch

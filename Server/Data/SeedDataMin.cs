@@ -86,7 +86,7 @@ namespace LexiconLMSBlazor.Server.Data // Av Jean-Yves Michel (ombyggd av Björn
             return activities;
         }
 
-        private static IEnumerable<Course> GenerateCourses(int nrOfCourses)
+        private static List<Course> GenerateCourses(int nrOfCourses)
         {
             var courses = new List<Course>();
             var faker = new Faker("sv");

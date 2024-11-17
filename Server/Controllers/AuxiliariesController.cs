@@ -7,14 +7,9 @@ namespace LexiconLMSBlazor.Server.Controllers
 {
     [Route("api/Auxiliary")]
     [ApiController]
-    public class AuxiliariesController : ControllerBase
+    public class AuxiliariesController(ApplicationDbContext context) : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-
-        public AuxiliariesController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Auxiliary>> GetAuxiliary(int id)

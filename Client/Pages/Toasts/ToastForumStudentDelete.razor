@@ -95,7 +95,9 @@
     {
         bool IsFind = false;
 
-        string names = await xClient.GetStorage<string>("LMS_F_Name");
+        string names = "";
+        var ls = await xClient.GetStorage<string>("LMS_F_Name");
+        if (ls is not null) names = ls;
         var forum = await xClient.GetAsync<IEnumerable<ForumDto>>("api/Forum");
 
         Tname = Tname.Replace("|", "/");
@@ -111,7 +113,7 @@
 
                 try
                 {
-                    await xClient.SetStorage<string>("LMS_F_Name", names);
+                    await xClient.SetStorage("LMS_F_Name", names);
                     xnav.SetDone(xtoa.TxtDone[36]);
                     xnav.SetReset('d');
                     Auxx.Flag = true;
@@ -133,7 +135,7 @@
         {
             try
             {
-                await xClient.SetStorage<string>("LMS_F_Name", "");
+                await xClient.SetStorage("LMS_F_Name", "");
                 xnav.SetDone(xtoa.TxtDone[37]);
                 xnav.SetReset('d');
                 Auxx.Flag = true;
@@ -187,7 +189,7 @@
 
                 try
                 {
-                    await xClient.SetStorage<string>("LMS_F_Name", names);
+                    await xClient.SetStorage("LMS_F_Name", names);
                 }
                 catch
                 {

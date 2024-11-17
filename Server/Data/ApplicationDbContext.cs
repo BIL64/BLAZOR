@@ -6,13 +6,10 @@ using Microsoft.Extensions.Options;
 
 namespace LexiconLMSBlazor.Server.Data
 {
-    public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
+    public class ApplicationDbContext(
+        DbContextOptions options,
+        IOptions<OperationalStoreOptions> operationalStoreOptions) : ApiAuthorizationDbContext<ApplicationUser>(options, operationalStoreOptions)
     {
-        public ApplicationDbContext(
-            DbContextOptions options,
-            IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
-        {
-        }
         public DbSet<Course> Course { get; set; } = default!;
         public DbSet<Module> Module { get; set; } = default!;
         public DbSet<Activity> Activity { get; set; } = default!;

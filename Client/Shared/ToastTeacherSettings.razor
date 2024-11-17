@@ -155,11 +155,11 @@
         if (await xClient.GetStorage<string>("LMS_C_Standard") == "False") IsStandard = false;
         else IsStandard = true;
 
-        string LScolor = await xClient.GetStorage<string>("LMS_C-R");
+        string LScolor = await GetLS("LMS_C-R");
         if (LScolor is not null && LScolor != "") ColorR = byte.Parse(LScolor); else ColorR = xnav.ColorRGB[0];
-        LScolor = await xClient.GetStorage<string>("LMS_C-G");
+        LScolor = await GetLS("LMS_C-G");
         if (LScolor is not null && LScolor != "") ColorG = byte.Parse(LScolor); else ColorG = xnav.ColorRGB[1];
-        LScolor = await xClient.GetStorage<string>("LMS_C-B");
+        LScolor = await GetLS("LMS_C-B");
         if (LScolor is not null && LScolor != "") ColorB = byte.Parse(LScolor); else ColorB = xnav.ColorRGB[2];
 
         if (IsStandard)
@@ -279,7 +279,7 @@
 
         try
         {
-            await xClient.SetStorage<string>("LMS_Note", IsNote.ToString());
+            await xClient.SetStorage("LMS_Note", IsNote.ToString());
         }
         catch
         {
@@ -291,7 +291,7 @@
         {
             if (LangSelect == 0)
             {
-                await xClient.SetStorage<string>("LMS_Lang", "EN");
+                await xClient.SetStorage("LMS_Lang", "EN");
                 xdet.SetLanguage_EN();
                 xedi.SetLanguage_EN();
                 xstu.SetLanguage_EN();
@@ -300,7 +300,7 @@
             }
             if (LangSelect == 1)
             {
-                await xClient.SetStorage<string>("LMS_Lang", "SV");
+                await xClient.SetStorage("LMS_Lang", "SV");
                 xdet.SetLanguage_SV();
                 xedi.SetLanguage_SV();
                 xstu.SetLanguage_SV();
@@ -309,7 +309,7 @@
             }
             if (LangSelect == 2)
             {
-                await xClient.SetStorage<string>("LMS_Lang", "DE");
+                await xClient.SetStorage("LMS_Lang", "DE");
                 xdet.SetLanguage_DE();
                 xedi.SetLanguage_DE();
                 xstu.SetLanguage_DE();
@@ -318,7 +318,7 @@
             }
             if (LangSelect == 3)
             {
-                await xClient.SetStorage<string>("LMS_Lang", "FR");
+                await xClient.SetStorage("LMS_Lang", "FR");
                 xdet.SetLanguage_FR();
                 xedi.SetLanguage_FR();
                 xstu.SetLanguage_FR();
@@ -334,10 +334,10 @@
 
         try
         {
-            await xClient.SetStorage<string>("LMS_C_Standard", IsStandard.ToString());
-            await xClient.SetStorage<string>("LMS_C-R", ColorR.ToString());
-            await xClient.SetStorage<string>("LMS_C-G", ColorG.ToString());
-            await xClient.SetStorage<string>("LMS_C-B", ColorB.ToString());
+            await xClient.SetStorage("LMS_C_Standard", IsStandard.ToString());
+            await xClient.SetStorage("LMS_C-R", ColorR.ToString());
+            await xClient.SetStorage("LMS_C-G", ColorG.ToString());
+            await xClient.SetStorage("LMS_C-B", ColorB.ToString());
         }
         catch
         {
@@ -346,5 +346,12 @@
         }
 
         Close(); // En omnavigering här nollställer alla variabler inklusive statiska.
+    }
+
+    private async Task<string> GetLS(string target) // Hämtar från LocalStorage.
+    {
+        var response = await xClient.GetStorage<string>(target);
+        if (response is not null) return response;
+        else return string.Empty;
     }
 }

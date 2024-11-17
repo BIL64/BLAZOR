@@ -1,4 +1,5 @@
-﻿namespace LexiconLMSBlazor.Client.Services
+﻿
+namespace LexiconLMSBlazor.Client.Services
 {
     public interface IXDtoClient
     {
@@ -8,7 +9,7 @@
         Task<T?> GetAsync<T>(int id, string route);
         Task<T?> GetAsync<T>(string route);
         string GetFilepath();
-        Task<T> GetStorage<T>(string name);
+        Task<string?> GetStorage<T>(string name);
         Task<WindowDimension> GetWindow();
         Task OpenFile(int ix, string filename);
         Task<T?> PostAsync<T>(T dto, string route);
@@ -16,6 +17,6 @@
         Task<bool> PutAsync<T>(int id, T dto, string route);
         Task<bool> RemAsync(int id, string route);
         Task Scroll2View(string id);
-        Task SetStorage<T>(string name, string value);
+        Task SetStorage(string name, string value);
     }
 }

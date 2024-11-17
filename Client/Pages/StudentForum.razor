@@ -487,7 +487,7 @@ else
 
             threadnames = threadnames.Distinct().ToList();
 
-            string myownthread = await xClient.GetStorage<string>("LMS_F_Name"); // Hämtar alla sparade trådar från local storage.
+            string myownthread = await GetLS("LMS_F_Name"); // Hämtar alla sparade trådar från local storage.
             if (!string.IsNullOrWhiteSpace(myownthread))
             {
                 string[] threadsarray = myownthread.Split('|');
@@ -500,7 +500,7 @@ else
         }
 
         // // För att kunna studera trådnamnen i lokal storage.
-        // string lsnames = await xClient.GetStorage<string>("LMS_F_Name");
+        // string lsnames = await GetLS("LMS_F_Name");
         // xnav.SetDone(lsnames);
         // xnav.SetReset('d');
     }
@@ -532,7 +532,7 @@ else
 
     private async Task SaveThread(string threadname)
     {
-        string names = await xClient.GetStorage<string>("LMS_F_Name");
+        string names = await GetLS("LMS_F_Name");
 
         threadname = threadname.Replace("|", "/");
 
@@ -544,7 +544,7 @@ else
 
             try
             {
-                await xClient.SetStorage<string>("LMS_F_Name", names);
+                await xClient.SetStorage("LMS_F_Name", names);
                 xnav.SetDone(xstu.TxtText[47]);
                 xnav.SetReset('d');
             }
@@ -753,5 +753,12 @@ else
             Id4Post = tid
         };
         return dto;
+    }
+
+    private async Task<string> GetLS(string target) // Hämtar från LocalStorage.
+    {
+        var response = await xClient.GetStorage<string>(target);
+        if (response is not null) return response;
+        else return string.Empty;
     }
 }

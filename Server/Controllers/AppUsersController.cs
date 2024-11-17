@@ -9,18 +9,12 @@ namespace LexiconLMSBlazor.Server.Controllers
 {
     [Route("api/AppUser")]
     [ApiController]
-    public class AppUsersController : ControllerBase
+    public class AppUsersController(ApplicationDbContext context, UserManager<ApplicationUser> UserManager,
+    ILogger<OidcConfigurationController> logger) : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userman;
-        private readonly ILogger<OidcConfigurationController> _logger;
-
-        public AppUsersController(ApplicationDbContext context, UserManager<ApplicationUser> UserManager, ILogger<OidcConfigurationController> logger)
-        {
-            _context = context;
-            this._userman = UserManager;
-            this._logger = logger;
-        }
+        private readonly ApplicationDbContext _context = context;
+        private readonly UserManager<ApplicationUser> _userman = UserManager;
+        private readonly ILogger<OidcConfigurationController> _logger = logger;
 
         // Av Björn Lindqvist
         [HttpGet]

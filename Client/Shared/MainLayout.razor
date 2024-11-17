@@ -80,11 +80,11 @@
         if (await xClient.GetStorage<string>("LMS_C_Standard") == "False") IsStandard = false;
         else IsStandard = true;
 
-        string LScolor = await xClient.GetStorage<string>("LMS_C-R");
+        string LScolor = await GetLS("LMS_C-R");
         if (LScolor is not null && LScolor != "") ColorR = byte.Parse(LScolor); else ColorR = xnav.ColorRGB[0];
-        LScolor = await xClient.GetStorage<string>("LMS_C-G");
+        LScolor = await GetLS("LMS_C-G");
         if (LScolor is not null && LScolor != "") ColorG = byte.Parse(LScolor); else ColorG = xnav.ColorRGB[1];
-        LScolor = await xClient.GetStorage<string>("LMS_C-B");
+        LScolor = await GetLS("LMS_C-B");
         if (LScolor is not null && LScolor != "") ColorB = byte.Parse(LScolor); else ColorB = xnav.ColorRGB[2];
 
         if (IsStandard)
@@ -96,5 +96,12 @@
         colorStyle = $"background-image: linear-gradient(180deg, rgb(80, 35, 60) 0%, rgb({ColorR}, {ColorG}, {ColorB}) 170%)";
 
         xnav.OnChange += StateHasChanged;
+    }
+
+    private async Task<string> GetLS(string target) // Hämtar från LocalStorage.
+    {
+        var response = await xClient.GetStorage<string>(target);
+        if (response is not null) return response;
+        else return string.Empty;
     }
 }

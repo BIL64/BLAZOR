@@ -26,6 +26,6 @@ namespace LexiconLMSBlazor.Server.Models
         public int? CourseId { get; set; }
 
         // Enumerable Type
-        public ICollection<Activity> Activities { get; set; } = new List<Activity>();
+        public ICollection<Activity> Activities { get; set; } = [];
     }
 }

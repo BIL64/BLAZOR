@@ -46,12 +46,12 @@ namespace LexiconLMSBlazor.Client.Services
             return (await _httpClient.DeleteAsync($"{route}/{id}")).IsSuccessStatusCode;
         }
 
-        public async Task<T> GetStorage<T>(string name) // LocalStorage Get.
+        public async Task<string?> GetStorage<T>(string name) // LocalStorage Get.
         {
-            return await _localStorageService.GetItemAsync<T>(name);
+            return await _localStorageService.GetItemAsync<string>(name);
         }
 
-        public async Task SetStorage<T>(string name, string value) // LocalStorage Set.
+        public async Task SetStorage(string name, string value) // LocalStorage Set.
         {
             await _localStorageService.SetItemAsync(name, value);
         }
