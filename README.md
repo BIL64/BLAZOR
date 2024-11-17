@@ -1,6 +1,6 @@
 # LexiconLMSBlazor
 Lexicon LMS (Learning Management System)
-Version 1.16
+Version 1.17 (NET9)
 
 Det avslutande projektet för .NET IT-utbildningen vid Lexicon (221025-230421) som jag och mina klasskamrater gjorde var ett grupparbete. Vi skulle bygga en lärplattform som förenklar och centraliserar kommunikationen mellan lärare, lärosäte och elev genom att samla schema, kursmaterial, övrig information, övningsuppgifter och inlämningar på ett och samma ställe. Att från grunden producera systemet med databas, back-end funktionalitet och ett genomtänkt frontend. Detta kallas ett "full-stack projekt" och syftar till att visa upp vår förståelse för samtliga delar av en webbapplikation och nutida system. Projektet ämnar testa bredden av vår förståelse, så att vi har en grund att stå på oavsett framtida inriktning inom .NET.
 
