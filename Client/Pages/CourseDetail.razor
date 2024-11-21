@@ -200,12 +200,12 @@
                                         if (data.Select > 8)
                                         {
                                             <NavLink style="cursor: pointer" class="oi oi-x mx-2 text-danger text-decoration-none"
-                                            @onclick=" _ => ShowOrHide(data.Id, (byte) (data.Select / 10))" title=@xdet.TxtTitle[9]></NavLink>
+                                            @onclick=" _ => ShowOrHide(data.Id, (byte) (data.Select / 10), 'M')" title=@xdet.TxtTitle[9]></NavLink>
                                         }
                                         else
                                         {
                                             <NavLink style="cursor: pointer" class="oi oi-aperture mx-2 text-primary text-decoration-none"
-                                            @onclick=" _ => ShowOrHide(data.Id, (byte) (data.Select * 10))" title=@xdet.TxtTitle[10]></NavLink>
+                                            @onclick=" _ => ShowOrHide(data.Id, (byte) (data.Select * 10), 'M')" title=@xdet.TxtTitle[10]></NavLink>
                                         }
                                     }
                                 </div>
@@ -359,8 +359,29 @@
                                                         }
                                                     </td>
                                                     <td>
+                                                        @* Visa eller dölja datum i aktiviteter *@
                                                         <span style="cursor: pointer" @onclick=" _ => ActivityDate(act.Id)" title=@xdet.TxtTitle[7]>
                                                         @XNavMenu.StartEndDate(act.StartDate, act.EndDate)</span>
+                                                        @if (act.Select > 15)
+                                                        {
+                                                            <span style="cursor: pointer" class="oi oi-x text-danger mx-2 text-decoration-none"
+                                                            @onclick=" _ => ShowOrHide(act.Id, 10, 'A')" title=@xdet.TxtTitle[11]></span>
+                                                        }
+                                                        else if (act.Select > 5)
+                                                        {
+                                                            <span style="cursor: pointer" class="oi oi-aperture text-primary mx-2 text-decoration-none"
+                                                            @onclick=" _ => ShowOrHide(act.Id, 20, 'A')" title=@xdet.TxtTitle[12]></span>
+                                                        }
+                                                        else if (act.Select > 1)
+                                                        {
+                                                            <span style="cursor: pointer" class="oi oi-x text-danger mx-2 text-decoration-none"
+                                                            @onclick=" _ => ShowOrHide(act.Id, 1, 'A')" title=@xdet.TxtTitle[11]></span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span style="cursor: pointer" class="oi oi-aperture text-primary mx-2 text-decoration-none"
+                                                            @onclick=" _ => ShowOrHide(act.Id, 2, 'A')" title=@xdet.TxtTitle[12]></span>
+                                                        }
                                                     </td>
                                                 }
                                                 else
@@ -415,15 +436,26 @@
                                                 <td>
                                                     @if (!Empty && data.Select != 5)
                                                     {
-                                                        if (act.Select > 8)
+                                                        @* Visa eller dölja dokument i aktiviteter *@
+                                                        if (act.Select > 15)
                                                         {
                                                             <NavLink style="cursor: pointer" class="oi oi-x text-danger mt-2 text-decoration-none"
-                                                            @onclick=" _ => ShowOrHide(act.Id, 101)" title=@xdet.TxtTitle[9]></NavLink>
+                                                            @onclick=" _ => ShowOrHide(act.Id, 2, 'A')" title=@xdet.TxtTitle[9]></NavLink>
+                                                        }
+                                                        else if (act.Select > 5)
+                                                        {
+                                                            <NavLink style="cursor: pointer" class="oi oi-x text-danger mt-2 text-decoration-none"
+                                                            @onclick=" _ => ShowOrHide(act.Id, 1, 'A')" title=@xdet.TxtTitle[9]></NavLink>
+                                                        }
+                                                        else if (act.Select > 1)
+                                                        {
+                                                            <NavLink style="cursor: pointer" class="oi oi-aperture text-primary mt-2 text-decoration-none"
+                                                            @onclick=" _ => ShowOrHide(act.Id, 20, 'A')" title=@xdet.TxtTitle[10]></NavLink>
                                                         }
                                                         else
                                                         {
                                                             <NavLink style="cursor: pointer" class="oi oi-aperture text-primary mt-2 text-decoration-none"
-                                                            @onclick=" _ => ShowOrHide(act.Id, 110)" title=@xdet.TxtTitle[10]></NavLink>
+                                                            @onclick=" _ => ShowOrHide(act.Id, 10, 'A')" title=@xdet.TxtTitle[10]></NavLink>
                                                         }
                                                     }
                                                 </td>
@@ -761,7 +793,7 @@
                     foreach (var doc in documents)
                     {
                         // Byter klass på knapp om dokument hittas.
-                        if (act.Id == doc.ActivityId && act.Select != 0 && mod.Select != 0)
+                        if (act.Id == doc.ActivityId && act.Select != 0 && mod.Select != 0 && mod.Select != 5)
                             await xClient.ChangeClass("A" + act.Id, "docviewbtn-docs");
                     }
                 }
@@ -899,12 +931,12 @@
         await OnInitializedAsync();
     }
 
-    private async Task ShowOrHide(int id, byte value) // Visa eller dölja dokument?
+    private async Task ShowOrHide(int id, byte value, char MA) // Visa eller dölja dokument?
     {
         var module = await xClient.GetAsync<IEnumerable<ModuleDto>>("api/Module");
         var activity = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
 
-        if (value < 50)
+        if (MA == 'M')
         {
             if (module is not null)
             {
@@ -921,13 +953,13 @@
             }
         }
 
-        if (value > 50)
+        if (MA == 'A')
         {
             if (activity is not null)
             {
                 foreach (var act in activity)
                 {
-                    var lact = GetNewActObject(act, (byte) (value - 100));
+                    var lact = GetNewActObject(act, (byte) (value));
                     await xClient.PutAsync<ActivityDto>(id, lact, "api/Activity");
                     var element = activities.FirstOrDefault(e => e.Id == id);
                     if (element is not null) element = lact;

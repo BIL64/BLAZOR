@@ -175,7 +175,7 @@
                                 <div class="dropdoc-content">
                                     @foreach (var doc in documents)
                                     {
-                                        if (doc.ModuleId == data.Id && data.Select < 8)
+                                        if (doc.ModuleId == data.Id && data.Select < 5)
                                         {
                                             if (doc.DocName != "")
                                             {
@@ -374,7 +374,17 @@
                                                             }
                                                         }
                                                     </td>
-                                                    <td>@XNavMenu.StartEndDate(act.StartDate, act.EndDate)</td>
+                                                    <td>
+                                                        @* Datum visas om Select är 1 eller 10 *@
+                                                        @if (act.Select == 1 || act.Select == 10)
+                                                        {
+                                                            @XNavMenu.StartEndDate(act.StartDate, act.EndDate)
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>-</span>
+                                                        }
+                                                    </td>
                                                 }
                                                 else
                                                 {
@@ -609,7 +619,17 @@
                                                             }
                                                         }
                                                     </td>
-                                                    <td>@XNavMenu.StartEndDate(act.StartDate, act.EndDate)</td>
+                                                    <td>
+                                                        @* Datum visas om Select är 1 eller 10 *@
+                                                        @if (act.Select == 1 || act.Select == 10)
+                                                        {
+                                                            @XNavMenu.StartEndDate(act.StartDate, act.EndDate)
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>-</span>
+                                                        }
+                                                    </td>
                                                     <td>
                                                         @{Empty = true;}
                                                         <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(act.Id, 40, act.Name)"

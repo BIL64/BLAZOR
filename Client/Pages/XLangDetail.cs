@@ -50,10 +50,10 @@
             TxtTitle[i] = "Hide document";
             i++;
             // 11
-            TxtTitle[i] = "reserve";
+            TxtTitle[i] = "Show date";
             i++;
             // 12
-            TxtTitle[i] = "reserve";
+            TxtTitle[i] = "Hide date";
             i++;
             // 13
             TxtTitle[i] = "reserve";
@@ -157,10 +157,10 @@
             TxtTitle[i] = "Dölj dokument";
             i++;
             // 11
-            TxtTitle[i] = "reserve";
+            TxtTitle[i] = "Visa datum";
             i++;
             // 12
-            TxtTitle[i] = "reserve";
+            TxtTitle[i] = "Dölj datum";
             i++;
             // 13
             TxtTitle[i] = "reserve";
