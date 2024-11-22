@@ -66,17 +66,17 @@
                             if (DateTime.Parse(doc.TimeStamp).AddDays(1) > DateTime.Now)
                             {
                                 <li class="oi oi-file text-danger text-decoration-none docicon"
-                                    style="position: relative; top: 10px; margin-right: 22px; text-shadow: 0 0 10px plum"
-                                    @onmouseover=" _ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
-                                    @onclick=" _ => DeleteMess(doc.Id)">
+                                style="position: relative; top: 10px; margin-right: 22px; text-shadow: 0 0 10px plum"
+                                @onmouseover=" _ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                @onclick=" _ => DeleteMess(doc.Id)">
                                 </li>
                             }
                             else
                             {
                                 <li class="oi oi-file text-danger text-decoration-none docicon"
-                                    style="position: relative; top: 10px; margin-right: 22px"
-                                    @onmouseover=" _ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
-                                    @onclick=" _ => DeleteMess(doc.Id)">
+                                style="position: relative; top: 10px; margin-right: 22px"
+                                @onmouseover=" _ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                @onclick=" _ => DeleteMess(doc.Id)">
                                 </li>
                             }
                         }
@@ -115,7 +115,9 @@
                 {
                     foreach (var mess in textmessage)
                     {
-                        <div class="activity5S_box" style="padding-left: 22px; padding-bottom: 15px; color: darkorange"><b>@mess</b></div>
+                        <div class="activity5S_box" style="padding-left: 22px; padding-bottom: 15px">
+                            <b>@mess</b>
+                        </div>
                     }
                     textmessage.Clear();
                     IsTextMess = false;
@@ -158,12 +160,12 @@
                                 @if (data.Select == 1)
                                 {
                                     <b>@xstu.TxtText[1] @data.Id: <u class="verdana" style="font-size: 0.97rem; cursor: pointer"
-                                    @onclick=" _ => InfoTitle(data.Description)">@data.Name</u></b>
+                                        @onclick=" _ => InfoTitle(data.Description)">@data.Name</u></b>
                                 }
                                 else
                                 {
                                     <b>@xstu.TxtText[1] <u class="verdana" style="font-size: 0.97rem; cursor: pointer"
-                                    @onclick=" _ => InfoTitle(data.Description)">@data.Name</u></b>
+                                        @onclick=" _ => InfoTitle(data.Description)">@data.Name</u></b>
                                 }
                             </div>
                             <div style="margin: 0 0 0 auto"><b>@XNavMenu.StartEndDate(data.StartDate, data.EndDate)</b></div>
@@ -179,7 +181,7 @@
                                         {
                                             if (doc.DocName != "")
                                             {
-                                                // Öppnar filen samt visar dokumentets formulärdata.
+                                            // Öppnar filen samt visar dokumentets formulärdata.
                                                 <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
                                                 title="@doc.Description by @doc.Author @doc.TimeStamp"
                                                 @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)">@doc.DocName</a>
@@ -390,7 +392,24 @@
                                                 {
                                                     if (data.Select == 5)
                                                     {
-                                                        <div style="color: darkorange"><b>@act.Description</b></div>
+                                                        if (act.Description.IndexOf("#Tb#") != -1)
+                                                        {
+                                                            string prepstr = act.Description.Replace("#Tb#", "");
+                                                            MarkupString markup = (MarkupString)prepstr.Replace("\n", "<br>");
+
+                                                            <div style="color: royalblue"><b>@markup</b></div>
+                                                        }
+                                                        else if (act.Description.IndexOf("#Ti#") != -1)
+                                                        {
+                                                            string prepstr = act.Description.Replace("#Ti#", "");
+                                                            MarkupString markup = (MarkupString)prepstr.Replace("\n", "<br>");
+                                                            <div><b>@markup</b></div>
+                                                        }
+                                                        else
+                                                        {
+                                                            MarkupString markup = (MarkupString)act.Description.Replace("\n", "<br>");
+                                                            <div style="color: darkorange"><b>@markup</b></div>
+                                                        }
                                                     }
                                                     else
                                                     {
@@ -416,7 +435,7 @@
                                                                     {
                                                                         if (doc.DocName != "")
                                                                         {
-                                                                            // Öppnar filen samt visar dokumentets formulärdata.
+                                                                        // Öppnar filen samt visar dokumentets formulärdata.
                                                                             <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
                                                                             title="@doc.Description by @doc.Author @doc.TimeStamp"
                                                                             @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)">@doc.DocName</a>
@@ -446,7 +465,22 @@
 
                                     if (act.ModuleId == data.Id && act.Name.IndexOf("#T#") != -1)
                                     {
-                                        textmessage.Add(act.Description);
+                                        string des = "<div style='color: darkorange'>" + act.Description.Replace("\n", "<br>") + "</div>";
+                                        textmessage.Add((MarkupString)des);
+                                        IsTextMess = true;
+                                    }
+
+                                    if (act.ModuleId == data.Id && act.Name.IndexOf("#Tb#") != -1)
+                                    {
+                                        string des = "<div style='color: royalblue'>" + act.Description.Replace("\n", "<br>") + "</div>";
+                                        textmessage.Add((MarkupString)des);
+                                        IsTextMess = true;
+                                    }
+
+                                    if (act.ModuleId == data.Id && act.Name.IndexOf("#Ti#") != -1)
+                                    {
+                                        string des = act.Description.Replace("\n", "<br>");
+                                        textmessage.Add((MarkupString)des);
                                         IsTextMess = true;
                                     }
                                 }
@@ -476,7 +510,7 @@
                             @if (data.Description.IndexOf("#E#") == -1 && data.Description.IndexOf("#H#") == -1)
                             {
                                 <div class="verdana" style="font-size: 0.8rem; margin: 5px 0 10px 0; color: black">
-                                <b><em>@data.Description</em></b></div>
+                                    <b><em>@data.Description</em></b></div>
                             }
 
                             @if (data.Description.IndexOf("#E#") != -1)
@@ -644,7 +678,7 @@
                                                                     {
                                                                         if (doc.DocName != "")
                                                                         {
-                                                                            // Öppnar filen samt visar dokumentets formulärdata.
+                                                                        // Öppnar filen samt visar dokumentets formulärdata.
                                                                             <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
                                                                             title="@doc.Description by @doc.Author @doc.TimeStamp"
                                                                             @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)">@doc.DocName</a>
@@ -673,7 +707,22 @@
 
                                         if (act.ModuleId == data.Id && act.Name.IndexOf("#T#") != -1)
                                         {
-                                            textmessage.Add(act.Description);
+                                            string des = "<div style='color: darkorange'>" + act.Description.Replace("\n", "<br>") + "</div>";
+                                            textmessage.Add((MarkupString)des);
+                                            IsTextMess = true;
+                                        }
+
+                                        if (act.ModuleId == data.Id && act.Name.IndexOf("#Tb#") != -1)
+                                        {
+                                            string des = "<div style='color: royalblue'>" + act.Description.Replace("\n", "<br>") + "</div>";
+                                            textmessage.Add((MarkupString)des);
+                                            IsTextMess = true;
+                                        }
+
+                                        if (act.ModuleId == data.Id && act.Name.IndexOf("#Ti#") != -1)
+                                        {
+                                            string des = act.Description.Replace("\n", "<br>");
+                                            textmessage.Add((MarkupString)des);
                                             IsTextMess = true;
                                         }
                                     }
@@ -689,7 +738,7 @@
             {
                 foreach (var mess in textmessage)
                 {
-                    <div class="activity5S_box" style="padding-left: 22px; padding-bottom: 15px; color: darkorange">
+                    <div class="activity5S_box" style="padding-left: 22px; padding-bottom: 15px">
                         <b>@mess</b>
                     </div>
                 }
@@ -766,7 +815,7 @@
 
     private List<DocumentDto> documents = new();
 
-    private List<string> textmessage = new();
+    private List<MarkupString> textmessage = new();
 
     private AppUserDto loggeduser = new(); // Info om den som för tillfället är inloggad.
 

@@ -373,7 +373,8 @@
                          "somewhere in the name of any activity and then disabling the activity " +
                          "(if you don't want both to appear). It is the same as here - that it is " +
                          "the description of the activity that constitutes the text message. The " +
-                         "message is displayed after the current module.";
+                         "message is displayed after the current module. " +
+                         "The text color can be changed with Ti = black (info) or Tb = blue (applies to both methods).";
             i++;
             // 15
             TxtText[i] = "The current module.";
@@ -451,7 +452,8 @@
                          "någonstans i namnet på någon aktivitet och sedan inaktivera aktiviteten " +
                          "(om du inte vill att båda ska visas). Det är samma sak som här – att det är " +
                          "beskrivningen av aktiviteten som utgör textmeddelandet. " +
-                         "Meddelandet visas efter den aktuella modulen.";
+                         "Meddelandet visas efter den aktuella modulen. " +
+                         "Textfärgen kan ändras med Ti = svart (info) eller Tb = blå (gäller för båda metoderna).";
             i++;
             // 15
             TxtText[i] = "Den aktuella modulen.";
