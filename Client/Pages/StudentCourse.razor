@@ -18,9 +18,19 @@
         <nav style="display: flex">
             <div style="width: 75%"><h3>@loggeduser.FirstName, @xstu.TxtText[0] @* this is your course: *@
                 <span class="verdanahead" style="background-color: rgb(@ColorR, @ColorG, @ColorB)"
-                @onclick=" _ => InfoTitle(CourseDescription)">@CourseName</span></h3>
+                @onclick=" _ => InfoTitle(CourseDescription, 0)">@CourseName</span></h3>
             </div>
-            <div style="margin: 0 auto 0 auto"><h5>@CourseDate</h5></div>
+            <div style="margin: 0 auto 0 auto">
+                @if (CourseH)
+                {
+                    <span> </span>
+                }
+                else
+                {
+                    <h5>@CourseDate</h5>
+                }
+
+            </div>
             <div style="margin: 0 0 0 auto">
                 <button type="button" class="mb-1 text-white delbtn" @onclick="AddDeleteAvatar" title=@xstu.TxtTitle[0]>A</button>
                 <button type="button" class="mb-1 text-white delbtn" @onclick="DeleteAllDocs" title=@xstu.TxtTitle[1]>E</button>
@@ -32,7 +42,7 @@
                 @foreach (var doc in documents)
                 {
                     <ul class="nav">
-                        @if (doc.Id4Course == CourseId)
+                        @if (loggeduser.CourseId != 0 && doc.Id4Course == CourseId)
                         {
                             <li class="doclink">
                                 <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)" title=@xstu.TxtTitle[2]>@doc.DocName</span>
@@ -160,12 +170,12 @@
                                 @if (data.Select == 1)
                                 {
                                     <b>@xstu.TxtText[1] @data.Id: <u class="verdana" style="font-size: 0.97rem; cursor: pointer"
-                                        @onclick=" _ => InfoTitle(data.Description)">@data.Name</u></b>
+                                        @onclick=" _ => InfoTitle(data.Description, 0)">@data.Name</u></b>
                                 }
                                 else
                                 {
                                     <b>@xstu.TxtText[1] <u class="verdana" style="font-size: 0.97rem; cursor: pointer"
-                                        @onclick=" _ => InfoTitle(data.Description)">@data.Name</u></b>
+                                        @onclick=" _ => InfoTitle(data.Description, 0)">@data.Name</u></b>
                                 }
                             </div>
                             <div style="margin: 0 0 0 auto"><b>@XNavMenu.StartEndDate(data.StartDate, data.EndDate)</b></div>
@@ -181,7 +191,7 @@
                                         {
                                             if (doc.DocName != "")
                                             {
-                                            // Öppnar filen samt visar dokumentets formulärdata.
+                                                // Öppnar filen samt visar dokumentets formulärdata.
                                                 <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
                                                 title="@doc.Description by @doc.Author @doc.TimeStamp"
                                                 @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)">@doc.DocName</a>
@@ -256,11 +266,11 @@
                                                             actStyleName = actStyleName.Replace("#i#", "");
                                                             actStyleName = actStyleName.Replace("i#", "");
                                                             actStyleName = actStyleName.Replace("#i", "");
-                                                            <td><em style="cursor: pointer; color: crimson" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</em></td>
+                                                            <td><em style="cursor: pointer; color: crimson" @onclick=" _ => InfoTitle(act.Description, data.Select)">@actStyleName</em></td>
                                                         }
                                                         else
                                                         {
-                                                            <td><b style="cursor: pointer; color: crimson" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                            <td><b style="cursor: pointer; color: crimson" @onclick=" _ => InfoTitle(act.Description, data.Select)">@actStyleName</b></td>
                                                         }
                                                     }
 
@@ -273,11 +283,11 @@
                                                             actStyleName = actStyleName.Replace("#i#", "");
                                                             actStyleName = actStyleName.Replace("i#", "");
                                                             actStyleName = actStyleName.Replace("#i", "");
-                                                            <td><em style="cursor: pointer; color: magenta" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</em></td>
+                                                            <td><em style="cursor: pointer; color: magenta" @onclick=" _ => InfoTitle(act.Description, data.Select)">@actStyleName</em></td>
                                                         }
                                                         else
                                                         {
-                                                            <td><b style="cursor: pointer; color: magenta" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                            <td><b style="cursor: pointer; color: magenta" @onclick=" _ => InfoTitle(act.Description, data.Select)">@actStyleName</b></td>
                                                         }
                                                     }
 
@@ -290,11 +300,11 @@
                                                             actStyleName = actStyleName.Replace("#i#", "");
                                                             actStyleName = actStyleName.Replace("i#", "");
                                                             actStyleName = actStyleName.Replace("#i", "");
-                                                            <td><em style="cursor: pointer; color: darkgreen" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</em></td>
+                                                            <td><em style="cursor: pointer; color: darkgreen" @onclick=" _ => InfoTitle(act.Description, data.Select)">@actStyleName</em></td>
                                                         }
                                                         else
                                                         {
-                                                            <td><b style="cursor: pointer; color: darkgreen" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                            <td><b style="cursor: pointer; color: darkgreen" @onclick=" _ => InfoTitle(act.Description, data.Select)">@actStyleName</b></td>
                                                         }
                                                     }
 
@@ -307,11 +317,11 @@
                                                             actStyleName = actStyleName.Replace("#i#", "");
                                                             actStyleName = actStyleName.Replace("i#", "");
                                                             actStyleName = actStyleName.Replace("#i", "");
-                                                            <td><em style="cursor: pointer; color: royalblue" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</em></td>
+                                                            <td><em style="cursor: pointer; color: royalblue" @onclick=" _ => InfoTitle(act.Description, data.Select)">@actStyleName</em></td>
                                                         }
                                                         else
                                                         {
-                                                            <td><b style="cursor: pointer; color: royalblue" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                            <td><b style="cursor: pointer; color: royalblue" @onclick=" _ => InfoTitle(act.Description, data.Select)">@actStyleName</b></td>
                                                         }
                                                     }
 
@@ -324,11 +334,11 @@
                                                             actStyleName = actStyleName.Replace("#i#", "");
                                                             actStyleName = actStyleName.Replace("i#", "");
                                                             actStyleName = actStyleName.Replace("#i", "");
-                                                            <td><em style="cursor: pointer; color: black" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</em></td>
+                                                            <td><em style="cursor: pointer; color: black" @onclick=" _ => InfoTitle(act.Description, data.Select)">@actStyleName</em></td>
                                                         }
                                                         else
                                                         {
-                                                            <td><span style="cursor: pointer; color: black" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</span></td>
+                                                            <td><span style="cursor: pointer; color: black" @onclick=" _ => InfoTitle(act.Description, data.Select)">@actStyleName</span></td>
                                                         }
                                                     }
 
@@ -341,11 +351,11 @@
                                                             actStyleName = actStyleName.Replace("#i#", "");
                                                             actStyleName = actStyleName.Replace("i#", "");
                                                             actStyleName = actStyleName.Replace("#i", "");
-                                                            <td><em style="cursor: pointer; color: black" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</em></td>
+                                                            <td><em style="cursor: pointer; color: black" @onclick=" _ => InfoTitle(act.Description, data.Select)">@actStyleName</em></td>
                                                         }
                                                         else
                                                         {
-                                                            <td><b style="cursor: pointer; color: black" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                            <td><b style="cursor: pointer; color: black" @onclick=" _ => InfoTitle(act.Description, data.Select)">@actStyleName</b></td>
                                                         }
                                                     }
 
@@ -355,11 +365,11 @@
                                                         {
                                                             actStyleName = act.Name;
                                                             actStyleName = actStyleName.Replace("#i#", "");
-                                                            <td><em style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</em></td>
+                                                            <td><em style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description, data.Select)">@actStyleName</em></td>
                                                         }
                                                         else
                                                         {
-                                                            <td><span style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</span></td>
+                                                            <td><span style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description, data.Select)">@act.Name</span></td>
                                                         }
                                                     }
                                                     actStyleName = "";
@@ -390,30 +400,32 @@
                                                 }
                                                 else
                                                 {
+                                                    MarkupString markup;
+
                                                     if (data.Select == 5)
                                                     {
                                                         if (act.Description.IndexOf("#Tb#") != -1)
                                                         {
                                                             string prepstr = act.Description.Replace("#Tb#", "");
-                                                            MarkupString markup = (MarkupString)prepstr.Replace("\n", "<br>");
-
+                                                            markup = (MarkupString)prepstr.Replace("\n", "<br>");
                                                             <div style="color: royalblue"><b>@markup</b></div>
                                                         }
                                                         else if (act.Description.IndexOf("#Ti#") != -1)
                                                         {
                                                             string prepstr = act.Description.Replace("#Ti#", "");
-                                                            MarkupString markup = (MarkupString)prepstr.Replace("\n", "<br>");
+                                                            markup = (MarkupString)prepstr.Replace("\n", "<br>");
                                                             <div><b>@markup</b></div>
                                                         }
                                                         else
                                                         {
-                                                            MarkupString markup = (MarkupString)act.Description.Replace("\n", "<br>");
+                                                            markup = (MarkupString)act.Description.Replace("\n", "<br>");
                                                             <div style="color: darkorange"><b>@markup</b></div>
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        <td>@act.Description</td>
+                                                        markup = (MarkupString)act.Description.Replace("\n", "<br>");
+                                                        <td>@markup</td>
                                                     }
                                                 }
 
@@ -552,11 +564,11 @@
                                                             actStyleName = actStyleName.Replace("#i#", "");
                                                             actStyleName = actStyleName.Replace("i#", "");
                                                             actStyleName = actStyleName.Replace("#i", "");
-                                                            <td><b style="cursor: pointer; color: crimson" @onclick=" _ => InfoTitle(act.Description)"><em>@actStyleName</em></b></td>
+                                                            <td><b style="cursor: pointer; color: crimson" @onclick=" _ => InfoTitle(act.Description, 0)"><em>@actStyleName</em></b></td>
                                                         }
                                                         else
                                                         {
-                                                            <td><b style="cursor: pointer; color: crimson" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                            <td><b style="cursor: pointer; color: crimson" @onclick=" _ => InfoTitle(act.Description, 0)">@actStyleName</b></td>
                                                         }
                                                     }
 
@@ -569,11 +581,11 @@
                                                             actStyleName = actStyleName.Replace("#i#", "");
                                                             actStyleName = actStyleName.Replace("i#", "");
                                                             actStyleName = actStyleName.Replace("#i", "");
-                                                            <td><b style="cursor: pointer; color: magenta" @onclick=" _ => InfoTitle(act.Description)"><em>@actStyleName</em></b></td>
+                                                            <td><b style="cursor: pointer; color: magenta" @onclick=" _ => InfoTitle(act.Description, 0)"><em>@actStyleName</em></b></td>
                                                         }
                                                         else
                                                         {
-                                                            <td><b style="cursor: pointer; color: magenta" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                            <td><b style="cursor: pointer; color: magenta" @onclick=" _ => InfoTitle(act.Description, 0)">@actStyleName</b></td>
                                                         }
                                                     }
 
@@ -586,11 +598,11 @@
                                                             actStyleName = actStyleName.Replace("#i#", "");
                                                             actStyleName = actStyleName.Replace("i#", "");
                                                             actStyleName = actStyleName.Replace("#i", "");
-                                                            <td><b style="cursor: pointer; color: darkgreen" @onclick=" _ => InfoTitle(act.Description)"><em>@actStyleName</em></b></td>
+                                                            <td><b style="cursor: pointer; color: darkgreen" @onclick=" _ => InfoTitle(act.Description, 0)"><em>@actStyleName</em></b></td>
                                                         }
                                                         else
                                                         {
-                                                            <td><b style="cursor: pointer; color: darkgreen" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                            <td><b style="cursor: pointer; color: darkgreen" @onclick=" _ => InfoTitle(act.Description, 0)">@actStyleName</b></td>
                                                         }
                                                     }
 
@@ -603,11 +615,11 @@
                                                             actStyleName = actStyleName.Replace("#i#", "");
                                                             actStyleName = actStyleName.Replace("i#", "");
                                                             actStyleName = actStyleName.Replace("#i", "");
-                                                            <td><b style="cursor: pointer; color: royalblue" @onclick=" _ => InfoTitle(act.Description)"><em>@actStyleName</em></b></td>
+                                                            <td><b style="cursor: pointer; color: royalblue" @onclick=" _ => InfoTitle(act.Description, 0)"><em>@actStyleName</em></b></td>
                                                         }
                                                         else
                                                         {
-                                                            <td><b style="cursor: pointer; color: royalblue" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                            <td><b style="cursor: pointer; color: royalblue" @onclick=" _ => InfoTitle(act.Description, 0)">@actStyleName</b></td>
                                                         }
                                                     }
 
@@ -621,11 +633,11 @@
                                                             actStyleName = actStyleName.Replace("#i#", "");
                                                             actStyleName = actStyleName.Replace("i#", "");
                                                             actStyleName = actStyleName.Replace("#i", "");
-                                                            <td><b style="cursor: pointer; color: black" @onclick=" _ => InfoTitle(act.Description)"><em>@actStyleName</em></b></td>
+                                                            <td><b style="cursor: pointer; color: black" @onclick=" _ => InfoTitle(act.Description, 0)"><em>@actStyleName</em></b></td>
                                                         }
                                                         else
                                                         {
-                                                            <td><b style="cursor: pointer; color: black" @onclick=" _ => InfoTitle(act.Description)">@actStyleName</b></td>
+                                                            <td><b style="cursor: pointer; color: black" @onclick=" _ => InfoTitle(act.Description, 0)">@actStyleName</b></td>
                                                         }
                                                     }
 
@@ -635,11 +647,11 @@
                                                         {
                                                             actStyleName = act.Name;
                                                             actStyleName = actStyleName.Replace("#i#", "");
-                                                            <td><b style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)"><em>@actStyleName</em></b></td>
+                                                            <td><b style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description, 0)"><em>@actStyleName</em></b></td>
                                                         }
                                                         else
                                                         {
-                                                            <td><b style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description)">@act.Name</b></td>
+                                                            <td><b style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description, 0)">@act.Name</b></td>
                                                         }
                                                     }
                                                     actStyleName = "";
@@ -834,6 +846,7 @@
     private int CourseId;
     private bool Empty;
     private bool IsTextMess;
+    private bool CourseH;
 
     private async Task RefreshAfterThis(bool delay) // Uppdaterar efter förändring av innehåll.
     {
@@ -894,6 +907,8 @@
 
         if (document is not null) documents = document.ToList();
 
+        CourseName = xstu.TxtText[31]; // You have no course
+
         if (course is not null)
         {
             if (appuser is not null)
@@ -922,6 +937,7 @@
                     CourseDescription = cour.Description;
                     CourseId = cour.Id;
                     CourseDate = XNavMenu.StartEndDate(cour.StartDate, cour.EndDate);
+                    CourseH = cour.HideDate;
 
                     foreach (var mod in cour.Modules) // Hämtar moduler.
                     {
@@ -1015,10 +1031,18 @@
         return marray.ToList();
     }
 
-    private void InfoTitle(string description)
+    private void InfoTitle(string description, byte select)
     {
-        xnav.SetInfo(description);
-        xnav.SetReset('i');
+        if (select == 4)
+        {
+            xnav.SetInfo(xstu.TxtText[32]);
+            xnav.SetReset('i');
+        }
+        else
+        {
+            xnav.SetInfo(description);
+            xnav.SetReset('i');
+        }
     }
 
     private async Task OpenFileControl(int ix, string filename)

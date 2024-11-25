@@ -29,6 +29,7 @@ namespace LexiconLMSBlazor.Server.Controllers
                     Description = c.Description,
                     StartDate = c.StartDate,
                     EndDate = c.EndDate,
+                    HideDate = c.HideDate,
                     Total_M = c.Modules.Count,
                     Total_S = c.Users.Count,
                     Modules = c.Modules.Select(m => new ModuleDto

@@ -16,6 +16,8 @@ namespace LexiconLMSBlazor.Shared.Dtos
 
         public DateTime EndDate { get; set; } = DateTime.Now;
 
+        public bool HideDate { get; set; }
+
         // Enumerable Type
         public IEnumerable<ModuleDto> Modules { get; set; } = [];
 

@@ -801,7 +801,7 @@
             TxtText[i] = "No course yet...";
             i++;
             // 70
-            TxtText[i] = "reserve";
+            TxtText[i] = "No course";
             i++;
             // 71
             TxtText[i] = "reserve";
@@ -1067,7 +1067,7 @@
             TxtText[i] = "Ingen kurs ännu...";
             i++;
             // 70
-            TxtText[i] = "reserve";
+            TxtText[i] = "Ingen kurs";
             i++;
             // 71
             TxtText[i] = "reserve";

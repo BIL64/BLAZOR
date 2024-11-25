@@ -68,6 +68,8 @@ namespace LexiconLMSBlazor.Server.Controllers
 
             if (prefix > 100) appUser.CourseId = prefix - 100; // Lägger till ett kurs-id.
 
+            if (prefix == 100) appUser.CourseId = null; // Frilägger användaren från alla kurser.
+
             if (prefix > 0) await _context.SaveChangesAsync(); // Sparar.
 
             return NoContent();

@@ -61,7 +61,8 @@ namespace LexiconLMSBlazor.Server.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    HideDate = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

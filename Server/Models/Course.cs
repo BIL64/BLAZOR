@@ -18,6 +18,8 @@ namespace LexiconLMSBlazor.Server.Models
         [Required]
         public DateTime EndDate { get; set; }
 
+        public bool HideDate { get; set; }
+
         // Enumerable Types
         public ICollection<Module> Modules { get; set; } = [];
         public ICollection<ApplicationUser> Users { get; set; } = [];

@@ -252,10 +252,10 @@
             TxtText[i] = "Post!";
             i++;
             // 31
-            TxtText[i] = "reserve";
+            TxtText[i] = "You have no course";
             i++;
             // 32
-            TxtText[i] = "reserve";
+            TxtText[i] = "See description!";
             i++;
             // 33
             TxtText[i] = "Your saved threads...";
@@ -434,10 +434,10 @@
             TxtText[i] = "Posta!";
             i++;
             // 31
-            TxtText[i] = "reserve";
+            TxtText[i] = "Du har ingen kurs";
             i++;
             // 32
-            TxtText[i] = "reserve";
+            TxtText[i] = "Se beskrivning!";
             i++;
             // 33
             TxtText[i] = "Dina sparade trådar...";

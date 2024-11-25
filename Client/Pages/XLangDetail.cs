@@ -83,7 +83,7 @@
             TxtTitle[i] = "#r# = bold red, #m# = bold magenta, #g# = bold green, #b# = bold blue, #B# = black normal, #BB# = bold black, #i# = italic";
             i++;
             // 22
-            TxtTitle[i] = "reserve";
+            TxtTitle[i] = "The text can be styled with html tags. NOTE Use <em> instead of <i>";
             i++;
             // 23
             TxtTitle[i] = "reserve";
@@ -190,7 +190,7 @@
             TxtTitle[i] = "#r# = fet röd, #m# = fet magenta, #g# = fet grön, #b# = fet blå, #B# = svart normal, #BB# = fet svart, #i# = kursiv";
             i++;
             // 22
-            TxtTitle[i] = "reserve";
+            TxtTitle[i] = "Texten kan stajlas med html-taggar. OBS Använd <em> istället för <i>";
             i++;
             // 23
             TxtTitle[i] = "reserve";

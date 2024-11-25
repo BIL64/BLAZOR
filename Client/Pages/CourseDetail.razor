@@ -17,10 +17,25 @@
     <Authorized>
         <nav class="d-flex">
             <div style="width: 75%"><h3>@xdet.TxtText[1]: @CourseId @NoModules @* Administration of this course *@
-                    <i style="cursor: pointer" @onclick=" _ => EditCourse(CourseId)" title="@CourseDescription @xdet.TxtTitle[4]">@CourseName</i>
+                <i style="cursor: pointer" @onclick=" _ => EditCourse(CourseId)" title="@CourseDescription @xdet.TxtTitle[4]">@CourseName</i>
                 </h3>
             </div>
-            <div style="margin: 0 auto 0 auto"><h5>@CourseDate</h5></div>
+            <div style="margin: 0 auto 0 auto">
+                <h5>@CourseDate
+                    <span style="position: relative; top: -2px" class="h6">
+                        @if (CourseH)
+                        {
+                            <span style="cursor: pointer" class="oi oi-x text-danger mx-2 text-decoration-none"
+                            @onclick=" _ => ShowOrHide(IId, 0, 'C')" title=@xdet.TxtTitle[11]></span>
+                        }
+                        else
+                        {
+                            <span style="cursor: pointer" class="oi oi-aperture text-primary mx-2 text-decoration-none"
+                            @onclick=" _ => ShowOrHide(IId, 1, 'C')" title=@xdet.TxtTitle[12]></span>
+                        }
+                    </span>
+                </h5>
+            </div>
             <div style="margin: 0 0 0 auto">
                 <button type="button" class="mb-1 text-white delbtn" @onclick="DateCheck" title=@xdet.TxtTitle[1]>DC</button>
                 <button type="button" class="mb-1 text-white delbtn" @onclick="StudentPage" title=@xdet.TxtTitle[2]>S</button>
@@ -142,19 +157,19 @@
                                 @if (data.Select == 1 || data.Select == 10)
                                 {
                                     <b title="@data.Description @xdet.TxtTitle[4]">@xdet.TxtText[8] @data.Id: @* Module *@
-                                    <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
+                                        <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
                                 }
                                 else
                                 {
                                     if (data.Select == 3)
                                     {
                                         <b title=@xdet.TxtTitle[5]>
-                                        <i style="cursor: pointer; margin-left: 10px" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
+                                            <i style="cursor: pointer; margin-left: 10px" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
                                     }
                                     else
                                     {
                                         <b title="@data.Description @xdet.TxtTitle[4]">@xdet.TxtText[8] @* Module *@
-                                        <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
+                                            <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
                                     }
                                 }
                                 <span class="order" @onclick=" _ => OrderModule(data.Id)" title=@xdet.TxtTitle[6]>@data.Morder</span>
@@ -170,7 +185,7 @@
                             {
                                 <div style="width: 75%; margin-top: 20px">
                                     <button type="button" class="docplusbtn" @onclick=" _ => DocSaveControl(data.Id, 30, data.Name)"
-                                        title=@xdet.TxtTitle[8]>+ DOC</button>
+                                    title=@xdet.TxtTitle[8]>+ DOC</button>
                                     <div class="dropdoc">
                                         <button  type="button" id="M@(data.Id)" class="docviewbtn">DOCs</button>
                                         <div class="dropdoc-content">
@@ -194,7 +209,7 @@
                                             }
                                         </div>
                                     </div>
-                                
+
                                     @if (!Empty)
                                     {
                                         if (data.Select > 8)
@@ -215,7 +230,7 @@
                                 if (data.Select == 3)
                                 {
                                     <div style="font-size: 0.8rem; text-indent: 10px; color:darkslategrey" title=@xdet.TxtTitle[14]>
-                                    <em>@data.Description</em></div>
+                                        <em>@data.Description</em></div>
                                 }
                             }
 
@@ -270,14 +285,15 @@
                                 {
                                     <tr>
                                         <th title=@xdet.TxtTitle[21]>@xdet.TxtText[3]</th> @* Activity *@
-                                        <th>@xdet.TxtText[4]</th> @* Description *@
+                                        <th title=@xdet.TxtTitle[22]>@xdet.TxtText[4]</th> @* Description *@
                                         <th>@xdet.TxtText[7]</th> @* Appendix *@
                                     </tr>
                                 }
 
                                 @if (data.Select == 5)
                                 {
-                                    <tr>
+                                    <tr title=@xdet.TxtTitle[22]>
+                                        @* Text message (the description of the aktivity) *@
                                         <th>@xdet.TxtText[9] <u>@xdet.TxtText[10]</u> @xdet.TxtText[11]</th>
                                     </tr>
                                 }
@@ -300,49 +316,49 @@
                                                     if (act.Name.IndexOf("#r#") != -1 && !IsStyle)
                                                     {
                                                         <td><i style="cursor: pointer; color: crimson" title="@act.Description @xdet.TxtTitle[4]"
-                                                        @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
+                                                            @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
                                                         IsStyle = true;
                                                     }
 
                                                     if (act.Name.IndexOf("#m#") != -1 && !IsStyle)
                                                     {
                                                         <td><i style="cursor: pointer; color: magenta" title="@act.Description @xdet.TxtTitle[4]"
-                                                        @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
+                                                            @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
                                                         IsStyle = true;
                                                     }
 
                                                     if (act.Name.IndexOf("#g#") != -1 && !IsStyle)
                                                     {
                                                         <td><i style="cursor: pointer; color: darkgreen" title="@act.Description @xdet.TxtTitle[4]"
-                                                        @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
+                                                            @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
                                                         IsStyle = true;
                                                     }
 
                                                     if (act.Name.IndexOf("#b#") != -1 && !IsStyle)
                                                     {
                                                         <td><i style="cursor: pointer; color: royalblue" title="@act.Description @xdet.TxtTitle[4]"
-                                                        @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
+                                                            @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
                                                         IsStyle = true;
                                                     }
 
                                                     if (act.Name.IndexOf("#B#") != -1 && !IsStyle)
                                                     {
                                                         <td><i style="cursor: pointer; color: black" title="@act.Description @xdet.TxtTitle[4]"
-                                                        @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
+                                                            @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
                                                         IsStyle = true;
                                                     }
 
                                                     if (act.Name.IndexOf("#BB#") != -1 && !IsStyle)
                                                     {
                                                         <td><i style="cursor: pointer; color: black" title="@act.Description @xdet.TxtTitle[4]"
-                                                        @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
+                                                            @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
                                                         IsStyle = true;
                                                     }
 
                                                     if (!IsStyle)
                                                     {
                                                         <td><i style="cursor: pointer" title="@act.Description @xdet.TxtTitle[4]"
-                                                        @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
+                                                            @onclick=" _ => EditActivity(act.Id)">@act.Name</i></td>
                                                     }
                                                     IsStyle = false;
                                                 }
@@ -361,7 +377,7 @@
                                                     <td>
                                                         @* Visa eller dölja datum i aktiviteter *@
                                                         <span style="cursor: pointer" @onclick=" _ => ActivityDate(act.Id)" title=@xdet.TxtTitle[7]>
-                                                        @XNavMenu.StartEndDate(act.StartDate, act.EndDate)</span>
+                                                            @XNavMenu.StartEndDate(act.StartDate, act.EndDate)</span>
                                                         @if (act.Select > 15)
                                                         {
                                                             <span style="cursor: pointer" class="oi oi-x text-danger mx-2 text-decoration-none"
@@ -386,14 +402,36 @@
                                                 }
                                                 else
                                                 {
+                                                    string des = act.Description.Replace("\n", "<br>");
+                                                    MarkupString markup = new(des);
+
                                                     if (data.Select == 5)
                                                     {
-                                                        <td style="cursor: pointer; color: darkorange" title="@xdet.TxtTitle[24] @act.Name @xdet.TxtTitle[4]"
-                                                        @onclick=" _ => EditActivity(act.Id)">@act.Description</td>
+                                                        if (act.Description.IndexOf("Ti") != -1)
+                                                        {
+                                                            <td style="cursor: pointer"
+                                                            title="@xdet.TxtTitle[24] @act.Name @xdet.TxtTitle[4]"
+                                                            @onclick=" _ => EditActivity(act.Id)">@markup
+                                                            </td>
+                                                        }
+                                                        else if (act.Description.IndexOf("Tb") != -1)
+                                                        {
+                                                            <td style="cursor: pointer; color: royalblue"
+                                                            title="@xdet.TxtTitle[24] @act.Name @xdet.TxtTitle[4]"
+                                                            @onclick=" _ => EditActivity(act.Id)">@markup
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td style="cursor: pointer; color: darkorange"
+                                                            title="@xdet.TxtTitle[24] @act.Name @xdet.TxtTitle[4]"
+                                                            @onclick=" _ => EditActivity(act.Id)">@markup
+                                                            </td>
+                                                        }
                                                     }
                                                     else
                                                     {
-                                                        <td>@act.Description</td>
+                                                        <td>@markup</td>
                                                     }
                                                 }
 
@@ -477,8 +515,8 @@
                                                 <td>@XNavMenu.StartEndDate(act.StartDate, act.EndDate)</td>
                                                 <td>
                                                     <div style="margin-left: auto; margin-right: 0">
-                                                    <NavLink style="cursor: pointer" class="oi oi-arrow-circle-top text-primary mt-2 text-decoration-none"
-                                                    @onclick=" _ => ActivateOrDisable(act.Id, 3)" title=@xdet.TxtTitle[28]></NavLink>
+                                                        <NavLink style="cursor: pointer" class="oi oi-arrow-circle-top text-primary mt-2 text-decoration-none"
+                                                        @onclick=" _ => ActivateOrDisable(act.Id, 3)" title=@xdet.TxtTitle[28]></NavLink>
                                                     </div>
                                                 </td>
                                             }
@@ -506,7 +544,7 @@
                         <div style="display: flex">
                             <div style="width: 85%">
                                 <b title="@data.Description @xdet.TxtTitle[4]">@xdet.TxtText[8] @* Module *@
-                                <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
+                                    <i style="cursor: pointer" @onclick=" _ => EditModule(data.Id)">@data.Name</i></b>
                                 <span class="order" @onclick=" _ => OrderModule(data.Id)" title=@xdet.TxtTitle[6]>@data.Morder</span>
                             </div>
                             <div style="margin-left: auto; margin-right: 0"><b>@XNavMenu.StartEndDate(data.StartDate, data.EndDate)</b></div>
@@ -554,7 +592,7 @@
                                 }
                             </tbody>
                         </table>
-                    
+
                     </article>
                 }
             }
@@ -654,6 +692,7 @@
     private int CourseId;
     private bool Empty;
     private bool IsStyle;
+    private bool CourseH;
 
     private string TestMess1 = string.Empty; // Test.
     private string TestMess2 = string.Empty; // Test.
@@ -711,6 +750,7 @@
                     CourseDescription = cour.Description;
                     CourseId = cour.Id;
                     CourseDate = XNavMenu.StartEndDate(cour.StartDate, cour.EndDate);
+                    CourseH = cour.HideDate;
 
                     foreach (var mod in cour.Modules) // Hämtar moduler.
                     {
@@ -931,10 +971,29 @@
         await OnInitializedAsync();
     }
 
-    private async Task ShowOrHide(int id, byte value, char MA) // Visa eller dölja dokument?
+    private async Task ShowOrHide(int id, byte value, char MA) // Visa eller dölja dokument eller datum?
     {
+        var course = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
         var module = await xClient.GetAsync<IEnumerable<ModuleDto>>("api/Module");
         var activity = await xClient.GetAsync<IEnumerable<ActivityDto>>("api/Activity");
+
+        if (MA == 'C')
+        {
+            if (course is not null)
+            {
+                foreach (var cou in course)
+                {
+                    if (cou.Id == id)
+                    {
+                        if (value == 1) CourseH = true; else CourseH = false;
+                        var lcou = GetNewCouObject(cou, CourseH);
+                        await xClient.PutAsync<CourseDto>(id, lcou, "api/Course");
+                        var element = courses.FirstOrDefault(e => e.Id == id);
+                        if (element is not null) element = lcou;
+                    }
+                }
+            }
+        }
 
         if (MA == 'M')
         {
@@ -967,6 +1026,20 @@
             }
         }
         await OnInitializedAsync();
+    }
+
+    private CourseDto GetNewCouObject(CourseDto cou, bool hide) // Nytt kursobjekt.
+    {
+        var dto = new CourseDto
+        {
+            Id = cou.Id,
+            Name = cou.Name,
+            Description = cou.Description,
+            StartDate = cou.StartDate,
+            EndDate = cou.EndDate,
+            HideDate = hide
+        };
+        return dto;
     }
 
     private ModuleDto GetNewModObject(ModuleDto mod, byte select) // Nytt modulobjekt.
