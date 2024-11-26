@@ -33,83 +33,134 @@
             <tbody>
             </tbody>
             @foreach (var mod in modulelist)
-            {
-                <tr>
-                    <td>@mod.Name</td>
-                    <td>@mod.Description</td>
-                    <td>@XNavMenu.StartEndDate(mod.StartDate, mod.EndDate)</td>
-                </tr>
-            }
-        </table>
-        <br />
-        <h6>@xedi.TxtText[19] @module.Name</h6>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>@xedi.TxtText[26]</th>
-                    <th>@xedi.TxtText[27]</th>
-                    <th>@xedi.TxtText[28]</th>
-                    <th>@xedi.TxtText[29]</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-            @foreach (var act in activitylist)
-            {
-                <tr>
-                    <td>@act.Name</td>
-                    <td>@act.ActivityTypeName</td>
-                    <td>@act.Description</td>
-                    <td>@XNavMenu.StartEndDate(act.StartDate, act.EndDate)</td>
-                </tr>
-            }
-        </table>
-    </section>
+                {
+                    <tr>
+                        <td>@mod.Name</td>
+                        <td>@mod.Description</td>
+                        <td>@XNavMenu.StartEndDate(mod.StartDate, mod.EndDate)</td>
+                    </tr>
+                }
+            </table>
+            <br />
+            <h6>@xedi.TxtText[19] @module.Name</h6>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>@xedi.TxtText[26]</th>
+                        <th>@xedi.TxtText[27]</th>
+                        <th>@xedi.TxtText[28]</th>
+                        <th>@xedi.TxtText[29]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                @foreach (var act in activitylist)
+                {
+                    <tr>
+                        <td>@act.Name</td>
+                        <td>@act.ActivityTypeName</td>
+                        <td>@act.Description</td>
+                        <td>@XNavMenu.StartEndDate(act.StartDate, act.EndDate)</td>
+                    </tr>
+                }
+            </table>
+        </section>
         <h5>@TestMess1</h5>
         <h5>@TestMess2</h5>
-    <section class="activityeditbox">
-        <nav style="display: flex">
-            <div style="width: 50%"><h5>@xedi.TxtText[3]</h5></div>
-            <div style="margin: 0 0 0 auto">
-                <button type="button" class="btn btn-danger btn-sm" @onclick="DeleteControll"
-                title=@xedi.TxtTitle[8]>@xedi.TxtButton[4]</button>
-            </div>
-        </nav>
-        <EditForm EditContext="activityContext" Context="activitylmslexnet" OnValidSubmit="HandleSubmitActivity">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-            <div class="form-group m-3">
-                <label for="Name">@xedi.TxtText[4]</label>
-                <InputText id="Name" class="form-control" @bind-Value="activity.Name" placeholder="Enter name" />
-            </div>
-            <div class="form-group m-3">
-                <label for="Typename">@xedi.TxtText[8]</label>
-                <InputSelect class="form-control" id="Typename" @bind-Value="activityType.Name">
-                    @foreach (var acttype in activitytypelist)
-                    {
-                        <option value="@acttype.Name">@acttype.Name</option>
-                    }
-                </InputSelect>
-            </div>
-            <div class="form-group m-3">
-                <label for="Description">@xedi.TxtText[5]</label>
-                <InputTextArea id="Description" class="form-control" @bind-Value="activity.Description" placeholder="Enter description" />
-            </div>
-            <div class="form-group m-3">
-                <label for="Startdate">@xedi.TxtText[6]</label>
-                <InputDate id="Startdate" class="form-control" @bind-Value="activity.StartDate" />
-            </div>
-            <div class="form-group m-3">
-                <label for="Enddate">@xedi.TxtText[7]</label>
-                <InputDate id="Enddate" class="form-control" @bind-Value="activity.EndDate" />
-            </div>
-            <div class="form-group m-3">
-                <button type="button" class="btn btn-secondary btn-sm m-1" @onclick="RegretRefresh" title=@xedi.TxtTitle[3]>@xedi.TxtButton[0]</button>
-                <button type="submit" class="btn btn-primary btn-sm m-1" title=@xedi.TxtTitle[4]>@xedi.TxtButton[1]</button>
-                <button type="button" class="btn btn-primary btn-sm m-1" @onclick="AddThisActivity" title=@xedi.TxtTitle[6]>@xedi.TxtButton[5]</button>
-            </div>
-        </EditForm>
-    </section>
+        <section class="activityeditbox">
+            <nav style="display: flex">
+                <div style="width: 50%"><h5>@xedi.TxtText[3]</h5></div>
+                <div style="margin: 0 0 0 auto">
+                    <button type="button" class="btn btn-danger btn-sm" @onclick="DeleteControll"
+                    title=@xedi.TxtTitle[8]>@xedi.TxtButton[4]</button>
+                </div>
+            </nav>
+            <EditForm EditContext="activityContext" Context="activitylmslexnet" OnValidSubmit="HandleSubmitActivity">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="form-group m-3">
+                    <label for="Name">@xedi.TxtText[4]</label>
+                    <InputText id="Name" class="form-control" @bind-Value="activity.Name" placeholder="Enter name" />
+                </div>
+                <div class="form-group m-3">
+                    <label for="Typename">@xedi.TxtText[8]</label>
+                    <InputSelect class="form-control" id="Typename" @bind-Value="activityType.Name">
+                        @foreach (var acttype in activitytypelist)
+                        {
+                            <option value="@acttype.Name">@acttype.Name</option>
+                        }
+                    </InputSelect>
+                </div>
+                @if (module.Select == 4 || module.Select == 5)
+                {
+                    <div class="form-group m-3">
+                        <label for="Description">@xedi.TxtText[5]</label>
+                        <InputTextArea id="ACT_DES" style="height: 300px" class="form-control" @bind-Value="activity.Description" placeholder="Enter description" />
+                    </div>
+                    <div class="form-group text-white mx-4"> @* HTML-taggar *@
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag01)" title="Bold">&ltb&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag02)" title="Emphasis (italic)">&ltem&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag03)" title="Underlined">&ltu&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag04)" title="Strikethrough">&lts&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag05)" title="Block quotation">&ltbq&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag06)" title="Horizontal rule">&lthr&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag07)" title="Superscript">&ltsup&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag08)" title="Subscript">&ltsub&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag09)" title="Paragraphs">&ltp&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag10)" title="Breaks">&ltbr&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag11)" title="Dividers">&ltdiv&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag12)" title="Spans">&ltspan&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag13)" title="Hyperlink">&lta&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag14)" title="Unordered list (bullet list)">&ltul&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag15)" title="Ordered list">&ltol&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag16)" title="Description list">&ltdl&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag17)" title="Picture (wwwroot)">&ltimg&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag18)" title="Color example">&ltcss color&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag19)" title="Font example">&ltcss font&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag20)" title="Table example">&lttable&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag21)" title="Hard space">&lt&nbsp&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag22)" title="Quotations">&lt“””&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag23)" title="Arrow heads">&lt&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag24)" title="Bullet">&lt•&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag25)" title="Small bullet">&lt·&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag26)" title="Division sign">&lt÷&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag27)" title="Plus or minus">&lt±&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag28)" title="Approximately equal to">&lt≈&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag29)" title="Degree">&lt°&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag30)" title="Micro">&ltµ&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag31)" title="Omega">&ltΩ&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag32)" title="Copyright">&lt©&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag33)" title="Trademark">&lt™&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag34)" title="Registered trademark">&lt®&gt</span>
+                    </div>
+                    <div style="position: relative; top: -10px" class="form-group m-3">
+                        <label for="Startdate">@xedi.TxtText[6]</label>
+                        <InputDate id="Startdate" class="form-control" @bind-Value="activity.StartDate" />
+                    </div>
+                }
+                else
+                {
+                    <div class="form-group m-3">
+                        <label for="Description">@xedi.TxtText[5]</label>
+                        <InputTextArea id="Description" class="form-control" @bind-Value="activity.Description" placeholder="Enter description" />
+                    </div>
+                    <div class="form-group m-3">
+                        <label for="Startdate">@xedi.TxtText[6]</label>
+                        <InputDate id="Startdate" class="form-control" @bind-Value="activity.StartDate" />
+                    </div>
+                }
+
+                <div class="form-group m-3">
+                    <label for="Enddate">@xedi.TxtText[7]</label>
+                    <InputDate id="Enddate" class="form-control" @bind-Value="activity.EndDate" />
+                </div>
+                <div class="form-group m-3">
+                    <button type="button" class="btn btn-secondary btn-sm m-1" @onclick="RegretRefresh" title=@xedi.TxtTitle[3]>@xedi.TxtButton[0]</button>
+                    <button type="submit" class="btn btn-primary btn-sm m-1" title=@xedi.TxtTitle[4]>@xedi.TxtButton[1]</button>
+                    <button type="button" class="btn btn-primary btn-sm m-1" @onclick="AddThisActivity" title=@xedi.TxtTitle[6]>@xedi.TxtButton[5]</button>
+                </div>
+            </EditForm>
+        </section>
 
         <div class="container"> @*Eventuella dokument som ingår läggs ut här*@
             <div class="d-flex flex-wrap">
@@ -123,7 +174,7 @@
                                 if (DateTime.Parse(doc.TimeStamp).AddDays(1) > DateTime.Now)
                                 {
                                     <li class="doclink" style="box-shadow: 0 0 10px plum"
-                                        title="File: @doc.Description by @doc.Author @doc.TimeStamp">
+                                    title="File: @doc.Description by @doc.Author @doc.TimeStamp">
                                         <span @onclick=" _ => OpenFileControl(doc.NameIx, doc.DocName)">@doc.DocName</span>
                                         <span class="oi oi-file text-primary text-decoration-none docicon"
                                         @onclick=" _ => DocEditControl(doc.Id, 4)"></span>
@@ -143,17 +194,17 @@
                                 if (DateTime.Parse(doc.TimeStamp).AddDays(1) > DateTime.Now)
                                 {
                                     <li class="oi oi-file text-danger text-decoration-none docicon"
-                                        style="position: relative; top: 10px; margin-right: 22px; text-shadow: 0 0 10px plum"
-                                        @onmouseover=" _ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
-                                        @onclick=" _ => DeleteMess(doc.Id)">
+                                    style="position: relative; top: 10px; margin-right: 22px; text-shadow: 0 0 10px plum"
+                                    @onmouseover=" _ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                    @onclick=" _ => DeleteMess(doc.Id)">
                                     </li>
                                 }
                                 else
                                 {
                                     <li class="oi oi-file text-danger text-decoration-none docicon"
-                                        style="position: relative; top: 10px; margin-right: 22px"
-                                        @onmouseover=" _ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
-                                        @onclick=" _ => DeleteMess(doc.Id)">
+                                    style="position: relative; top: 10px; margin-right: 22px"
+                                    @onmouseover=" _ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                    @onclick=" _ => DeleteMess(doc.Id)">
                                     </li>
                                 }
                             }
@@ -169,9 +220,9 @@
             </div>
         </footer>
 
-    <ToastDeleteMess @ref="deleteRef" /> @*Delete-fönster*@
-    <ToastDeleteAllDocActivities @ref="deletealldocRef" /> @*Delete-fönster*@
-    <ToastDocumentEdit @ref="doceditRef" /><br /><br /> @*Filredigeringsfönster*@
+        <ToastDeleteMess @ref="deleteRef" /> @*Delete-fönster*@
+        <ToastDeleteAllDocActivities @ref="deletealldocRef" /> @*Delete-fönster*@
+        <ToastDocumentEdit @ref="doceditRef" /><br /><br /> @*Filredigeringsfönster*@
 
     </Authorized>
     <NotAuthorized>
@@ -239,6 +290,43 @@
     private string TestMess2 = string.Empty; // Test.
 
     private int CourseID; // Kursens id.
+
+    // Olika listade taggar och exempel.
+    private const string textarea = "ACT_DES";
+    private const string tag01 = "<b></b>";
+    private const string tag02 = "<em></em>";
+    private const string tag03 = "<u></u>";
+    private const string tag04 = "<s></s>";
+    private const string tag05 = "<blockquote>“””</blockquote>";
+    private const string tag06 = "<hr>";
+    private const string tag07 = "<sup></sup>";
+    private const string tag08 = "<sub></sub>";
+    private const string tag09 = "<p></p>";
+    private const string tag10 = "<br>";
+    private const string tag11 = "<div></div>";
+    private const string tag12 = "<span></span>";
+    private const string tag13 = "<a href='www.address'>name</a>";
+    private const string tag14 = "<ul>\n<li>A</li><li>B</li><li>C</li>\n</ul>\nPlace the tags in a row or few rows to reduce the space (remove this)";
+    private const string tag15 = "<ol>\n<li>A</li><li>B</li><li>C</li>\n</ol>\nPlace the tags in a row or few rows to reduce the space (remove this)";
+    private const string tag16 = "<dl>\n<dt>Microsoft Corporation</dt><dd>Was founded by Bill Gates and Paul Allen</dd>\n</dl>\nPlace the tags in a row or few rows to reduce the space (remove this)";
+    private const string tag17 = "<img src='favicon.png' alt='Favicon'>";
+    private const string tag18 = "<span style='color: red'></span>";
+    private const string tag19 = "<span style='font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-style: italic; font-size: 22px'></span>";
+    private const string tag20 = "<table style='border: 1px solid black'>\n<tr><th>Head1</th><th>Head2</th><th>Head3</th></tr><tr><td>Value1</td><td>Value2</td><td>Value3</td></tr>\n</table>\nPlace the tags in a row or few rows to reduce the space (remove this)";
+    private const string tag21 = "&nbsp";
+    private const string tag22 = "“””";
+    private const string tag23 = "&lt&gt";
+    private const string tag24 = "•";
+    private const string tag25 = "·";
+    private const string tag26 = "÷";
+    private const string tag27 = "±";
+    private const string tag28 = "≈";
+    private const string tag29 = "°";
+    private const string tag30 = "µ";
+    private const string tag31 = "Ω";
+    private const string tag32 = "©";
+    private const string tag33 = "™";
+    private const string tag34 = "®";
 
     private async Task RefreshAfterThis() // Uppdaterar efter förändring av innehåll.
     {
@@ -338,6 +426,7 @@
                 {
                     CourseID = mod.CourseId;
                     module.Name = mod.Name;
+                    module.Select = mod.Select;
                 }
             }
 
@@ -517,5 +606,10 @@
     {
         xnav.SetMess(description + " by " + author + " Created: " + timestamp);
         xnav.SetReset('m');
+    }
+
+    private async Task AddTag(string id, string tags) // Via ett javascript.
+    {
+        await xClient.AddInTextarea(id, tags);
     }
 }

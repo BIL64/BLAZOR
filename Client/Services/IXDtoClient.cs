@@ -3,6 +3,7 @@ namespace LexiconLMSBlazor.Client.Services
 {
     public interface IXDtoClient
     {
+        Task AddInTextarea(string id, string text);
         Task ChangeClass(string id, string newclassname);
         Task<bool> DeleteFile(string filename);
         Task<T?> ExistFile<T>(string filename, string route);

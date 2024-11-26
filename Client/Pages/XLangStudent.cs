@@ -255,7 +255,7 @@
             TxtText[i] = "You have no course";
             i++;
             // 32
-            TxtText[i] = "See description!";
+            TxtText[i] = "reserve";
             i++;
             // 33
             TxtText[i] = "Your saved threads...";
@@ -437,7 +437,7 @@
             TxtText[i] = "Du har ingen kurs";
             i++;
             // 32
-            TxtText[i] = "Se beskrivning!";
+            TxtText[i] = "reserve";
             i++;
             // 33
             TxtText[i] = "Dina sparade trådar...";

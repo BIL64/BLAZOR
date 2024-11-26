@@ -98,6 +98,11 @@ namespace LexiconLMSBlazor.Client.Services
         {
             await _js.InvokeVoidAsync("scrollIntoView", id);
         }
+
+        public async Task AddInTextarea(string id, string text) // Lägger in en text i en textarea (formulär).
+        {
+            await _js.InvokeVoidAsync("insertText", id, text);
+        }
     }
 
     public class WindowDimension

@@ -53,7 +53,17 @@
             if (elem) {
                 elem.scrollIntoView();
                 window.location.hash = elementId;
-            }
+            };
+        }
+
+        window.insertText = (id, intext) => {
+            const textarea = document.getElementById(id);
+            const startpos = textarea.selectionStart;
+            const endpos = textarea.selectionStart + intext.length;
+            textarea.setRangeText(intext, startpos, startpos);
+            textarea.focus();
+            textarea.setSelectionRange(endpos, endpos);  /* Moves cursor to the end of the inserted text */
+            textarea.dispatchEvent(new Event('change')); /* Trigger change event to avoid saving problems */
         }
     </script>
 </body>
