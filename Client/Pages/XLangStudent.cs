@@ -6,7 +6,7 @@
 
         public string[] TxtMenu { get; private set; } = new string[5];
 
-        public string[] TxtTitle { get; private set; } = new string[12];
+        public string[] TxtTitle { get; private set; } = new string[14];
 
         public string[] TxtText { get; private set; } = new string[59];
 
@@ -101,6 +101,12 @@
             i++;
             // 11
             TxtTitle[i] = "Up again";
+            i++;
+            // 12
+            TxtTitle[i] = " days or ";
+            i++;
+            // 13
+            TxtTitle[i] = " weeks";
         }
 
         private void Title_SV()
@@ -142,6 +148,12 @@
             i++;
             // 11
             TxtTitle[i] = "Upp igen";
+            i++;
+            // 12
+            TxtTitle[i] = " dagar eller ";
+            i++;
+            // 13
+            TxtTitle[i] = " veckor";
         }
 
         private void Title_DE()

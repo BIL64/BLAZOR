@@ -110,10 +110,10 @@
             TxtTitle[i] = "Click for more information...";
             i++;
             // 31
-            TxtTitle[i] = "reserve";
+            TxtTitle[i] = " days or ";
             i++;
             // 32
-            TxtTitle[i] = "reserve";
+            TxtTitle[i] = " veckor";
             i++;
             // 33
             TxtTitle[i] = "reserve";
@@ -217,10 +217,10 @@
             TxtTitle[i] = "Klicka för mer information...";
             i++;
             // 31
-            TxtTitle[i] = "reserve";
+            TxtTitle[i] = " dagar eller ";
             i++;
             // 32
-            TxtTitle[i] = "reserve";
+            TxtTitle[i] = " veckor";
             i++;
             // 33
             TxtTitle[i] = "reserve";

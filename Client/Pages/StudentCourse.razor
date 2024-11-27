@@ -16,7 +16,7 @@
 <AuthorizeView Roles="Student, Teacher">
     <Authorized>
         <nav style="display: flex">
-            <div style="width: 75%"><h3>@loggeduser.FirstName, @xstu.TxtText[0] @* this is your course: *@
+            <div style="width: 75%" title=@GetCourseTime(CourseDate)><h3>@loggeduser.FirstName, @xstu.TxtText[0] @* this is your course: *@
                 <span class="verdanahead" style="background-color: rgb(@ColorR, @ColorG, @ColorB)"
                 @onclick=" _ => InfoTitle(CourseDescription, 0)">@CourseName</span></h3>
             </div>
@@ -1039,6 +1039,25 @@
         }
 
         return marray.ToList();
+    }
+
+    private string GetCourseTime(string coursedate) // Returnerar kurstiden i dagar och veckor.
+    {
+        TimeSpan courseTime = new();
+        string days = string.Empty;
+        decimal weeks = 0;
+
+        // Kurstid ex: "2023-01-01 | 2023-12-31"
+        if (coursedate.Length == 23)
+        {
+            DateTime startDate = DateTime.Parse(coursedate.Substring(0, 10));
+            DateTime endDate = DateTime.Parse(coursedate.Substring(13, 10));
+            courseTime = endDate - startDate;
+
+            days = courseTime.Days.ToString();
+            weeks = Math.Round(((decimal)courseTime.Days / 7), 1);
+        }
+        return days + xstu.TxtTitle[12] + weeks.ToString() + xstu.TxtTitle[13];
     }
 
     private void InfoTitle(string description, byte select)
