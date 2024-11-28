@@ -114,7 +114,7 @@
                         <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag14)" title="Unordered list (bullet list)">&ltul&gt</span>
                         <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag15)" title="Ordered list">&ltol&gt</span>
                         <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag16)" title="Description list">&ltdl&gt</span>
-                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag17)" title="Picture (wwwroot)">&ltimg&gt</span>
+                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag17)" title="Images">&ltimg&gt</span>
                         <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag18)" title="Color example">&ltcss color&gt</span>
                         <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag19)" title="Font example">&ltcss font&gt</span>
                         <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag20)" title="Table example">&lttable&gt</span>
@@ -308,11 +308,13 @@
     private const string tag13 = "<a href='www.address'>name</a>";
     private const string tag14 = "<ul>\n<li>A</li><li>B</li><li>C</li>\n</ul>\nPlace the tags in a row or few rows to reduce the space (remove this)";
     private const string tag15 = "<ol>\n<li>A</li><li>B</li><li>C</li>\n</ol>\nPlace the tags in a row or few rows to reduce the space (remove this)";
-    private const string tag16 = "<dl>\n<dt>Microsoft Corporation</dt><dd>Was founded by Bill Gates and Paul Allen</dd>\n</dl>\nPlace the tags in a row or few rows to reduce the space (remove this)";
-    private const string tag17 = "<img src='favicon.png' alt='Favicon'>";
+    private const string tag16 = "<dl>\n<dt>Microsoft Corporation</dt><dd>Was founded by Bill Gates and Paul Allen</dd>\n</dl>" +
+                                 "\nPlace the tags in a row or few rows to reduce the space (remove this)";
+    private const string tag17 = "<img style='border: 2px solid black; width: 192px; height: 192px' src='icon-192.png' alt='Icon-192'>";
     private const string tag18 = "<span style='color: red'></span>";
     private const string tag19 = "<span style='font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-style: italic; font-size: 22px'></span>";
-    private const string tag20 = "<table style='border: 1px solid black'>\n<tr><th>Head1</th><th>Head2</th><th>Head3</th></tr><tr><td>Value1</td><td>Value2</td><td>Value3</td></tr>\n</table>\nPlace the tags in a row or few rows to reduce the space (remove this)";
+    private const string tag20 = "<table style='border: 1px solid black'>\n<tr><th>Head1</th><th>Head2</th><th>Head3</th></tr><tr><td>Value1</td>" +
+                                 "<td>Value2</td><td>Value3</td></tr>\n</table>\nPlace the tags in a row or few rows to reduce the space (remove this)";
     private const string tag21 = "&nbsp";
     private const string tag22 = "“””";
     private const string tag23 = "&lt&gt";
