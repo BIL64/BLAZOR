@@ -6,6 +6,7 @@ namespace LexiconLMSBlazor.Client.Services
         Task AddInTextarea(string id, string text);
         Task ChangeClass(string id, string newclassname);
         Task<bool> DeleteFile(string filename);
+        Task EditTextarea(string id, char action);
         Task<T?> ExistFile<T>(string filename, string route);
         Task<T?> GetAsync<T>(int id, string route);
         Task<T?> GetAsync<T>(string route);

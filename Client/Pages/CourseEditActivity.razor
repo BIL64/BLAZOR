@@ -97,7 +97,13 @@
                         <label for="Description">@xedi.TxtText[5]</label>
                         <InputTextArea id="ACT_DES" style="height: 300px" class="form-control" @bind-Value="activity.Description" placeholder="Enter description" />
                     </div>
-                    <div class="form-group text-white mx-4"> @* HTML-taggar *@
+                    <div class="form-group text-white mx-4"> @* Redigerings- och HTML-taggar *@
+                        <span class="dtagg rounded-pill" style="background-color: cornflowerblue" @onclick=" _
+                        => EditArea(textarea, 'C')" title="Copy">&nbspc&nbsp</span>
+                        <span class="dtagg rounded-pill" style="background-color: cornflowerblue" @onclick=" _
+                        => EditArea(textarea, 'P')" title="Paste">&nbspp&nbsp</span>
+                        <span class="dtagg rounded-pill" style="background-color: sandybrown"  @onclick=" _
+                        => EditArea(textarea, 'U')" title="Undo">&nbspu&nbsp</span>
                         <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag01)" title="Bold">&ltb&gt</span>
                         <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag02)" title="Emphasis (italic)">&ltem&gt</span>
                         <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag03)" title="Underlined">&ltu&gt</span>
@@ -310,7 +316,7 @@
     private const string tag15 = "<ol>\n<li>A</li><li>B</li><li>C</li>\n</ol>\nPlace the tags in a row or few rows to reduce the space (remove this)";
     private const string tag16 = "<dl>\n<dt>Microsoft Corporation</dt><dd>Was founded by Bill Gates and Paul Allen</dd>\n</dl>" +
                                  "\nPlace the tags in a row or few rows to reduce the space (remove this)";
-    private const string tag17 = "<img style='border: 2px solid black; width: 192px; height: 192px' src='icon-192.png' alt='Icon-192'>";
+    private const string tag17 = "<img style='border: 2px solid black; max-width: 100%; height: auto' src='icon-192.png' alt='Icon-192'>";
     private const string tag18 = "<span style='color: red'></span>";
     private const string tag19 = "<span style='font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-style: italic; font-size: 22px'></span>";
     private const string tag20 = "<table style='border: 1px solid black'>\n<tr><th>Head1</th><th>Head2</th><th>Head3</th></tr><tr><td>Value1</td>" +
@@ -608,6 +614,11 @@
     {
         xnav.SetMess(description + " by " + author + " Created: " + timestamp);
         xnav.SetReset('m');
+    }
+
+    private async Task EditArea(string id, char action) // C, P eller U via ett javascript.
+    {
+        await xClient.EditTextarea(id, action);
     }
 
     private async Task AddTag(string id, string tags) // Via ett javascript.

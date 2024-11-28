@@ -29,7 +29,7 @@
     <script src="_content/Microsoft.AspNetCore.Components.WebAssembly.Authentication/AuthenticationService.js"></script>
     <script src="_framework/blazor.webassembly.js"></script>
     <script>
-        window.triggerFileDownload = (fileName, url) => {
+        window.triggerFileDownload = (fileName, url) => { /* Open a file */
             const anchorElement = document.createElement('a');
             anchorElement.href = url;
             anchorElement.download = fileName ?? '';
@@ -37,18 +37,18 @@
             anchorElement.remove();
         }
 
-        window.getWindowDimensions = function () {
+        window.getWindowDimensions = function () { /* Window dimensions */
             return {
                 width: window.innerWidth,
                 height: window.innerHeight
             };
         }
 
-        window.swapDocClass = (id, name) => {
+        window.swapDocClass = (id, name) => { /* Change class name */
             document.getElementById(id).className = name;
         }
 
-        window.scrollIntoView = (elementId) => {
+        window.scrollIntoView = (elementId) => { /* Scrolling up */
             var elem = document.getElementById(elementId);
             if (elem) {
                 elem.scrollIntoView();
@@ -56,7 +56,51 @@
             };
         }
 
-        window.insertText = (id, intext) => {
+        let historyStack = []; /* Initiate history stack */
+
+        window.handleEditAction = (id, action) => { /* Edit in textarea */
+            const textarea = document.getElementById(id);
+            textarea.focus();
+
+            switch (action) {
+                case 'C':
+                    document.execCommand('copy');
+                    break;
+                case 'P':
+                    saveHistory(textarea); /* Save current content before pasting */
+                    navigator.clipboard.readText().then(text => {
+                        textarea.setRangeText(text, textarea.selectionStart, textarea.selectionEnd, "end");
+                        var event = new Event('input', { bubbles: true });
+                        textarea.dispatchEvent(event);
+                    }).catch(err => {
+                        console.error('Failed to read clipboard contents: ', err);
+                    });
+                    break;
+                case 'U':
+                    document.execCommand('undo'); /* Double undo functions! */
+                    undoTextAction(textarea);     /* Second undo function */
+                    break;
+                default:
+                    console.log('Unsupported action: ', action);
+                    break;
+            }
+        }
+
+        window.saveHistory = (textarea) => { /* Save history function */
+            historyStack.push(textarea.value);
+        }
+
+        window.undoTextAction = (textarea) => { /* Second undo function */
+            if (historyStack.length > 0) {
+                let lastState = historyStack.pop();
+                isManualChange = true;
+                textarea.value = lastState;
+                var event = new Event('input', { bubbles: true });
+                textarea.dispatchEvent(event);
+            }
+        }
+
+        window.insertText = (id, intext) => { /* Add text to textarea */
             const textarea = document.getElementById(id);
             const startpos = textarea.selectionStart;
             const endpos = textarea.selectionStart + intext.length;

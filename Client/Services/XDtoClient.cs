@@ -103,6 +103,11 @@ namespace LexiconLMSBlazor.Client.Services
         {
             await _js.InvokeVoidAsync("insertText", id, text);
         }
+
+        public async Task EditTextarea(string id, char action) // Utför kopiera (C), klistra in (P) och ångra (U) i en textarea (formulär).
+        {
+            await _js.InvokeVoidAsync("handleEditAction", id, action);
+        }
     }
 
     public class WindowDimension
