@@ -149,9 +149,17 @@
 
         if (DelSelect == 2) // Raderar hela diskussionstråden med alla dess poster i databasen!
         {
+            if (forum is not null) // Kontrollerar om tråden som ska tas bort tillhör studenten.
+            {
+                foreach (var fum in forum)
+                {
+                    if (fum.ThreadName == Tname && fum.Id4User == Auxx.GuidId && fum.Select == 0) IsFind = true;
+                }
+            }
+
             var thumb = await xClient.GetAsync<IEnumerable<ThumbDto>>("api/Thumb");
 
-            if (forum is not null && thumb is not null) // Radering av tumma upp/ned först.
+            if (forum is not null && thumb is not null && IsFind) // Radering av tumma upp/ned först.
             {
                 foreach (var fum in forum)
                 {
@@ -165,15 +173,11 @@
                 }
             }
 
-            if (forum is not null)
+            if (forum is not null && IsFind)
             {
                 foreach (var fum in forum)
                 {
-                    if (fum.ThreadName == Tname)
-                    {
-                        await xClient.RemAsync(fum.Id, "api/Forum");
-                        IsFind = true;
-                    }
+                    if (fum.ThreadName == Tname) await xClient.RemAsync(fum.Id, "api/Forum");
                 }
                 xnav.SetDone(xtoa.TxtDone[38]);
                 xnav.SetReset('d');
@@ -182,7 +186,7 @@
 
             Tname = "|" + Tname + "|";
 
-            if (names.IndexOf(Tname) != -1 && Tname != "||") // Raderar även en ev sparad tråd.
+            if (names.IndexOf(Tname) != -1 && Tname != "||" && IsFind) // Raderar även en ev sparad tråd.
             {
                 Tname = Tname.Replace("|", "");
                 names = names.Replace(Tname + "|", "");
