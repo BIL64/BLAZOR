@@ -18,7 +18,8 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (_context.Course == null)
             {
-                return BadRequest();
+                XC.ERR("No courses were found");
+                return NotFound("No courses were found");
             }
             
             var dto = _context.Course
@@ -56,26 +57,31 @@ namespace LexiconLMSBlazor.Server.Controllers
                     })
                 });
 
+            XC.INF("The get all method (course) was successful");
             return await dto.ToListAsync();
         }
 
-        //// GET: api/Courses/5
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<Course>> GetCourse(int id)
-        //{
-        //  if (_context.Course == null)
-        //  {
-        //      return NotFound();
-        //  }
-        //    var course = await _context.Course.FindAsync(id);
+        // GET: api/Courses/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Course>> GetCourse(int id)
+        {
+            if (_context.Course == null)
+            {
+                XC.ERR("No courses were found");
+                return NotFound("No courses were found");
+            }
 
-        //    if (course == null)
-        //    {
-        //        return NotFound();
-        //    }
+            var course = await _context.Course.FindAsync(id);
 
-        //    return course;
-        //}
+            if (course == null)
+            {
+                XC.ERR("The course was not found");
+                return NotFound("The course was not found");
+            }
+
+            XC.INF("The get one method (course) was successful");
+            return course;
+        }
 
         // PUT: api/Courses/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -84,7 +90,8 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (id != course.Id)
             {
-                return BadRequest();
+                XC.ERR("The course and the corresponding id are different");
+                return Problem("The course and the corresponding id are different");
             }
 
             _context.Entry(course).State = EntityState.Modified;
@@ -92,16 +99,19 @@ namespace LexiconLMSBlazor.Server.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                XC.INF("The put method (course) was successful");
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!CourseExists(id))
                 {
-                    return NotFound();
+                    XC.ERR("The course while saving was not found");
+                    return NotFound("The course while saving was not found");
                 }
                 else
                 {
-                    throw;
+                    XC.ERR("Cannot save (course)");
+                    return Problem("Cannot save (course)");
                 }
             }
 
@@ -115,11 +125,13 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
           if (_context.Course == null)
           {
-              return Problem("Entity set 'ApplicationDbContext.Course'  is null.");
+                XC.ERR("Entity set 'ApplicationDbContext.Course' is null");
+                return Problem("Entity set 'ApplicationDbContext.Course' is null");
           }
             _context.Course.Add(course);
             await _context.SaveChangesAsync();
 
+            XC.INF("The post method (course) was successful");
             return CreatedAtAction("GetCourse", new { id = course.Id }, course);
         }
 
@@ -129,17 +141,20 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (_context.Course == null)
             {
-                return NotFound();
+                XC.ERR("No courses were found");
+                return NotFound("No courses were found");
             }
             var course = await _context.Course.FindAsync(id);
             if (course == null)
             {
-                return NotFound();
+                XC.ERR("The course was not found");
+                return NotFound("The course was not found");
             }
 
             _context.Course.Remove(course);
             await _context.SaveChangesAsync();
 
+            XC.INF("The delete method (course) was successful");
             return NoContent();
         }
 

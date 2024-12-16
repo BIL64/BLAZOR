@@ -2,17 +2,17 @@
 {
     public class XLangToast // Implementerar det språk man valt via Local Storage.
     {
-        public string[] TxtButton { get; private set; } = new string[18];
+        public string[] TxtButton { get; private set; } = new string[19];
 
         public string[] TxtTitle { get; private set; } = new string[28];
 
         public string[] TxtHead { get; private set; } = new string[38];
 
-        public string[] TxtText { get; private set; } = new string[65];
+        public string[] TxtText { get; private set; } = new string[68];
 
-        public string[] TxtDone { get; private set; } = new string[47];
+        public string[] TxtDone { get; private set; } = new string[51];
 
-        public string[] TxtError { get; private set; } = new string[30];
+        public string[] TxtError { get; private set; } = new string[32];
 
         public event Action? OnChange;
 
@@ -73,6 +73,9 @@
             i++;
             // 17
             TxtButton[i] = "OK";
+            i++;
+            // 18
+            TxtButton[i] = "Apply";
         }
 
         private void Button_SV()
@@ -132,6 +135,9 @@
             i++;
             // 17
             TxtButton[i] = "OK";
+            i++;
+            // 18
+            TxtButton[i] = "Utför";
         }
 
         private void Button_DE()
@@ -370,7 +376,7 @@
             TxtHead[i] = "Edit dates for this activity...";
             i++;
             // 11
-            TxtHead[i] = "reserve";
+            TxtHead[i] = "Create or download template...";
             i++;
             // 12
             TxtHead[i] = "reserve";
@@ -489,7 +495,7 @@
             TxtHead[i] = "Redigera datum för denna aktivitet...";
             i++;
             // 11
-            TxtHead[i] = "reserve";
+            TxtHead[i] = "Skapa eller hämta template...";
             i++;
             // 12
             TxtHead[i] = "reserve";
@@ -655,7 +661,12 @@
             TxtText[i] = "Enter position";
             i++;
             // 22
-            TxtText[i] = "reserve";
+            TxtText[i] = "Make a zip file that is an exact copy or backup of a course including any documents/files. " +
+                         "A template that is downloaded (retrieved) can cause problems if the same course already exists. " +
+                         "Then you get two identical courses and if both contain files, these are shared by the courses. " +
+                         "(during a download, files are never overwritten or duplicated if they have the same name). So, if " +
+                         "you remove a file from one course, it also disappears from the other. If you are only interested in a " +
+                         "course copy, you should exclude file documents when downloading. Lost documents shall be added manually.";
             i++;
             // 23
             TxtText[i] = "reserve";
@@ -712,13 +723,13 @@
             TxtText[i] = "Private threads are only available to those selected (two participants).";
             i++;
             // 41
-            TxtText[i] = "reserve";
+            TxtText[i] = "Create a template file";
             i++;
             // 42
-            TxtText[i] = "reserve";
+            TxtText[i] = "Download a template file";
             i++;
             // 43
-            TxtText[i] = "reserve";
+            TxtText[i] = "Incorrect or missing serial data.";
             i++;
             // 44
             TxtText[i] = "The thread “";
@@ -787,6 +798,15 @@
             // 64
             TxtText[i] = "When you remove (delete) a student or a teacher, all posts made in a possible discussion thread " +
                          "also disappear. Even created threads and private threads disappear.";
+            i++;
+            // 65
+            TxtText[i] = "Select course number";
+            i++;
+            // 66
+            TxtText[i] = "A file name different from the course name";
+            i++;
+            // 67
+            TxtText[i] = "Include file documents";
         }
 
         private void Text_SV()
@@ -864,7 +884,12 @@
             TxtText[i] = "Ange position";
             i++;
             // 22
-            TxtText[i] = "reserve";
+            TxtText[i] = "Gör en zip-fil som är en exakt kopia eller backup av en kurs inklusive eventuella dokument/filer. " +
+                         "En template som laddas ner (hämtas) kan orsaka problem om samma kurs redan existerar. Då får man två " +
+                         "identiska kurser och om båda innehåller filer så delas dessa av kurserna (under en hämtning skrivs aldrig " +
+                         "filer över eller dupliceras om de har samma namn). Tar man då bort en fil från den ena kursen så försvinner " +
+                         "den även från den andra. Är man endast intresserad av en kurskopia så bör man utesluta fildokument vid hämtning. " +
+                         "Förlorade dokument får man lägga till manuellt.";
             i++;
             // 23
             TxtText[i] = "reserve";
@@ -921,13 +946,13 @@
             TxtText[i] = "Privata trådar är endast tillgängliga för de utvalda (två deltagare).";
             i++;
             // 41
-            TxtText[i] = "reserve";
+            TxtText[i] = "Skapa en template-fil";
             i++;
             // 42
-            TxtText[i] = "reserve";
+            TxtText[i] = "Hämta en template-fil";
             i++;
             // 43
-            TxtText[i] = "reserve";
+            TxtText[i] = "Felaktig eller saknad seriell data.";
             i++;
             // 44
             TxtText[i] = "Tråden ”";
@@ -996,6 +1021,15 @@
             // 64
             TxtText[i] = "När man tar bort (raderar) en student eller en lärare så förvinner även alla inlägg som gjorts i en ev. " +
                          "diskussionstråd. Även skapade trådar och privata trådar försvinner.";
+            i++;
+            // 65
+            TxtText[i] = "Välj kursnummer";
+            i++;
+            // 66
+            TxtText[i] = "Ett filnamn som skiljer sig från kursnamnet";
+            i++;
+            // 67
+            TxtText[i] = "Inkludera fildokument";
         }
 
         private void Text_DE()
@@ -1152,6 +1186,18 @@
             i++;
             // 46
             TxtDone[i] = "This post was deleted from the database.";
+            i++;
+            // 47
+            TxtDone[i] = "Building zip...";
+            i++;
+            // 48
+            TxtDone[i] = "The template was saved.";
+            i++;
+            // 49
+            TxtDone[i] = "A saved course has been added.";
+            i++;
+            // 50
+            TxtDone[i] = "The course was inserted but not the file(s).";
         }
 
         private void Done_SV()
@@ -1298,6 +1344,18 @@
             i++;
             // 46
             TxtDone[i] = "Detta inlägg raderades från databasen.";
+            i++;
+            // 47
+            TxtDone[i] = "Bygger zip...";
+            i++;
+            // 48
+            TxtDone[i] = "Filmallen sparades.";
+            i++;
+            // 49
+            TxtDone[i] = "En sparad kurs har lagts till.";
+            i++;
+            // 50
+            TxtDone[i] = "Kursen infogades men inte filen/filerna.";
         }
 
         private void Done_DE()
@@ -1380,13 +1438,13 @@
             TxtError[i] = "An error occurred while saving to Local Storage.";
             i++;
             // 21
-            TxtError[i] = "reserve";
+            TxtError[i] = "Not a valid template.";
             i++;
             // 22
-            TxtError[i] = "reserve";
+            TxtError[i] = "Failed to insert compressed course. ";
             i++;
             // 23
-            TxtError[i] = "reserve";
+            TxtError[i] = "Failed to insert file or files.";
             i++;
             // 24
             TxtError[i] = "No course was selected.";
@@ -1405,6 +1463,12 @@
             i++;
             // 29
             TxtError[i] = "The post cannot be found.";
+            i++;
+            // 30
+            TxtError[i] = "The zip file could not be build.";
+            i++;
+            // 31
+            TxtError[i] = "The zip file could not be saved.";
         }
 
         private void Error_SV()
@@ -1477,13 +1541,13 @@
             TxtError[i] = "Ett fel uppstod vid skrivning i Local Storage.";
             i++;
             // 21
-            TxtError[i] = "reserve";
+            TxtError[i] = "Inte en giltig template.";
             i++;
             // 22
-            TxtError[i] = "reserve";
+            TxtError[i] = "Det gick inte att införa komprimerad kurs. ";
             i++;
             // 23
-            TxtError[i] = "reserve";
+            TxtError[i] = "Det gick inte att infoga filen eller filerna.";
             i++;
             // 24
             TxtError[i] = "Ingen kurs valdes.";
@@ -1502,6 +1566,12 @@
             i++;
             // 29
             TxtError[i] = "Inlägget kan inte hittas.";
+            i++;
+            // 30
+            TxtError[i] = "Det gick inte att bygga zip-filen.";
+            i++;
+            // 31
+            TxtError[i] = "Zipfilen kunde inte sparas.";
         }
 
         private void Error_DE()

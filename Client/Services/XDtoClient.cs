@@ -46,6 +46,22 @@ namespace LexiconLMSBlazor.Client.Services
             return (await _httpClient.DeleteAsync($"{route}/{id}")).IsSuccessStatusCode;
         }
 
+        public async Task<T?> GetTemplate<T>(int id, string filename) // Bygger en zipfil som innehåller en kurs (template) och returnerar den.
+        {
+            var response = await _httpClient.GetFromJsonAsync<T>($"api/Template/{id}/{filename}");
+            return response;
+        }
+
+        public async Task<bool> PostTemplate(string cbase64, string dbase64) // Adderar en sparad kurs från en template (zipfil).
+        {
+            return (await _httpClient.PostAsJsonAsync($"api/Template/{dbase64}", cbase64)).IsSuccessStatusCode;
+        }
+
+        public async Task DownloadZipFile(string base64, string filename) // JS - laddar ner en zipfil till datorn.
+        {
+            await _js.InvokeVoidAsync("downloadAFile", base64, filename, "application/zip");
+        }
+
         public async Task<string?> GetStorage<T>(string name) // LocalStorage Get.
         {
             return await _localStorageService.GetItemAsync<string>(name);
@@ -62,7 +78,7 @@ namespace LexiconLMSBlazor.Client.Services
             return response;
         }
 
-        public async Task OpenFile(int ix, string filename) // Öppnar en fil med hjälp av ett javascript.
+        public async Task OpenFile(int ix, string filename) // JS - öppnar en fil.
         {
             await _js.InvokeVoidAsync("triggerFileDownload", filename, $"{_httpClient.BaseAddress}Documents/{ix.ToString() + filename}");
         }
@@ -83,30 +99,35 @@ namespace LexiconLMSBlazor.Client.Services
             return $"{_httpClient.BaseAddress}Documents/";
         }
 
-        public async Task<WindowDimension> GetWindow() // Returnerar skärmstorlek med hjälp av ett javascript och en klass.
+        public async Task<WindowDimension> GetWindow() // JS - returnerar skärmstorlek med hjälp av en klass.
         {
             var dimension = await _js.InvokeAsync<WindowDimension>("getWindowDimensions");
             return dimension;
         }
 
-        public async Task ChangeClass(string id, string newclassname) // Byter css-klass på ett id-försett objekt.
+        public async Task ChangeClass(string id, string newclassname) // JS - byter css-klass på ett id-försett objekt.
         {
             await _js.InvokeVoidAsync("swapDocClass", id, newclassname);
         }
 
-        public async Task Scroll2View(string id) // Skrollar till en id-tag med hjälp av ett javascript.
+        public async Task Scroll2View(string id) // JS - skrollar till en id-tag.
         {
             await _js.InvokeVoidAsync("scrollIntoView", id);
         }
 
-        public async Task AddInTextarea(string id, string text) // Lägger in en text i en textarea (formulär).
+        public async Task AddInTextarea(string id, string text) // JS - lägger in en text i en textarea (formulär).
         {
             await _js.InvokeVoidAsync("insertText", id, text);
         }
 
-        public async Task EditTextarea(string id, char action) // Utför kopiera (C), klistra in (P) och ångra (U) i en textarea (formulär).
+        public async Task EditTextarea(string id, char action) // JS - utför kopiera (C), klistra in (P) och ångra (U) i en textarea (formulär).
         {
             await _js.InvokeVoidAsync("handleEditAction", id, action);
+        }
+
+        public async Task DownloadTxtFile(string base64, string filename) // JS - laddar ner en textfil till datorn.
+        {
+            await _js.InvokeVoidAsync("downloadAFile", base64, filename, "text/plain");
         }
     }
 

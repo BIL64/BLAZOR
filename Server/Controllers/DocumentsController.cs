@@ -18,7 +18,8 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (_context.Document == null)
             {
-                return NotFound();
+                XC.ERR("No documents were found");
+                return NotFound("No documents were found");
             }
 
             var dto = _context.Document
@@ -36,6 +37,7 @@ namespace LexiconLMSBlazor.Server.Controllers
                       ActivityId = d.ActivityId
                   });
 
+            XC.INF("The get all method (document) was successful");
             return await dto.ToListAsync();
         }
 
@@ -45,15 +47,18 @@ namespace LexiconLMSBlazor.Server.Controllers
         //{
         //  if (_context.Document == null)
         //  {
-        //      return NotFound();
+        //      XC.ERR("No documents were found");
+        //      return NotFound("No documents were found");
         //  }
         //    var document = await _context.Document.FindAsync(id);
 
         //    if (document == null)
         //    {
-        //        return NotFound();
+        //        XC.ERR("The document was not found");
+        //        return NotFound("The document was not found");
         //    }
 
+        //    XC.INF("The get one method (document) was successful");
         //    return document;
         //}
 
@@ -64,7 +69,8 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (id != document.Id)
             {
-                return BadRequest();
+                XC.ERR("The document and the corresponding id are different");
+                return Problem("The document and the corresponding id are different");
             }
 
             _context.Entry(document).State = EntityState.Modified;
@@ -72,16 +78,19 @@ namespace LexiconLMSBlazor.Server.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                XC.INF("The put method (document) was successful");
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!DocumentExists(id))
                 {
-                    return NotFound();
+                    XC.ERR("The document while saving was not found");
+                    return NotFound("The document while saving was not found");
                 }
                 else
                 {
-                    throw;
+                    XC.ERR("Cannot save (document)");
+                    return Problem("Cannot save (document)");
                 }
             }
 
@@ -95,11 +104,13 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
           if (_context.Document == null)
           {
-              return Problem("Entity set 'ApplicationDbContext.Document'  is null.");
+                XC.ERR("Entity set 'ApplicationDbContext.Document' is null");
+                return Problem("Entity set 'ApplicationDbContext.Document' is null");
           }
             _context.Document.Add(document);
             await _context.SaveChangesAsync();
 
+            XC.INF("The post method (document) was successful");
             return CreatedAtAction("GetDocument", new { id = document.Id }, document);
         }
 
@@ -109,17 +120,20 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (_context.Document == null)
             {
-                return NotFound();
+                XC.ERR("No documents were found");
+                return NotFound("No documents were found");
             }
             var document = await _context.Document.FindAsync(id);
             if (document == null)
             {
-                return NotFound();
+                XC.ERR("The document was not found");
+                return NotFound("The document was not found");
             }
 
             _context.Document.Remove(document);
             await _context.SaveChangesAsync();
 
+            XC.INF("The delete method (document) was successful");
             return NoContent();
         }
 

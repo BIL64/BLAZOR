@@ -6,7 +6,7 @@
 
         public string[] TxtMenu { get; private set; } = new string[5];
 
-        public string[] TxtTitle { get; private set; } = new string[14];
+        public string[] TxtTitle { get; private set; } = new string[15];
 
         public string[] TxtText { get; private set; } = new string[59];
 
@@ -107,6 +107,9 @@
             i++;
             // 13
             TxtTitle[i] = " weeks";
+            i++;
+            // 14
+            TxtTitle[i] = "Copy thread to file";
         }
 
         private void Title_SV()
@@ -154,6 +157,9 @@
             i++;
             // 13
             TxtTitle[i] = " veckor";
+            i++;
+            // 14
+            TxtTitle[i] = "Kopiera tråd till fil";
         }
 
         private void Title_DE()
@@ -288,7 +294,7 @@
             TxtText[i] = " - No restrictions";
             i++;
             // 39
-            TxtText[i] = "Write a reply";
+            TxtText[i] = "Your text (also html tags)";
             i++;
             // 40
             TxtText[i] = "Add to the name (red)";
@@ -327,10 +333,10 @@
             TxtText[i] = "The thread cannot be found.";
             i++;
             // 52
-            TxtText[i] = "reserve";
+            TxtText[i] = "The thread content was sent to a text file.";
             i++;
             // 53
-            TxtText[i] = "reserve";
+            TxtText[i] = "The text file cannot be created.";
             i++;
             // 54
             TxtText[i] = "reserve";
@@ -470,7 +476,7 @@
             TxtText[i] = " - Inga restriktioner";
             i++;
             // 39
-            TxtText[i] = "Skriv ett inlägg";
+            TxtText[i] = "Din text (även html-taggar)";
             i++;
             // 40
             TxtText[i] = "Adderar till namnet (rött)";
@@ -509,10 +515,10 @@
             TxtText[i] = "Tråden går inte att hitta.";
             i++;
             // 52
-            TxtText[i] = "reserve";
+            TxtText[i] = "Trådinnehållet skickades till en textfil.";
             i++;
             // 53
-            TxtText[i] = "reserve";
+            TxtText[i] = "Textfilen kan inte skapas.";
             i++;
             // 54
             TxtText[i] = "reserve";

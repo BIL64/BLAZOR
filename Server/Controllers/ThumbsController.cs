@@ -18,7 +18,8 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (_context.Thumb == null)
             {
-                return BadRequest();
+                XC.ERR("No thumbs were found");
+                return NotFound("No thumbs were found");
             }
 
             var dto = _context.Thumb
@@ -31,6 +32,7 @@ namespace LexiconLMSBlazor.Server.Controllers
                     Id4Post = d.Id4Post
                 });
 
+            XC.INF("The get all method (thumb) was successful");
             return await dto.ToListAsync();
         }
 
@@ -40,15 +42,18 @@ namespace LexiconLMSBlazor.Server.Controllers
         //{
         //    if (_context.Thumb == null)
         //    {
-        //        return NotFound();
+        //        XC.ERR("No thumbs were found");
+        //        return NotFound("No thumbs were found");
         //    }
         //    var @thumb = await _context.Thumb.FindAsync(id);
 
         //    if (@thumb == null)
         //    {
-        //        return NotFound();
+        //        XC.ERR("The thumb was not found");
+        //        return NotFound("The thumb was not found");
         //    }
 
+        //    XC.INF("The get one method (thumb) was successful");
         //    return @thumb;
         //}
 
@@ -59,7 +64,8 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (id != @thumb.Id)
             {
-                return BadRequest();
+                XC.ERR("The thumb and the corresponding id are different");
+                return Problem("The thumb and the corresponding id are different");
             }
 
             _context.Entry(@thumb).State = EntityState.Modified;
@@ -67,16 +73,19 @@ namespace LexiconLMSBlazor.Server.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                XC.INF("The put method (thumb) was successful");
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!ThumbExists(id))
                 {
-                    return NotFound();
+                    XC.ERR("The thumb while saving was not found");
+                    return NotFound("The thumb while saving was not found");
                 }
                 else
                 {
-                    throw;
+                    XC.ERR("Cannot save (thumb)");
+                    return Problem("Cannot save (thumb)");
                 }
             }
 
@@ -90,11 +99,13 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (_context.Thumb == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Thumb'  is null.");
+                XC.ERR("Entity set 'ApplicationDbContext.Thumb' is null");
+                return Problem("Entity set 'ApplicationDbContext.Thumb' is null");
             }
             _context.Thumb.Add(@thumb);
             await _context.SaveChangesAsync();
 
+            XC.INF("The post method (thumb) was successful");
             return CreatedAtAction("GetThumb", new { id = @thumb.Id }, @thumb);
         }
 
@@ -104,18 +115,21 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (_context.Thumb == null)
             {
-                return NotFound();
+                XC.ERR("No thumbs were found");
+                return NotFound("No thumbs were found");
             }
 
             var @thumb = await _context.Thumb.FindAsync(id);
             if (@thumb == null)
             {
-                return NotFound();
+                XC.ERR("The thumb was not found");
+                return NotFound("The thumb was not found");
             }
 
             _context.Thumb.Remove(@thumb);
             await _context.SaveChangesAsync();
 
+            XC.INF("The delete method (thumb) was successful");
             return NoContent();
         }
 

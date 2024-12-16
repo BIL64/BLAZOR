@@ -1,12 +1,12 @@
 ﻿using System.Net;
-using LexiconLMSBlazor.Shared.DocFileData;
 using LexiconLMSBlazor.Shared.Dtos;
+using LexiconLMSBlazor.Shared.ServiceFileData;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LexiconLMSBlazor.Server.Controllers
 {
-    [ApiController]
     [Route("Filesave")]
+    [ApiController]
     public class FilesaveController(IWebHostEnvironment env, ILogger<FilesaveController> logger) : ControllerBase
     {
         private readonly IWebHostEnvironment env = env;
@@ -29,6 +29,13 @@ namespace LexiconLMSBlazor.Server.Controllers
             var resourcePath = new Uri($"{Request.Scheme}://{Request.Host}/");
             List<UploadResult> uploadResults = [];
 
+            if (!files.Any())
+            {
+                XC.ERR("Empty Controller! Selected file or files failed to pass");
+                logger.LogInformation("Empty Controller! Selected file or files failed to pass (Err: 1)");
+                return Problem("Empty Controller! Selected file or files failed to pass");
+            }
+
             foreach (var file in files)
             {
                 var uploadResult = new UploadResult();
@@ -37,32 +44,25 @@ namespace LexiconLMSBlazor.Server.Controllers
                 uploadResult.FileName = untrustedFileName;
                 var trustedFileNameForDisplay = WebUtility.HtmlEncode(untrustedFileName);
 
-                if (file.Length > 0)
+                try
                 {
-                    try
-                    {
-                        trustedFileNameForFileStorage = file.FileName;
-                        var path = Path.Combine(env.ContentRootPath, "wwwroot/Documents", trustedFileNameForFileStorage);
+                    trustedFileNameForFileStorage = file.FileName;
+                    var path = Path.Combine(env.ContentRootPath, "wwwroot/Documents", trustedFileNameForFileStorage);
 
+                    await using FileStream fs = new(path, FileMode.Create);
+                    await file.CopyToAsync(fs);
 
-                        await using FileStream fs = new(path, FileMode.Create);
-                        await file.CopyToAsync(fs);
-
-                        logger.LogInformation("{file.FileName} saved at {path}",
-                        trustedFileNameForDisplay, path);
-                        uploadResult.Uploaded = true;
-                    }
-                    catch (IOException ex)
-                    {
-                        logger.LogError("{file.FileName} error on upload (Err: 3): {ex.Message}",
-                        trustedFileNameForDisplay, ex.Message);
-                        uploadResult.ErrorCode = 3;
-                    }
+                    XC.INF($"{file.FileName} saved at {path}");
+                    logger.LogInformation("{file.FileName} saved at {path}",
+                    trustedFileNameForDisplay, path);
+                    uploadResult.Uploaded = true;
                 }
-                else
+                catch (IOException ex)
                 {
-                    logger.LogInformation("{file.FileName} length is 0 (Err: 1)", trustedFileNameForDisplay);
-                    uploadResult.ErrorCode = 1;
+                    XC.ERR($"Error upload file: {ex.Message}");
+                    logger.LogError("{file.FileName} error on upload (Err: 3): {ex.Message}",
+                    trustedFileNameForDisplay, ex.Message);
+                    uploadResult.ErrorCode = 3;
                 }
 
                 uploadResults.Add(uploadResult);
@@ -75,7 +75,6 @@ namespace LexiconLMSBlazor.Server.Controllers
         public IActionResult DeleteFile(string filename)
         {
             System.IO.File.Delete($"wwwroot/Documents/{filename}");
-
             return NoContent();
         }
     }

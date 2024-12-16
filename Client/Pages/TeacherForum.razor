@@ -1,4 +1,5 @@
 ﻿@page "/teacherforum"
+@using System.Text;
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject IAppUserDtoClient appuserClient
 @inject IXDtoClient xClient
@@ -17,250 +18,258 @@
 <h5 id="targethead">@Emptydb</h5><br />
 
 @if (forums == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <nav class="float-end" style="width: 280px; margin: 0 3% 0 10%; padding: 10px; border: 4px outset lightgray; border-radius: 10px">
-        <EditForm Context="teacherforumlmslexnet" Model="@forums" OnSubmit="OnInitializedAsync">
-            <div class="input-group">
-                <div style="position: relative; top: 1px; z-index: 0">
-                    <button type="submit" class="btn btn-outline-dark btn-sm">Search</button>
-                </div>
-                <InputText class="form-control-sm" @bind-Value="searchString" placeholder="Thread name" />
-            </div>
-        </EditForm>
-        <div class="dropuse my-3" style="color:darkblue" title="All excisting threads">
-            <strong>@xtea.TxtText[72]</strong>
-            <div style="font-size: 0.78rem; padding: 3px; margin-left: 100px; cursor: pointer" class="dropuse-content">
-                @foreach (var name in threadnames) // Samtliga existerande trådar.
-                {
-                    <div @onclick="_ => OpenThread(name)">@name</div>
-                }
-            </div>
-        </div>
-        <div class="my-3">
-            <button type="button" class="btn btn-outline-dark btn-sm"
-                @onclick="_ => AddEditThread(nameString)">@xtea.TxtButton[14]</button> @* Add/edit thread *@
-        </div>
-        <div class="my-3">
-            <button type="button" class="btn btn-outline-dark text-danger btn-sm"
-                @onclick="DeleteThread">@xtea.TxtButton[15]</button> @* Delete thread *@
-        </div>
-        <div class="my-3">
-            <button type="button" class="btn btn-outline-dark btn-sm"
-                @onclick="CloseThread">@xtea.TxtButton[16]</button> @* Close *@
-                <hr />
-        </div>
-        <div>
-            @foreach (var fan in formans)
-            {
-                if (fan.IsMan && fan.Select == 0) // Endast obligatoriska.
-                {
-                    if (fan.Id4Course == 0) // Oberoende av kurs.
-                    {
-                        <div class="my-3" style="margin-left: 20%">
-                            <button type="button" class="btn btn-outline-dark border-info btn-sm"
-                                @onclick="_ => OpenThread(fan.ThreadName)" title=@xtea.TxtTitle[39]>@fan.ThreadName
-                            </button>
-                        </div>
-                    }
-
-                    if (loggeduser.CourseId == fan.Id4Course) // Om specifik kurs.
-                    {
-                        <div class="my-3" style="margin-left: 20%">
-                            <button type="button" class="btn btn-outline-dark border-info btn-sm"
-                                @onclick="_ => OpenThread(fan.ThreadName)" title=@xtea.TxtTitle[39]>@fan.ThreadName
-                            </button>
-                        </div>
-                    }
-                }
-            }
-        </div>
-        <div>
-            @xtea.TxtText[73] @* Your saved threads... *@
-        </div>
-
-        @foreach (var name in myownthreads) // Sparade trådar.
         {
-            if (!string.IsNullOrWhiteSpace(name))
-            {
-                <div class="my-2" style="margin-left: 20%">
-                    <button type="button" class="btn btn-outline-primary border-info btn-sm"
-                        @onclick="_ => OpenThread(name)">@name</button>
-                </div>       
-            }
-        }
-    </nav>
-
-    <aside class="container">
-        @if (!string.IsNullOrWhiteSpace(searchString)) // Presentation av sökta trådar.
-        {
-            foreach (var name in threadnames)
-            {
-                <div style="color: darkblue; cursor: pointer; margin: 5px"
-                    @onclick="_ => OpenThread(name)" title=@xtea.TxtTitle[40]><u>@name</u></div>
-            }
+            <p><em>Loading...</em></p>
         }
         else
         {
-            if (!string.IsNullOrWhiteSpace(nameString))
-            {
-                Emptydb = nameString + " \u2BA7";
-                <button type="button" class="btn btn-outline-dark btn-sm my-4"
-                    @onclick="_ => SaveThread(nameString)" title=@xtea.TxtTitle[44]>@xtea.TxtButton[17]</button>
-                foreach (var fum in forums)
-                {
-                    foreach (var use in appusers)
-                    {
-                        if (use.Id == fum.Id4User && fum.ThreadName == nameString && fum.Select != 0)
-                        {
-                            if (fum.AuxHead != "") // Om extra rubrik:
+            <nav class="float-end" style="width: 280px; margin: 0 3% 0 10%; padding: 10px; border: 4px outset lightgray; border-radius: 10px">
+                <EditForm Context="teacherforumlmslexnet" Model="@forums" OnSubmit="OnInitializedAsync">
+                    <div class="input-group">
+                        <div style="position: relative; top: 1px; z-index: 0">
+                            <button type="submit" class="btn btn-outline-dark btn-sm">Search</button>
+                        </div>
+                        <InputText class="form-control-sm" @bind-Value="searchString" placeholder="Thread name" />
+                    </div>
+                </EditForm>
+                <div style="display: flex">
+                    <div class="dropuse my-3" style="width: 75%; color:darkblue" title="All excisting threads">
+                        <strong>@xtea.TxtText[72]</strong>
+                        <div style="font-size: 0.78rem; padding: 3px; margin-left: 100px; cursor: pointer" class="dropuse-content">
+                            @foreach (var name in threadnames) // Samtliga existerande trådar.
                             {
-                                if (fum.Select == 1)
-                                {
-                                    <div style="font-size: 0.8rem; font-weight: bold; color: red">@fum.AuxHead</div>
-                                }
-
-                                if (fum.Select == 2)
-                                {
-                                    <div style="font-size: 0.8rem; font-weight: bold">
-                                        <span style=" color: red">@fum.AuxHead </span>
-                                        <span style="font-size: 0.77rem; color: darkblue">
-                                            @use.FirstName @use.LastName</span>
-                                    </div>
-                                }
+                                <div @onclick="_ => OpenThread(name)">@name</div>
                             }
-                            else
+                        </div>
+                    </div>
+                    <NavLink style="cursor: pointer; margin-left: auto" class="oi oi-layers text-dark text-decoration-none my-3"
+                        @onclick=" _ => CopyTread2File()" title=@xtea.TxtTitle[41]></NavLink> @* Copy thread to file *@
+                </div>
+                <div class="my-3">
+                    <button type="button" class="btn btn-outline-dark btn-sm"
+                        @onclick="_ => AddEditThread(nameString)">@xtea.TxtButton[14]</button> @* Add/edit thread *@
+                </div>
+                <div class="my-3">
+                    <button type="button" class="btn btn-outline-dark text-danger btn-sm"
+                        @onclick="DeleteThread">@xtea.TxtButton[15]</button> @* Delete thread *@
+                </div>
+                <div class="my-3">
+                    <button type="button" class="btn btn-outline-dark btn-sm"
+                        @onclick="CloseThread">@xtea.TxtButton[16]</button> @* Close *@
+                    <hr />
+                </div>
+                <div>
+                    @foreach (var fan in formans)
+                    {
+                        if (fan.IsMan && fan.Select == 0) // Endast obligatoriska.
+                        {
+                            if (fan.Id4Course == 0) // Oberoende av kurs.
                             {
-                                if (fum.Select == 1) // Ingen rubrik:
+                                <div class="my-3" style="margin-left: 20%">
+                                    <button type="button" class="btn btn-outline-dark border-info btn-sm"
+                                    @onclick="_ => OpenThread(fan.ThreadName)" title=@xtea.TxtTitle[39]>@fan.ThreadName
+                                    </button>
+                                </div>
+                            }
+
+                            if (loggeduser.CourseId == fan.Id4Course) // Om specifik kurs.
+                            {
+                                <div class="my-3" style="margin-left: 20%">
+                                    <button type="button" class="btn btn-outline-dark border-info btn-sm"
+                                    @onclick="_ => OpenThread(fan.ThreadName)" title=@xtea.TxtTitle[39]>@fan.ThreadName
+                                    </button>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+                <div>
+                    @xtea.TxtText[73] @* Your saved threads... *@
+                </div>
+
+                @foreach (var name in myownthreads) // Sparade trådar.
+                {
+                    if (!string.IsNullOrWhiteSpace(name))
+                    {
+                        <div class="my-2" style="margin-left: 20%">
+                            <button type="button" class="btn btn-outline-primary border-info btn-sm"
+                            @onclick="_ => OpenThread(name)">@name</button>
+                        </div>       
+                    }
+                }
+            </nav>
+
+            <aside class="container">
+                @if (!string.IsNullOrWhiteSpace(searchString)) // Presentation av sökta trådar.
+                {
+                    foreach (var name in threadnames)
+                    {
+                        <div style="color: darkblue; cursor: pointer; margin: 5px"
+                        @onclick="_ => OpenThread(name)" title=@xtea.TxtTitle[40]><u>@name</u></div>
+                    }
+                }
+                else
+                {
+                    if (!string.IsNullOrWhiteSpace(nameString))
+                    {
+                        Emptydb = nameString + " \u2BA7";
+                        <button type="button" class="btn btn-outline-dark btn-sm my-4"
+                        @onclick="_ => SaveThread(nameString)" title=@xtea.TxtTitle[44]>@xtea.TxtButton[17]</button>
+                        foreach (var fum in forums)
+                        {
+                            foreach (var use in appusers)
+                            {
+                                if (use.Id == fum.Id4User && fum.ThreadName == nameString && fum.Select != 0)
                                 {
-                                    if (use.Id == loggeduser.Id)
+                                    if (fum.AuxHead != "") // Om extra rubrik:
                                     {
-                                        <div style="font-size: 0.77rem; font-weight: bold; color: magenta">
-                                            @use.FirstName @use.LastName</div>
+                                        if (fum.Select == 1)
+                                        {
+                                            <div style="font-size: 0.8rem; font-weight: bold; color: red">@fum.AuxHead</div>
+                                        }
+
+                                        if (fum.Select == 2)
+                                        {
+                                            <div style="font-size: 0.8rem; font-weight: bold">
+                                                <span style=" color: red">@fum.AuxHead </span>
+                                                <span style="font-size: 0.77rem; color: darkblue">
+                                                    @use.FirstName @use.LastName</span>
+                                            </div>
+                                        }
                                     }
                                     else
                                     {
-                                        <div style="font-size: 0.77rem; font-weight: bold; color: darkred">
-                                            @use.FirstName @use.LastName</div>
+                                        if (fum.Select == 1) // Ingen rubrik:
+                                        {
+                                            if (use.Id == loggeduser.Id)
+                                            {
+                                                <div style="font-size: 0.77rem; font-weight: bold; color: magenta">
+                                                    @use.FirstName @use.LastName</div>
+                                            }
+                                            else
+                                            {
+                                                <div style="font-size: 0.77rem; font-weight: bold; color: darkred">
+                                                    @use.FirstName @use.LastName</div>
+                                            }
+                                        }
+
+                                        if (fum.Select == 2)
+                                        {
+                                            <div style="font-size: 0.77rem; font-weight: bold; color: darkblue">@use.FirstName @use.LastName</div>
+                                        }
+
+                                        if (fum.Select > 10)
+                                        {
+                                            <div style="font-size: 0.77rem; font-weight: bold; color: gray">@use.FirstName @use.LastName</div>
+                                        }
                                     }
+
+                                    string t = fum.Text.Replace("\n", "<br>");
+                                    MarkupString markup = new(t);
+
+                                    if (fum.Select > 10) // Om posten är censurerad:
+                                    {
+                                        <div style="font-size: 0.85rem; max-width: 700px; margin-top: 5px"><s>@markup</s></div>
+                                        <div style="font-size: 0.85rem; font-style: oblique">@xtea.TxtText[74]</div>
+                                    }
+                                    else // Text, tumma upp/ner, datum och redigering:
+                                    {
+                                        <div style="font-size: 0.85rem; max-width: 700px; margin-top: 5px">@markup</div>
+                                    }
+                                    Tup = 0;
+                                    Tdn = 0;
+                                    <div class="d-flex">
+                                        <span style="margin: 4px 10px 0 0" class="dropuse">
+                                            <span class="oi oi-thumb-up" style="color: goldenrod; cursor: pointer" @onclick="_ => ThumbsUp(fum.Id)"></span>
+                                            <span class="dropuse-content thumbnames" style="color: royalblue">
+                                                @foreach (var thu in thumbs)
+                                                {
+                                                    if (thu.Id4Post == fum.Id && thu.IsLike)
+                                                    {
+                                                        <div>@thu.Name</div>
+                                                        Tup++;
+                                                    }
+                                                }
+                                            </span>
+                                            @if (Tup > 0)
+                                            {
+                                                <span style="font-size: 0.65rem; margin-left: -2px; color: gray">@Tup</span>
+                                            }
+                                        </span>
+                                        <span style="margin-top: 7px" class="dropuse">
+                                            <span class="oi oi-thumb-down" style="color: goldenrod; cursor: pointer" @onclick="_ => ThumbsDown(fum.Id)"></span>
+                                            <span class="dropuse-content thumbnames" style="color: tomato">
+                                                @foreach (var thu in thumbs)
+                                                {
+                                                    if (thu.Id4Post == fum.Id && !thu.IsLike)
+                                                    {
+                                                        <div>@thu.Name</div>
+                                                        Tdn++;
+                                                    }
+                                                }
+                                            </span>
+                                            @if (Tdn > 0)
+                                            {
+                                                <span style="font-size: 0.65rem; margin-left: -2px; position: relative; top: -3px; color: gray">@Tdn</span>
+                                            }
+                                        </span>
+                                        <span class="postdate">@fum.Date.ToString()[..16]</span>
+                                        <span class="postedit" @onclick="_ => EditPost(fum.Id)" title=@xtea.TxtTitle[45]>@fum.Edited</span>
+                                    </div><br />
                                 }
 
-                                if (fum.Select == 2)
+                                else if (use.Id == fum.Id4User && fum.ThreadName == nameString && fum.Select == 0) // Initieringspost.
                                 {
-                                    <div style="font-size: 0.77rem; font-weight: bold; color: darkblue">@use.FirstName @use.LastName</div>
-                                }
+                                    <div style="font-size: 0.85rem; font-style: oblique; margin-bottom: 20px">
+                                        @xtea.TxtText[75] @use.FirstName @use.LastName @fum.Date.ToString()[..10];
 
-                                if (fum.Select > 10)
-                                {
-                                    <div style="font-size: 0.77rem; font-weight: bold; color: gray">@use.FirstName @use.LastName</div>
+                                        @if (fum.Pmail != "")
+                                        {
+                                            <span>@xtea.TxtText[76]</span>
+                                        }
+
+                                        @if (fum.IsMan)
+                                        {
+                                            <span>@xtea.TxtText[77]</span>
+                                        }
+
+                                        @if (fum.Id4Course != 0)
+                                        {
+                                            foreach (var cour in courses)
+                                            {
+                                                if (cour.Id == fum.Id4Course)
+                                                {
+                                                    <span> - @cour.Name</span>
+                                                }
+                                            }
+                                        }
+
+                                        @if (fum.Pmail == "" && !fum.IsMan && fum.Id4Course == 0)
+                                        {
+                                            <span>@xtea.TxtText[78]</span>
+                                        }
+                                    </div>
                                 }
                             }
-
-                            if (fum.Select > 10) // Om posten är censurerad:
-                            {
-                                <div style="font-size: 0.85rem; max-width: 700px; margin-top: 5px"><s>@fum.Text</s></div>
-                                <div style="font-size: 0.85rem; font-style: oblique">@xtea.TxtText[74]</div>
-                            }
-                            else // Text, tumma upp/ner, datum och redigering:
-                            {
-                                <div style="font-size: 0.85rem; max-width: 700px; margin-top: 5px">@fum.Text</div>
-                            }
-                            Tup = 0;
-                            Tdn = 0;
+                        }
+                        <EditForm Context="addthreadlmslexnet" Model="@forums" OnSubmit="_ => AddPost(nameString)">
+                            <InputTextArea class="form-control" style="max-width: 700px; margin-top: 20px" @bind-Value="addString" placeholder=@xtea.TxtText[79]/>
                             <div class="d-flex">
-                                <span style="margin: 4px 10px 0 0" class="dropuse">
-                                    <span class="oi oi-thumb-up" style="color: goldenrod; cursor: pointer" @onclick="_ => ThumbsUp(fum.Id)"></span>
-                                    <span class="dropuse-content thumbnames" style="color: royalblue">
-                                        @foreach (var thu in thumbs)
-                                        {
-                                            if (thu.Id4Post == fum.Id && thu.IsLike)
-                                            {
-                                                <div>@thu.Name</div>
-                                                Tup++;
-                                            }
-                                        }
-                                    </span>
-                                    @if (Tup > 0)
-                                    {
-                                        <span style="font-size: 0.65rem; margin-left: -2px; color: gray">@Tup</span>
-                                    }
-                                </span>
-                                <span style="margin-top: 7px" class="dropuse">
-                                    <span class="oi oi-thumb-down" style="color: goldenrod; cursor: pointer" @onclick="_ => ThumbsDown(fum.Id)"></span>
-                                    <span class="dropuse-content thumbnames" style="color: tomato">
-                                        @foreach (var thu in thumbs)
-                                        {
-                                            if (thu.Id4Post == fum.Id && !thu.IsLike)
-                                            {
-                                                <div>@thu.Name</div>
-                                                Tdn++;
-                                            }
-                                        }
-                                    </span>
-                                    @if (Tdn > 0)
-                                    {
-                                        <span style="font-size: 0.65rem; margin-left: -2px; position: relative; top: -3px; color: gray">@Tdn</span>
-                                    }
-                                </span>
-                                <span class="postdate">@fum.Date.ToString()[..16]</span>
-                                <span class="postedit" @onclick="_ => EditPost(fum.Id)" title=@xtea.TxtTitle[45]>@fum.Edited</span>
-                            </div><br />
-                        }
-
-                        else if (use.Id == fum.Id4User && fum.ThreadName == nameString && fum.Select == 0) // Initieringspost.
-                        {
-                            <div style="font-size: 0.85rem; font-style: oblique; margin-bottom: 20px">
-                                @xtea.TxtText[75] @use.FirstName @use.LastName @fum.Date.ToString()[..10]
-                                @if (fum.Pmail != "")
-                                {
-                                    <span>@xtea.TxtText[76]</span>
-                                }
-
-                                @if (fum.IsMan)
-                                {
-                                    <span>@xtea.TxtText[77]</span>
-                                }
-
-                                @if (fum.Id4Course != 0)
-                                {
-                                    foreach (var cour in courses)
-                                    {
-                                        if (cour.Id == fum.Id4Course)
-                                        {
-                                            <span> - @cour.Name</span>
-                                        }
-                                    }
-                                }
-
-                                @if (fum.Pmail == "" && !fum.IsMan && fum.Id4Course == 0)
-                                {
-                                    <span>@xtea.TxtText[78]</span>
-                                }
+                                <InputText class="form-control my-2" style="max-width: 300px" @bind-Value="auxString" placeholder=@xtea.TxtText[80] />
+                                <button type="button" class="btn btn-outline-dark oi oi-arrow-circle-top border-light btn-sm"
+                                style="height: 30px; margin: 11px 0 0 20px" title=@xtea.TxtTitle[47] @onclick="UpAgain"></button>
                             </div>
-                        }
+                            <button type="submit" id="targetpostit" class="btn btn-outline-success btn-sm">@xtea.TxtButton[18]</button>
+                        </EditForm><br />
                     }
                 }
-                <EditForm Context="addthreadlmslexnet" Model="@forums" OnSubmit="_ => AddPost(nameString)">
-                    <InputTextArea class="form-control" style="max-width: 700px; margin-top: 20px" @bind-Value="addString" placeholder=@xtea.TxtText[79]/>
-                    <div class="d-flex">
-                        <InputText class="form-control my-2" style="max-width: 300px" @bind-Value="auxString" placeholder=@xtea.TxtText[80] />
-                        <button type="button" class="btn btn-outline-dark oi oi-arrow-circle-top border-light btn-sm"
-                            style="height: 30px; margin: 11px 0 0 20px" title=@xtea.TxtTitle[47] @onclick="UpAgain"></button>
-                    </div>
-                    <button type="submit" id="targetpostit" class="btn btn-outline-success btn-sm">@xtea.TxtButton[18]</button>
-                </EditForm><br />
-            }
-        }
-    </aside>
+            </aside>
 
-    <ToastForumTeacherAddEdit @ref="addeditthreadRef" /> @*Läggtillredigeratrådfönster*@
-    <ToastForumTeacherEdit @ref="editpostRef" /> @*Redigerapostfönster*@
-    <ToastForumTeacherDelete @ref="deleteRef" /> @*Delete-fönster*@
-}
-</Authorized>
+            <ToastForumTeacherAddEdit @ref="addeditthreadRef" /> @*Läggtillredigeratrådfönster*@
+            <ToastForumTeacherEdit @ref="editpostRef" /> @*Redigerapostfönster*@
+            <ToastForumTeacherDelete @ref="deleteRef" /> @*Delete-fönster*@
+        }
+    </Authorized>
     <NotAuthorized>
         <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
     </NotAuthorized>
@@ -627,6 +636,154 @@ else
             Id4Course = cid
         };
         return dto;
+    }
+
+    private async Task CopyTread2File() // Copilot - bygger en textfil av den tråd som är synlig.
+    {
+        int Count = 0;
+        string Header = string.Empty;
+
+        if (nameString != "")
+        {
+            try
+            {
+                using (var txtStream = new FileStream($"LMS_Thread_{nameString}.txt", FileMode.Create))
+                {
+                    using (var writer = new StreamWriter(txtStream, leaveOpen: true))
+                    {
+                        foreach (var fum in forums)
+                        {
+                            foreach (var use in appusers)
+                            {
+                                if (use.Id == fum.Id4User && fum.ThreadName == nameString && fum.Select == 0) // Initieringspost.
+                                {
+                                    Header = "Created by " + use.FirstName + " " + use.LastName + " " + fum.Date.ToString()[..10];
+
+                                    if (fum.Pmail != "") Header += " - Private";
+
+                                    if (fum.IsMan) Header += " - Mandatory";
+
+                                    if (fum.Id4Course != 0)
+                                    {
+                                        foreach (var cour in courses)
+                                        {
+                                            if (cour.Id == fum.Id4Course) Header += " - " + cour.Name;
+                                        }
+                                    }
+
+                                    if (fum.Pmail == "" && !fum.IsMan && fum.Id4Course == 0) Header += " - No restrictions";
+
+                                    await writer.WriteLineAsync(Header + Environment.NewLine); // Högst upp i textfilen.
+                                }
+                            }
+
+                            if (fum.ThreadName == nameString & fum.Select != 0)
+                            {
+                                await writer.WriteLineAsync(Environment.NewLine + "----------------------------------------" + Environment.NewLine);
+
+                                foreach (var use in appusers)
+                                {
+                                    if (use.Id == fum.Id4User)
+                                    {
+                                        string Name = use.FirstName + " " + use.LastName;
+
+                                        if (fum.AuxHead != "" & fum.Select == 1) await writer.WriteLineAsync(fum.AuxHead);
+                                        else if (fum.AuxHead != "" & fum.Select == 2) await writer.WriteLineAsync(fum.AuxHead + " " + Name);
+                                        else await writer.WriteLineAsync(Name);
+                                    }
+                                }
+                                Count++;
+
+                                if (fum.Select > 10) await writer.WriteLineAsync("--- censored text ---");
+                                await writer.WriteLineAsync(WrapText(fum.Text, 90));
+                                await writer.WriteLineAsync($"Post: {Count} Posted: {fum.Date.ToString()}");
+                                await writer.WriteLineAsync("Thumb up:");
+
+                                foreach (var thu in thumbs)
+                                {
+                                    if (thu.Id4Post == fum.Id && thu.IsLike) await writer.WriteLineAsync(" " + thu.Name);
+                                }
+
+                                await writer.WriteLineAsync("Thumb down:");
+
+                                foreach (var thu in thumbs)
+                                {
+                                    if (thu.Id4Post == fum.Id && !thu.IsLike) await writer.WriteLineAsync(" " + thu.Name);
+                                }
+                            }
+                        }
+
+                        await writer.WriteLineAsync(Environment.NewLine + "END ------------------------------------");
+                        await writer.FlushAsync();
+                    }
+
+                    txtStream.Position = 0; // Säkerställer läsning från början av strömmen.
+                    string base64 = ConvertStreamToBase64(txtStream);
+                    await xClient.DownloadTxtFile(base64, $"LMS_Thread_{nameString}.txt");
+                }
+
+                xnav.SetDone(xtea.TxtDone[14]); // The thread content was sent to a text file.
+                xnav.SetReset('d');
+            }
+            catch
+            {
+                xnav.SetError(xtea.TxtError[8]); // The text file cannot be created.
+                xnav.SetReset('e');
+            }
+        }
+    }
+
+    public static string WrapText(string text, int maxLineLength) // Copilot - snyggar till texten för varje inlägg.
+    {
+        var paragraphs = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+        var wrappedParagraphs = new List<string>();
+
+        foreach (var paragraph in paragraphs)
+        {
+            if (string.IsNullOrWhiteSpace(paragraph))
+            {
+                // Lägg till en tom rad för att bevara styckeavbrott
+                wrappedParagraphs.Add(string.Empty);
+                continue;
+            }
+
+            var words = paragraph.Split(' ');
+            var currentLine = new StringBuilder();
+
+            foreach (var word in words)
+            {
+                if (currentLine.Length + word.Length + 1 > maxLineLength)
+                {
+                    wrappedParagraphs.Add(currentLine.ToString());
+                    currentLine.Clear();
+                }
+
+                if (currentLine.Length > 0)
+                {
+                    currentLine.Append(' ');
+                }
+
+                currentLine.Append(word);
+            }
+
+            if (currentLine.Length > 0)
+            {
+                wrappedParagraphs.Add(currentLine.ToString());
+            }
+        }
+
+        return string.Join(Environment.NewLine, wrappedParagraphs);
+    }
+
+    public string ConvertStreamToBase64(FileStream fileStream) // Från FileStream till ByteArray.
+    {
+        byte[] fileBytes;
+        using (var ms = new MemoryStream())
+        {
+            fileStream.CopyTo(ms);
+            fileBytes = ms.ToArray();
+        }
+        return Convert.ToBase64String(fileBytes);
     }
 
     private async Task ThumbsUp(int id) // Tumma upp.

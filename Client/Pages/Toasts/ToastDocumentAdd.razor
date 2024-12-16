@@ -2,7 +2,7 @@
 @using System.Text.Json
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject IAppUserDtoClient appuserClient
-@inject ILogger<CourseDetail> Logger
+@inject ILogger<ToastDocumentAdd> Logger
 @inject IXDtoClient xClient
 @inject XLangToast xtoa
 @inject XNavMenu xnav
@@ -131,9 +131,8 @@
         StateHasChanged();
     }
 
-    private async Task OnInputFileChange(InputFileChangeEventArgs e) // Sparar en eller flera filer på servern.
+    private async Task OnInputFileChange(InputFileChangeEventArgs e) // Samlar ihop alla filer som ska sparas.
     {
-        List<File> files = new();
         int maxAllowedFiles = 1; // Max 1 fil!
         long maxFileSize; // Maximal filstorlek.
 
@@ -156,12 +155,11 @@
                 {
                     try
                     {
-                        files.Add(new() { Name = file.Name });
                         DocFileName = file.Name;
 
                         var fileContent = new StreamContent(file.OpenReadStream(maxFileSize));
                         fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-
+                        
                         content.Add(content: fileContent, name: "\"files\"", fileName: NameIndex + file.Name);
                         Upload = true;
 
@@ -285,7 +283,7 @@
         }
     }
 
-    private async Task UploadFile()
+    private async Task UploadFile() // Sparar en eller flera filer på servern.
     {
         var response = await xClient.PostFile(content); // Postoperationen!
 

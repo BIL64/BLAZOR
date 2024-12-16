@@ -16,15 +16,18 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (_context.Auxiliary == null)
             {
-                return NotFound();
+                XC.ERR("No content");
+                return NotFound("No content");
             }
             var @auxiliary = await _context.Auxiliary.FindAsync(id);
 
             if (@auxiliary == null)
             {
-                return NotFound();
+                XC.ERR("The request was not found");
+                return NotFound("The request was not found");
             }
 
+            XC.INF("The get one method (auxiliary) was successful");
             return @auxiliary;
         }
 
@@ -33,7 +36,8 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (id != @auxiliary.Id)
             {
-                return BadRequest();
+                XC.ERR("The request and the corresponding id are different");
+                return Problem("The request and the corresponding id are different");
             }
 
             _context.Entry(@auxiliary).State = EntityState.Modified;
@@ -41,16 +45,19 @@ namespace LexiconLMSBlazor.Server.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                XC.INF("The put method (auxiliary) was successful");
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!AuxiliaryExists(id))
                 {
-                    return NotFound();
+                    XC.ERR("The request while saving was not found");
+                    return NotFound("The request while saving was not found");
                 }
                 else
                 {
-                    throw;
+                    XC.ERR("Cannot save (auxiliary)");
+                    return Problem("Cannot save (auxiliary)");
                 }
             }
 

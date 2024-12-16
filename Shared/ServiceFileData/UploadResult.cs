@@ -1,4 +1,4 @@
-﻿namespace LexiconLMSBlazor.Shared.DocFileData
+﻿namespace LexiconLMSBlazor.Shared.ServiceFileData
 {
     public class UploadResult
     {

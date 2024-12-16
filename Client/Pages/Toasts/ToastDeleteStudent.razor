@@ -135,7 +135,6 @@
             } while (IsPthread);
         }
 
-
         if (!FindDoc) // Tar bort alla övriga inlägg.
         {
             var forum2 = await xClient.GetAsync<IEnumerable<ForumDto>>("api/Forum");

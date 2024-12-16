@@ -18,7 +18,8 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (_context.ActivityType == null)
             {
-                return BadRequest();
+                XC.ERR("No activity types were found");
+                return NotFound("No activity types were found");
             }
 
             var dto = _context.ActivityType
@@ -28,6 +29,7 @@ namespace LexiconLMSBlazor.Server.Controllers
                     Name = d.Name
                 });
 
+            XC.INF("The get all method (activity type) was successful");
             return await dto.ToListAsync();
         }
 
@@ -35,17 +37,20 @@ namespace LexiconLMSBlazor.Server.Controllers
         //[HttpGet("{id}")]
         //public async Task<ActionResult<ActivityType>> GetActivityType(int id)
         //{
-        //  if (_context.ActivityType == null)
-        //  {
-        //      return NotFound();
-        //  }
+        //    if (_context.ActivityType == null)
+        //    {
+        //        XC.ERR("No activity types were found");
+        //        return NotFound("No activity types were found");
+        //    }
         //    var activityType = await _context.ActivityType.FindAsync(id);
 
         //    if (activityType == null)
         //    {
-        //        return NotFound();
+        //        XC.ERR("The activity type was not found");
+        //        return NotFound("The activity type was not found");
         //    }
 
+        //    XC.INF("The get one method (activity type) was successful");
         //    return activityType;
         //}
 
@@ -56,7 +61,8 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (id != activityType.Id)
             {
-                return BadRequest();
+                XC.ERR("The activity type and the corresponding id are different");
+                return Problem("The activity type and the corresponding id are different");
             }
 
             _context.Entry(activityType).State = EntityState.Modified;
@@ -64,16 +70,19 @@ namespace LexiconLMSBlazor.Server.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                XC.INF("The put method (activity type) was successful");
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!ActivityTypeExists(id))
                 {
-                    return NotFound();
+                    XC.ERR("The activity type while saving was not found");
+                    return NotFound("The activity type while saving was not found");
                 }
                 else
                 {
-                    throw;
+                    XC.ERR("Cannot save (activity type)");
+                    return Problem("Cannot save (activity type)");
                 }
             }
 
@@ -87,11 +96,13 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
           if (_context.ActivityType == null)
           {
-              return Problem("Entity set 'ApplicationDbContext.ActivityType'  is null.");
+                XC.ERR("Entity set 'ApplicationDbContext.ActivityType' is null");
+                return Problem("Entity set 'ApplicationDbContext.ActivityType' is null");
           }
             _context.ActivityType.Add(activityType);
             await _context.SaveChangesAsync();
 
+            XC.INF("The post method (activity type) was successful");
             return CreatedAtAction("GetActivityType", new { id = activityType.Id }, activityType);
         }
 
@@ -101,17 +112,20 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (_context.ActivityType == null)
             {
-                return NotFound();
+                XC.ERR("No activity types were found");
+                return NotFound("No activity types were found");
             }
             var activityType = await _context.ActivityType.FindAsync(id);
             if (activityType == null)
             {
-                return NotFound();
+                XC.ERR("The activity type was not found");
+                return NotFound("The activity type was not found");
             }
 
             _context.ActivityType.Remove(activityType);
             await _context.SaveChangesAsync();
 
+            XC.INF("The delete method (activity type) was successful");
             return NoContent();
         }
 

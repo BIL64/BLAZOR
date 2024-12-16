@@ -40,7 +40,13 @@ namespace LexiconLMSBlazor.Server.Controllers
                     dtolist.Add(dto);
                 }
             }
+            else
+            {
+                XC.ERR("No users were found");
+                return NotFound("No users were found");
+            }
 
+            XC.INF("The get all method (user) was successful");
             return dtolist; // Viktigt att ändra i AppUserDtoClient, att det är en lista som returneras.
         }
 
@@ -50,13 +56,18 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (id == null || _context.Users == null)
             {
-                return BadRequest();
+                XC.ERR("No users were found or id is null");
+                return NotFound("No users were found or id is null");
             }
 
             var appUser = await _context.Users
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (appUser == null) return BadRequest();
+            if (appUser == null)
+            {
+                XC.ERR("The user was not found");
+                return NotFound("The user was not found");
+            }
 
             if (prefix == 12) await _userman.RemoveFromRoleAsync(appUser, "Student"); // Tar bort rollen.
 
@@ -72,6 +83,7 @@ namespace LexiconLMSBlazor.Server.Controllers
 
             if (prefix > 0) await _context.SaveChangesAsync(); // Sparar.
 
+            XC.INF("The put method (user) was successful");
             return NoContent();
         }
 
@@ -81,26 +93,36 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (id == null || _context.Users == null)
             {
-                return BadRequest();
+                XC.ERR("No users were found or id is null");
+                return NotFound("No users were found or id is null");
             }
 
             var appUser = await _context.Users
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (appUser == null) return BadRequest();
+            if (appUser == null)
+            {
+                XC.ERR("The user was not found");
+                return NotFound("The user was not found");
+            }
 
             var result = await _userman.DeleteAsync(appUser); // Koden är samma som den som raderar en användare i Areas.
             var userId = await _userman.GetUserIdAsync(appUser);
 
-            if (userId == null) return BadRequest();
+            if (userId == null)
+            {
+                XC.ERR("The user was not found");
+                return NotFound("The user was not found");
+            }
 
             if (!result.Succeeded)
             {
-                throw new InvalidOperationException($"Unexpected error occurred deleting user.");
+                XC.ERR("Unexpected error occurred deleting user");
+                throw new InvalidOperationException("Unexpected error occurred deleting user");
             };
 
-            _logger.LogInformation("User with ID '{UserId}' deleted themselves.", userId); // ILogger används här.
-
+            XC.INF($"User with ID '{userId}' deleted themselves");
+            _logger.LogInformation("User with ID '{userId}' deleted themselves", userId); // ILogger används här.
             return NoContent();
         }
 

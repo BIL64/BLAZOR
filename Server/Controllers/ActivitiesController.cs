@@ -18,7 +18,8 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (_context.Activity == null)
             {
-                return BadRequest();
+                XC.ERR("No activities were found");
+                return NotFound("No activities were found");
             }
 
             var dto = _context.Activity
@@ -34,6 +35,7 @@ namespace LexiconLMSBlazor.Server.Controllers
                     ActivityTypeId = (int)d.ActivityTypeId!
                 });
 
+            XC.INF("The get all method (activity) was successful");
             return await dto.ToListAsync();
         }
 
@@ -43,15 +45,18 @@ namespace LexiconLMSBlazor.Server.Controllers
         //{
         //  if (_context.Activity == null)
         //  {
-        //      return NotFound();
+        //      XC.ERR("No activities were found.");
+        //      return NotFound("No activities were found.");
         //  }
         //    var activity = await _context.Activity.FindAsync(id);
 
         //    if (activity == null)
         //    {
-        //        return NotFound();
+        //      XC.ERR("The activity was not found");
+        //      return NotFound("The activity was not found");
         //    }
 
+        //    XC.INF("The get one method (activity) was successful");
         //    return activity;
         //}
 
@@ -62,7 +67,8 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (id != activity.Id)
             {
-                return BadRequest();
+                XC.ERR("The activity and the corresponding id are different");
+                return Problem("The activity and the corresponding id are different");
             }
 
             _context.Entry(activity).State = EntityState.Modified;
@@ -70,16 +76,19 @@ namespace LexiconLMSBlazor.Server.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                XC.INF("The put method (activity) was successful");
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!ActivityExists(id))
                 {
-                    return NotFound();
+                    XC.ERR("The activity while saving was not found");
+                    return NotFound("The activity while saving was not found");
                 }
                 else
                 {
-                    throw;
+                    XC.ERR("Cannot save (activity)");
+                    return Problem("Cannot save (activity)");
                 }
             }
 
@@ -93,11 +102,13 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
           if (_context.Activity == null)
           {
-              return Problem("Entity set 'ApplicationDbContext.Activity'  is null.");
+                XC.ERR("Entity set 'ApplicationDbContext.Activity' is null");
+                return Problem("Entity set 'ApplicationDbContext.Activity' is null");
           }
             _context.Activity.Add(activity);
             await _context.SaveChangesAsync();
 
+            XC.INF("The post method (activity) was successful");
             return CreatedAtAction("GetActivity", new { id = activity.Id }, activity);
         }
 
@@ -107,17 +118,20 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (_context.Activity == null)
             {
-                return NotFound();
+                XC.ERR("No activities were found.");
+                return NotFound("No activities were found.");
             }
             var activity = await _context.Activity.FindAsync(id);
             if (activity == null)
             {
-                return NotFound();
+                XC.ERR("The activity was not found");
+                return NotFound("The activity was not found");
             }
 
             _context.Activity.Remove(activity);
             await _context.SaveChangesAsync();
 
+            XC.INF("The delete method (activity) was successful");
             return NoContent();
         }
 

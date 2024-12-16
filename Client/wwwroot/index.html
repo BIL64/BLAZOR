@@ -106,9 +106,43 @@
             const endpos = textarea.selectionStart + intext.length;
             textarea.setRangeText(intext, startpos, startpos);
             textarea.focus();
-            textarea.setSelectionRange(endpos, endpos);  /* Moves cursor to the end of the inserted text */
-            textarea.dispatchEvent(new Event('change')); /* Trigger change event to avoid saving problems */
+
+            /* Moves cursor to the end of the inserted text */
+            textarea.setSelectionRange(endpos, endpos);
+
+            /* Trigger change event to avoid saving problems */
+            textarea.dispatchEvent(new Event('change'));
         }
+
+        window.downloadAFile = async function (base64Content, fileName, mimeType) { /* Download a file */
+            try {
+                const blob = new Blob([base64ToArrayBuffer(base64Content)], { type: mimeType });
+                const url = window.URL.createObjectURL(blob);
+
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = fileName;
+
+                document.body.appendChild(link);
+                link.click();
+
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error("Error saving file:", error);
+            }
+        };
+
+        window.base64ToArrayBuffer = function (base64) { /* Utility function for saving */
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
     </script>
 </body>
 

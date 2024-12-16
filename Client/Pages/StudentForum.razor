@@ -1,4 +1,5 @@
 ﻿@page "/studentforum"
+@using System.Text;
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject IAppUserDtoClient appuserClient
 @inject IXDtoClient xClient
@@ -39,11 +40,15 @@ else
             <button type="button" class="btn btn-outline-dark text-danger btn-sm"
                 @onclick="DeleteThread">@xstu.TxtText[27]</button> @* Delete thread *@
         </div>
-        <div class="my-3">
-            <button type="button" class="btn btn-outline-dark btn-sm"
-                @onclick="CloseThread">@xstu.TxtText[28]</button> @* Close *@
-                <hr />
+        <div style="display: flex" class="my-3">
+            <div style="width: 75%">
+                <button type="button" class="btn btn-outline-dark btn-sm"
+                    @onclick="CloseThread">@xstu.TxtText[28]</button> @* Close *@
+            </div>
+                <NavLink style="cursor: pointer; position-relative; top: 8px; margin-left: auto" class="oi oi-layers text-dark text-decoration-none"
+                    @onclick=" _ => CopyTread2File()" title=@xstu.TxtTitle[14]></NavLink> @* Copy thread to file *@
         </div>
+                <hr />
         <div>
             @foreach (var fan in formans)
             {
@@ -165,9 +170,12 @@ else
 
                             if (fum.Select < 10) // Text, tumma upp/ner, datum och redigering:
                             {
+                                string t = fum.Text.Replace("\n", "<br>");
+                                MarkupString markup = new(t);
+
                                 Tup = 0;
                                 Tdn = 0;
-                                <div style="font-size: 0.85rem; max-width: 700px; margin-top: 5px">@fum.Text</div>
+                                <div style="font-size: 0.85rem; max-width: 700px; margin-top: 5px">@markup</div>
                                 <div class="d-flex">
                                     <span style="margin: 4px 10px 0 0" class="dropuse">
                                         <span class="oi oi-thumb-up" style="color: goldenrod; cursor: pointer" @onclick="_ => ThumbsUp(fum.Id)"></span>
@@ -651,6 +659,153 @@ else
             Id4Course = cid
         };
         return dto;
+    }
+
+    private async Task CopyTread2File() // Copilot - bygger en textfil av den tråd som är synlig.
+    {
+        int Count = 0;
+        string Header = string.Empty;
+
+        if (nameString != "")
+        {
+            try
+            {
+                using (var txtStream = new FileStream($"LMS_Thread_{nameString}.txt", FileMode.Create))
+                {
+                    using (var writer = new StreamWriter(txtStream, leaveOpen: true))
+                    {
+                        foreach (var fum in forums)
+                        {
+                            foreach (var use in appusers)
+                            {
+                                if (use.Id == fum.Id4User && fum.ThreadName == nameString && fum.Select == 0) // Initieringspost.
+                                {
+                                    Header = "Created by " + use.FirstName + " " + use.LastName + " " + fum.Date.ToString()[..10];
+
+                                    if (fum.Pmail != "") Header += " - Private";
+
+                                    if (fum.IsMan) Header += " - Mandatory";
+
+                                    if (fum.Id4Course != 0)
+                                    {
+                                        foreach (var cour in courses)
+                                        {
+                                            if (cour.Id == fum.Id4Course) Header += " - " + cour.Name;
+                                        }
+                                    }
+
+                                    if (fum.Pmail == "" && !fum.IsMan && fum.Id4Course == 0) Header += " - No restrictions";
+
+                                    await writer.WriteLineAsync(Header + Environment.NewLine); // Högst upp i textfilen.
+                                }
+                            }
+
+                            if (fum.ThreadName == nameString & fum.Select != 0 & fum.Select <= 10)
+                            {
+                                await writer.WriteLineAsync(Environment.NewLine + "----------------------------------------" + Environment.NewLine);
+
+                                foreach (var use in appusers)
+                                {
+                                    if (use.Id == fum.Id4User)
+                                    {
+                                        string Name = use.FirstName + " " + use.LastName;
+
+                                        if (fum.AuxHead != "" & fum.Select == 1) await writer.WriteLineAsync(fum.AuxHead);
+                                        else if (fum.AuxHead != "" & fum.Select == 2) await writer.WriteLineAsync(fum.AuxHead + " " + Name);
+                                        else await writer.WriteLineAsync(Name);
+                                    }
+                                }
+                                Count++;
+
+                                await writer.WriteLineAsync(WrapText(fum.Text, 90));
+                                await writer.WriteLineAsync($"Post: {Count} Posted: {fum.Date.ToString()}");
+                                await writer.WriteLineAsync("Thumb up:");
+
+                                foreach (var thu in thumbs)
+                                {
+                                    if (thu.Id4Post == fum.Id && thu.IsLike) await writer.WriteLineAsync(" " + thu.Name);
+                                }
+
+                                await writer.WriteLineAsync("Thumb down:");
+
+                                foreach (var thu in thumbs)
+                                {
+                                    if (thu.Id4Post == fum.Id && !thu.IsLike) await writer.WriteLineAsync(" " + thu.Name);
+                                }
+                            }
+                        }
+
+                        await writer.WriteLineAsync(Environment.NewLine + "END ------------------------------------");
+                        await writer.FlushAsync();
+                    }
+
+                    txtStream.Position = 0; // Säkerställer läsning från början av strömmen.
+                    string base64 = ConvertStreamToBase64(txtStream);
+                    await xClient.DownloadTxtFile(base64, $"LMS_Thread_{nameString}.txt");
+                }
+
+                xnav.SetDone(xstu.TxtText[52]); // The thread content was sent to a text file.
+                xnav.SetReset('d');
+            }
+            catch
+            {
+                xnav.SetError(xstu.TxtText[53]); // The text file cannot be created.
+                xnav.SetReset('e');
+            }
+        }
+    }
+
+    public static string WrapText(string text, int maxLineLength) // Copilot - snyggar till texten för varje inlägg.
+    {
+        var paragraphs = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+        var wrappedParagraphs = new List<string>();
+
+        foreach (var paragraph in paragraphs)
+        {
+            if (string.IsNullOrWhiteSpace(paragraph))
+            {
+                // Lägg till en tom rad för att bevara styckeavbrott
+                wrappedParagraphs.Add(string.Empty);
+                continue;
+            }
+
+            var words = paragraph.Split(' ');
+            var currentLine = new StringBuilder();
+
+            foreach (var word in words)
+            {
+                if (currentLine.Length + word.Length + 1 > maxLineLength)
+                {
+                    wrappedParagraphs.Add(currentLine.ToString());
+                    currentLine.Clear();
+                }
+
+                if (currentLine.Length > 0)
+                {
+                    currentLine.Append(' ');
+                }
+
+                currentLine.Append(word);
+            }
+
+            if (currentLine.Length > 0)
+            {
+                wrappedParagraphs.Add(currentLine.ToString());
+            }
+        }
+
+        return string.Join(Environment.NewLine, wrappedParagraphs);
+    }
+
+    public string ConvertStreamToBase64(FileStream fileStream) // Från FileStream till ByteArray.
+    {
+        byte[] fileBytes;
+        using (var ms = new MemoryStream())
+        {
+            fileStream.CopyTo(ms);
+            fileBytes = ms.ToArray();
+        }
+        return Convert.ToBase64String(fileBytes);
     }
 
     private async Task ThumbsUp(int id) // Tumma upp.

@@ -14,9 +14,9 @@
 
         public string[] TxtText { get; private set; } = new string[87];
 
-        public string[] TxtDone { get; private set; } = new string[14];
+        public string[] TxtDone { get; private set; } = new string[15];
 
-        public string[] TxtError { get; private set; } = new string[8];
+        public string[] TxtError { get; private set; } = new string[9];
 
         public event Action? OnChange;
 
@@ -260,7 +260,7 @@
             TxtTitle[i] = "Add or edit activity types";
             i++;
             // 11
-            TxtTitle[i] = "reserve";
+            TxtTitle[i] = "Saving or downloading course (zip file)";
             i++;
             // 12
             TxtTitle[i] = "reserve";
@@ -350,7 +350,7 @@
             TxtTitle[i] = "Open this thread";
             i++;
             // 41
-            TxtTitle[i] = "reserve";
+            TxtTitle[i] = "Copy thread to file";
             i++;
             // 42
             TxtTitle[i] = "reserve";
@@ -409,7 +409,7 @@
             TxtTitle[i] = "Lägg till eller redigera aktivitetstyper";
             i++;
             // 11
-            TxtTitle[i] = "reserve";
+            TxtTitle[i] = "Sparar eller hämtar kurs (zipfil)";
             i++;
             // 12
             TxtTitle[i] = "reserve";
@@ -499,7 +499,7 @@
             TxtTitle[i] = "Öppna den här tråden";
             i++;
             // 41
-            TxtTitle[i] = "reserve";
+            TxtTitle[i] = "Kopiera tråd till fil";
             i++;
             // 42
             TxtTitle[i] = "reserve";
@@ -828,7 +828,7 @@
             TxtText[i] = " - No restrictions";
             i++;
             // 79
-            TxtText[i] = "Write a reply";
+            TxtText[i] = "Your text (also html tags)";
             i++;
             // 80
             TxtText[i] = "Replaces the name (red)";
@@ -1094,7 +1094,7 @@
             TxtText[i] = " - Inga restriktioner";
             i++;
             // 79
-            TxtText[i] = "Skriv ett inlägg";
+            TxtText[i] = "Din text (även html-taggar)";
             i++;
             // 80
             TxtText[i] = "Ersätter namnet (rött)";
@@ -1173,6 +1173,9 @@
             i++;
             // 13
             TxtDone[i] = "One is enough!";
+            i++;
+            // 14
+            TxtDone[i] = "The thread content was sent to a text file.";
         }
 
         private void Done_SV()
@@ -1220,6 +1223,9 @@
             i++;
             // 13
             TxtDone[i] = "En räcker!";
+            i++;
+            // 14
+            TxtDone[i] = "Trådinnehållet skickades till en textfil.";
         }
 
         private void Done_DE()
@@ -1260,6 +1266,9 @@
             i++;
             // 7
             TxtError[i] = "The thread cannot be found.";
+            i++;
+            // 8
+            TxtError[i] = "The text file cannot be created.";
         }
 
         private void Error_SV()
@@ -1290,6 +1299,9 @@
             i++;
             // 7
             TxtError[i] = "Tråden går inte att hitta.";
+            i++;
+            // 8
+            TxtError[i] = "Textfilen kan inte skapas.";
         }
 
         private void Error_DE()

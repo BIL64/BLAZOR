@@ -1,0 +1,339 @@
+﻿@using System.Net.Http.Headers
+@using System.Text.Json
+@using System.IO.Compression;
+@inject ILogger<ToastTemplate> Logger
+@inject IXDtoClient xClient
+@inject NavigationManager Navigation
+@inject XLangToast xtoa
+@inject XNavMenu xnav
+@attribute [Authorize]
+@*Toast component by Björn Lindqvist*@
+@*Endast lärare har åtkomst hit*@
+
+<AuthorizeView Roles ="Teacher">
+    <Authorized>
+        <div class="toast-container p-3 @showClass"
+             style="position: fixed; top: auto; top: @(xnav.Pos_V)px; margin-left: @(xnav.Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
+            <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header" @onmouseup=" _ => xnav.Mouse('U', _)" @onmousedown=" _ => xnav.Mouse('D', _)"
+                     @onmousemove=" _ => xnav.Mouse('M', _)" @onmouseout=" _ => xnav.Mouse('M', _)">
+                    <strong class="me-auto">@HeaderText</strong>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+                </div>
+
+                <div class="toast-body">
+                    <p style="font-size: 0.8rem">@xtoa.TxtText[22]</p>
+                    <p>
+                        <InputRadioGroup Name="AddRadio" @bind-Value="OperationSelect">
+                            <div class="form-group m-1">
+                                <InputRadio id="Select0" class="form-check-inline" Value="0" />
+                                <label for="Select0">@xtoa.TxtText[41]</label> @* Create a template file *@
+                            </div>
+                            <div class="form-group m-1">
+                                <InputRadio id="Select1" class="form-check-inline" Value="1" />
+                                <label for="Select1">@xtoa.TxtText[42]</label> @* Download a template file *@
+                            </div>
+                        </InputRadioGroup>
+                    </p>
+                    @if (OperationSelect == 0)
+                    {
+                        <p>
+                            <label for="Select2">@xtoa.TxtText[65]</label> @* Select course number *@
+                            <InputNumber id="Select2" class="form-check-inline col-2 mx-2" @bind-Value="CourseNumber" min="1" /><br /><br />
+
+                            <label for="Select3">@xtoa.TxtText[66]</label> @* A file name different from the course name *@
+                            <InputText id="Select3" class="form-check-inline col-12" @bind-Value="FileName" />
+                        </p>
+                    }
+                    else
+                    {
+                        <p>
+                            <InputCheckbox id="IncludeDocs" class="form-check-inline" @bind-Value="IsDoc" />
+                            <label for="IncludeDocs">@xtoa.TxtText[67]</label><br /><br /> @* Include file documents *@
+
+                            <InputFile accept=".zip" class="form-control text-white" style="background-color:lightslategray" OnChange="@OnInputFileChange" />
+                        </p>
+                    }
+
+                    <div>
+                        <button type="button" class="text-white remyes" style="margin-right: 15px" @onclick="ApplyControl">@xtoa.TxtButton[18]</button> @* Apply *@
+                        <button type="button" class="text-white remnot" @onclick="Close">@xtoa.TxtButton[0]</button> @* NO *@
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </Authorized>
+    <NotAuthorized>
+        <h5 style="font-weight: bold; color: red">You are not authorized to visit this page...</h5>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private string HeaderText = string.Empty;
+    private string showClass = "d-none";
+
+    private string ZipFileName = string.Empty;
+    private string FileName = string.Empty;
+    private string CourseTemplateJson = "no accessible data";
+    private string DocumentTemplateJson = "no accessible data";
+    private int CourseNumber = 1;
+    private int OperationSelect; // Måste vara int!
+    private bool IsDoc = true;
+    private bool IsZip = false;
+
+    MultipartFormDataContent content = new();
+
+    List<UploadResult> uploadResults = new();
+
+    public async Task Show()
+    {
+        xnav.SetReset('a');
+
+        var dim = await xClient.GetWindow(); // Hämtar aktuell skärmstorlek.
+        xnav.Pos_H = (int)Math.Round(dim.Width * 0.08); // 08%
+        xnav.Pos_V = (int)Math.Round(dim.Height * 0.2); // 20%
+
+        HeaderText = xtoa.TxtHead[11];
+        uploadResults = new();
+        content = new();
+        showClass = "d-block";
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        HeaderText = string.Empty;
+        showClass = "d-none";
+        StateHasChanged();
+    }
+
+    private async Task OnInputFileChange(InputFileChangeEventArgs e) // Copilot: Packar upp och kontrollerar en zipfil.
+    {
+        int maxAllowedFiles = 1; // Max 1 fil!
+        long maxZipSize = long.MaxValue; // Ingen storleksbegränsning.
+
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            ZipFileName = file.Name;
+
+            using (var zipStream = new MemoryStream())
+            {
+                await file.OpenReadStream(maxZipSize).CopyToAsync(zipStream);
+                zipStream.Position = 0; // Återställ strömposition
+                using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Read))
+                {
+                    // Kontrollera om "id#bil64lms2412.txt" finns i zipfilen
+                    var textEntry = archive.GetEntry("id#bil64lms2412.txt");
+
+                    if (textEntry is not null)
+                    {
+                        IsZip = true; // Är det en template eller har ingen fil valts?
+
+                        // Läs innehållet i textfilen
+                        using (var reader = new StreamReader(textEntry.Open()))
+                        {
+                            var textContent = await reader.ReadToEndAsync();
+                            var parts = textContent.Split("|***|");
+
+                            xnav.SetDone(parts[0] + ", #mod=" + parts[1] + ", #act=" + parts[2] + ", #doc=" + parts[3] + "\xA0\xA0***ok!***");
+                            xnav.SetReset('d');
+                        }
+
+                        // Hämta JSON-data för kurs
+                        var jsonEntry1 = archive.GetEntry("coursetemplate.json");
+                        if (jsonEntry1 != null)
+                        {
+                            using (var jsonReader1 = new StreamReader(jsonEntry1.Open()))
+                            {
+                                CourseTemplateJson = await jsonReader1.ReadToEndAsync();
+                            }
+                        }
+
+                        // Hämta JSON-data för dokument
+                        var jsonEntry2 = archive.GetEntry("documenttemplate.json");
+                        if (jsonEntry2 != null)
+                        {
+                            using (var jsonReader2 = new StreamReader(jsonEntry2.Open()))
+                            {
+                                DocumentTemplateJson = await jsonReader2.ReadToEndAsync();
+                            }
+                        }
+
+                        // Lägg till dokumentfiler
+                        var documentEntries = archive.Entries
+                            .Where(entry => entry.FullName.StartsWith("docfiles/") && !entry.FullName.EndsWith("/"))
+                            .ToList();
+
+                        if (documentEntries is not null)
+                        {
+                            foreach (var entry in documentEntries)
+                            {
+                                var documentStream = entry.Open();
+                                var documentMemoryStream = new MemoryStream();
+                                await documentStream.CopyToAsync(documentMemoryStream);
+                                documentMemoryStream.Position = 0;
+
+                                // Skapa StreamContent från minnesströmmen
+                                var streamContent = new StreamContent(documentMemoryStream);
+                                streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+
+                                content.Add(content: streamContent, name: "files", fileName: entry.Name);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        xnav.SetError(xtoa.TxtError[21]); // Not a valid template
+                        xnav.SetReset('e');
+                    }
+                }
+            }
+        }
+    }
+
+    private async Task ApplyControl()
+    {
+        if (OperationSelect == 0) // SKAPA EN TEMPLATE:
+        {
+            string base64Content = string.Empty;
+            string errormessage = string.Empty;
+            var template = new ZFile();
+            bool IsCourse = false;
+            var course = new CourseDto();
+            course = null;
+
+            var courses = await xClient.GetAsync<IEnumerable<CourseDto>>("api/Course");
+
+            if (courses != null )
+            {
+                foreach (var c in courses)
+                {
+                    if (CourseNumber == c.Id)
+                    {
+                        course = await xClient.GetAsync<CourseDto>(CourseNumber, "api/Course");
+                    }
+                }
+            }
+
+            if (course != null)
+            {
+                IsCourse = true;
+
+                if (FileName == "") FileName = course.Name;
+
+                try
+                {
+                    xnav.SetDone(xtoa.TxtDone[47]); // Building zip...
+                    xnav.SetReset('d');
+                    template = await xClient.GetTemplate<ZFile>(CourseNumber, FileName); // Försöker bygga zipfilen.
+                }
+                catch (Exception ex)
+                {
+                    errormessage = ex.ToString() + ". ";
+                    IsCourse = false;
+                }
+
+                if (template != null)
+                {
+                    if (template.Zcontent != null)
+                    {
+                        try
+                        {
+                            base64Content = Convert.ToBase64String(template.Zcontent);
+                            await xClient.DownloadZipFile(base64Content, FileName); // Försöker ladda ner zipfilen.
+                            xnav.SetDone(xtoa.TxtDone[48]); // The course file was saved.
+                            xnav.SetReset('d');
+                            IsCourse = true;
+                        }
+                        catch (Exception ex)
+                        {
+                            xnav.SetError(xtoa.TxtError[31] + " " + errormessage + ex.ToString()); // The zip file could not be saved.
+                            xnav.SetReset('e');
+                            IsCourse = true;
+                        }
+                    }
+                    else
+                    {
+                        errormessage += xtoa.TxtText[43]; // Incorrect or missing serial data.
+                        IsCourse = false;
+                    }
+                }
+                else IsCourse = false;
+            }
+
+            if (!IsCourse)
+            {
+                xnav.SetError(xtoa.TxtError[30] + " " + errormessage); // The zip file could not be build.
+                xnav.SetReset('e');
+            }
+        }
+        else // HÄMTA EN TEMPLATE:
+        {
+            if (IsZip)
+            {
+                if (!IsDoc) DocumentTemplateJson = "no accessible data"; // Om inga dokument önskas.
+
+                // Lägger till en kurs från en zipfil.
+                bool tempresponse = await xClient.PostTemplate(CourseTemplateJson, DocumentTemplateJson);
+                if (tempresponse)
+                {
+                    xnav.SetDone(xtoa.TxtDone[49]); // A saved course has been added.
+                    xnav.SetReset('d');
+
+                    if (DocumentTemplateJson != "no accessible data")
+                    {
+                        await UploadFile(); // Lägger in dokumentfiler.
+                    }
+                    else
+                    {
+                        await xnav.Intermission(3000, false);
+                        Navigation.NavigateTo("/teacherallcourses", true);
+                    }
+                }
+                else
+                {
+                    xnav.SetError(xtoa.TxtError[22]); // Failed to insert compressed course.
+                    xnav.SetReset('e');
+                }
+            }
+            else
+            {
+                xnav.SetError(xtoa.TxtError[14]); // The file was not approved or was never selected.
+                xnav.SetReset('e');
+            }
+        }
+    }
+
+    private async Task UploadFile() // Sparar en eller flera filer på servern.
+    {
+        var response = await xClient.PostFile(content); // Postoperationen!
+
+        if (response.IsSuccessStatusCode)
+        {
+            var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                };
+
+            using var responseStream = await response.Content.ReadAsStreamAsync();
+
+            var newUploadResults = await JsonSerializer
+                .DeserializeAsync<IList<UploadResult>>(responseStream, options);
+
+            if (newUploadResults is not null)
+            {
+                uploadResults = uploadResults.Concat(newUploadResults).ToList();
+            }
+
+            await xnav.Intermission(3000, false);
+            Navigation.NavigateTo("/teacherallcourses", true);
+        }
+        else
+        {
+            xnav.SetDone(xtoa.TxtDone[50]); // The course was inserted but not the file(s).
+            xnav.SetReset('d');
+        }
+    }
+}

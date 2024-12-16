@@ -19,6 +19,7 @@
             <div style="margin: 0 0 0 auto">
                 <button type="button" class="mb-1 text-white delbtn" @onclick="AddDeleteAvatar" title=@xtea.TxtTitle[1]>A</button>
                 <button type="button" class="mb-1 text-white delbtn" @onclick="DeleteAllDocs" title=@xtea.TxtTitle[2]>E</button>
+                <button type="button" class="mb-1 text-white delbtn" @onclick="Template" title=@xtea.TxtTitle[11]>T</button>
                 <button type="button" class="mb-1 text-white delbtn" @onclick="Info" title=@xtea.TxtTitle[0]>I</button>
             </div>
         </nav>
@@ -54,17 +55,17 @@
                                 if (DateTime.Parse(doc.TimeStamp).AddDays(1) > DateTime.Now)
                                 {
                                     <li class="oi oi-file text-danger text-decoration-none docicon"
-                                        style="position: relative; top: 10px; margin-right: 22px; text-shadow: 0 0 10px plum"
-                                        @onmouseover=" _ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
-                                        @onclick=" _ => DeleteMess(doc.Id)">
+                                    style="position: relative; top: 10px; margin-right: 22px; text-shadow: 0 0 10px plum"
+                                    @onmouseover=" _ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                    @onclick=" _ => DeleteMess(doc.Id)">
                                     </li>
                                 }
                                 else
                                 {
                                     <li class="oi oi-file text-danger text-decoration-none docicon"
-                                        style="position: relative; top: 10px; margin-right: 22px"
-                                        @onmouseover=" _ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
-                                        @onclick=" _ => DeleteMess(doc.Id)">
+                                    style="position: relative; top: 10px; margin-right: 22px"
+                                    @onmouseover=" _ => ShowMessControl(doc.Description, doc.Author, doc.TimeStamp)"
+                                    @onclick=" _ => DeleteMess(doc.Id)">
                                     </li>
                                 }
                             }
@@ -78,6 +79,7 @@
         <ToastDeleteAllDocUser @ref="deletealldocRef" /> @*Delete-fönster*@
         <ToastDocumentUser @ref="docuserRef" /> @*Filmottagarefönster*@
         <ToastDocumentAvatar @ref="addavatarRef" /> @*Avatar-fönster*@
+        <ToastTemplate @ref="templateRef" /> @*Template-fönster*@
         <ToastInfo @ref="infoRef" /> @*Info-fönster*@
 
         <EditForm Context="searchlmslexnet" Model="@courses" OnSubmit="OnInitializedAsync">
@@ -203,25 +205,25 @@
                                 </span>
 
                             </div>
-                                <b style="margin-left: auto">@XNavMenu.StartEndDate(data.StartDate, data.EndDate)</b>&nbsp;
-                                @if (data.Total_M > 0)
-                                {
-                                    <div style="margin-left: auto; margin-right: 0">
-                                        <NavLink style="cursor: pointer" class="oi oi-x text-danger text-decoration-none"
-                                        @onclick=" _ => DeleteControl(data.Id)" Title=@xtea.TxtTitle[5]></NavLink>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div style="margin-left: auto">
-                                        <NavLink style="cursor: pointer" class="oi oi-x text-danger text-decoration-none"
-                                        @onclick=" _ => DeleteControl(data.Id)" Title=@xtea.TxtTitle[5]></NavLink>
-                                    </div>
-                                    <div style="margin-left: auto; margin-right: 0">
-                                        <NavLink style="cursor: pointer; margin-left: 1%" class="oi oi-browser text-primary text-decoration-none"
-                                        @onclick=" _ => AddModule(data.Id)" Title=@xtea.TxtTitle[6]></NavLink>
-                                    </div>  
-                                }
+                            <b style="margin-left: auto">@XNavMenu.StartEndDate(data.StartDate, data.EndDate)</b>&nbsp;
+                            @if (data.Total_M > 0)
+                            {
+                                <div style="margin-left: auto; margin-right: 0">
+                                    <NavLink style="cursor: pointer" class="oi oi-x text-danger text-decoration-none"
+                                    @onclick=" _ => DeleteControl(data.Id)" Title=@xtea.TxtTitle[5]></NavLink>
+                                </div>
+                            }
+                            else
+                            {
+                                <div style="margin-left: auto">
+                                    <NavLink style="cursor: pointer" class="oi oi-x text-danger text-decoration-none"
+                                    @onclick=" _ => DeleteControl(data.Id)" Title=@xtea.TxtTitle[5]></NavLink>
+                                </div>
+                                <div style="margin-left: auto; margin-right: 0">
+                                    <NavLink style="cursor: pointer; margin-left: 1%" class="oi oi-browser text-primary text-decoration-none"
+                                    @onclick=" _ => AddModule(data.Id)" Title=@xtea.TxtTitle[6]></NavLink>
+                                </div>  
+                            }
                         </div>
                     </section>
                 }
@@ -273,6 +275,13 @@
         Auxx.Loggeduser = loggeduser;
         await addavatarRef!.Show();
         await RefreshAfterThis(false); // Uppdaterar sidan.
+    }
+
+    private ToastTemplate? templateRef; // Template-fönster.
+
+    private async Task Template() // Template-fönster.
+    {
+        await templateRef!.Show();
     }
 
     private ToastInfo? infoRef; // Info-fönster.
@@ -405,7 +414,7 @@
             }
         }
 
-        TeacherName = @xtea.TxtText[1] + loggeduser.FirstName + loggeduser.LastName + "!";
+        TeacherName = @xtea.TxtText[1] + loggeduser.FirstName + " " + loggeduser.LastName + "!";
 
         xtea.OnChange += StateHasChanged;
         xtoa.OnChange += StateHasChanged;

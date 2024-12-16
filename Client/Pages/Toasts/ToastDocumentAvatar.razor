@@ -1,6 +1,6 @@
 ﻿@using System.Net.Http.Headers
 @using System.Text.Json
-@inject ILogger<StudentCourse> Logger
+@inject ILogger<ToastDocumentAvatar> Logger
 @inject IXDtoClient xClient
 @inject XLangToast xtoa
 @inject XNavMenu xnav
@@ -20,14 +20,14 @@
                 </div>
 
                 <div class="toast-body">
-                    <div style="font-size: 0.8rem; color:darkblue"><em>For @Auxx.Name4Type...</em></div>
-                    <div style="font-size: 0.8rem">
+                    <p style="font-size: 0.8rem; color:darkblue"><em>For @Auxx.Name4Type...</em></p>
+                    <p style="font-size: 0.8rem">
                         @xtoa.TxtText[13]<br />@xtoa.TxtText[14] @Asize byte.<br />@xtoa.TxtText[15]
-                    </div><br />
-                    <div>
+                    </p>
+                    <p>
                         <InputFile class="form-control text-white" style="background-color:blueviolet"
                         accept="image/x-png, image/jpeg" OnChange="@OnInputFileChange" />
-                    </div><br />
+                    </p>
                     <div>
                         <button type="button" class="text-white rembtn" style="margin-right: 15px" @onclick="SaveAvatar">@xtoa.TxtButton[8]</button> @* Save avatar *@
                         <button type="button" class="text-white remyes" style="margin-right: 15px" @onclick=" _ => DeleteAvatar(true)">@xtoa.TxtButton[4]</button> @* Delete avatar *@
@@ -93,9 +93,8 @@
         StateHasChanged();
     }
 
-    private async Task OnInputFileChange(InputFileChangeEventArgs e) // Sparar en eller flera filer på servern.
+    private async Task OnInputFileChange(InputFileChangeEventArgs e) // Samlar ihop alla filer som ska sparas.
     {
-        List<File> files = new();
         int maxAllowedFiles = 1; // Max 1 fil!
         long maxAvatarSize; // Maximal avatarstorlek.
 
@@ -114,7 +113,7 @@
             }
         }
 
-        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles)) // Samlar ihop alla filer som ska sparas.
         {
             var response = new ExistDto();
 
@@ -130,7 +129,6 @@
                 {
                     try
                     {
-                        files.Add(new() { Name = file.Name });
                         DocFileName = file.Name;
 
                         var fileContent = new StreamContent(file.OpenReadStream(maxAvatarSize));
@@ -256,7 +254,7 @@
         }
     }
 
-    private async Task UploadFile()
+    private async Task UploadFile() // Sparar en eller flera filer på servern.
     {
         if (IsAvatar) await DeleteAvatar(false); // Tar bort den gamla avatarfilen.
 

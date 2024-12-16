@@ -18,7 +18,8 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (_context.Module == null)
             {
-                return BadRequest();
+                XC.ERR("No modules were found");
+                return NotFound("No modules were found");
             }
 
             var dto = _context.Module
@@ -34,6 +35,7 @@ namespace LexiconLMSBlazor.Server.Controllers
                     CourseId = (int)d.CourseId!
                 });
 
+            XC.INF("The get all method (module) was successful");
             return await dto.ToListAsync();
         }
 
@@ -43,15 +45,18 @@ namespace LexiconLMSBlazor.Server.Controllers
         //{
         //    if (_context.Module == null)
         //    {
-        //        return NotFound();
+        //        XC.ERR("No modules were found");
+        //        return NotFound("No modules were found");
         //    }
         //    var @module = await _context.Module.FindAsync(id);
 
         //    if (@module == null)
         //    {
-        //        return NotFound();
+        //        XC.ERR("The module was not found");
+        //        return NotFound("The module was not found");
         //    }
 
+        //    XC.INF("The get one method (module) was successful");
         //    return @module;
         //}
 
@@ -62,7 +67,8 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (id != @module.Id)
             {
-                return BadRequest();
+                XC.ERR("The module and the corresponding id are different");
+                return Problem("The module and the corresponding id are different");
             }
 
             _context.Entry(@module).State = EntityState.Modified;
@@ -70,16 +76,19 @@ namespace LexiconLMSBlazor.Server.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                XC.INF("The put method (module) was successful");
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!ModuleExists(id))
                 {
-                    return NotFound();
+                    XC.ERR("The module while saving was not found");
+                    return NotFound("The module while saving was not found");
                 }
                 else
                 {
-                    throw;
+                    XC.ERR("Cannot save (module)");
+                    return Problem("Cannot save (module)");
                 }
             }
 
@@ -93,11 +102,13 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (_context.Module == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Module'  is null.");
+                XC.ERR("Entity set 'ApplicationDbContext.Module' is null");
+                return Problem("Entity set 'ApplicationDbContext.Module' is null");
             }
             _context.Module.Add(@module);
             await _context.SaveChangesAsync();
 
+            XC.INF("The post method (module) was successful");
             return CreatedAtAction("GetModule", new { id = @module.Id }, @module);
         }
 
@@ -107,18 +118,21 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (_context.Module == null)
             {
-                return NotFound();
+                XC.ERR("No modules were found");
+                return NotFound("No modules were found");
             }
 
             var @module = await _context.Module.FindAsync(id);
             if (@module == null)
             {
-                return NotFound();
+                XC.ERR("The module was not found");
+                return NotFound("The module was not found");
             }
 
             _context.Module.Remove(@module);
             await _context.SaveChangesAsync();
 
+            XC.INF("The delete method (module) was successful");
             return NoContent();
         }
 

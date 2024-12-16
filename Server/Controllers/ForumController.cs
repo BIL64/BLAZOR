@@ -18,7 +18,8 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (_context.Forum == null)
             {
-                return BadRequest();
+                XC.ERR("No threads were found");
+                return NotFound("No threads were found");
             }
 
             var dto = _context.Forum
@@ -37,6 +38,7 @@ namespace LexiconLMSBlazor.Server.Controllers
                     Id4Course = d.Id4Course
                 });
 
+            XC.INF("The get all method (forum) was successful");
             return await dto.ToListAsync();
         }
 
@@ -46,15 +48,18 @@ namespace LexiconLMSBlazor.Server.Controllers
         //{
         //    if (_context.Forum == null)
         //    {
-        //        return NotFound();
+        //        XC.ERR("No threads were found");
+        //        return NotFound("No threads were found");
         //    }
         //    var @forum = await _context.Forum.FindAsync(id);
 
         //    if (@forum == null)
         //    {
-        //        return NotFound();
+        //        XC.ERR("The thread was not found");
+        //        return NotFound("The thread was not found");
         //    }
 
+        //    XC.INF("The get one method (forum) was successful");
         //    return @forum;
         //}
 
@@ -65,7 +70,8 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (id != @forum.Id)
             {
-                return BadRequest();
+                XC.ERR("The thread and the corresponding id are different");
+                return Problem("The thread and the corresponding id are different");
             }
 
             _context.Entry(@forum).State = EntityState.Modified;
@@ -73,16 +79,19 @@ namespace LexiconLMSBlazor.Server.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                XC.INF("The put method (forum) was successful");
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!ForumExists(id))
                 {
-                    return NotFound();
+                    XC.ERR("The thread while saving was not found");
+                    return NotFound("The thread while saving was not found");
                 }
                 else
                 {
-                    throw;
+                    XC.ERR("Cannot save (forum)");
+                    return Problem("Cannot save (forum)");
                 }
             }
 
@@ -96,11 +105,13 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (_context.Forum == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Forum'  is null.");
+                XC.ERR("Entity set 'ApplicationDbContext.Forum' is null");
+                return Problem("Entity set 'ApplicationDbContext.Forum' is null");
             }
             _context.Forum.Add(@forum);
             await _context.SaveChangesAsync();
 
+            XC.INF("The post method (forum) was successful");
             return CreatedAtAction("GetForum", new { id = @forum.Id }, @forum);
         }
 
@@ -110,18 +121,21 @@ namespace LexiconLMSBlazor.Server.Controllers
         {
             if (_context.Forum == null)
             {
-                return NotFound();
+                XC.ERR("No threads were found");
+                return NotFound("No threads were found");
             }
 
             var @forum = await _context.Forum.FindAsync(id);
             if (@forum == null)
             {
-                return NotFound();
+                XC.ERR("The thread was not found");
+                return NotFound("The thread was not found");
             }
 
             _context.Forum.Remove(@forum);
             await _context.SaveChangesAsync();
 
+            XC.INF("The delete method (forum) was successful");
             return NoContent();
         }
 
