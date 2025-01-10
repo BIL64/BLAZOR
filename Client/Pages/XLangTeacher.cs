@@ -260,7 +260,7 @@
             TxtTitle[i] = "Add or edit activity types";
             i++;
             // 11
-            TxtTitle[i] = "Saving or downloading course (zip file)";
+            TxtTitle[i] = "Save or download a course (zip file)";
             i++;
             // 12
             TxtTitle[i] = "reserve";
@@ -409,7 +409,7 @@
             TxtTitle[i] = "Lägg till eller redigera aktivitetstyper";
             i++;
             // 11
-            TxtTitle[i] = "Sparar eller hämtar kurs (zipfil)";
+            TxtTitle[i] = "Spara eller hämta kurs (zipfil)";
             i++;
             // 12
             TxtTitle[i] = "reserve";
