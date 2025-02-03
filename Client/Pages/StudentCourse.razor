@@ -1057,7 +1057,9 @@
             days = courseTime.Days.ToString();
             weeks = Math.Round(((decimal)courseTime.Days / 7), 1);
         }
-        return days + xstu.TxtTitle[12] + weeks.ToString() + xstu.TxtTitle[13];
+
+        if (CourseH) return "";
+        else return days + xstu.TxtTitle[12] + weeks.ToString() + xstu.TxtTitle[13];
     }
 
     private void InfoTitle(string description, byte select)
