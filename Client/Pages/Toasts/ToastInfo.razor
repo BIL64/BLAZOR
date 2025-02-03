@@ -9,7 +9,7 @@
     <Authorized>
         <div class="toast-container p-3 @showClass"
              style="position: fixed; top: auto; top: @(xnav.Pos_V)px; margin-left: @(xnav.Pos_H)px; z-index: 5" data-bs-autohide="true" data-bs-delay="5000">
-            <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true" style="width: 355px">
+            <div class="toast show bg-white" role="alert" aria-live="assertive" aria-atomic="true" style="width: 405px">
                 <div class="toast-header" @onmouseup=" _ => xnav.Mouse('U', _)" @onmousedown=" _ => xnav.Mouse('D', _)"
                      @onmousemove=" _ => xnav.Mouse('M', _)" @onmouseout=" _ => xnav.Mouse('M', _)">
                     <strong class="me-auto">@HeaderText</strong>
@@ -21,6 +21,7 @@
                         <p>@xtoa.TxtText[62]</p>
                         <p>@xtoa.TxtText[63]</p>
                         <p>@xtoa.TxtText[64]</p>
+                        <p>@xtoa.TxtText[65]</p>
                     </div>
                     <button type="button" class="text-white remnot" @onclick="Close">@xtoa.TxtButton[17]</button> @* OK *@
                 </div>

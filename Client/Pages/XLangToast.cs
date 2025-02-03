@@ -8,7 +8,7 @@
 
         public string[] TxtHead { get; private set; } = new string[38];
 
-        public string[] TxtText { get; private set; } = new string[68];
+        public string[] TxtText { get; private set; } = new string[72];
 
         public string[] TxtDone { get; private set; } = new string[51];
 
@@ -800,12 +800,26 @@
                          "also disappear. Even created threads and private threads disappear.";
             i++;
             // 65
-            TxtText[i] = "Select course number";
+            TxtText[i] = "A big advantage of the zip/template feature is if you have many courses that are similar to each other. " +
+                         "Then it is much easier to copy and paste a selected course (a “universal template”). After that, you update " +
+                         "the modules and/or activities that differ.";
             i++;
             // 66
-            TxtText[i] = "A file name different from the course name";
+            TxtText[i] = "reserve";
             i++;
             // 67
+            TxtText[i] = "reserve";
+            i++;
+            // 68
+            TxtText[i] = "reserve";
+            i++;
+            // 69
+            TxtText[i] = "Select course number";
+            i++;
+            // 70
+            TxtText[i] = "A file name different from the course name";
+            i++;
+            // 71
             TxtText[i] = "Include file documents";
         }
 
@@ -1023,12 +1037,26 @@
                          "diskussionstråd. Även skapade trådar och privata trådar försvinner.";
             i++;
             // 65
-            TxtText[i] = "Välj kursnummer";
+            TxtText[i] = "En stor fördel med zip/template funktionen är om man har många kurser och som liknar varandra. Då är det " +
+                         "betydligt smidigare att kopiera och klistra in en utvald kurs (en ”universell mall”). Efter det uppdaterar " +
+                         "man de moduler och/eller aktiviteter som skiljer sig åt.";
             i++;
             // 66
-            TxtText[i] = "Ett filnamn som skiljer sig från kursnamnet";
+            TxtText[i] = "reserve";
             i++;
             // 67
+            TxtText[i] = "reserve";
+            i++;
+            // 68
+            TxtText[i] = "reserve";
+            i++;
+            // 69
+            TxtText[i] = "Välj kursnummer";
+            i++;
+            // 70
+            TxtText[i] = "Ett filnamn som skiljer sig från kursnamnet";
+            i++;
+            // 71
             TxtText[i] = "Inkludera fildokument";
         }
 

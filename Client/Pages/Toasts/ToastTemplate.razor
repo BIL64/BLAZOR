@@ -38,10 +38,10 @@
                     @if (OperationSelect == 0)
                     {
                         <p>
-                            <label for="Select2">@xtoa.TxtText[65]</label> @* Select course number *@
+                            <label for="Select2">@xtoa.TxtText[69]</label> @* Select course number *@
                             <InputNumber id="Select2" class="form-check-inline col-2 mx-2" @bind-Value="CourseNumber" min="1" /><br /><br />
 
-                            <label for="Select3">@xtoa.TxtText[66]</label> @* A file name different from the course name *@
+                            <label for="Select3">@xtoa.TxtText[70]</label> @* A file name different from the course name *@
                             <InputText id="Select3" class="form-check-inline col-12" @bind-Value="FileName" />
                         </p>
                     }
@@ -49,7 +49,7 @@
                     {
                         <p>
                             <InputCheckbox id="IncludeDocs" class="form-check-inline" @bind-Value="IsDoc" />
-                            <label for="IncludeDocs">@xtoa.TxtText[67]</label><br /><br /> @* Include file documents *@
+                            <label for="IncludeDocs">@xtoa.TxtText[71]</label><br /><br /> @* Include file documents *@
 
                             <InputFile accept=".zip" class="form-control text-white" style="background-color:lightslategray" OnChange="@OnInputFileChange" />
                         </p>

@@ -88,7 +88,7 @@
             // Français
         }
 
-        private void Button_EN() // 0 2 8 13 1 3 15 10 6 12 4 5 7
+        private void Button_EN()
         {
             int i = 0;
 
