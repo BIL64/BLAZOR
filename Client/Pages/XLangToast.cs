@@ -800,9 +800,10 @@
                          "also disappear. Even created threads and private threads disappear.";
             i++;
             // 65
-            TxtText[i] = "A big advantage of the zip/template feature is if you have many courses that are similar to each other. " +
-                         "Then it is much easier to copy and paste a selected course (a “universal template”). After that, you update " +
-                         "the modules and/or activities that differ.";
+            TxtText[i] = "A big advantage of the zip/template function is if the courses you are building are similar to " +
+                         "each other. Then it is much easier to copy and paste an already selected course, such as a " +
+                         "“universal template”. Then you update the modules and/or activities that differ. Another option " +
+                         "is to copy modules instead... The size of the course can determine which method is preferable.";
             i++;
             // 66
             TxtText[i] = "reserve";
@@ -1037,9 +1038,10 @@
                          "diskussionstråd. Även skapade trådar och privata trådar försvinner.";
             i++;
             // 65
-            TxtText[i] = "En stor fördel med zip/template funktionen är om man har många kurser och som liknar varandra. Då är det " +
-                         "betydligt smidigare att kopiera och klistra in en utvald kurs (en ”universell mall”). Efter det uppdaterar " +
-                         "man de moduler och/eller aktiviteter som skiljer sig åt.";
+            TxtText[i] = "En stor fördel med zip/template funktionen är om kurserna man bygger liknar varandra. Då är det betydligt " +
+                         "smidigare att kopiera och klistra in en redan utvald kurs, såsom en ”universell mall”. Därefter uppdaterar " +
+                         "man de moduler och/eller aktiviteter som skiljer sig åt. En annan möjlighet är att istället kopiera moduler... " +
+                         "Kursens storlek kan avgör vilken metod som är att föredra.";
             i++;
             // 66
             TxtText[i] = "reserve";
