@@ -213,7 +213,7 @@
             TxtText[i] = "Activities for module";
             i++;
             // 20
-            TxtText[i] = "reserve";
+            TxtText[i] = "Breaks. As default auto line breaks is on but the text string: #!ALB# sets it OFF! Then <br> must be used.";
             i++;
             // 21
             TxtText[i] = "reserve";
@@ -308,7 +308,7 @@
             TxtText[i] = "Aktiviteter för modul";
             i++;
             // 20
-            TxtText[i] = "reserve";
+            TxtText[i] = "Breaks. Som standard är automatisk radbrytning på men textsträngen: #!ALB# stänger av den! Då måste <br> användas.";
             i++;
             // 21
             TxtText[i] = "reserve";

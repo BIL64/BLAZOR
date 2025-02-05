@@ -191,7 +191,7 @@
                                         {
                                             if (doc.DocName != "")
                                             {
-                                            // Öppnar filen samt visar dokumentets formulärdata.
+                                                // Öppnar filen samt visar dokumentets formulärdata.
                                                 <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
                                                 title="@doc.Description by @doc.Author @doc.TimeStamp"
                                                 @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)">@doc.DocName</a>
@@ -378,7 +378,11 @@
                                                         }
                                                         else
                                                         {
-                                                            <td><span style="@stylePointer" @onclick=" _ => InfoTitle(act.Description, data.Select)">@act.Name</span></td>
+                                                            actStyleName = act.Name;
+                                                            actStyleName = actStyleName.Replace("#T#", "");
+                                                            actStyleName = actStyleName.Replace("#Ti#", "");
+                                                            actStyleName = actStyleName.Replace("#Tb#", "");
+                                                            <td><span style="@stylePointer" @onclick=" _ => InfoTitle(act.Description, data.Select)">@actStyleName</span></td>
                                                         }
                                                     }
                                                     actStyleName = "";
@@ -409,31 +413,29 @@
                                                 }
                                                 else
                                                 {
-                                                    MarkupString markup;
+                                                    MarkupString markup = (MarkupString)act.Description;
+                                                    // Är Auto Line Breaks av?
+                                                    if (act.Description.IndexOf("#!ALB#") == -1)
+                                                    markup = (MarkupString)act.Description.Replace("\n", "<br>");
+                                                    else markup = (MarkupString)act.Description.Replace("#!ALB#", "");
 
                                                     if (data.Select == 5)
                                                     {
-                                                        if (act.Description.IndexOf("#Tb#") != -1)
+                                                        if (act.Name.IndexOf("#Tb#") != -1)
                                                         {
-                                                            string prepstr = act.Description.Replace("#Tb#", "");
-                                                            markup = (MarkupString)prepstr.Replace("\n", "<br>");
                                                             <div style="color: royalblue"><b>@markup</b></div>
                                                         }
-                                                        else if (act.Description.IndexOf("#Ti#") != -1)
+                                                        else if (act.Name.IndexOf("#Ti#") != -1)
                                                         {
-                                                            string prepstr = act.Description.Replace("#Ti#", "");
-                                                            markup = (MarkupString)prepstr.Replace("\n", "<br>");
                                                             <div><b>@markup</b></div>
                                                         }
                                                         else
                                                         {
-                                                            markup = (MarkupString)act.Description.Replace("\n", "<br>");
                                                             <div style="color: darkorange"><b>@markup</b></div>
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        markup = (MarkupString)act.Description.Replace("\n", "<br>");
                                                         <td>@markup</td>
                                                     }
                                                 }
@@ -456,7 +458,7 @@
                                                                     {
                                                                         if (doc.DocName != "")
                                                                         {
-                                                                        // Öppnar filen samt visar dokumentets formulärdata.
+                                                                            // Öppnar filen samt visar dokumentets formulärdata.
                                                                             <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
                                                                             title="@doc.Description by @doc.Author @doc.TimeStamp"
                                                                             @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)">@doc.DocName</a>
@@ -484,23 +486,35 @@
                                         </tr>
                                     }
 
-                                    if (act.ModuleId == data.Id && act.Name.IndexOf("#T#") != -1)
+                                    if (data.Select != 5 && act.ModuleId == data.Id && act.Name.IndexOf("#T#") != -1)
                                     {
-                                        string des = "<div style='color: darkorange'>" + act.Description.Replace("\n", "<br>") + "</div>";
+                                        string des = "<div style='color: darkorange'>" + act.Description + "</div>";
+                                        if (act.Description.IndexOf("#!ALB#") == -1) // Är Auto Line Breaks av?
+                                        des = des.Replace("\n", "<br>");
+                                        else des = des.Replace("#!ALB#", "");
+
                                         textmessage.Add((MarkupString)des);
                                         IsTextMess = true;
                                     }
 
-                                    if (act.ModuleId == data.Id && act.Name.IndexOf("#Tb#") != -1)
+                                    if (data.Select != 5 && act.ModuleId == data.Id && act.Name.IndexOf("#Tb#") != -1)
                                     {
-                                        string des = "<div style='color: royalblue'>" + act.Description.Replace("\n", "<br>") + "</div>";
+                                        string des = "<div style='color: royalblue'>" + act.Description + "</div>";
+                                        if (act.Description.IndexOf("#!ALB#") == -1) // Är Auto Line Breaks av?
+                                        des = des.Replace("\n", "<br>");
+                                        else des = des.Replace("#!ALB#", "");
+
                                         textmessage.Add((MarkupString)des);
                                         IsTextMess = true;
                                     }
 
-                                    if (act.ModuleId == data.Id && act.Name.IndexOf("#Ti#") != -1)
+                                    if (data.Select != 5 && act.ModuleId == data.Id && act.Name.IndexOf("#Ti#") != -1)
                                     {
-                                        string des = act.Description.Replace("\n", "<br>");
+                                        string des = act.Description;
+                                        if (act.Description.IndexOf("#!ALB#") == -1) // Är Auto Line Breaks av?
+                                        des = des.Replace("\n", "<br>");
+                                        else des = des.Replace("#!ALB#", "");
+
                                         textmessage.Add((MarkupString)des);
                                         IsTextMess = true;
                                     }
@@ -660,7 +674,11 @@
                                                         }
                                                         else
                                                         {
-                                                            <td><b style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description, 0)">@act.Name</b></td>
+                                                            actStyleName = act.Name;
+                                                            actStyleName = actStyleName.Replace("#T#", "");
+                                                            actStyleName = actStyleName.Replace("#Ti#", "");
+                                                            actStyleName = actStyleName.Replace("#Tb#", "");
+                                                            <td><b style="cursor: pointer" @onclick=" _ => InfoTitle(act.Description, 0)">@actStyleName</b></td>
                                                         }
                                                     }
                                                     actStyleName = "";
@@ -699,7 +717,7 @@
                                                                     {
                                                                         if (doc.DocName != "")
                                                                         {
-                                                                        // Öppnar filen samt visar dokumentets formulärdata.
+                                                                            // Öppnar filen samt visar dokumentets formulärdata.
                                                                             <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
                                                                             title="@doc.Description by @doc.Author @doc.TimeStamp"
                                                                             @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)">@doc.DocName</a>
@@ -728,21 +746,33 @@
 
                                         if (act.ModuleId == data.Id && act.Name.IndexOf("#T#") != -1)
                                         {
-                                            string des = "<div style='color: darkorange'>" + act.Description.Replace("\n", "<br>") + "</div>";
+                                            string des = "<div style='color: darkorange'>" + act.Description + "</div>";
+                                            if (act.Description.IndexOf("#!ALB#") == -1) // Är Auto Line Breaks av?
+                                            des = des.Replace("\n", "<br>");
+                                            else des = des.Replace("#!ALB#", "");
+
                                             textmessage.Add((MarkupString)des);
                                             IsTextMess = true;
                                         }
 
                                         if (act.ModuleId == data.Id && act.Name.IndexOf("#Tb#") != -1)
                                         {
-                                            string des = "<div style='color: royalblue'>" + act.Description.Replace("\n", "<br>") + "</div>";
+                                            string des = "<div style='color: royalblue'>" + act.Description + "</div>";
+                                            if (act.Description.IndexOf("#!ALB#") == -1) // Är Auto Line Breaks av?
+                                            des = des.Replace("\n", "<br>");
+                                            else des = des.Replace("#!ALB#", "");
+
                                             textmessage.Add((MarkupString)des);
                                             IsTextMess = true;
                                         }
 
                                         if (act.ModuleId == data.Id && act.Name.IndexOf("#Ti#") != -1)
                                         {
-                                            string des = act.Description.Replace("\n", "<br>");
+                                            string des = act.Description;
+                                            if (act.Description.IndexOf("#!ALB#") == -1) // Är Auto Line Breaks av?
+                                            des = des.Replace("\n", "<br>");
+                                            else des = des.Replace("#!ALB#", "");
+
                                             textmessage.Add((MarkupString)des);
                                             IsTextMess = true;
                                         }

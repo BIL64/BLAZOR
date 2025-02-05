@@ -94,7 +94,7 @@
                 @if (module.Select == 4 || module.Select == 5)
                 {
                     <div class="form-group m-3">
-                        <label for="Description">@xedi.TxtText[5]</label>
+                        <label for="ACT_DES">@xedi.TxtText[5]</label>
                         <InputTextArea id="ACT_DES" style="height: 300px" class="form-control" @bind-Value="activity.Description" placeholder="Enter description" />
                     </div>
                     <div class="form-group text-white mx-4"> @* Redigerings- och HTML-taggar *@
@@ -113,7 +113,7 @@
                         <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag07)" title="Superscript">&ltsup&gt</span>
                         <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag08)" title="Subscript">&ltsub&gt</span>
                         <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag09)" title="Paragraphs">&ltp&gt</span>
-                        <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag10)" title="Breaks">&ltbr&gt</span>
+                        <span class="dtagg rounded-pill" style="background-color: lightcoral" @onclick=" _ => AddTag(textarea, tag10)" title=@xedi.TxtText[20]>&ltbr&gt</span>
                         <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag11)" title="Dividers">&ltdiv&gt</span>
                         <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag12)" title="Spans">&ltspan&gt</span>
                         <span class="dtagg rounded-pill" @onclick=" _ => AddTag(textarea, tag13)" title="Hyperlink">&lta&gt</span>

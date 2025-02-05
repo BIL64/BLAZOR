@@ -411,36 +411,50 @@
                                                 }
                                                 else
                                                 {
-                                                    string des = act.Description.Replace("\n", "<br>");
-                                                    MarkupString markup = new(des);
+                                                    MarkupString markup;
+                                                    string alb;
+
+                                                    if (act.Description.IndexOf("#!ALB#") != -1)
+                                                    {
+                                                        string tdescription = act.Description;
+                                                        tdescription = tdescription.Replace("#!ALB#", "");
+                                                        markup = new(tdescription);
+                                                        alb = "ALB is off";
+                                                    }
+                                                    else
+                                                    {
+                                                        string des = act.Description.Replace("\n", "<br>");
+                                                        markup = new(des);
+                                                        alb = "ALB is on";
+                                                    }
 
                                                     if (data.Select == 5)
                                                     {
-                                                        if (act.Description.IndexOf("Ti") != -1)
+                                                        if (act.Name.IndexOf("#Ti#") != -1)
                                                         {
                                                             <td style="cursor: pointer"
-                                                            title="@xdet.TxtTitle[24] @act.Name @xdet.TxtTitle[4]"
+                                                            title="@xdet.TxtTitle[24] @act.Name @xdet.TxtTitle[4] @alb"
                                                             @onclick=" _ => EditActivity(act.Id)">@markup
                                                             </td>
                                                         }
-                                                        else if (act.Description.IndexOf("Tb") != -1)
+                                                        else if (act.Name.IndexOf("#Tb#") != -1)
                                                         {
                                                             <td style="cursor: pointer; color: royalblue"
-                                                            title="@xdet.TxtTitle[24] @act.Name @xdet.TxtTitle[4]"
+                                                            title="@xdet.TxtTitle[24] @act.Name @xdet.TxtTitle[4] @alb"
                                                             @onclick=" _ => EditActivity(act.Id)">@markup
                                                             </td>
                                                         }
                                                         else
                                                         {
                                                             <td style="cursor: pointer; color: darkorange"
-                                                            title="@xdet.TxtTitle[24] @act.Name @xdet.TxtTitle[4]"
+                                                            title="@xdet.TxtTitle[24] @act.Name @xdet.TxtTitle[4] @alb"
                                                             @onclick=" _ => EditActivity(act.Id)">@markup
                                                             </td>
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        <td>@markup</td>
+                                                        <td title=@alb>@markup</td>
                                                     }
                                                 }
 
