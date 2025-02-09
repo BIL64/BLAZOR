@@ -355,13 +355,13 @@
             TxtHead[i] = "Eliminate all your docs and mess...";
             i++;
             // 4
-            TxtHead[i] = "Remove all visitors...";
+            TxtHead[i] = "Eliminate all incoming docs and mess...";
             i++;
             // 5
-            TxtHead[i] = "Remove message...";
+            TxtHead[i] = "Remove all visitors...";
             i++;
             // 6
-            TxtHead[i] = "Info...";
+            TxtHead[i] = "Remove message...";
             i++;
             // 7
             TxtHead[i] = "Remove this user...";
@@ -474,13 +474,13 @@
             TxtHead[i] = "Eliminera alla dina docs & mess...";
             i++;
             // 4
-            TxtHead[i] = "Ta bort alla besökare...";
+            TxtHead[i] = "Eliminera alla inkomna docs & mess...";
             i++;
             // 5
-            TxtHead[i] = "Ta bort meddelandet...";
+            TxtHead[i] = "Ta bort alla besökare...";
             i++;
             // 6
-            TxtHead[i] = "Info...";
+            TxtHead[i] = "Ta bort meddelandet...";
             i++;
             // 7
             TxtHead[i] = "Ta bort den här användaren...";

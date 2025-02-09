@@ -42,9 +42,9 @@ namespace LexiconLMSBlazor.Server
                 var serviceProvider = scope.ServiceProvider;
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                // db.Database.EnsureDeleted(); // Om en ny seedning ska göras vid varje uppstart.
-                // db.Database.Migrate();
-                // db.Database.EnsureCreated();
+                //db.Database.EnsureDeleted(); // Om en ny seedning ska göras vid varje uppstart.
+                //db.Database.Migrate();
+                //db.Database.EnsureCreated();
 
                 try
                 {

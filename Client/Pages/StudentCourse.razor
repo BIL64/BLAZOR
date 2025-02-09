@@ -191,7 +191,7 @@
                                         {
                                             if (doc.DocName != "")
                                             {
-                                                // Öppnar filen samt visar dokumentets formulärdata.
+                                            // Öppnar filen samt visar dokumentets formulärdata.
                                                 <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
                                                 title="@doc.Description by @doc.Author @doc.TimeStamp"
                                                 @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)">@doc.DocName</a>
@@ -416,7 +416,7 @@
                                                     MarkupString markup = (MarkupString)act.Description;
                                                     // Är Auto Line Breaks av?
                                                     if (act.Description.IndexOf("#!ALB#") == -1)
-                                                    markup = (MarkupString)act.Description.Replace("\n", "<br>");
+                                                        markup = (MarkupString)act.Description.Replace("\n", "<br>");
                                                     else markup = (MarkupString)act.Description.Replace("#!ALB#", "");
 
                                                     if (data.Select == 5)
@@ -458,7 +458,7 @@
                                                                     {
                                                                         if (doc.DocName != "")
                                                                         {
-                                                                            // Öppnar filen samt visar dokumentets formulärdata.
+                                                                        // Öppnar filen samt visar dokumentets formulärdata.
                                                                             <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
                                                                             title="@doc.Description by @doc.Author @doc.TimeStamp"
                                                                             @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)">@doc.DocName</a>
@@ -490,7 +490,7 @@
                                     {
                                         string des = "<div style='color: darkorange'>" + act.Description + "</div>";
                                         if (act.Description.IndexOf("#!ALB#") == -1) // Är Auto Line Breaks av?
-                                        des = des.Replace("\n", "<br>");
+                                            des = des.Replace("\n", "<br>");
                                         else des = des.Replace("#!ALB#", "");
 
                                         textmessage.Add((MarkupString)des);
@@ -501,7 +501,7 @@
                                     {
                                         string des = "<div style='color: royalblue'>" + act.Description + "</div>";
                                         if (act.Description.IndexOf("#!ALB#") == -1) // Är Auto Line Breaks av?
-                                        des = des.Replace("\n", "<br>");
+                                            des = des.Replace("\n", "<br>");
                                         else des = des.Replace("#!ALB#", "");
 
                                         textmessage.Add((MarkupString)des);
@@ -512,7 +512,7 @@
                                     {
                                         string des = act.Description;
                                         if (act.Description.IndexOf("#!ALB#") == -1) // Är Auto Line Breaks av?
-                                        des = des.Replace("\n", "<br>");
+                                            des = des.Replace("\n", "<br>");
                                         else des = des.Replace("#!ALB#", "");
 
                                         textmessage.Add((MarkupString)des);
@@ -717,7 +717,7 @@
                                                                     {
                                                                         if (doc.DocName != "")
                                                                         {
-                                                                            // Öppnar filen samt visar dokumentets formulärdata.
+                                                                        // Öppnar filen samt visar dokumentets formulärdata.
                                                                             <a @onclick="_ => OpenFileControl(doc.NameIx, doc.DocName)"
                                                                             title="@doc.Description by @doc.Author @doc.TimeStamp"
                                                                             @onmouseover="_ => ShowInfoControl(doc.Description, doc.Author, doc.TimeStamp)">@doc.DocName</a>
@@ -748,7 +748,7 @@
                                         {
                                             string des = "<div style='color: darkorange'>" + act.Description + "</div>";
                                             if (act.Description.IndexOf("#!ALB#") == -1) // Är Auto Line Breaks av?
-                                            des = des.Replace("\n", "<br>");
+                                                des = des.Replace("\n", "<br>");
                                             else des = des.Replace("#!ALB#", "");
 
                                             textmessage.Add((MarkupString)des);
@@ -759,7 +759,7 @@
                                         {
                                             string des = "<div style='color: royalblue'>" + act.Description + "</div>";
                                             if (act.Description.IndexOf("#!ALB#") == -1) // Är Auto Line Breaks av?
-                                            des = des.Replace("\n", "<br>");
+                                                des = des.Replace("\n", "<br>");
                                             else des = des.Replace("#!ALB#", "");
 
                                             textmessage.Add((MarkupString)des);
@@ -770,7 +770,7 @@
                                         {
                                             string des = act.Description;
                                             if (act.Description.IndexOf("#!ALB#") == -1) // Är Auto Line Breaks av?
-                                            des = des.Replace("\n", "<br>");
+                                                des = des.Replace("\n", "<br>");
                                             else des = des.Replace("#!ALB#", "");
 
                                             textmessage.Add((MarkupString)des);

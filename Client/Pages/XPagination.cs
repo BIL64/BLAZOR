@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using LexiconLMSBlazor.Client.Services;
+using LexiconLMSBlazor.Client.Shared;
 using LexiconLMSBlazor.Shared.Dtos;
 using Microsoft.JSInterop;
 
